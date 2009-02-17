@@ -285,9 +285,15 @@ public class FormDef implements Serializable{
 	}
 	
 	public void removePage(PageDef pageDef){
-		for(int i=0; i<pages.size(); i++){
+		/*for(int i=0; i<pages.size(); i++){
 			((PageDef)pages.elementAt(i)).removeAllQuestions();
-		}
+		}*/
+		
+		pageDef.removeAllQuestions();
+		
+		if(pageDef.getGroupNode() != null)
+			pageDef.getGroupNode().getParentNode().removeChild(pageDef.getGroupNode());
+		
 		pages.removeElement(pageDef);
 	}
 	

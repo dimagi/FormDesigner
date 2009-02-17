@@ -161,6 +161,7 @@ public class XformConverter implements Serializable{
 		formDef.setDoc(doc);
 
 		Element xformsNode = doc.createElement(NODE_NAME_XFORMS);
+		formDef.setXformsNode(xformsNode);
 
 		//xformsNode.setAttribute("xmlns", "http://www.w3.org/2002/xforms");
 		xformsNode.setAttribute(XML_NAMESPACE_PREFIX+PREFIX_XFORMS, NAMESPACE_XFORMS);
@@ -262,9 +263,11 @@ public class XformConverter implements Serializable{
 		labelNode.appendChild(doc.createTextNode(pageDef.getName()));
 		groupNode.appendChild(labelNode);
 		xformsNode.appendChild(groupNode);
-		formDef.setPageLabelNode(labelNode);
-		formDef.setPageGroupNode(groupNode);
-
+		//formDef.setPageLabelNode(labelNode);
+		//formDef.setPageGroupNode(groupNode);
+		pageDef.setLabelNode(labelNode);
+		pageDef.setGroupNode(groupNode);
+		
 		Vector questions = pageDef.getQuestions();
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef qtn = (QuestionDef)questions.elementAt(i);

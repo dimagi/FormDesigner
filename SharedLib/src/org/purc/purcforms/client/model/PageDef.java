@@ -203,10 +203,13 @@ public class PageDef implements Serializable{
 	}
 
 	public void removeAllQuestions(){
-		for(int i=0; i<questions.size(); i++)
+		/*for(int i=0; i<questions.size(); i++)
 			removeQuestion((QuestionDef)questions.elementAt(i));
 
-		questions.removeAllElements();
+		questions.removeAllElements();*/
+		
+		while(questions.size() > 0)
+			removeQuestion((QuestionDef)questions.elementAt(0));
 	}
 
 	public int size(){

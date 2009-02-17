@@ -1,0 +1,4 @@
+<module>    
+      <!-- Source paths -->  
+	  <source path="client" />
+</module>

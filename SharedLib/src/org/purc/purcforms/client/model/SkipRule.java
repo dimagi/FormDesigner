@@ -31,7 +31,7 @@ public class SkipRule implements Serializable{
 	 */
 	private int action = PurcConstants.ACTION_NONE;
 	
-	/** A list of question identifiers (bytes) acted upon when conditions for the rule are true. */
+	/** A list of question identifiers (int) acted upon when conditions for the rule are true. */
 	private Vector actionTargets;
 	
 	/** The skip rule name. */
@@ -111,12 +111,29 @@ public class SkipRule implements Serializable{
 		this.conditionsOperator = conditionsOperator;
 	}
 	
+	public Condition getConditionAt(int index) {
+		if(conditions == null)
+			return null;
+		return (Condition)conditions.elementAt(index);
+	}
+	
 	public int getConditionCount() {
 		if(conditions == null)
 			return 0;
 		return conditions.size();
 	}
+	
+	public int getActionTargetCount() {
+		if(actionTargets == null)
+			return 0;
+		return actionTargets.size();
+	}
 
+	public Integer getActionTargetAt(int index) {
+		if(actionTargets == null)
+			return null;
+		return (Integer)actionTargets.elementAt(index);
+	}
 	/*public String getName() {
 		return name;
 	}
@@ -243,6 +260,41 @@ public class SkipRule implements Serializable{
 				node = questionDef.getControlNode();
 			node.setAttribute(EpihandyXform.ATTRIBUTE_NAME_RELEVANT, "");
 		}*/
+	}
+	
+	public void refresh(FormDef dstFormDef, FormDef srcFormDef){
+		SkipRule skipRule = null;
+		
+		for(int index = 0; index < this.getConditionCount(); index++){
+			Condition condition = getConditionAt(index);
+			QuestionDef qtn = srcFormDef.getQuestion(condition.getQuestionId());
+			if(qtn == null)
+				continue;
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			if(questionDef == null)
+				continue;
+			if(skipRule == null)
+				skipRule = new SkipRule();
+			condition.setQuestionId(questionDef.getId());
+			skipRule.addCondition(new Condition(condition));
+		}
+		
+		if(skipRule == null)
+			return; //No matching condition found.
+		
+		for(int index = 0; index < this.getActionTargetCount(); index++){
+			Integer actionTarget = getActionTargetAt(index);
+			QuestionDef qtn = srcFormDef.getQuestion(actionTarget);
+			if(qtn == null)
+				continue;
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			if(questionDef == null)
+				continue;
+			skipRule.addActionTarget(questionDef.getId());
+		}
+		
+		if(skipRule.getActionTargetCount() > 0)
+			dstFormDef.addSkipRule(skipRule);
 	}
 }
  

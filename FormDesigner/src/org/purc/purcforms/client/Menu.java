@@ -61,7 +61,7 @@ public class Menu extends Composite {
 
 		    MenuBar viewMenu = new MenuBar(true);
 		    viewMenu.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true, new Command(){
-		    	public void execute() {controller.refresh();}});
+		    	public void execute() {controller.refresh(this);}});
 
 		    MenuBar qtnMenu = new MenuBar(true);
 		    qtnMenu.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Add New"),true, new Command(){

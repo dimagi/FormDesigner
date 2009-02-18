@@ -32,6 +32,7 @@ public class FormUtil {
 	private static String entityFormDefDownloadUrlSuffix;
 	private static String formDataUploadUrlSuffix;
 	private static String afterSubmitUrlSuffix;
+	private static String formDefRefreshUrlSuffix;
 	
 	private static String formIdName;
 	private static String entityIdName;
@@ -106,7 +107,12 @@ public class FormUtil {
 	/**
 	 * Add formatting to an XML string
 	 */
-	public static String formatXml(String xmlContent) {
+	
+	public static String formatXml(String xmlContent){
+		return formatXmlPrivate(formatXmlPrivate(xmlContent));
+	}
+	
+	private static String formatXmlPrivate(String xmlContent) {
 
 		String result = "";
 
@@ -162,8 +168,17 @@ public class FormUtil {
 							if(isClosingPreviousBeginTag(prevBeginSection,section))
 								result = result.substring(0,result.length()-len);
 							String s = xmlContent.substring(prevIndex+1,index);
-							if(!s.contains("\n"))
+							if(s.contains("\r\n")){
+								if(!s.trim().equals(""))
+									result += s.replace("\r\n", " ");
+							}
+							else if(s.contains("\n")){
+								if(!s.trim().equals(""))
+									result += s.replace("\n", " ");
+							}
+							else
 								result += s;
+							
 							prevIndex = 0;
 						}
 					}
@@ -231,6 +246,7 @@ public class FormUtil {
 		entityFormDefDownloadUrlSuffix = getDivValue("entityFormDefDownloadUrlSuffix");
 		formDataUploadUrlSuffix = getDivValue("formDataUploadUrlSuffix");
 		afterSubmitUrlSuffix = getDivValue("afterSubmitUrlSuffix");
+		formDefRefreshUrlSuffix = getDivValue("formDefRefreshUrlSuffix");
 		
 		formIdName = getDivValue("formIdName");
 		if(formIdName == null || formIdName.trim().length() == 0)
@@ -289,6 +305,10 @@ public class FormUtil {
 		return afterSubmitUrlSuffix;
 	}
 	
+	public static String getFormDefRefreshUrlSuffix(){
+		return formDefRefreshUrlSuffix;
+	}
+	
 	public static String getFormIdName(){
 		return formIdName;
 	}
@@ -306,7 +326,8 @@ public class FormUtil {
 	}
 	
 	public static String getHostPageBaseURL(){
-		//"http://127.0.0.1:8080/openmrs/"
+		//return "http://127.0.0.1:8080/openmrs/";
+		
 		String s = GWT.getHostPageBaseURL();
 		
 		int pos = s.lastIndexOf(':');

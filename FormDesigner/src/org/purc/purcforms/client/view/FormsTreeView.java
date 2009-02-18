@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
+import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
@@ -66,6 +67,8 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	private int nextPageId = 0;
 	private int nextQuestionId = 0;
 	private int nextOptionId = 0;
+	private IFormDesignerListener formDesignerListener;
+	
 
 	public FormsTreeView(Images images,IFormSelectionListener formSelectionListener) {
 
@@ -91,6 +94,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		});
 
 		initContextMenu();
+	}
+
+	public void setFormDesignerListener(IFormDesignerListener formDesignerListener){
+		this.formDesignerListener = formDesignerListener;
 	}
 
 	public void addFormSelectionListener(IFormSelectionListener formSelectionListener){
@@ -176,26 +183,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 
 	public void onTreeItemSelected(TreeItem item) {
-		//Window.alert(item.getText());
-		/*dlg.setText("Opening Form");
-		dlg.center();
-
-	    DeferredCommand.addCommand(new Command(){
-	        public void execute() {
-	        	try{
-	        		formSelectionListener.onFormItemSelected(item.getUserObject());
-	        	}
-	        	catch(Exception ex){
-	        		ErrorDialog dialogBox = new ErrorDialog();
-	     	        dialogBox.setText("Unxpected Failure while opening form.");
-	     	        dialogBox.setBody(ex.getMessage());
-	     	        dialogBox.center();
-	     	        ex.printStackTrace();
-	        	}
-	    		dlg.hide();	
-	        }
-	      });	*/
-
+		
 		//Should not call this more than once for the same selected item.
 		if(item != this.item){
 			fireFormItemSelected(item.getUserObject());
@@ -239,6 +227,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			formRoot.setState(true);
 		}
 
+	}
+	
+	public void refreshForm(FormDef formDef){
+		tree.clear();
+		loadForm(formDef,true);
 	}
 
 	private TreeItem loadPage(PageDef pageDef,TreeItem formRoot){
@@ -702,7 +695,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void refreshItem(){
-
+		formDesignerListener.refresh(this);
 	}
 
 	public Object getSelectedForm(){

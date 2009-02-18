@@ -124,6 +124,12 @@ public class FormDef implements Serializable{
 			return null;
 		return (PageDef)pages.elementAt(index);
 	}
+	
+	public SkipRule getSkipRuleAt(int index) {
+		if(skipRules == null)
+			return null;
+		return (SkipRule)skipRules.elementAt(index);
+	}
 
 	public void setPages(Vector pages) {
 		this.pages = pages;
@@ -425,6 +431,12 @@ public class FormDef implements Serializable{
 		return pages.size();
 	}
 	
+	public int getSkipRuleCount(){
+		if(skipRules == null)
+			return 0;
+		return skipRules.size();
+	}
+	
 	public void moveQuestion2Page(QuestionDef qtn, int pageNo){
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
@@ -477,5 +489,21 @@ public class FormDef implements Serializable{
 	
 	public boolean removeSkipRule(SkipRule skipRule){
 		return skipRules.remove(skipRule);
+	}
+	
+	public void refresh(FormDef formDef){
+		if(variableName.equals(formDef.getVariableName()))
+			name = formDef.getName();
+		
+		for(int index = 0; index < formDef.getPageCount(); index++)
+			refresh((PageDef)formDef.getPageAt(index));
+		
+		for(int index = 0; index < formDef.getSkipRuleCount(); index++)
+			formDef.getSkipRuleAt(index).refresh(this, formDef);
+	}
+	
+	private void refresh(PageDef pageDef){
+		for(int index = 0; index < pages.size(); index++)
+			((PageDef)pages.get(index)).refresh(pageDef);
 	}
 }

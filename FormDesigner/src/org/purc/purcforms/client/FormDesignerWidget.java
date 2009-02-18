@@ -51,7 +51,8 @@ public class FormDesignerWidget extends Composite{
 		this.showToolbar =  showToolbar;
 		leftPanel.showFormAsRoot(showFormAsRoot);
 		centerPanel.setWidgetSelectionListener(leftPanel.getWidgetSelectionListener());
-
+		leftPanel.setFormDesignerListener(controller);
+		
 		initDesigner();  
 		centerPanel.setFormChangeListener(leftPanel.getFormChangeListener());
 	}

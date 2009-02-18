@@ -200,4 +200,17 @@ public class RepeatQtnsDef implements Serializable {
 		}
 		return null;
 	}
+	
+	public void refresh(RepeatQtnsDef pepeatQtnsDef){
+		Vector questions2 = pepeatQtnsDef.getQuestions();
+		if(questions == null || questions2 == null)
+			return;
+		
+		for(int index = 0; index < questions2.size(); index++){
+			QuestionDef qtn = (QuestionDef)questions2.get(index);
+			QuestionDef questionDef = getQuestion(qtn.getVariableName());
+			if(questionDef != null)
+				questionDef.refresh(qtn);
+		}
+	}
 }

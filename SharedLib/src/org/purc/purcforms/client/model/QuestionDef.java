@@ -26,13 +26,13 @@ import com.google.gwt.xml.client.NodeList;
  *
  */
 public class QuestionDef implements Serializable{
-	
+
 	public static final String TRUE_VALUE = "true";
 	public static final String FALSE_VALUE = "false";
-	
+
 	public static final String TRUE_DISPLAY_VALUE = "Yes";
 	public static final String FALSE_DISPLAY_VALUE = "No";
-	
+
 	/** The prompt text. The text the user sees. */
 	private String text = PurcConstants.EMPTY_STRING;
 
@@ -228,7 +228,7 @@ public class QuestionDef implements Serializable{
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onEnabledChanged(enabled);
 	}
@@ -247,7 +247,7 @@ public class QuestionDef implements Serializable{
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onLockedChanged(locked);
 	}
@@ -258,7 +258,7 @@ public class QuestionDef implements Serializable{
 
 	public void setRequired(boolean required) {
 		this.required = required;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onRequiredChanged(required);
 	}
@@ -287,7 +287,7 @@ public class QuestionDef implements Serializable{
 
 	public void setDataType(int dataType) {
 		this.dataType = dataType;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onDataTypeChanged(dataType);
 	}
@@ -298,7 +298,7 @@ public class QuestionDef implements Serializable{
 
 	public void setVariableName(String variableName) {
 		this.variableName = variableName;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onBindingChanged(variableName);
 	}
@@ -401,7 +401,7 @@ public class QuestionDef implements Serializable{
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onVisibleChanged(visible);
 	}
@@ -412,7 +412,7 @@ public class QuestionDef implements Serializable{
 
 	public void addChangeListener(QuestionChangeListener changeListener) {
 		if(!changeListeners.contains(changeListener))
-				changeListeners.add(changeListener);
+			changeListeners.add(changeListener);
 	}
 
 	public void addOption(OptionDef optionDef){
@@ -570,12 +570,12 @@ public class QuestionDef implements Serializable{
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED,XformConverter.XPATH_VALUE_TRUE);
 			else
 				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED);
-			
+
 			if(!enabled)
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_READONLY,XformConverter.XPATH_VALUE_TRUE);
 			else
 				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_READONLY);
-			
+
 			if(locked)
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED,XformConverter.XPATH_VALUE_TRUE);
 			else
@@ -621,17 +621,17 @@ public class QuestionDef implements Serializable{
 	public void updateNodeValue(FormDef formDef){
 		updateNodeValue(formDef.getDoc(),formDef.getDataNode(),answer);
 	}
-	
+
 	public void updateNodeValue(Document doc, Element formNode,String value){
 		if((dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME)
 				&& value != null && value.trim().length() > 0){
-			
-			
+
+
 			DateTimeFormat formatter = FormUtil.getDateTimeFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
 			if(formatter != null)
 				value = formatter.format(DateUtil.getDateTimeFormat().parse(value));
 		}
-		
+
 		if(value != null && value.trim().length() > 0){
 			if(variableName.contains("@"))
 				updateAttributeValue(formNode,value);
@@ -715,8 +715,8 @@ public class QuestionDef implements Serializable{
 				parent.replaceChild(node, dataNode);
 			else
 				parent.replaceChild(node, dataNode);
-				//formDef.getDataNode().replaceChild(node, parent);
-			
+			//formDef.getDataNode().replaceChild(node, parent);
+
 			dataNode = node;
 		}
 		else{
@@ -745,7 +745,7 @@ public class QuestionDef implements Serializable{
 				else
 					//if(dataNode.getParentNode().getParentNode() != null)
 					formDef.getDataNode().replaceChild(parentNode, dataNode.getParentNode());
-				
+
 				dataNode = node;
 			}
 		}
@@ -877,6 +877,37 @@ public class QuestionDef implements Serializable{
 				return optionDef;
 		}
 		return null;
+	}
+
+	public void refresh(QuestionDef questionDef){
+		setText(questionDef.getText());
+		setHelpText(questionDef.getHelpText());
+		setDefaultValue(questionDef.getDefaultValue());
+		setDataType(questionDef.getDataType());
+		setEnabled(questionDef.isEnabled());
+		setRequired(questionDef.isRequired());
+		setLocked(questionDef.isLocked());
+		setVisible(questionDef.isVisible());
+
+		if((dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
+		  (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) )
+			refreshOptions(questionDef);
+		else if(dataType == QuestionDef.QTN_TYPE_REPEAT && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			questionDef.getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
+	}
+	
+	private void refreshOptions(QuestionDef questionDef){
+		Vector options2 = questionDef.getOptions();
+		if(options == null || options2 == null)
+			return;
+		
+		for(int index = 0; index < options2.size(); index++){
+			OptionDef optn = (OptionDef)options2.get(index);
+			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
+			if(optionDef == null)
+				continue;
+			optionDef.setText(optn.getText());
+		}
 	}
 }
 

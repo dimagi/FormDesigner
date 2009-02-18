@@ -1,6 +1,7 @@
 package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.controller.IFormChangeListener;
+import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
@@ -83,6 +84,10 @@ public class LeftPanel extends Composite {
 	    initWidget(stackPanel);
 	  }
 	  
+	  public void setFormDesignerListener(IFormDesignerListener formDesignerListener){
+		  formsTreeView.setFormDesignerListener(formDesignerListener);
+	  }
+	  
 	  public void showFormAsRoot(boolean showFormAsRoot){
 		  formsTreeView.showFormAsRoot(showFormAsRoot);
 	  }
@@ -102,6 +107,10 @@ public class LeftPanel extends Composite {
 	  
 	  public void loadForm(FormDef formDef){
 		  formsTreeView.loadForm(formDef,true);
+	  }
+	  
+	  public void refresh(FormDef formDef){
+		  formsTreeView.refreshForm(formDef);
 	  }
 	  
 	  public void deleteSelectedItem(){

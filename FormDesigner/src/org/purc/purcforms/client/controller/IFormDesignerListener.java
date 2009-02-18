@@ -32,6 +32,6 @@ public interface IFormDesignerListener extends IFormActionListener{
 	//public void newFormLayout();
 	public void openFormLayout();
 	public void saveFormLayout();
-	public void refresh();
+	public void refresh(Object sender);
 	//public void saveFormLayoutAs();
 }

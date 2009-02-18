@@ -768,8 +768,10 @@ public class XformConverter implements Serializable{
 					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
 				else if (tagname.equals("body"))
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
-				else if (tagname.equals("title"))
-					formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
+				else if (tagname.equals("title")){
+					if(child.getChildNodes().getLength() != 0)
+						formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
+				}
 				else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 					formDef.setModelNode((Element)child);
 					formDef.setXformsNode((Element)child.getParentNode());
@@ -894,11 +896,13 @@ public class XformConverter implements Serializable{
 					String parentName = ((Element)child.getParentNode()).getNodeName();
 					if(parentName.equalsIgnoreCase(NODE_NAME_INPUT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1) || parentName.equalsIgnoreCase(NODE_NAME_ITEM)
 							||parentName.equalsIgnoreCase(NODE_NAME_INPUT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_ITEM_MINUS_PREFIX)){
-						label = child.getChildNodes().item(0).getNodeValue().trim(); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
-						labelNode = child;
+						if(child.getChildNodes().getLength() != 0){
+							label = child.getChildNodes().item(0).getNodeValue().trim(); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
+							labelNode = child;
+						}
 					}
 					else if(parentName.equalsIgnoreCase(NODE_NAME_REPEAT)||parentName.equalsIgnoreCase(NODE_NAME_REPEAT_MINUS_PREFIX)){
-						if(questionDef != null)
+						if(questionDef != null && child.getChildNodes().getLength() != 0)
 							questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 					}
 					else if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
@@ -911,19 +915,25 @@ public class XformConverter implements Serializable{
 				else if (tagname.equals(NODE_NAME_HINT)||tagname.equals(NODE_NAME_HINT_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
 					if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
-						hint = child.getChildNodes().item(0).getNodeValue().trim();
-						hintNode = child;
+						if(child.getChildNodes().getLength() != 0){
+							hint = child.getChildNodes().item(0).getNodeValue().trim();
+							hintNode = child;
+						}
 					}
 					else if(questionDef != null){
-						questionDef.setHelpText(child.getChildNodes().item(0).getNodeValue().trim());
-						questionDef.setHintNode(element);
+						if(child.getChildNodes().getLength() != 0){
+							questionDef.setHelpText(child.getChildNodes().item(0).getNodeValue().trim());
+							questionDef.setHintNode(element);
+						}
 					}
 				}
 				else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
 				else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
-					value = child.getChildNodes().item(0).getNodeValue().trim();
-					valueNode = child;
+					if(child.getChildNodes().getLength() != 0){
+						value = child.getChildNodes().item(0).getNodeValue().trim();
+						valueNode = child;
+					}
 				}
 				else
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);

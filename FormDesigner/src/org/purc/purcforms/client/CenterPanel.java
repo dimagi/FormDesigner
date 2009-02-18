@@ -316,6 +316,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	public void refresh(){
-		previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
+		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
+			previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
+	}
+	
+	public FormDef getFormDef(){
+		return formDef;
 	}
 }

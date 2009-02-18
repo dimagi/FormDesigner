@@ -350,6 +350,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	}
 
 	public void saveValue(FormDef formDef){
+		if(questionDef == null)
+			return;
+		
 		if(widget instanceof TextBox && questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			OptionDef optionDef = questionDef.getOptionWithText(((TextBox)widget).getText());
 			if(optionDef != null)
@@ -359,6 +362,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 		else if(widget instanceof TextBox)
 			questionDef.setAnswer(((TextBox)widget).getText());
+		else if(widget instanceof TextArea)
+			questionDef.setAnswer(((TextArea)widget).getText());
 		else if(widget instanceof ListBox){
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -370,7 +375,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 		else if(widget instanceof RadioButton){ //Should be before CheckBox
-			if(questionDef == null || questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || childWidgets == null)
+			if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || childWidgets == null)
 				return;
 
 			String value = null;
@@ -386,7 +391,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			questionDef.setAnswer(value);
 		}
 		else if(widget instanceof CheckBox){
-			if(questionDef == null || questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_MULTIPLE || childWidgets == null)
+			if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_MULTIPLE || childWidgets == null)
 				return;
 
 			String value = "";
@@ -405,8 +410,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).saveValue(formDef);
 		
-		if(questionDef != null)
-			questionDef.updateNodeValue(formDef);
+		questionDef.updateNodeValue(formDef);
 	}
 
 	public void addChildWidget(RuntimeWidgetWrapper childWidget){
@@ -458,7 +462,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	//These taken from question data.
 	public boolean isValid(){
-		if(widget instanceof Label || widget instanceof Button ||
+		if(widget instanceof Label || widget instanceof Button || questionDef == null ||
 				(widget instanceof CheckBox && childWidgets == null))
 			return true;
 

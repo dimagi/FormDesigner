@@ -4,8 +4,6 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -35,7 +33,6 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 		String s = FormUtil.getFormId();
 		if(s != null)
 			designer.loadForm(Integer.parseInt(s));
-
 
 		// Hook the window resize event, so that we can adjust the UI.
 		Window.addWindowResizeListener(this);

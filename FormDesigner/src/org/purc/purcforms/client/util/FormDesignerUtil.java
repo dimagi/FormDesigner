@@ -3,6 +3,7 @@ package org.purc.purcforms.client.util;
 import java.util.Vector;
 
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.view.ProgressDialog;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -158,7 +159,6 @@ public class FormDesignerUtil {
 			title = s;
 		Window.setTitle(title);
 	}
-	
 	
 	/*public String formatDate(Date date){
 		DateTimeFormat formatter = DateTimeFormat.getFormat("yyyy-MM-dd");

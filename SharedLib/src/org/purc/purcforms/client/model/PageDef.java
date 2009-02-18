@@ -369,4 +369,18 @@ public class PageDef implements Serializable{
 		}
 		return null;
 	}
+	
+	public void refresh(PageDef pageDef){
+		if(pageNo == pageDef.getPageNo())
+			name = pageDef.getName();
+		
+		int count = pageDef.getQuestionCount();
+		for(int index = 0; index < count; index++){
+			QuestionDef qtn = pageDef.getQuestionAt(index);
+			QuestionDef questionDef = this.getQuestion(qtn.getVariableName());
+			if(questionDef == null)
+				continue; //Possibly this question was deleted on server
+			questionDef.refresh(qtn);
+		}
+	}
 }

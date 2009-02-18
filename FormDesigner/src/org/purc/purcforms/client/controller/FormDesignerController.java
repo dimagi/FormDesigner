@@ -8,6 +8,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.ErrorDialog;
+import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.ProgressDialog;
 import org.purc.purcforms.client.xforms.XformConverter;
 
@@ -31,8 +32,10 @@ public class FormDesignerController implements IFormDesignerListener{
 
 	private CenterPanel centerPanel;
 	private LeftPanel leftPanel;
-	private ProgressDialog dlg = new ProgressDialog();
 	private Integer formId;	
+	
+	private static ProgressDialog dlg = new ProgressDialog();
+	
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
@@ -100,6 +103,7 @@ public class FormDesignerController implements IFormDesignerListener{
 	}
 
 	public void openFormDeffered() {
+		
 		dlg.setText("Opening Form");
 		dlg.center();
 
@@ -134,27 +138,13 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					ErrorDialog dialogBox = new ErrorDialog();
 					dialogBox.setText("Unxpected Failure");
-					//DOM.setStyleAttribute(dialogBox.getElement(), "backgroundColor", "#ABCDEF");
-					//System.err.print(text);
-					//text = text.replaceAll(" ", "&nbsp;");
-					dialogBox.setBody(s);//("<pre>" + text + "</pre>");
+					dialogBox.setBody(s);
 					dialogBox.setCallStack(text);
 					dialogBox.center();
-
-					/*ErrorDialog dialogBox = new ErrorDialog();
-	     	        dialogBox.setText("Unxpected Failure while opening form.");
-	     	        dialogBox.setBody(ex.getMessage());
-	     	        dialogBox.center();
-	     	        ex.printStackTrace();*/
 				}
 				dlg.hide();	
 			}
 		});
-
-
-		/*OpenFileDialog dlg = new OpenFileDialog();
-		dlg.setText("Open File");
-		dlg.center();*/
 	}
 
 
@@ -369,17 +359,32 @@ public class FormDesignerController implements IFormDesignerListener{
 		centerPanel.format();
 	}
 
-	public void refresh() {
-		centerPanel.refresh();
+	public void refresh(Object sender) {
+		if(sender instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
+			if(formId != null){
+				dlg.setText("Refresing Form");
+				dlg.center();
+
+				DeferredCommand.addCommand(new Command(){
+					public void execute() {
+						refreshForm();
+						dlg.hide();	
+					}
+				});
+			}
+		}
+		else
+			centerPanel.refresh();
 	}
 
 	public void loadForm(int formId){
 		this.formId = formId;
 
-		//String url = "http://127.0.0.1:8080/openmrs/moduleServlet/xforms/xformDownload?target=xform&formId="+formId+"&contentType=xml&uname=Guyzb&pw=daniel123";
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefDownloadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
+		
+		//url += "&uname=Guyzb&pw=daniel123";
 		
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
 
@@ -387,6 +392,7 @@ public class FormDesignerController implements IFormDesignerListener{
 			builder.sendRequest(null, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
+					System.out.println(xml);
 					String xformXml, layoutXml = null;
 
 					int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
@@ -415,8 +421,6 @@ public class FormDesignerController implements IFormDesignerListener{
 	}
 
 	public void saveForm(String xformXml, String layoutXml){
-		
-		//"http://127.0.0.1:8080/openmrs/module/xforms/xformUpload.form?target=xform&formId="+formId+"&contentType=xml&uname=Guyzb&pw=daniel123"
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefUploadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
@@ -448,5 +452,81 @@ public class FormDesignerController implements IFormDesignerListener{
 
 	public boolean isOfflineMode(){
 		return formId == null;
+	}
+	
+	private void refreshForm(){
+		String url = FormUtil.getHostPageBaseURL();
+		url += FormUtil.getFormDefRefreshUrlSuffix();
+		url += FormUtil.getFormIdName()+"="+this.formId;
+		
+		//url += "&uname=Guyzb&pw=daniel123";
+		
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
+
+		try{
+			builder.sendRequest(null, new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+					String xml = response.getText();
+					if(xml.length() > 0){
+						centerPanel.setXformsSource(xml,false);
+						refreshFormDeffered();
+					}
+				}
+
+				public void onError(Request request, Throwable exception){
+					exception.printStackTrace();
+					Window.alert(exception.getMessage());
+				}
+			});
+		}
+		catch(RequestException ex){
+			ex.printStackTrace();
+			Window.alert(ex.getMessage());
+		}
+	}
+	
+	private void refreshFormDeffered(){
+		dlg.setText("Refreshing Form");
+		dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					String xml = centerPanel.getXformsSource();
+					FormDef formDef = XformConverter.fromXform2FormDef(xml);
+					formDef.refresh(centerPanel.getFormDef());
+					formDef.updateDoc(false);
+					xml = formDef.getDoc().toString();
+					
+					leftPanel.refresh(formDef);
+					centerPanel.setXformsSource(FormUtil.formatXml(xml), false);
+				}
+				catch(Exception ex){
+					ex.printStackTrace();
+
+					String text = "Uncaught exception: ";
+					String s = text;
+					while (ex != null) {
+						s = ex.getMessage();
+						StackTraceElement[] stackTraceElements = ex.getStackTrace();
+						text += ex.toString() + "\n";
+						for (int i = 0; i < stackTraceElements.length; i++) {
+							text += "    at " + stackTraceElements[i] + "\n";
+						}
+						ex = (Exception)ex.getCause();
+						if (ex != null) {
+							text += "Caused by: ";
+						}
+					}
+
+					ErrorDialog dialogBox = new ErrorDialog();
+					dialogBox.setText("Unxpected Failure");
+					dialogBox.setBody(s);
+					dialogBox.setCallStack(text);
+					dialogBox.center();
+				}
+				dlg.hide();	
+			}
+		});
 	}
 }

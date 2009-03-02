@@ -808,10 +808,13 @@ public class XformConverter implements Serializable{
 					if(formDef.getPages() == null)
 						qtn.setId(Integer.parseInt("1"));
 					else{
-						if(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size() > 126)
-							break;
+						//This limitation was only for mobile devices and hence does not make sense for browser xform clients.
+						/*if(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size() > 126){
+							System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
+							//break;
+						}*/
 						//System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
-						qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1)));
+						qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
 					}
 					qtn.setVariableName(getQuestionVariableName(child,formDef));
 					setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE));
@@ -821,7 +824,7 @@ public class XformConverter implements Serializable{
 						qtn.setEnabled(false);
 					if(child.getAttribute(ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(ATTRIBUTE_NAME_LOCKED).equals(XPATH_VALUE_TRUE))
 						qtn.setLocked(true);
-
+					
 					if(!addRepeatChildQtn(qtn,repeats,child,map,rptKidMap)){
 						map.put(child.getAttribute(ATTRIBUTE_NAME_ID), qtn.getVariableName());
 						formDef.addQuestion(qtn);
@@ -844,6 +847,9 @@ public class XformConverter implements Serializable{
 					String bind = child.getAttribute(ATTRIBUTE_NAME_BIND);
 					String varName = (String)map.get(((ref != null) ? ref : bind));
 
+					//if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))
+					//	map.put(bind, bind); //TODO Not very sure about this
+					
 					//new addition may cause bugs
 					if(varName == null){
 						varName = addNonBindControl(formDef,child,relevants,ref,bind);
@@ -884,7 +890,8 @@ public class XformConverter implements Serializable{
 						//TODO second addition for repeats
 						Element parent = (Element)child.getParentNode(); 
 						if(parent.getNodeName().equals(NODE_NAME_REPEAT)||parent.getNodeName().equals(NODE_NAME_REPEAT_MINUS_PREFIX)){
-							QuestionDef rptQtnDef = formDef.getQuestion((String)map.get(parent.getAttribute(ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(ATTRIBUTE_NAME_BIND) : parent.getAttribute(ATTRIBUTE_NAME_NODESET)));
+							varName = (String)map.get(parent.getAttribute(ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(ATTRIBUTE_NAME_BIND) : parent.getAttribute(ATTRIBUTE_NAME_NODESET));
+							QuestionDef rptQtnDef = formDef.getQuestion(varName);
 							rptQtnDef.addRepeatQtnsDef(qtn);
 							formDef.removeQuestion(qtn);
 						}
@@ -1003,6 +1010,7 @@ public class XformConverter implements Serializable{
 
 	private static String getQuestionVariableName(Element child, FormDef formDef){
 		String name = child.getAttribute(ATTRIBUTE_NAME_NODESET);
+		
 		if(name.startsWith("/"+formDef.getVariableName()+"/"))
 			name = name.replace("/"+formDef.getVariableName()+"/", "");
 		return name;

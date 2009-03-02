@@ -207,6 +207,8 @@ public class PageDef implements Serializable{
 			removeQuestion((QuestionDef)questions.elementAt(i));
 
 		questions.removeAllElements();*/
+		if(questions == null)
+			return;
 		
 		while(questions.size() > 0)
 			removeQuestion((QuestionDef)questions.elementAt(0));
@@ -370,6 +372,11 @@ public class PageDef implements Serializable{
 		return null;
 	}
 	
+	/**
+	 * Updates this pageDef (as the main) with the parameter one
+	 * 
+	 * @param pageDef
+	 */
 	public void refresh(PageDef pageDef){
 		if(pageNo == pageDef.getPageNo())
 			name = pageDef.getName();

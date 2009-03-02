@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.widget;
 
+import java.util.List;
+
 import org.purc.purcforms.client.controller.FormRunnerController;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormUtil;
@@ -36,8 +38,8 @@ public class FormRunnerWidget extends Composite{
 		view.setSubmitListener(controller);
 	}
 	
-	public void loadForm(FormDef formDef,String layoutXml){
-		view.loadForm(formDef, layoutXml);
+	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
+		view.loadForm(formDef, layoutXml,externalSourceWidgets);
 	}
 	
 	public void loadForm(int formId, int patientId){

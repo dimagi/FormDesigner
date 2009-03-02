@@ -33,9 +33,9 @@ public class FormDesignerController implements IFormDesignerListener{
 	private CenterPanel centerPanel;
 	private LeftPanel leftPanel;
 	private Integer formId;	
-	
+
 	private static ProgressDialog dlg = new ProgressDialog();
-	
+
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
@@ -103,7 +103,7 @@ public class FormDesignerController implements IFormDesignerListener{
 	}
 
 	public void openFormDeffered() {
-		
+
 		dlg.setText("Opening Form");
 		dlg.center();
 
@@ -383,16 +383,20 @@ public class FormDesignerController implements IFormDesignerListener{
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefDownloadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
-		
+
 		//url += "&uname=Guyzb&pw=daniel123";
-		
+
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
 
 		try{
 			builder.sendRequest(null, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
-					System.out.println(xml);
+					if(xml == null || xml.length() == 0){
+						Window.alert("No data found.");
+						return;
+					}
+					
 					String xformXml, layoutXml = null;
 
 					int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
@@ -424,7 +428,7 @@ public class FormDesignerController implements IFormDesignerListener{
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefUploadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
-		
+
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
 		//builder.setHeader("Content_type", "application/x-www-form-urlencoded");
 
@@ -453,24 +457,28 @@ public class FormDesignerController implements IFormDesignerListener{
 	public boolean isOfflineMode(){
 		return formId == null;
 	}
-	
+
 	private void refreshForm(){
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefRefreshUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
-		
+
 		//url += "&uname=Guyzb&pw=daniel123";
-		
+
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
 
 		try{
 			builder.sendRequest(null, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
-					if(xml.length() > 0){
-						centerPanel.setXformsSource(xml,false);
-						refreshFormDeffered();
+					if(xml == null || xml.length() == 0){
+						Window.alert("No data found.");
+						return;
 					}
+
+					centerPanel.setXformsSource(xml,false);
+					refreshFormDeffered();
+
 				}
 
 				public void onError(Request request, Throwable exception){
@@ -484,7 +492,7 @@ public class FormDesignerController implements IFormDesignerListener{
 			Window.alert(ex.getMessage());
 		}
 	}
-	
+
 	private void refreshFormDeffered(){
 		dlg.setText("Refreshing Form");
 		dlg.center();
@@ -497,7 +505,7 @@ public class FormDesignerController implements IFormDesignerListener{
 					formDef.refresh(centerPanel.getFormDef());
 					formDef.updateDoc(false);
 					xml = formDef.getDoc().toString();
-					
+
 					leftPanel.refresh(formDef);
 					centerPanel.setXformsSource(FormUtil.formatXml(xml), false);
 				}

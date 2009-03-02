@@ -1,6 +1,8 @@
 package org.purc.purcforms.client.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -8,12 +10,15 @@ import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
+import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
@@ -61,7 +66,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class DesignSurfaceView extends Composite implements WindowResizeListener,TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents{
+public class DesignSurfaceView extends Composite implements WindowResizeListener,TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
 
 	private MouseListenerCollection mouseListeners;
 	private static final int MOVE_LEFT = 1;
@@ -93,6 +98,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	private WidgetSelectionListener widgetSelectionListener;
 	private WidgetSelectionListener currentWidgetSelectionListener;
 	private DesignWidgetWrapper selectedWidget;
+
 
 	private int selectionXPos;
 	private int selectionYPos;
@@ -361,29 +367,32 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 
 		MenuBar addControlMenu = new MenuBar(true);
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Label"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_LABEL),true,new Command(){
 			public void execute() {popup.hide(); addNewLabel("Label");}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"TextBox"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_TEXTBOX),true,new Command(){
 			public void execute() {popup.hide(); addNewTextBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"CheckBox"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_CHECKBOX),true,new Command(){
 			public void execute() {popup.hide(); addNewCheckBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"RadioButton"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_RADIOBUTTON),true,new Command(){
 			public void execute() {popup.hide(); addNewRadioButton();}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"DropdownList"),true,new Command(){
 			public void execute() {popup.hide(); addNewDropdownList();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"TextArea"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_TEXTAREA),true,new Command(){
 			public void execute() {popup.hide(); addTextArea();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Button"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_BUTTON),true,new Command(){
 			public void execute() {popup.hide(); addNewButton();}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date Picker"),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker();}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
+			public void execute() {popup.hide(); addGroupBox();}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Repeat Section"),true,new Command(){
 			public void execute() {popup.hide(); addNewRepeatSection();}});
@@ -480,17 +489,21 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 		if(text == null)
 			text = "Label";
 		Label label = new Label(text);
-		return addNewWidget(label);
+		
+		DesignWidgetWrapper wrapper = addNewWidget(label);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		return wrapper;
 	}
 
 	private DesignWidgetWrapper addNewRepeatSection(){
-		DesignGroupWidget repeat = new DesignGroupWidget(images);
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","500px");
-		repeat.setWidgetSelectionListener(widgetSelectionListener);
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 		
 		DesignWidgetWrapper widget = addNewWidget(repeat);
+		widget.setRepeated(true);
 
 		FormDesignerDragController selDragController = selectedDragController;
 		AbsolutePanel absPanel = selectedPanel;
@@ -522,6 +535,18 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 		currentWidgetSelectionListener = wgSelectionListener;
 		
 		y = oldY;
+
+		return widget;
+	}
+
+	private DesignWidgetWrapper addGroupBox(){
+		DesignGroupWidget group = new DesignGroupWidget(images,this);
+		group.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(group.getElement(), "height","150px");
+		DOM.setStyleAttribute(group.getElement(), "width","500px");
+		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
+		
+		DesignWidgetWrapper widget = addNewWidget(group);
 
 		return widget;
 	}
@@ -607,7 +632,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	}
 
 	private DesignWidgetWrapper addNewDatePicker(){
-		DatePicker tb = new DatePicker();
+		DatePicker tb = new DatePickerWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		return addNewWidget(tb);
@@ -649,7 +674,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	private void addNewTab(String name){
 		initPanel();
 		if(name == null)
-			name = "Page"+tabs.getWidgetCount();
+			name = "Page"+(tabs.getWidgetCount()+1);
 
 		tabs.add(selectedPanel, name);
 		selectedTabIndex = tabs.getWidgetCount() - 1;
@@ -708,7 +733,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 		boolean hasWidgets = false;
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			Element node = doc.createElement("Page");
-			node.setAttribute("Text", DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
 			//node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
 			rootNode.appendChild(node);
 			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
@@ -790,7 +815,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 			if(pages.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
 			Element node = (Element)pages.item(i);
-			addNewTab(node.getAttribute("Text"));
+			addNewTab(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			loadPage(node.getChildNodes());
 		}
 
@@ -805,72 +830,88 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 			if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
 			Element node = (Element)nodes.item(i);
-			DesignWidgetWrapper widget = loadWidget(node,selectedDragController,selectedPanel,images,widgetPopup,widgetSelectionListener,formDef);
+			DesignWidgetWrapper widget = loadWidget(node,selectedDragController,selectedPanel,images,widgetPopup,this,currentWidgetSelectionListener,formDef); //TODO CHECK ???????????????
 			if(widget != null && (widget.getWrappedWidget() instanceof DesignGroupWidget)){
 				((DesignGroupWidget)widget.getWrappedWidget()).loadWidgets(node,formDef);
-				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(widgetSelectionListener);
+				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK
 			}
 		}
 	}
 
-	public static DesignWidgetWrapper loadWidget(Element node,FormDesignerDragController dragController, AbsolutePanel panel, Images images, PopupPanel widgetPopup,WidgetSelectionListener widgetSelectionListener,FormDef formDef){
-		String left = node.getAttribute("Left");
-		String top = node.getAttribute("Top");
-		String s = node.getAttribute("WidgetType");
+	public static DesignWidgetWrapper loadWidget(Element node,FormDesignerDragController dragController, AbsolutePanel panel, Images images, PopupPanel widgetPopup, IWidgetPopupMenuListener widgetPopupMenuListener,WidgetSelectionListener widgetSelectionListener,FormDef formDef){
+		String left = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
+		String top = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
+		String s = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE);
 
 		Widget widget = null;
-		if(s.equalsIgnoreCase("RadioButton"))
-			widget = new RadioButton(node.getAttribute("ParentBinding"),node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("CheckBox"))
-			widget = new CheckBox(node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("Button"))
-			widget = new Button(node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("ListBox"))
+		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON))
+			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX))
+			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON))
+			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LISTBOX))
 			widget = new ListBox(false);
-		else if(s.equalsIgnoreCase("TextArea"))
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA))
 			widget = new TextArea();
-		else if(s.equalsIgnoreCase("DatePicker"))
-			widget = new DatePicker();
-		else if(s.equalsIgnoreCase("TextBox"))
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER))
+			widget = new DatePickerWidget();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX))
 			widget = new TextBox();
-		else if(s.equalsIgnoreCase("Label"))
-			widget = new Label(node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("RepeatSection"))
-			widget = new DesignGroupWidget(images);
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
+			widget = new Label(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_GROUPBOX) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION))
+			widget = new DesignGroupWidget(images,widgetPopupMenuListener);
 		else
 			return null; 
 
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,widgetSelectionListener);
 
-		String value = node.getAttribute("HelpText");
+		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTitle(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setExternalSource(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setDisplayField(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setValueField(value);
 
-		value = node.getAttribute("Width");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setWidth(value);
 
-		value = node.getAttribute("Height");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setHeight(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setRepeated(value.equals(WidgetEx.REPEATED_TRUE_VALUE));
 
-		String binding = node.getAttribute("Binding");
+		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
 		if(binding != null && binding.trim().length() > 0)
 			wrapper.setBinding(binding);
 		else
 			binding = null;
 
-		String parentBinding = node.getAttribute("ParentBinding");
+		String parentBinding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING);
 		if(parentBinding != null && parentBinding.trim().length() > 0)
 			wrapper.setParentBinding(parentBinding);
 		else
 			parentBinding = null;
 
-		value = node.getAttribute("TabIndex");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTabIndex(Integer.parseInt(value));
 
-		if(wrapper.getWrappedWidget() instanceof Label)
+		//if(wrapper.getWrappedWidget() instanceof Label)
 			WidgetEx.loadLabelProperties(node,wrapper);
 		
 		if(formDef != null && binding != null && parentBinding == null){
@@ -986,9 +1027,12 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget) {
+		if(widget == null)
+			return;
+		
 		if(!(widget.getWrappedWidget() instanceof TabBar)){
 			Event event = DOM.eventGetCurrentEvent();
-			if(DOM.eventGetType(event) == Event.ONCONTEXTMENU){
+			if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
 				if(selectedDragController.getSelectedWidgetCount() == 1)
 					selectedDragController.clearSelection();
 				selectedDragController.selectWidget(widget);
@@ -1054,10 +1098,12 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	}
 
 	private void loadPage(PageDef pageDef){
-
+		loadQuestions(pageDef.getQuestions(),pageDef.getName());
+	}
+	
+	private void loadQuestions(List<QuestionDef> questions, String pageName){
 		int max = FormDesignerUtil.convertDimensionToInt(sHeight) - 40;
 		int tabIndex = 0;
-		Vector questions  = pageDef.getQuestions();
 		x = y = 20;
 
 		x += selectedPanel.getAbsoluteLeft();
@@ -1080,11 +1126,11 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker();
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageDef.getName());
+				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList();
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				widgetWrapper = addNewRepeatSet(questionDef,max,pageDef.getName());
+				widgetWrapper = addNewRepeatSet(questionDef,max,pageName);
 			else
 				widgetWrapper = addNewTextBox();
 
@@ -1114,7 +1160,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 			if((y+40+rptIncr) > max){
 				y += 10;
 				addNewButton();
-				addNewTab(pageDef.getName());
+				addNewTab(pageName);
 				y = 20 + selectedPanel.getAbsoluteTop();
 			}
 		}
@@ -1362,8 +1408,62 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	public void refresh(){
 		
 		if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
-			return;
+			loadNewWidgets();
+		else
+			setLayout(formDef);
+	}
+
+	public void onCopy(Widget sender) {
+		selectedDragController.clearSelection();
+		selectedDragController.selectWidget(sender.getParent().getParent());
+		copyWidgets(false);
+	}
+
+	public void onCut(Widget sender) {
+		selectedDragController.clearSelection();
+		selectedDragController.selectWidget(sender.getParent().getParent());
+		cutWidgets();
+	}
+
+	public void onDelete(Widget sender) {
+		selectedDragController.clearSelection();
+		selectedDragController.selectWidget(sender.getParent().getParent());
+		deleteWidgets();
+	}
+	
+	private void loadNewWidgets(){
+		HashMap<String,String> bindings = new HashMap<String, String>();
+		for(int i=0; i<dragControllers.size(); i++){
+			AbsolutePanel panel = dragControllers.elementAt(i).getBoundaryPanel();
+			fillBindings(panel,bindings);
+		}
 		
-		setLayout(formDef);
+		List<QuestionDef> newQuestions = new ArrayList<QuestionDef>();
+		for(int index = 0; index < formDef.getPageCount(); index++)
+			fillNewQuestions(formDef.getPageAt(index),newQuestions,bindings);
+		
+		if(newQuestions.size() > 0){
+			String pageName = "Page"+(tabs.getTabBar().getTabCount()+1);
+			addNewTab(pageName);
+			loadQuestions(newQuestions,pageName);
+		}
+	}
+	
+	private void fillBindings(AbsolutePanel panel,HashMap<String,String> bindings){
+		for(int index = 0; index < panel.getWidgetCount(); index++){
+			DesignWidgetWrapper widget = (DesignWidgetWrapper)panel.getWidget(index);
+			String binding = widget.getParentBinding();
+			if(binding == null)
+				binding = widget.getBinding();
+			bindings.put(binding, binding); //Could possibly put widget as value.
+		}
+	}
+	
+	private void fillNewQuestions(PageDef pageDef, List<QuestionDef> newQuestions, HashMap<String,String> bindings){
+		for(int index = 0; index < pageDef.getQuestionCount(); index ++){
+			QuestionDef questionDef = pageDef.getQuestionAt(index);
+			if(!bindings.containsKey(questionDef.getVariableName()))
+				newQuestions.add(questionDef);
+		}
 	}
 }

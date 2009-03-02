@@ -68,11 +68,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private ListBox lbFontWeight = new ListBox(false);
 	private ListBox lbFontStyle = new ListBox(false);
 	private TextBox txtFontSize= new TextBox();
+	private TextBox txtFontFamily= new TextBox();
 	private ListBox lbTextDecoration = new ListBox(false);
 	private ListBox lbBorderStyle = new ListBox(false);
 	private TextBox txtBorderWidth = new TextBox();
-	
-	
+	private ListBox cbRepeat = new ListBox(false);
+	private TextBox txtExternalSource = new TextBox();
+	private TextBox txtDisplayField = new TextBox();
+	private TextBox txtValueField = new TextBox();
 	
 	private FormDef formDef;
 	QuestionDef questionDef;
@@ -93,7 +96,13 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 0, new Label("Left"));
 		table.setWidget(++index, 0, new Label("Top"));
 		table.setWidget(++index, 0, new Label("Tab Index"));
+		table.setWidget(++index, 0, new Label("Repeat"));
 		
+		table.setWidget(++index, 0, new Label("External Source"));
+		table.setWidget(++index, 0, new Label("Display Field"));
+		table.setWidget(++index, 0, new Label("Value Field"));
+		
+		table.setWidget(++index, 0, new Label("Font Family"));
 		table.setWidget(++index, 0, new Label("Fore Color"));
 		table.setWidget(++index, 0, new Label("Font Weight"));
 		table.setWidget(++index, 0, new Label("Font Style"));
@@ -116,7 +125,13 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 1, txtLeft);
 		table.setWidget(++index, 1, txtTop);
 		table.setWidget(++index, 1, txtTabIndex);
+		table.setWidget(++index, 1, cbRepeat);
 		
+		table.setWidget(++index, 1, txtExternalSource);
+		table.setWidget(++index, 1, txtDisplayField);
+		table.setWidget(++index, 1, txtValueField);
+		
+		table.setWidget(++index, 1, txtFontFamily);
 		table.setWidget(++index, 1, sgstForeColor);
 		table.setWidget(++index, 1, lbFontWeight);
 		table.setWidget(++index, 1, lbFontStyle);
@@ -138,11 +153,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		sgstChildBinding.setWidth("100%");
 		sgstBinding.setWidth("100%");
 		txtTabIndex.setWidth("100%");
+		cbRepeat.setWidth("100%");
+		txtExternalSource.setWidth("100%");
+		txtDisplayField.setWidth("100%");
+		txtValueField.setWidth("100%");
 		
 		sgstForeColor.setWidth("100%");
 		lbFontWeight.setWidth("100%");
 		lbFontStyle.setWidth("100%");
 		txtFontSize.setWidth("100%");
+		txtFontFamily.setWidth("100%");
 		lbTextDecoration.setWidth("100%");
 		sgstBackgroundColor.setWidth("100%");
 		lbBorderStyle.setWidth("100%");
@@ -169,6 +189,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		FormDesignerUtil.allowNumericOnly(txtTabIndex,false);
 		
 		enableLabelProperties(false);
+		
+		cbRepeat.addItem("true");
+		cbRepeat.addItem("false");
 	}
 	
 	private void initStyles(){
@@ -279,9 +302,57 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			}
 		});
 		
+		txtTabIndex.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				updateTabIndex();
+			}
+		});
+		
 		txtTabIndex.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				updateTabIndex();
+			}
+		});
+		
+		txtExternalSource.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				updateExternalSource();
+			}
+		});
+		
+		cbRepeat.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				updateIsRepeat();
+			}
+		});
+		
+		txtExternalSource.addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				updateExternalSource();
+			}
+		});
+		
+		txtDisplayField.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				updateDisplayField();
+			}
+		});
+		
+		txtDisplayField.addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				updateDisplayField();
+			}
+		});
+		
+		txtValueField.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				updateValueField();
+			}
+		});
+		
+		txtValueField.addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				updateValueField();
 			}
 		});
 		
@@ -326,6 +397,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				widget.setFontSize(txtFontSize.getText());
 			}
 		});
+		txtFontFamily.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				widget.setFontFamily(txtFontFamily.getText());
+			}
+		});
+		txtFontFamily.addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				widget.setFontFamily(txtFontFamily.getText());
+			}
+		});
 		txtBorderWidth.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				widget.setBorderWidth(txtBorderWidth.getText());
@@ -366,6 +447,26 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateHelpText(){
 		if(widget != null)
 			widget.setTitle(txtHelpText.getText());
+	}
+	
+	private void updateExternalSource(){
+		if(widget != null)
+			widget.setExternalSource(txtExternalSource.getText());
+	}
+	
+	private void updateDisplayField(){
+		if(widget != null)
+			widget.setDisplayField(txtDisplayField.getText());
+	}
+	
+	private void updateValueField(){
+		if(widget != null)
+			widget.setValueField(txtValueField.getText());
+	}
+	
+	private void updateIsRepeat(){
+		if(widget != null)
+			widget.setRepeated(cbRepeat.getSelectedIndex() == 0);
 	}
 	
 	private void updateChildBinding(){
@@ -493,6 +594,26 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			else
 				txtHelpText.setText(txtText.getText());
 			
+			value = widget.getExternalSource();
+			if(value != null && value.trim().length() > 0)
+				txtExternalSource.setText(value);
+			else
+				txtExternalSource.setText(txtText.getText());
+			
+			value = widget.getDisplayField();
+			if(value != null && value.trim().length() > 0)
+				txtDisplayField.setText(value);
+			else
+				txtDisplayField.setText(txtText.getText());
+			
+			value = widget.getValueField();
+			if(value != null && value.trim().length() > 0)
+				txtValueField.setText(value);
+			else
+				txtValueField.setText(txtText.getText());
+			
+			cbRepeat.setSelectedIndex(widget.isRepeated() ? 0 : 1);
+			
 			if(widget.getWrappedWidget() instanceof CheckBox){
 				value = widget.getParentBinding();
 				if(value != null && value.trim().length() > 0 && formDef != null){
@@ -570,6 +691,10 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtTop.setText(null);
 			txtLeft.setText(null);
 			txtTabIndex.setText(null);
+			txtExternalSource.setText(null);
+			txtDisplayField.setText(null);
+			txtValueField.setText(null);
+			cbRepeat.setSelectedIndex(-1);
 			enableLabelProperties(false);
 		}
 	}
@@ -634,10 +759,13 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	}
 	
 	private void enableLabelProperties(boolean enable){
+		enable = true;
+		
 		txtForeColor.setEnabled(enable);
 		lbFontWeight.setEnabled(enable);
 		lbFontStyle.setEnabled(enable);
 		txtFontSize.setEnabled(enable);
+		txtFontFamily.setEnabled(enable);
 		lbTextDecoration.setEnabled(enable);
 		txtBackgroundColor.setEnabled(enable);
 		lbBorderStyle.setEnabled(enable);
@@ -649,22 +777,36 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			lbFontWeight.setSelectedIndex(-1);
 			lbFontStyle.setSelectedIndex(-1);
 			txtFontSize.setText(null);
+			txtFontFamily.setText(null);
 			lbTextDecoration.setSelectedIndex(-1);
 			txtBackgroundColor.setText(null);
 			lbBorderStyle.setSelectedIndex(-1);
 			txtBorderWidth.setText(null);
 			txtBorderColor.setText(null);
 		}
-		else{
+		else if(widget != null){
 			txtForeColor.setText(widget.getForeColor());
 			StyleUtil.setFontWeightIndex(widget.getFontWeight(), lbFontWeight);
 			StyleUtil.setFontStyleIndex(widget.getFontStyle(), lbFontStyle);
 			txtFontSize.setText(widget.getFontSize());
+			txtFontFamily.setText(widget.getFontFamily());
 			StyleUtil.setTextDecorationIndex(widget.getTextDecoration(), lbTextDecoration);
 			txtBackgroundColor.setText(widget.getBackgroundColor());
 			StyleUtil.setBorderStyleIndex(widget.getBorderStyle(), lbBorderStyle);
 			txtBorderWidth.setText(widget.getBorderWidth());
 			txtBorderColor.setText(widget.getBorderColor());
+		}
+		else if(widget == null){
+			txtForeColor.setText(null);
+			lbFontWeight.setSelectedIndex(-1);
+			lbFontStyle.setSelectedIndex(-1);
+			txtFontSize.setText(null);
+			txtFontFamily.setText(null);
+			lbTextDecoration.setSelectedIndex(-1);
+			txtBackgroundColor.setText(null);
+			lbBorderStyle.setSelectedIndex(-1);
+			txtBorderWidth.setText(null);
+			txtBorderColor.setText(null);
 		}
 	}
 }

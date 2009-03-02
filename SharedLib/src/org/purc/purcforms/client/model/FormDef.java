@@ -197,6 +197,13 @@ public class FormDef implements Serializable{
 		if(!dataNode.getNodeName().equalsIgnoreCase(variableName))
 			dataNode = XformConverter.renameNode(dataNode,variableName);
 		
+		if(dataNode != null){
+			if(descriptionTemplate == null || descriptionTemplate.trim().length() == 0)
+				dataNode.removeAttribute(XformConverter.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE);
+			else
+				dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
+		}
+		
 		for(int i=0; i<pages.size(); i++){
 			PageDef pageDef = (PageDef)pages.elementAt(i);
 			pageDef.updateDoc(doc,xformsNode,this,dataNode,modelNode,withData);
@@ -491,6 +498,11 @@ public class FormDef implements Serializable{
 		return skipRules.remove(skipRule);
 	}
 	
+	/**
+	 * Updates this formDef (as the main) with the parameter one
+	 * 
+	 * @param formDef
+	 */
 	public void refresh(FormDef formDef){
 		if(variableName.equals(formDef.getVariableName()))
 			name = formDef.getName();

@@ -91,7 +91,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			if(formDef != null){
 				if(!previewView.isPreviewing()){
 					commitChanges();
-					previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
+					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 				}
 				else
 					previewView.moveToFirstWidget();
@@ -156,7 +156,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
-				previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
+				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 		}
 	}
 
@@ -317,7 +317,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void refresh(){
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
-			previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
+			previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 	}
 	
 	public FormDef getFormDef(){

@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.widget;
 
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.user.client.DOM;
@@ -24,9 +25,38 @@ import com.google.gwt.xml.client.Element;
  */
 public class WidgetEx extends Composite{
 	
+	public static final String WIDGET_TYPE_CHECKBOX = "CheckBox";
+	public static final String WIDGET_TYPE_RADIOBUTTON = "RadioButton";
+	public static final String WIDGET_TYPE_TEXTBOX = "TextBox";
+	public static final String WIDGET_TYPE_TEXTAREA = "TextArea";
+	public static final String WIDGET_TYPE_GROUPBOX = "GroupBox";
+	public static final String WIDGET_TYPE_BUTTON = "Button";
+	public static final String WIDGET_TYPE_REPEATSECTION = "RepeatSection";
+	public static final String WIDGET_TYPE_LISTBOX = "ListBox";
+	public static final String WIDGET_TYPE_LABEL = "Label";
+	public static final String WIDGET_TYPE_DATEPICKER = "DatePicker";
+	
+	public static final String WIDGET_PROPERTY_TOP = "Top";
+	public static final String WIDGET_PROPERTY_LEFT = "Left";
+	public static final String WIDGET_PROPERTY_WIDGETTYPE = "WidgetType";
+	public static final String WIDGET_PROPERTY_HELPTEXT = "HelpText";
+	public static final String WIDGET_PROPERTY_PARENTBINDING = "ParentBinding";
+	public static final String WIDGET_PROPERTY_BINDING = "Binding";
+	public static final String WIDGET_PROPERTY_TEXT = "Text";
+	public static final String WIDGET_PROPERTY_WIDTH = "Width";
+	public static final String WIDGET_PROPERTY_HEIGHT = "Height";
+	public static final String WIDGET_PROPERTY_EXTERNALSOURCE = "ExternalSource";
+	public static final String WIDGET_PROPERTY_DISPLAYFIELD = "DisplayField";
+	public static final String WIDGET_PROPERTY_VALUEFIELD = "ValueField";
+	public static final String WIDGET_PROPERTY_TABINDEX = "TabIndex";
+	public static final String WIDGET_PROPERTY_REPEATED = "Repeated";
+	
+	public static final String REPEATED_TRUE_VALUE = "1";
+	
 	protected Widget widget;
 	
 	protected String color;
+	protected String fontFamily;
 	protected String fontWeight;
 	protected String fontStyle;
 	protected String fontSize;
@@ -43,6 +73,12 @@ public class WidgetEx extends Composite{
 	protected String binding;
 	protected String parentBinding;
 	protected int tabIndex;
+	
+	protected String externalSource;
+	protected String displayField;
+	protected String valueField;
+	
+	protected boolean isRepeated = false;
 	
 	protected HorizontalPanel panel = new HorizontalPanel();
 	protected QuestionDef questionDef;
@@ -62,6 +98,10 @@ public class WidgetEx extends Composite{
 		this.parentBinding = widget.parentBinding;
 		this.binding = widget.binding;
 		this.tabIndex = widget.tabIndex;
+		this.externalSource = widget.externalSource;
+		this.displayField = widget.displayField;
+		this.valueField = widget.valueField;
+		this.isRepeated = widget.isRepeated;
 		
 		copyWidget(widget);
 
@@ -69,6 +109,7 @@ public class WidgetEx extends Composite{
 		setFontWeight(widget.getFontWeight());
 		setFontStyle(widget.getFontStyle());
 		setFontSize(widget.getFontSize());
+		setFontFamily(widget.getFontFamily());
 		setTextDecoration(widget.getTextDecoration());
 		setBackgroundColor(widget.getBackgroundColor());
 		setBorderStyle(widget.getBorderStyle());
@@ -88,7 +129,7 @@ public class WidgetEx extends Composite{
 		else if(widget.widget instanceof TextArea)
 			this.widget = new TextArea();
 		else if(widget.widget instanceof DatePicker)
-			this.widget = new DatePicker();
+			this.widget = new DatePickerWidget();
 		else if(widget.widget instanceof TextBox)
 			this.widget = new TextBox();
 		else if(widget.widget instanceof Label){
@@ -167,6 +208,16 @@ public class WidgetEx extends Composite{
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
+		}
+	}
+	
+	public void setFontFamily(String fontFamily){
+		try{
+			DOM.setStyleAttribute(widget.getElement(), "fontFamily", fontFamily);
+			this.fontFamily = fontFamily;
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	
@@ -249,6 +300,16 @@ public class WidgetEx extends Composite{
 		return s;
 	}
 	
+	public String getFontFamily(){
+		String s = DOM.getStyleAttribute(widget.getElement(), "fontFamily");
+		if(s == null || s.trim().length() == 0){
+			if(fontFamily == null || fontFamily.trim().length() == 0)
+				fontFamily = FormUtil.getDefaultFontFamily();
+			s = fontFamily;
+		}
+		return s;
+	}
+	
 	public String getTextDecoration(){
 		String s = DOM.getStyleAttribute(widget.getElement(), "textDecoration");
 		if(s == null || s.trim().length() == 0)
@@ -301,6 +362,10 @@ public class WidgetEx extends Composite{
 		 if(value != null && value.trim().length() > 0)
 			 widget.setFontSize(value);
 		 
+		 value = node.getAttribute("fontFamily");
+		 if(value != null && value.trim().length() > 0)
+			 widget.setFontFamily(value);
+		 
 		 value = node.getAttribute("textDecoration");
 		 if(value != null && value.trim().length() > 0)
 			 widget.setTextDecoration(value);
@@ -350,5 +415,69 @@ public class WidgetEx extends Composite{
 	public void refreshSize(){
 		setHeight(getHeight());
 		setWidth(getWidth());
+	}
+	
+	public String getExternalSource(){
+		return externalSource;
+	}
+	
+	public void setExternalSource(String externalSource){
+		this.externalSource = externalSource;
+	}
+	
+	public String getDisplayField(){
+		return displayField;
+	}
+	
+	public void setDisplayField(String displayField){
+		this.displayField = displayField;
+	}
+	
+	public String getValueField(){
+		return valueField;
+	}
+	
+	public void setValueField(String valueField){
+		this.valueField = valueField;
+	}
+	
+	public String getBinding(){
+		return binding;
+	}
+
+	public void setBinding(String binding){
+		this.binding = binding;
+	}
+
+	public void setParentBinding(String parentBinding){
+		this.parentBinding = parentBinding;
+	}
+
+	public String getParentBinding(){
+		return parentBinding;
+	}
+	
+	public boolean isRepeated(){
+		return isRepeated;
+	}
+	
+	public void setRepeated(boolean isRepeated){
+		this.isRepeated = isRepeated;
+	}
+	
+	public String getTheOffsetHeight(){  
+		return String.valueOf(getOffsetHeight());
+	}
+
+	public String getTheOffsetWidth(){  
+		return String.valueOf(getOffsetWidth());
+	}
+
+	public void setLeft(String sLeft){
+		DOM.setStyleAttribute(getElement(), "left",sLeft);
+	}
+
+	public void setTop(String sTop){
+		DOM.setStyleAttribute(getElement(), "top",sTop);
 	}
 }

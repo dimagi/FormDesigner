@@ -44,13 +44,16 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		
 		this.widgetSelectionListener = designWidgetWrapper.widgetSelectionListener;
 		this.popup = designWidgetWrapper.popup;
+		
+		if(widgetSelectionListener == null)
+			widget.getElement();
 
 		initWidget();
 	}
 	
 	protected void copyWidget(WidgetEx widget){
 		if(widget.getWrappedWidget() instanceof DesignGroupWidget)
-			this.widget = new DesignGroupWidget((DesignGroupWidget)widget.getWrappedWidget(),((DesignGroupWidget)widget.getWrappedWidget()).getImages());
+			this.widget = new DesignGroupWidget((DesignGroupWidget)widget.getWrappedWidget(),((DesignGroupWidget)widget.getWrappedWidget()).getImages(),((DesignGroupWidget)widget.getWrappedWidget()).getWidgetPopupMenuListener());
 		super.copyWidget(widget);
 	}
 
@@ -68,6 +71,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		this.widget = widget;
 		this.popup = popup;
 		this.widgetSelectionListener = widgetSelectionListener;
+		if(widgetSelectionListener == null)
+			widget.getElement();
 
 		initWidget();
 	}
@@ -207,40 +212,24 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public String getWidgetName(){
 		if(widget instanceof RadioButton)
-			return "RadioButton";
+			return WidgetEx.WIDGET_TYPE_RADIOBUTTON;
 		else if(widget instanceof CheckBox)
-			return "CheckBox";
+			return WidgetEx.WIDGET_TYPE_CHECKBOX;
 		else if(widget instanceof Button)
-			return "Button";
+			return WidgetEx.WIDGET_TYPE_BUTTON;
 		else if(widget instanceof ListBox)
-			return "ListBox";
+			return WidgetEx.WIDGET_TYPE_LISTBOX;
 		else if(widget instanceof TextArea)
-			return "TextArea";
+			return WidgetEx.WIDGET_TYPE_TEXTAREA;
 		else if(widget instanceof DatePicker)
-			return "DatePicker";
+			return WidgetEx.WIDGET_TYPE_DATEPICKER;
 		else if(widget instanceof TextBox)
-			return "TextBox";
+			return WidgetEx.WIDGET_TYPE_TEXTBOX;
 		else if(widget instanceof Label)
-			return "Label";
+			return WidgetEx.WIDGET_TYPE_LABEL;
 		else if(widget instanceof DesignGroupWidget)
-			return "RepeatSection";
+			return WidgetEx.WIDGET_TYPE_GROUPBOX;
 		return null;
-	}
-
-	public String getTheOffsetHeight(){  
-		return String.valueOf(getOffsetHeight());
-	}
-
-	public String getTheOffsetWidth(){  
-		return String.valueOf(getOffsetWidth());
-	}
-
-	public void setLeft(String sLeft){
-		DOM.setStyleAttribute(getElement(), "left",sLeft);
-	}
-
-	public void setTop(String sTop){
-		DOM.setStyleAttribute(getElement(), "top",sTop);
 	}
 
 	public void storePosition(){
@@ -280,22 +269,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void setTopInt(int top){
 		setTop(top+"px");
-	}
-
-	public String getBinding(){
-		return binding;
-	}
-
-	public void setBinding(String binding){
-		this.binding = binding;
-	}
-
-	public void setParentBinding(String parentBinding){
-		this.parentBinding = parentBinding;
-	}
-
-	public String getParentBinding(){
-		return parentBinding;
 	}
 
 	public boolean isWidgetInRect(int left, int top, int right, int bottom){
@@ -350,54 +323,77 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	public void buildLayoutXml(Element parent, com.google.gwt.xml.client.Document doc){
 		Element node = doc.createElement("Item");
 		parent.appendChild(node);			 
-		node.setAttribute("WidgetType", getWidgetName());
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE, getWidgetName());
 
 		String value = getText();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("Text", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, value);
 		else
-			node.removeAttribute("Text");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
 
 		value = getTitle();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("HelpText", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT, value);
 		else
-			node.removeAttribute("HelpText");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 
 		value = getBinding();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("Binding", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);
 		else
-			node.removeAttribute("Binding");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
 
 		value = getParentBinding();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("ParentBinding", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING, value);
 		else
-			node.removeAttribute("ParentBinding");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING);
 
-		node.setAttribute("Left", getLeft());
-		node.setAttribute("Top", getTop());
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_LEFT, getLeft());
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_TOP, getTop());
 
 		value = getWidth();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("Width", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH, value);
 		else
-			node.removeAttribute("Width");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH);
 
 		value = getHeight();
 		if(value != null && value.trim().length() > 0)
-			node.setAttribute("Height", value);
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT, value);
 		else
-			node.removeAttribute("Height");
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
 
-		node.setAttribute("TabIndex", String.valueOf(getTabIndex()));
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX, String.valueOf(getTabIndex()));
 
-		if(widget instanceof Label)
+		//if(widget instanceof Label)
 			buildLabelProperties(node);
 
 		if(widget instanceof DesignGroupWidget)
 			((DesignGroupWidget)widget).buildLayoutXml(node, doc);
+		
+		if(isRepeated())
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED, WidgetEx.REPEATED_TRUE_VALUE);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
+		
+		value = getExternalSource();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE, value);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE);
+		
+		value = getDisplayField();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD, value);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
+		
+		value = getValueField();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 	}
 
 	private void buildLabelProperties(Element node){
@@ -424,6 +420,12 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			node.setAttribute("fontSize", value);
 		else
 			node.removeAttribute("fontSize");
+		
+		value = getFontFamily();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute("fontFamily", value);
+		else
+			node.removeAttribute("fontFamily");
 
 		value = getTextDecoration();
 		if(value != null && value.trim().length() > 0)
@@ -453,7 +455,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute("borderColor", value);
 		else
-			node.removeAttribute("borderColor");	 
+			node.removeAttribute("borderColor");	
 	}
 
 	public FormDesignerDragController getDragController(){
@@ -508,7 +510,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
 			if(!(widget instanceof DatePicker)){
 				panel.remove(widget);
-				widget = new DatePicker();
+				widget = new DatePickerWidget();
 				panel.add(widget);
 				refreshSize();
 			}

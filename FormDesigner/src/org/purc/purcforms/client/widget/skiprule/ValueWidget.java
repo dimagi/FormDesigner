@@ -7,6 +7,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PurcConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.SelectItemCommand;
 import org.zenika.widget.client.datePicker.DatePicker;
 
@@ -174,10 +175,19 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				menuBar.addItem(text,true, new SelectItemCommand(optionDef,this));
 			}
 			
-			ScrollPanel scrollPanel = new ScrollPanel();
+			/*ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
 			scrollPanel.setHeight("200px");
-			scrollPanel.setWidth((maxSize*11)+"px");
+			scrollPanel.setWidth((maxSize*11)+"px");*/
+			
+			int height = questionDef.getOptions().size()*40;
+			if(height > 200)
+				height = 200;
+			
+			ScrollPanel scrollPanel = new ScrollPanel();
+			scrollPanel.setWidget(menuBar);
+			scrollPanel.setHeight(height+"px"); //"200px"
+			scrollPanel.setWidth((maxSize*12)+"px");
 			
 			popup = new PopupPanel(true,false);
 			popup.setWidget(scrollPanel);
@@ -209,10 +219,14 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				panel.add(checkbox);
 			}
 			
+			int height = questionDef.getOptions().size()*40;
+			if(height > 200)
+				height = 200;
+			
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(panel);
-			scrollPanel.setHeight("200px");
-			scrollPanel.setWidth((maxSize*11)+"px");
+			scrollPanel.setHeight(height+"px"); //"200px"
+			scrollPanel.setWidth((maxSize*12)+"px");
 			
 			popup = new PopupPanel(true,false);
 			popup.addPopupListener(this);
@@ -231,8 +245,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			txtValue2.removeKeyboardListener(keyboardListener2);
 			
 			if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
-				txtValue1 = new DatePicker();
-				txtValue2 = new DatePicker();
+				txtValue1 = new DatePickerWidget();
+				txtValue2 = new DatePickerWidget();
 			}
 			else{
 				txtValue1 = new TextBox();

@@ -2,6 +2,7 @@ package org.purc.purcforms.client.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -10,7 +11,6 @@ import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.purc.purcforms.client.xpath.XPathExpression;
-import org.zenika.widget.client.util.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.xml.client.Document;
@@ -204,6 +204,34 @@ public class QuestionDef implements Serializable{
 	}
 
 	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public boolean isDateFunction(String value){
+		if(value == null)
+			return false;
+		
+		return (value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
+				||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"));
+	}
+
+	public boolean isDateTime(){
+		return (dataType == QuestionDef.QTN_TYPE_DATE_TIME || 
+				dataType == QuestionDef.QTN_TYPE_DATE ||
+				dataType == QuestionDef.QTN_TYPE_TIME);
+	}
+
+	public String getDefaultValueDisplay() {
+		if(isDateTime() && isDateFunction(defaultValue))
+			return FormUtil.getDateTimeDisplayFormat().format(new Date());
+
+		return defaultValue;
+	}
+
+	public String getDefaultValueSubmit() {
+		if(isDateTime() && isDateFunction(defaultValue))
+			return FormUtil.getDateTimeSubmitFormat().format(new Date());
+
 		return defaultValue;
 	}
 
@@ -611,25 +639,32 @@ public class QuestionDef implements Serializable{
 			XformConverter.addHelpTextNode(this, doc, controlNode, firstOptionNode);
 
 		if(withData)
-			updateNodeValue(doc,formNode,(answer != null) ? answer : defaultValue);
+			updateNodeValue(doc,formNode,(answer != null) ? answer : defaultValue,withData);
 		else
-			updateNodeValue(doc,formNode,defaultValue);
+			updateNodeValue(doc,formNode,defaultValue,withData);
 
 		return isNew;
 	}
 
 	public void updateNodeValue(FormDef formDef){
-		updateNodeValue(formDef.getDoc(),formDef.getDataNode(),answer);
+		updateNodeValue(formDef.getDoc(),formDef.getDataNode(),answer,true);
 	}
 
-	public void updateNodeValue(Document doc, Element formNode,String value){
+	public void updateNodeValue(Document doc, Element formNode,String value, boolean withData){
 		if((dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME)
 				&& value != null && value.trim().length() > 0){
 
+			if(withData){
+				DateTimeFormat formatter = FormUtil.getDateTimeSubmitFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
 
-			DateTimeFormat formatter = FormUtil.getDateTimeFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
-			if(formatter != null)
-				value = formatter.format(DateUtil.getDateTimeFormat().parse(value));
+				if(value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
+						||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"))
+					value = formatter.format(new Date());
+				else{
+					//if(formatter != null)
+					//	value = formatter.format(FormUtil.getDateTimeDisplayFormat().parse(value));
+				}
+			}
 		}
 
 		if(value != null && value.trim().length() > 0){
@@ -879,28 +914,37 @@ public class QuestionDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Updates this questionDef (as the main) with the parameter one
+	 * 
+	 * @param questionDef
+	 */
 	public void refresh(QuestionDef questionDef){
 		setText(questionDef.getText());
 		setHelpText(questionDef.getHelpText());
 		setDefaultValue(questionDef.getDefaultValue());
-		setDataType(questionDef.getDataType());
+		
+		//The old data type can only overwrite the new one if its not text (The new one is this question)
+		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_TEXT)
+			setDataType(questionDef.getDataType());
+		
 		setEnabled(questionDef.isEnabled());
 		setRequired(questionDef.isRequired());
 		setLocked(questionDef.isLocked());
 		setVisible(questionDef.isVisible());
 
 		if((dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-		  (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) )
+				(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) )
 			refreshOptions(questionDef);
 		else if(dataType == QuestionDef.QTN_TYPE_REPEAT && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			questionDef.getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
-	
+
 	private void refreshOptions(QuestionDef questionDef){
 		Vector options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
 			return;
-		
+
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
 			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
@@ -908,6 +952,17 @@ public class QuestionDef implements Serializable{
 				continue;
 			optionDef.setText(optn.getText());
 		}
+	}
+	
+	public int getOptionCount(){
+		if(options == null)
+			return 0;
+		return ((Vector)options).size();
+	}
+	
+	public void clearOptions(){
+		if(options != null)
+			((Vector)options).clear();
 	}
 }
 

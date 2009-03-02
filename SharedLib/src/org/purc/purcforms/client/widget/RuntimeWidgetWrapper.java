@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.widget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -11,8 +12,10 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -47,25 +50,25 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private boolean locked = false;
 
 	public RuntimeWidgetWrapper(){
-		
+
 	}
-	
+
 	public RuntimeWidgetWrapper(RuntimeWidgetWrapper widget){
 		super(widget);
-		
+
 		this.editListener = widget.getEditListener();
 		this.errorImage = widget.getErrorImage().createImage();
 		this.errorImageProto = widget.getErrorImage();
 		errorImage.setTitle("Please answer this required question.");
-		
+
 		panel.add(this.widget);
 		initWidget(panel);
 		setupEventListeners();
-				
-		if(widget.questionDef != null)
+
+		if(widget.questionDef != null) //TODO For long list of options may need to share list
 			questionDef = new QuestionDef(widget.questionDef,widget.questionDef.getParent());
 	}
-	
+
 	public RuntimeWidgetWrapper(Widget widget,AbstractImagePrototype errorImageProto,EditListener editListener){
 		this.widget = widget;
 		this.errorImageProto = errorImageProto;
@@ -81,16 +84,16 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public AbstractImagePrototype getErrorImage(){
 		return errorImageProto;
 	}
-	
+
 	public EditListener getEditListener(){
 		return editListener;
 	}
-	
+
 	public void onBrowserEvent(Event event) {
 		if(locked)
 			event.preventDefault();
 	}
-	
+
 	private void setupEventListeners(){
 		if(widget instanceof DatePicker){
 			((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
@@ -103,7 +106,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(widget instanceof TextBox){
 			((TextBox)widget).addChangeListener(new ChangeListener(){
 				public void onChange(Widget sender){
-					questionDef.setAnswer(((TextBox)widget).getText());
+					//questionDef.setAnswer(((TextBox)widget).getText());
+					questionDef.setAnswer(getTextBoxAnswer());
 					isValid();
 					editListener.onValueChanged(null, null, questionDef.getAnswer());
 				}
@@ -160,7 +164,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				}//TODO Do we really wanna alter the behaviour of the arrow keys for list boxes?
 			});
 		}
-		
+
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
 	}
 
@@ -202,34 +206,30 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((Label)widget).setTitle(title);
 	}
 
-	public String getBinding(){
-		return binding;
-	}
-
-	public void setBinding(String binding){
-		this.binding = binding;
-	}
-
-	public void setQuestionDef(QuestionDef questionDef){
+	public void setQuestionDef(QuestionDef questionDef ,boolean loadWidget){
 		this.questionDef = questionDef;
-		loadQuestion();
+
+		if(loadWidget)
+			loadQuestion();
 	}
-	
+
 	public void loadQuestion(){
 		if(questionDef == null)
 			return;
-		
+
 		questionDef.addChangeListener(this);
-		questionDef.setAnswer(questionDef.getDefaultValue());
+		questionDef.setAnswer(questionDef.getDefaultValueSubmit());
 
 		String defaultValue = questionDef.getDefaultValue();
 
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof ListBox){
+			Vector options  = questionDef.getOptions();
 			int defaultValueIndex = 0;
 			ListBox listBox = (ListBox)widget;
-			Vector options  = questionDef.getOptions();
+			listBox.clear(); //Could be called more than once.
+
 			listBox.addItem("","");
 			for(int index = 0; index < options.size(); index++){
 				OptionDef optionDef = (OptionDef)options.get(index);
@@ -242,8 +242,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && widget instanceof TextBox){ 
 			MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 			FormUtil.loadOptions(questionDef.getOptions(),oracle);
-			SuggestBox sgstBox = new SuggestBox(oracle,(TextBox)widget);
 			panel.remove(widget);
+			SuggestBox sgstBox = new SuggestBox(oracle,(TextBox)widget);
 			panel.add(sgstBox);
 			sgstBox.setTabIndex(((TextBox)widget).getTabIndex());
 		}
@@ -268,8 +268,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				if(optionDef != null)
 					((TextBox)widget).setText(optionDef.getText());
 			}
-			else
+			else{
+				if(defaultValue.trim().length() > 0 && questionDef.isDateTime() && questionDef.isDateFunction(defaultValue))
+					defaultValue = questionDef.getDefaultValueDisplay();
+
 				((TextBox)widget).setText(defaultValue);
+			}
 		}
 
 		isValid();
@@ -313,11 +317,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).setEnabled(enabled);
 	}
-	
+
 	public void setLocked(boolean locked){
-		
+
 		this.locked = locked;
-		
+
 		/*if(widget instanceof RadioButton){
 			((RadioButton)widget).setEnabled(locked);
 			if(!locked)
@@ -349,21 +353,52 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((RuntimeGroupWidget)widget).setLocked(locked);
 	}
 
+	private String getTextBoxAnswer(){
+		String value = ((TextBox)widget).getText();
+		
+		if(questionDef.isDateTime() && value != null && value.trim().length() > 0)
+			value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
+
+		return value;
+	}
+	
 	public void saveValue(FormDef formDef){
 		if(questionDef == null)
 			return;
-		
+
+		String defaultValue = questionDef.getDefaultValueSubmit();
+
 		if(widget instanceof TextBox && questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			OptionDef optionDef = questionDef.getOptionWithText(((TextBox)widget).getText());
 			if(optionDef != null)
 				questionDef.setAnswer(optionDef.getVariableName());
 			else
 				questionDef.setAnswer(null);
+
+			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
+			if(defaultValue != null && defaultValue.trim().length() > 0 && !((TextBox)widget).isEnabled()){
+				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)
+					questionDef.setAnswer(defaultValue);
+			}
 		}
-		else if(widget instanceof TextBox)
-			questionDef.setAnswer(((TextBox)widget).getText());
-		else if(widget instanceof TextArea)
+		else if(widget instanceof TextBox){
+			questionDef.setAnswer(getTextBoxAnswer());
+
+			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
+			if(defaultValue != null && defaultValue.trim().length() > 0 && !((TextBox)widget).isEnabled()){
+				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)
+					questionDef.setAnswer(defaultValue);
+			}
+		}
+		else if(widget instanceof TextArea){
 			questionDef.setAnswer(((TextArea)widget).getText());
+
+			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
+			if(defaultValue != null && defaultValue.trim().length() > 0 && !((TextArea)widget).isEnabled()){
+				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)
+					questionDef.setAnswer(defaultValue);
+			}
+		}
 		else if(widget instanceof ListBox){
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -372,6 +407,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				if(lb.getSelectedIndex() >= 0)
 					value = lb.getValue(lb.getSelectedIndex());
 				questionDef.setAnswer(value);
+			}
+
+			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
+			if(defaultValue != null && defaultValue.trim().length() > 0 && !((ListBox)widget).isEnabled()){
+				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)
+					questionDef.setAnswer(defaultValue);
 			}
 		}
 		else if(widget instanceof RadioButton){ //Should be before CheckBox
@@ -409,7 +450,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).saveValue(formDef);
-		
+
 		questionDef.updateNodeValue(formDef);
 	}
 
@@ -522,17 +563,17 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public void onVisibleChanged(boolean visible) {
 		setVisible(visible);
 	}
-	
+
 	public void onBindingChanged(String newValue){
 		if(newValue != null && newValue.trim().length() > 0)
 			binding = newValue;
 	}
-	
+
 	public QuestionDef getQuestionDef(){
 		return questionDef;
 	}
-	
+
 	public void onDataTypeChanged(int dataType){
-		
+
 	}
 }

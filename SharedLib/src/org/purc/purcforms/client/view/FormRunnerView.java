@@ -1,13 +1,16 @@
 package org.purc.purcforms.client.view;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.EditListener;
 import org.purc.purcforms.client.widget.RuntimeGroupWidget;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
@@ -65,17 +68,17 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 	public FormRunnerView(Images images){
 		this.images = images;
-		
+
 		FormUtil.maximizeWidget(tabs);
 
 		initWidget(tabs);
 		tabs.addTabListener(this);
-		
+
 		addNewTab("Page1");
 
 		Window.addWindowResizeListener(this);
-		
-//		This is needed for IE
+
+		//		This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
@@ -83,13 +86,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		});
 	}
 
-	public void loadForm(FormDef formDef,String layoutXml){
+	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		this.formDef = formDef;
 
 		tabs.clear();
 
 		if(layoutXml != null && layoutXml.trim().length() > 0)
-			loadLayout(layoutXml);
+			loadLayout(layoutXml,externalSourceWidgets);
 
 		moveToFirstWidget();
 
@@ -109,11 +112,11 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			}
 		}
 
-		if(!moved && this.selectedTabIndex < tabs.getWidgetCount()-1)
-			tabs.selectTab(++selectedTabIndex);
+		//if(!moved && this.selectedTabIndex < tabs.getWidgetCount()-1)
+		//	tabs.selectTab(++selectedTabIndex);
 	}
 
-	public void loadLayout(String xml){
+	public void loadLayout(String xml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		tabs.clear();
 
 		widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
@@ -126,7 +129,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				continue;
 			Element node = (Element)pages.item(i);
 			addNewTab(node.getAttribute("Text"));
-			loadPage(node.getChildNodes());
+			loadPage(node.getChildNodes(),externalSourceWidgets);
 		}
 
 		if(formDef != null)
@@ -167,7 +170,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		});
 	}
 
-	protected void loadPage(NodeList nodes){
+	protected void loadPage(NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		HashMap<Integer,RuntimeWidgetWrapper> widgets = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
@@ -177,7 +180,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(node,widgets);
+				int index = loadWidget(node,widgets,externalSourceWidgets);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -194,16 +197,16 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		}
 	}
 
-	protected int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets){
+	protected int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		RuntimeWidgetWrapper parentWrapper = null;
 
-		String left = node.getAttribute("Left");
-		String top = node.getAttribute("Top");
-		String s = node.getAttribute("WidgetType");
-		int tabIndex = (node.getAttribute("TabIndex") != null ? Integer.parseInt(node.getAttribute("TabIndex")) : 0);
+		String left = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
+		String top = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
+		String s = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE);
+		int tabIndex = (node.getAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX) != null ? Integer.parseInt(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX)) : 0);
 
 		QuestionDef questionDef = null;
-		String binding = node.getAttribute("Binding");
+		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
 		if(binding != null && binding.trim().length() > 0){
 			questionDef = formDef.getQuestion(binding);
 			if(questionDef != null)
@@ -211,30 +214,30 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		}
 
 		Widget widget = null;
-		if(s.equalsIgnoreCase("RadioButton")){
-			widget = new RadioButton(node.getAttribute("ParentBinding"),node.getAttribute("Text"));
+		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
+			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("CheckBox")){
-			widget = new CheckBox(node.getAttribute("Text"));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
+			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("Button")){
-			widget = new Button(node.getAttribute("Text"));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
+			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			((Button)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("ListBox")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LISTBOX)){
 			widget = new ListBox(false);
 			((ListBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("TextArea")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA)){
 			widget = new TextArea();
 			((TextArea)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("DatePicker")){
-			widget = new DatePicker();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
+			widget = new DatePickerWidget();
 			((DatePicker)widget).setTabIndex(tabIndex);
 			/*((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
 				 public void onLostFocus(Widget sender){
@@ -242,47 +245,83 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				 }
 			 });*/
 		}
-		else if(s.equalsIgnoreCase("TextBox")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX)){
 			widget = new TextBox();
 			if(questionDef != null && (questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC 
 					|| questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL))
 				FormUtil.allowNumericOnly((TextBox)widget,questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL);
 			((TextBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("Label"))
-			widget = new Label(node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("RepeatSection")){
-			widget = new RuntimeGroupWidget(images,questionDef.getRepeatQtnsDef(),this);
-			((RuntimeGroupWidget)widget).loadWidgets(node.getChildNodes());
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
+			widget = new Label(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_GROUPBOX)||s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
+			RepeatQtnsDef repeatQtnsDef = null;
+			if(questionDef != null)
+				repeatQtnsDef = questionDef.getRepeatQtnsDef();
+
+			boolean repeated = false;
+			String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
+			if(value != null && value.trim().length() > 0)
+				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
+			
+			widget = new RuntimeGroupWidget(images,repeatQtnsDef,this,repeated);
+			((RuntimeGroupWidget)widget).loadWidgets(node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
 		}
 		else
 			return tabIndex;
 
 		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
-
+		boolean loadWidget = true;
+		
 		if(questionDef != null)
-			wrapper.setQuestionDef(questionDef);
+			wrapper.setQuestionDef(questionDef,false);
+		
 		if(binding != null)
 			wrapper.setBinding(binding);
 
 		if(parentWrapper != null)
 			parentWrapper.addChildWidget(wrapper);
 
-		String value = node.getAttribute("HelpText");
+		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTitle(value);
 
-		value = node.getAttribute("Width");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setWidth(value);
 
-		value = node.getAttribute("Height");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setHeight(value);
 
-		if(wrapper.getWrappedWidget() instanceof Label)
-			WidgetEx.loadLabelProperties(node,wrapper);
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setExternalSource(value);
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setDisplayField(value);
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+		if(value != null && value.trim().length() > 0){
+			wrapper.setValueField(value);
+						
+			if(externalSourceWidgets != null && wrapper.getExternalSource() != null && wrapper.getDisplayField() != null
+					&& (wrapper.getWrappedWidget() instanceof TextBox || wrapper.getWrappedWidget() instanceof ListBox)
+					&& questionDef != null
+					&& (wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE
+						||wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+				externalSourceWidgets.add(wrapper);
+				loadWidget = false;
+			}
+		}
+		
+		if(loadWidget)
+			wrapper.loadQuestion();
+
+		//if(wrapper.getWrappedWidget() instanceof Label)
+		WidgetEx.loadLabelProperties(node,wrapper);
 
 		if(tabIndex > 0)
 			widgets.put(new Integer(tabIndex), wrapper);
@@ -302,13 +341,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	}
 
 	protected RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
-		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute("ParentBinding"));
+		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 		if(parentWrapper == null){
-			QuestionDef qtn = formDef.getQuestion(node.getAttribute("ParentBinding"));
+			QuestionDef qtn = formDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
-				parentWrapper.setQuestionDef(qtn);
-				widgetMap.put(node.getAttribute("ParentBinding"), parentWrapper);
+				parentWrapper.setQuestionDef(qtn,true);
+				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
 				selectedPanel.add(parentWrapper);
 			}
 		}	 
@@ -319,7 +358,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		if(formDef != null){
 			if(formDef.getDoc() == null)
 				XformConverter.fromFormDef2Xform(formDef);
-			
+
 			saveValues();
 
 			if(!isValid())
@@ -341,7 +380,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 					pageNo = index;
 			}
 		}
-		
+
 		if(!valid){
 			Window.alert("Please first correct the errors on the form.");
 			tabs.selectTab(pageNo);
@@ -419,25 +458,25 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			}
 		}
 	}
-	
+
 	public void clearPreview(){
 		tabs.clear();
 	}
-	
+
 	public void onWindowResized(int width, int height) {
 		height -= 110;
 		sHeight = height+"px";
 		super.setHeight(sHeight);
-		
+
 		if(selectedPanel != null)
 			//selectedPanel.setHeight("100%");
 			selectedPanel.setHeight(sHeight);
 	} 
-	
+
 	public void setFormDef(FormDef formDef){
 		if(this.formDef != formDef)
 			tabs.clear();
-		
+
 		this.formDef = formDef;
 	}
 }

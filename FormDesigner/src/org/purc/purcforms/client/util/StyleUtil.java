@@ -16,6 +16,8 @@ public class StyleUtil {
 			listBox.setSelectedIndex(1);
 		else if("oblique".equalsIgnoreCase(fontSyle))
 			listBox.setSelectedIndex(2);
+		else if("".equalsIgnoreCase(fontSyle) || fontSyle == null )
+			listBox.setSelectedIndex(3);
 		else
 			listBox.setSelectedIndex(0);
 	}
@@ -29,6 +31,8 @@ public class StyleUtil {
 			listBox.setSelectedIndex(3);
 		else if("blink".equalsIgnoreCase(textDecoration))
 			listBox.setSelectedIndex(4);
+		else if("".equalsIgnoreCase(textDecoration) || textDecoration == null )
+			listBox.setSelectedIndex(5);
 		else
 			listBox.setSelectedIndex(0);
 	}
@@ -52,6 +56,8 @@ public class StyleUtil {
 			listBox.setSelectedIndex(8);
 		else if("outset".equalsIgnoreCase(borderStyle))
 			listBox.setSelectedIndex(9);
+		else if("".equalsIgnoreCase(borderStyle) || borderStyle == null )
+			listBox.setSelectedIndex(10);
 		else
 			listBox.setSelectedIndex(0);
 	}
@@ -81,6 +87,8 @@ public class StyleUtil {
 			listBox.setSelectedIndex(11);
 		else if("900".equalsIgnoreCase(fontWeight))
 			listBox.setSelectedIndex(12);
+		else if("".equalsIgnoreCase(fontWeight) || fontWeight == null )
+			listBox.setSelectedIndex(13);
 		else
 			listBox.setSelectedIndex(0);
 	}
@@ -89,6 +97,7 @@ public class StyleUtil {
 		listBox.addItem("normal");
 		listBox.addItem("italic");
 		listBox.addItem("oblique");
+		listBox.addItem("");
 	}
 	
 	public static void loadTextDecoration(ListBox listBox){
@@ -97,6 +106,7 @@ public class StyleUtil {
 		listBox.addItem("overline");
 		listBox.addItem("line-through");
 		listBox.addItem("blink");
+		listBox.addItem("");
 	}
 	
 	public static void loadBorderStyles(ListBox listBox){
@@ -110,6 +120,7 @@ public class StyleUtil {
 		listBox.addItem("ridge");
 		listBox.addItem("inset");
 		listBox.addItem("outset");
+		listBox.addItem("");
 	}
 	
 	public static void loadFontWeights(ListBox listBox){
@@ -126,6 +137,7 @@ public class StyleUtil {
 		listBox.addItem("700");
 		listBox.addItem("800");
 		listBox.addItem("900");
+		listBox.addItem("");
 	}
 	
 	public static void loadColorNames(MultiWordSuggestOracle oracle){
@@ -269,5 +281,6 @@ public class StyleUtil {
 		oracle.add("WhiteSmoke");  
 		oracle.add("Yellow");   
 		oracle.add("YellowGreen");  
+		oracle.add(""); 
 	}
 }

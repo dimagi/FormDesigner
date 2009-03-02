@@ -8,6 +8,7 @@ import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
+import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
@@ -57,6 +58,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	//private DecoratedTabPanel tabs = new DecoratedTabPanel();
 	private PopupPanel popup;
 	private PopupPanel widgetPopup;
+	private IWidgetPopupMenuListener widgetPopupMenuListener;
 	private final Images images;
 	private String sHeight = "100%";
 	private int x;
@@ -76,14 +78,20 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	private FormDesignerDragController selectedDragController;
 	private WidgetSelectionListener widgetSelectionListener;
 	
+	private MenuItem parentCutMenu;
+	private MenuItem parentCopyMenu;
+	private MenuItem parentDeleteWidgetMenu;
+	private MenuItemSeparator parentMenuSeparator;
+	
 	private int selectionXPos;
 	private int selectionYPos;
 	private boolean mouseMoved = false;
 	
 	private int tabIndex = 0;
 	
-	public DesignGroupWidget(Images images){
+	public DesignGroupWidget(Images images,IWidgetPopupMenuListener widgetPopupMenuListener){
 		this.images = images;
+		this.widgetPopupMenuListener = widgetPopupMenuListener;
 		
 		//FormsDesignerUtil.maximizeWidget(tabs);
 		initPanel();
@@ -109,8 +117,8 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		  setupPopup();
 	}
 	
-	public DesignGroupWidget(DesignGroupWidget designGroupWidget, Images images){
-		this(images);
+	public DesignGroupWidget(DesignGroupWidget designGroupWidget, Images images,IWidgetPopupMenuListener widgetPopupMenuListener){
+		this(images,widgetPopupMenuListener);
 		
 		int count = designGroupWidget.getWidgetCount();
 		for(int index = 0; index < count; index++){
@@ -312,21 +320,21 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Button"),true,new Command(){
 		    	public void execute() {popup.hide(); addNewButton();}});
 		  
-		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
+		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date Picker"),true,new Command(){
+		    	public void execute() {popup.hide(); addNewDatePicker();}});
+		  
+		  /*addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
 		    	public void execute() {popup.hide(); addNewButton();}});
 		  
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Auto Complete TextBox"),true,new Command(){
 		    	public void execute() {popup.hide(); addNewTextBox();}});
 		  
 		  /*addControlMenu.addItem(FormsDesignerUtil.createHeaderHTML(images.addchild(),"Repeat Section"),true,new Command(){
-		    	public void execute() {popup.hide(); addNewRepeatSection();}});*/
+		    	public void execute() {popup.hide(); addNewRepeatSection();}});
 		  
 		  addControlMenu.addSeparator();
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Time Picker"),true,new Command(){
 		    	public void execute() {popup.hide(); ;}});
-		  
-		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date Picker"),true,new Command(){
-		    	public void execute() {popup.hide(); addNewDatePicker();}});
 		  
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date & Time Picker"),true,new Command(){
 		    	public void execute() {popup.hide(); ;}});
@@ -335,9 +343,9 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		    	public void execute() {popup.hide(); ;}});
 		  
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Attachment"),true,new Command(){
-		    	public void execute() {popup.hide(); ;}});
+		    	public void execute() {popup.hide(); ;}});*/
 		  	
-		  menuBar.addItem("     AddControl",addControlMenu);
+		  menuBar.addItem("   AddControl",addControlMenu);
 		  
 		  //if(selectedDragController.isAnyWidgetSelected()){
 			  deleteWidgetsSeparator = menuBar.addSeparator();
@@ -358,8 +366,22 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			  pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),"Paste"),true,new Command(){
 				  public void execute() {popup.hide(); pasteWidgets();}});
 		  //}
-		  
-		  menuBar.addSeparator();	
+			  
+			  parentMenuSeparator = menuBar.addSeparator();
+			  
+			  final Widget widget = this;
+			  parentCutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+			    	public void execute() {popup.hide(); widgetPopupMenuListener.onCut(widget);}});
+			  
+			  parentCopyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+			    	public void execute() {popup.hide(); widgetPopupMenuListener.onCopy(widget);}});
+			  
+			  parentDeleteWidgetMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete"),true, new Command(){
+			    	public void execute() {popup.hide(); widgetPopupMenuListener.onDelete(widget);}});
+			  
+			  menuBar.addSeparator();
+			  
+
 		  menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Select All"),true, new Command(){
 		    	public void execute() {popup.hide(); selectAll();}});
 		  
@@ -375,6 +397,11 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		 cutCopySeparator.setVisible(visible);
 		 cutMenu.setVisible(visible);
 		 copyMenu.setVisible(visible); 
+		 
+		 parentCutMenu.setVisible(!visible);
+		 parentCopyMenu.setVisible(!visible);
+		 parentDeleteWidgetMenu.setVisible(!visible);
+		 parentMenuSeparator.setVisible(!visible);
 		  
 		 visible = false;
 		 if(clipBoardWidgets.size() > 0)
@@ -417,7 +444,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	 }
 	 
 	 private DesignWidgetWrapper addNewDatePicker(){
-		 DatePicker tb = new DatePicker();
+		 DatePicker tb = new DatePickerWidget();
 		 DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		 DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		 return addNewWidget(tb);
@@ -492,7 +519,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		 return null;
 	 }
 	 
-	 private boolean buildLayoutXml(Element parent, AbsolutePanel panel, com.google.gwt.xml.client.Document doc){
+	 /*private boolean buildLayoutXml(Element parent, AbsolutePanel panel, com.google.gwt.xml.client.Document doc){
 		 for(int i=0; i<panel.getWidgetCount(); i++){
 			 DesignWidgetWrapper wrapper = (DesignWidgetWrapper)panel.getWidget(i);
 			 Element node = doc.createElement("Item");
@@ -542,7 +569,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		 }
 		 
 		 return panel.getWidgetCount() > 0;
-	 }
+	 }*/
 	 
 	 public void setLayoutXml(String xml){
 		 /*tabs.clear();
@@ -559,7 +586,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		 }*/
 	 }
 	 
-	 private void loadPage(NodeList nodes){
+	 /*private void loadPage(NodeList nodes){
 		 for(int i=0; i<nodes.getLength(); i++){
 			 if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
 				 continue;
@@ -581,7 +608,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			 else if(s.equalsIgnoreCase("TextArea"))
 				 widget = new TextArea();
 			 else if(s.equalsIgnoreCase("DatePicker"))
-				 widget = new DatePicker();
+				 widget = new DatePickerWidget();
 			 else if(s.equalsIgnoreCase("TextBox"))
 				 widget = new TextBox();
 			 else if(s.equalsIgnoreCase("Label"))
@@ -620,7 +647,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			 FormDesignerUtil.setWidgetPosition(wrapper, left, top);
 
 		 }
-	 }
+	 }*/
 	 
 	 /*private void setWidgetPosition(Widget w, String left, String top) {
 		 com.google.gwt.user.client.Element h = w.getElement();
@@ -944,7 +971,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		  for(int i=0; i<nodes.getLength(); i++){
 			 if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
 				 continue;
-			 DesignSurfaceView.loadWidget((Element)nodes.item(i),selectedDragController,selectedPanel,images,widgetPopup,widgetSelectionListener,formDef);
+			 DesignSurfaceView.loadWidget((Element)nodes.item(i),selectedDragController,selectedPanel,images,widgetPopup,this.widgetPopupMenuListener,this,formDef);
 		  }
 	  }
 	  
@@ -958,5 +985,9 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	  
 	  public PopupPanel getWidgetPopup(){
 			return widgetPopup;
+	  }
+	  
+	  public IWidgetPopupMenuListener getWidgetPopupMenuListener(){
+		  return widgetPopupMenuListener;
 	  }
 }

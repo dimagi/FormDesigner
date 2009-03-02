@@ -25,7 +25,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class FormUtil {
 	
-	private static DateTimeFormat dateTimeFormat;
+	private static DateTimeFormat dateTimeSubmitFormat;
+	private static DateTimeFormat dateTimeDisplayFormat;
 	
 	private static String formDefDownloadUrlSuffix;
 	private static String formDefUploadUrlSuffix;
@@ -33,12 +34,18 @@ public class FormUtil {
 	private static String formDataUploadUrlSuffix;
 	private static String afterSubmitUrlSuffix;
 	private static String formDefRefreshUrlSuffix;
+	private static String externalSourceUrlSuffix;
 	
 	private static String formIdName;
 	private static String entityIdName;
 	
 	private static String formId;
 	private static String entityId;
+	
+	private static String defaultFontFamily;
+	
+	private static boolean appendEntityIdAfterSubmit;
+	
 
 	/**
 	 * Maximizes a widget.
@@ -247,6 +254,7 @@ public class FormUtil {
 		formDataUploadUrlSuffix = getDivValue("formDataUploadUrlSuffix");
 		afterSubmitUrlSuffix = getDivValue("afterSubmitUrlSuffix");
 		formDefRefreshUrlSuffix = getDivValue("formDefRefreshUrlSuffix");
+		externalSourceUrlSuffix = getDivValue("externalSourceUrlSuffix");
 		
 		formIdName = getDivValue("formIdName");
 		if(formIdName == null || formIdName.trim().length() == 0)
@@ -259,9 +267,23 @@ public class FormUtil {
 		formId = getDivValue(formIdName);
 		entityId = getDivValue(entityIdName);
 		
-		String format = getDivValue("dateTimeFormat");
+		String format = getDivValue("dateTimeSubmitFormat");
 		if(format != null && format.trim().length() > 0)
-			setDateTimeFormat(format);
+			setDateTimeSubmitFormat(format);
+		
+		format = getDivValue("dateTimeDisplayFormat");
+		if(format != null && format.trim().length() > 0)
+			setDateTimeDisplayFormat(format);
+		
+		defaultFontFamily = getDivValue("defaultFontFamily");
+		if(defaultFontFamily == null || defaultFontFamily.trim().length() == 0)
+			defaultFontFamily = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
+	
+		String s = getDivValue("appendEntityIdAfterSubmit");
+		if(s == null || s.trim().length() == 0)
+			appendEntityIdAfterSubmit = false;
+		else
+			appendEntityIdAfterSubmit = !s.equals("0");
 	}
 	
 	public static String getDivValue(String id){
@@ -277,12 +299,20 @@ public class FormUtil {
 		return null;
 	}
 	
-	public static void setDateTimeFormat(String format){
-		dateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
+	public static void setDateTimeSubmitFormat(String format){
+		dateTimeSubmitFormat = DateTimeFormat.getFormat(format);
 	}
 	
-	public static DateTimeFormat getDateTimeFormat(){
-		return dateTimeFormat;
+	public static DateTimeFormat getDateTimeSubmitFormat(){
+		return dateTimeSubmitFormat;
+	}
+	
+	public static void setDateTimeDisplayFormat(String format){
+		dateTimeDisplayFormat = DateTimeFormat.getFormat(format);
+	}
+	
+	public static DateTimeFormat getDateTimeDisplayFormat(){
+		return dateTimeDisplayFormat;
 	}
 	
 	public static String getFormDefDownloadUrlSuffix(){
@@ -307,6 +337,10 @@ public class FormUtil {
 	
 	public static String getFormDefRefreshUrlSuffix(){
 		return formDefRefreshUrlSuffix;
+	}
+	
+	public static String getExternalSourceUrlSuffix(){
+		return externalSourceUrlSuffix;
 	}
 	
 	public static String getFormIdName(){
@@ -343,5 +377,13 @@ public class FormUtil {
 			return s;
 		
 		return s.substring(0,pos+1);
+	}
+	
+	public static String getDefaultFontFamily(){
+		return defaultFontFamily;
+	}
+	
+	public static boolean appendEntityIdAfterSubmit(){
+		return appendEntityIdAfterSubmit;
 	}
 }

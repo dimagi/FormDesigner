@@ -11,6 +11,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -44,17 +45,23 @@ public class RuntimeGroupWidget extends Composite{
 	private List<RuntimeWidgetWrapper> widgets = new ArrayList<RuntimeWidgetWrapper>();
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	private List<Element> dataNodes = new ArrayList<Element>();
+	private AbsolutePanel selectedPanel = new AbsolutePanel();
+	private boolean isRepeated = false;
 
-	public RuntimeGroupWidget(Images images,RepeatQtnsDef repeatQtnsDef,EditListener editListener){
+	public RuntimeGroupWidget(Images images,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.repeatQtnsDef = repeatQtnsDef;
 		this.editListener = editListener;
+		this.isRepeated = isRepeated;
 
-		table = new FlexTable();
-		FormUtil.maximizeWidget(table);		
-		verticalPanel.add(table);
-
-		initWidget(verticalPanel);
+		if(isRepeated){
+			table = new FlexTable();
+			FormUtil.maximizeWidget(table);		
+			verticalPanel.add(table);
+			initWidget(verticalPanel);
+		}
+		else
+			initWidget(selectedPanel);
 		//setupEventListeners();
 
 		//table.setStyleName("cw-FlexTable");
@@ -64,11 +71,11 @@ public class RuntimeGroupWidget extends Composite{
 	//TODO The code below needs great refactoring together with PreviewView
 	private RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
 		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute("ParentBinding"));
-		if(parentWrapper == null){
+		if(parentWrapper == null && repeatQtnsDef != null){
 			QuestionDef qtn = repeatQtnsDef.getQuestion(node.getAttribute("ParentBinding"));
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
-				parentWrapper.setQuestionDef(qtn);
+				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute("ParentBinding"), parentWrapper);
 				addWidget(parentWrapper);
 			}
@@ -76,7 +83,7 @@ public class RuntimeGroupWidget extends Composite{
 		return parentWrapper;
 	}
 
-	public void loadWidgets(NodeList nodes){
+	public void loadWidgets(NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		HashMap<Integer,RuntimeWidgetWrapper> widgets = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
@@ -85,7 +92,7 @@ public class RuntimeGroupWidget extends Composite{
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(node,widgets);
+				int index = loadWidget(node,widgets,externalSourceWidgets);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -109,45 +116,45 @@ public class RuntimeGroupWidget extends Composite{
 		FormUtil.maximizeWidget(panel);
 	}
 
-	private int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets){
+	private int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		RuntimeWidgetWrapper parentWrapper = null;
 
-		String s = node.getAttribute("WidgetType");
-		int tabIndex = (node.getAttribute("TabIndex") != null ? Integer.parseInt(node.getAttribute("TabIndex")) : 0);
+		String s = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE);
+		int tabIndex = (node.getAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX) != null ? Integer.parseInt(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX)) : 0);
 
 		QuestionDef questionDef = null;
-		String binding = node.getAttribute("Binding");
-		if(binding != null && binding.trim().length() > 0){
+		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
+		if(binding != null && binding.trim().length() > 0 && repeatQtnsDef != null){
 			questionDef = repeatQtnsDef.getQuestion(binding);
 			if(questionDef != null)
 				questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
 		}
 
 		Widget widget = null;
-		if(s.equalsIgnoreCase("RadioButton")){
-			widget = new RadioButton(node.getAttribute("ParentBinding"),node.getAttribute("Text"));
+		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
+			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("CheckBox")){
-			widget = new CheckBox(node.getAttribute("Text"));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
+			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("Button")){
-			widget = new Button(node.getAttribute("Text"));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
+			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			((Button)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("ListBox")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LISTBOX)){
 			widget = new ListBox(false);
 			((ListBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("TextArea")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA)){
 			widget = new TextArea();
 			((TextArea)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("DatePicker")){
-			widget = new DatePicker();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
+			widget = new DatePickerWidget();
 			((DatePicker)widget).setTabIndex(tabIndex);
 			/*((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
 				 public void onLostFocus(Widget sender){
@@ -155,16 +162,16 @@ public class RuntimeGroupWidget extends Composite{
 				 }
 			 });*/
 		}
-		else if(s.equalsIgnoreCase("TextBox")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX)){
 			widget = new TextBox();
 			if(questionDef != null && (questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC 
 					|| questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL))
 				FormUtil.allowNumericOnly((TextBox)widget,questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL);
 			((TextBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase("Label"))
-			widget = new Label(node.getAttribute("Text"));
-		else if(s.equalsIgnoreCase("RepeatSection")){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
+			widget = new Label(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			//Not dealing with nexted repeats
 			//widget = new RunTimeGroupWidget();
 			//((RunTimeGroupWidget)widget).setTabIndex(tabIndex);
@@ -173,26 +180,65 @@ public class RuntimeGroupWidget extends Composite{
 			return tabIndex;
 
 		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
-
+		boolean loadWidget = true;
+		
 		if(questionDef != null)
-			wrapper.setQuestionDef(questionDef);
+			wrapper.setQuestionDef(questionDef,false);
+		
 		if(binding != null)
 			wrapper.setBinding(binding);
 
 		if(parentWrapper != null)
 			parentWrapper.addChildWidget(wrapper);
 
-		String value = node.getAttribute("HelpText");
+		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTitle(value);
 
-		value = node.getAttribute("Width");
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setWidth(value);
-
-		value = node.getAttribute("Height");
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setHeight(value);
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setExternalSource(value);
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setDisplayField(value);
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+		if(value != null && value.trim().length() > 0){
+			wrapper.setValueField(value);
+						
+			if(externalSourceWidgets != null && wrapper.getExternalSource() != null && wrapper.getDisplayField() != null
+					&& (wrapper.getWrappedWidget() instanceof TextBox || wrapper.getWrappedWidget() instanceof ListBox)
+					&& questionDef != null
+					&& (wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE
+						||wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+				externalSourceWidgets.add(wrapper);
+				loadWidget = false;
+			}
+		}
+		
+		if(loadWidget)
+			wrapper.loadQuestion();
+
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setHeight(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setLeft(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setTop(value);
 
 		if(wrapper.getWrappedWidget() instanceof Label)
 			WidgetEx.loadLabelProperties(node,wrapper);
@@ -225,14 +271,20 @@ public class RuntimeGroupWidget extends Composite{
 			return;
 		}
 
-		//widgets.add(new RuntimeWidgetWrapper(wrapper));
-		widgets.add(wrapper);
+		if(isRepeated){
+			//widgets.add(new RuntimeWidgetWrapper(wrapper));
+			widgets.add(wrapper);
 
-		int row = 0 , col = 0;
-		if(table.getRowCount() > 0)
-			col = table.getCellCount(row);
+			int row = 0 , col = 0;
+			if(table.getRowCount() > 0)
+				col = table.getCellCount(row);
 
-		table.setWidget(row, col, wrapper);
+			table.setWidget(row, col, wrapper);
+		}
+		else{
+			selectedPanel.add(wrapper);
+			FormUtil.setWidgetPosition(wrapper,wrapper.getLeft(),wrapper.getTop());
+		}
 	}
 
 	private void execute(Widget sender){
@@ -252,7 +304,7 @@ public class RuntimeGroupWidget extends Composite{
 	}
 
 	private void addNewRow(){
-		Element parentDataNode = null;
+		Element newRepeatDataNode = null;
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
 			RuntimeWidgetWrapper mainWidget = widgets.get(index);
@@ -263,25 +315,50 @@ public class RuntimeGroupWidget extends Composite{
 			if(index == 0){
 				Element dataNode = mainWidget.getQuestionDef().getDataNode();
 				if(dataNode != null){
-					parentDataNode = (Element)dataNode.getParentNode().cloneNode(true);
-					dataNode.getParentNode().getParentNode().appendChild(parentDataNode);
-					dataNodes.add(parentDataNode);
+					Element repeatDataNode = getParentNode(dataNode,mainWidget.getBinding());
+					newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);
+					repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
+					dataNodes.add(newRepeatDataNode);
 				}
 			}
 
-			setDataNode(copyWidget,parentDataNode);
+			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding());
 		}
 	}
+	
+	private Element getParentNode(Node node, String binding){	
+		String name = binding;
+		int pos = binding.indexOf('/');
+		if(pos > 0)
+			name = binding.substring(0, pos);
+		
+		return getParentNodeWithName(node,name);
+	}
+	
+	private Element getParentNodeWithName(Node node, String name){
+		Element parentNode = (Element)node.getParentNode();
+		if(node.getNodeName().equalsIgnoreCase(name))
+			return parentNode;
+		return getParentNodeWithName(parentNode,name);
+	}
 
-	private void setDataNode(RuntimeWidgetWrapper widget, Element parentNode){
+	private void setDataNode(RuntimeWidgetWrapper widget, Element parentNode, String binding){
+		String name = binding;
+		int pos = name.indexOf('/');
+		if(pos > 0)
+			name = name.substring(0, pos);
+		
 		NodeList nodes = parentNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node child = nodes.item(index);
 			if(child.getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			if(child.getNodeName().equals(widget.getBinding()) ||
-			  (child.getParentNode().getNodeName() + "/"+ child.getNodeName()).equals(widget.getBinding())){
-				widget.getQuestionDef().setDataNode((Element)child);
+			if(child.getNodeName().equals(name) /*||
+					(child.getParentNode().getNodeName() + "/"+ child.getNodeName()).equals(widget.getBinding())*/){
+				if(pos > 0)
+					setDataNode(widget,(Element)child,binding.substring(pos+1));
+				else
+					widget.getQuestionDef().setDataNode((Element)child);
 				return;
 			}
 		}
@@ -290,7 +367,7 @@ public class RuntimeGroupWidget extends Composite{
 	private RuntimeWidgetWrapper getPreparedWidget(RuntimeWidgetWrapper w){
 		RuntimeWidgetWrapper widget = new RuntimeWidgetWrapper(w);
 		widget.loadQuestion();
-		
+
 		QuestionDef questionDef = widget.getQuestionDef();
 		if(questionDef != null && (questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC 
 				|| questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL))
@@ -301,31 +378,52 @@ public class RuntimeGroupWidget extends Composite{
 	}
 
 	public void setEnabled(boolean enabled){
-		HorizontalPanel panel = (HorizontalPanel)verticalPanel.getWidget(1);
-		for(int index = 0; index < panel.getWidgetCount(); index++)
-			((RuntimeWidgetWrapper)panel.getWidget(index)).setEnabled(enabled);
+		if(isRepeated){
+			HorizontalPanel panel = (HorizontalPanel)verticalPanel.getWidget(1);
+			for(int index = 0; index < panel.getWidgetCount(); index++)
+				((RuntimeWidgetWrapper)panel.getWidget(index)).setEnabled(enabled);
 
-		for(int row = 0; row < table.getRowCount(); row++){
-			for(int col = 0; col < table.getCellCount(row); col++)
-				((RuntimeWidgetWrapper)table.getWidget(row, col)).setEnabled(enabled);
+			for(int row = 0; row < table.getRowCount(); row++){
+				for(int col = 0; col < table.getCellCount(row); col++)
+					((RuntimeWidgetWrapper)table.getWidget(row, col)).setEnabled(enabled);
+			}
+		}
+		else{
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setEnabled(enabled);
+			}
 		}
 	}
-	
-	public void setLocked(boolean locked){
-		HorizontalPanel panel = (HorizontalPanel)verticalPanel.getWidget(1);
-		for(int index = 0; index < panel.getWidgetCount(); index++)
-			((RuntimeWidgetWrapper)panel.getWidget(index)).setLocked(locked);
 
-		for(int row = 0; row < table.getRowCount(); row++){
-			for(int col = 0; col < table.getCellCount(row); col++)
-				((RuntimeWidgetWrapper)table.getWidget(row, col)).setLocked(locked);
-		}	
+	public void setLocked(boolean locked){
+		if(isRepeated){
+			HorizontalPanel panel = (HorizontalPanel)verticalPanel.getWidget(1);
+			for(int index = 0; index < panel.getWidgetCount(); index++)
+				((RuntimeWidgetWrapper)panel.getWidget(index)).setLocked(locked);
+
+			for(int row = 0; row < table.getRowCount(); row++){
+				for(int col = 0; col < table.getCellCount(row); col++)
+					((RuntimeWidgetWrapper)table.getWidget(row, col)).setLocked(locked);
+			}	
+		}
+		else{
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setLocked(locked);
+			}
+		}
 	}
 
 	public void saveValue(FormDef formDef){
-		for(int row = 0; row < table.getRowCount(); row++){
-			for(int col = 0; col < table.getCellCount(row); col++)
-				((RuntimeWidgetWrapper)table.getWidget(row, col)).saveValue(formDef);
+		if(isRepeated){
+			for(int row = 0; row < table.getRowCount(); row++){
+				for(int col = 0; col < table.getCellCount(row); col++)
+					((RuntimeWidgetWrapper)table.getWidget(row, col)).saveValue(formDef);
+			}
+		}
+		else{
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).saveValue(formDef);
+			}
 		}
 	}
 }

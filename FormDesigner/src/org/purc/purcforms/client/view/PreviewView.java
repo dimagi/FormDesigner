@@ -127,7 +127,7 @@ public class PreviewView extends FormRunnerView {
 
 	public void refresh(){
 		centerPanel.commitChanges();
-		loadForm(formDef, designSurfaceView.getLayoutXml());
+		loadForm(formDef, designSurfaceView.getLayoutXml(),null);
 	}
 	
 	public void clearPreview(){

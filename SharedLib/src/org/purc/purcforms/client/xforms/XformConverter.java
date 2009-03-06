@@ -38,9 +38,6 @@ public class XformConverter implements Serializable{
 
 	private static final String PREFIX_XFORMS_AND_COLON = "xf:";
 
-	/** Namespace prefix for XForms events. */
-	private static final String PREFIX_XFORM_EVENTS = "ev";
-
 	/** Namespace prefix for XML schema. */
 	private static final String PREFIX_XML_SCHEMA = "xsd";
 
@@ -52,9 +49,6 @@ public class XformConverter implements Serializable{
 
 	/** Namespace for XForms. */
 	private static final String NAMESPACE_XFORMS = "http://www.w3.org/2002/xforms";
-
-	/** Namespace for XForm events. */
-	private static final String NAMESPACE_XFORM_EVENTS = "http://www.w3.org/2001/xml-events";
 
 	/** Namespace for XML schema. */
 	private static final String NAMESPACE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
@@ -99,14 +93,11 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_BIND = "bind";
 	public static final String ATTRIBUTE_NAME_REF = "ref";
 	public static final String ATTRIBUTE_NAME_NODESET = "nodeset";
-	private static final String ATTRIBUTE_NAME_APPEARANCE = "appearance";
-	private static final String ATTRIBUTE_NAME_MULTIPLE = "multiple";
 	public static final String ATTRIBUTE_NAME_LOCKED = "locked";
 	public static final String ATTRIBUTE_NAME_READONLY = "readonly";
 	public static final String ATTRIBUTE_NAME_RELEVANT = "relevant";
 	public static final String ATTRIBUTE_NAME_REQUIRED = "required";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";
-	private static final String ATTRIBUTE_NAME_PAGE_NO = "page_no";
 	public static final String ATTRIBUTE_NAME_NAME = "name";
 	public static final String ATTRIBUTE_NAME_XMLNS = "xmlns:"+PREFIX_XFORMS;
 	public static final String ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE = "description-template"; //eg ${/patient/family_name}$
@@ -1152,7 +1143,6 @@ public class XformConverter implements Serializable{
 			if(condition != null)
 				conditions.add(condition);
 		}
-
 
 		return conditions;
 	}

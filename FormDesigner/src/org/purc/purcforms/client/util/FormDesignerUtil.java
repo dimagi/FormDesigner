@@ -111,7 +111,7 @@ public class FormDesignerUtil {
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			oracle.add(questionDef.getText());	
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),oracle);
+				;//loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),oracle); //TODO These have different id sets and hence we are leaving them out for now
 		}
 	}
 

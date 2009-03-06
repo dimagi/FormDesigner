@@ -758,6 +758,10 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			setQuestionOptionProperties((OptionDef)formItem);*/
 	}
 	
+	public void refresh(){
+		setupFormDef(formDef);
+	}
+	
 	private void enableLabelProperties(boolean enable){
 		enable = true;
 		

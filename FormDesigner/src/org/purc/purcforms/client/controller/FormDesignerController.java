@@ -373,8 +373,10 @@ public class FormDesignerController implements IFormDesignerListener{
 				});
 			}
 		}
-		else
+		else{
 			centerPanel.refresh();
+			leftPanel.refresh();
+		}
 	}
 
 	public void loadForm(int formId){

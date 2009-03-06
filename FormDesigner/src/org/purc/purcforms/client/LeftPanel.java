@@ -160,4 +160,8 @@ public class LeftPanel extends Composite {
 	  public WidgetSelectionListener getWidgetSelectionListener(){
 		  return widgetPropertiesView;
 	  }
+	  
+	  public void refresh(){
+		  widgetPropertiesView.refresh();
+	  }
 }

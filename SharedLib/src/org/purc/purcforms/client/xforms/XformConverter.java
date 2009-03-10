@@ -112,6 +112,7 @@ public class XformConverter implements Serializable{
 	private static final String DATA_TYPE_INT = "xsd:int";
 	private static final String DATA_TYPE_TEXT = "xsd:string";
 	private static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
+	private static final String DATA_TYPE_BINARY = "xsd:base64Binary";
 
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String XPATH_VALUE_FALSE = "false()";
@@ -124,7 +125,14 @@ public class XformConverter implements Serializable{
 
 	}
 
-	public static String getXmlType(int type){
+	public static String getXmlType(int type, Element node){
+		if(type == QuestionDef.QTN_TYPE_VIDEO)
+			node.setAttribute("format", "video");
+		else if(type == QuestionDef.QTN_TYPE_AUDIO)
+			node.setAttribute("format", "audio");
+		else if(type == QuestionDef.QTN_TYPE_IMAGE)
+			node.setAttribute("format", "image");
+
 		switch(type){
 		case QuestionDef.QTN_TYPE_BOOLEAN:
 			return DATA_TYPE_BOOLEAN;
@@ -142,6 +150,10 @@ public class XformConverter implements Serializable{
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
 			return DATA_TYPE_TEXT;
+		case QuestionDef.QTN_TYPE_IMAGE:
+		case QuestionDef.QTN_TYPE_VIDEO:
+		case QuestionDef.QTN_TYPE_AUDIO:
+			return DATA_TYPE_BINARY;
 		}
 
 		return "";
@@ -200,7 +212,7 @@ public class XformConverter implements Serializable{
 			QuestionDef questionDef = formDef.getQuestion(id);
 			if(questionDef == null)
 				continue;
-			
+
 			Element node = questionDef.getBindNode();
 			if(node == null)
 				node = questionDef.getControlNode();
@@ -258,7 +270,7 @@ public class XformConverter implements Serializable{
 		//formDef.setPageGroupNode(groupNode);
 		pageDef.setLabelNode(labelNode);
 		pageDef.setGroupNode(groupNode);
-		
+
 		Vector questions = pageDef.getQuestions();
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef qtn = (QuestionDef)questions.elementAt(i);
@@ -335,7 +347,7 @@ public class XformConverter implements Serializable{
 		bindNode.setAttribute(ATTRIBUTE_NAME_NODESET, nodeset);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
-			bindNode.setAttribute(ATTRIBUTE_NAME_TYPE, getXmlType(qtn.getDataType()));	
+			bindNode.setAttribute(ATTRIBUTE_NAME_TYPE, getXmlType(qtn.getDataType(),bindNode));	
 		if(qtn.isRequired())
 			bindNode.setAttribute(ATTRIBUTE_NAME_REQUIRED, XPATH_VALUE_TRUE);
 		if(!qtn.isEnabled())
@@ -434,14 +446,14 @@ public class XformConverter implements Serializable{
 		qtnDef.setDataNode(dataNode);
 
 		Element inputNode =  getXformInputElementName(doc,qtnDef,ATTRIBUTE_NAME_REF);
-		inputNode.setAttribute(ATTRIBUTE_NAME_TYPE, getXmlType(qtnDef.getDataType()));
+		inputNode.setAttribute(ATTRIBUTE_NAME_TYPE, getXmlType(qtnDef.getDataType(),inputNode));
 		if(qtnDef.isRequired())
 			inputNode.setAttribute(ATTRIBUTE_NAME_REQUIRED, XPATH_VALUE_TRUE);
 		if(!qtnDef.isEnabled())
 			inputNode.setAttribute(ATTRIBUTE_NAME_READONLY, XPATH_VALUE_TRUE);
 		if(qtnDef.isLocked())
 			inputNode.setAttribute(ATTRIBUTE_NAME_LOCKED, XPATH_VALUE_TRUE);
-		
+
 		parentControlNode.appendChild(inputNode);
 		qtnDef.setControlNode(inputNode);
 
@@ -808,14 +820,14 @@ public class XformConverter implements Serializable{
 						qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
 					}
 					qtn.setVariableName(getQuestionVariableName(child,formDef));
-					setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE));
+					setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE),child);
 					if(child.getAttribute(ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(ATTRIBUTE_NAME_REQUIRED).equals(XPATH_VALUE_TRUE))
 						qtn.setRequired(true);
 					if(child.getAttribute(ATTRIBUTE_NAME_READONLY) != null && child.getAttribute(ATTRIBUTE_NAME_READONLY).equals(XPATH_VALUE_TRUE))
 						qtn.setEnabled(false);
 					if(child.getAttribute(ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(ATTRIBUTE_NAME_LOCKED).equals(XPATH_VALUE_TRUE))
 						qtn.setLocked(true);
-					
+
 					if(!addRepeatChildQtn(qtn,repeats,child,map,rptKidMap)){
 						map.put(child.getAttribute(ATTRIBUTE_NAME_ID), qtn.getVariableName());
 						formDef.addQuestion(qtn);
@@ -840,7 +852,7 @@ public class XformConverter implements Serializable{
 
 					//if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))
 					//	map.put(bind, bind); //TODO Not very sure about this
-					
+
 					//new addition may cause bugs
 					if(varName == null){
 						varName = addNonBindControl(formDef,child,relevants,ref,bind);
@@ -1001,7 +1013,7 @@ public class XformConverter implements Serializable{
 
 	private static String getQuestionVariableName(Element child, FormDef formDef){
 		String name = child.getAttribute(ATTRIBUTE_NAME_NODESET);
-		
+
 		if(name.startsWith("/"+formDef.getVariableName()+"/"))
 			name = name.replace("/"+formDef.getVariableName()+"/", "");
 		return name;
@@ -1042,7 +1054,7 @@ public class XformConverter implements Serializable{
 	/*<range ref="length" start="0" end="100" step="5">
 	  <label>Length:</label>
 	</range>*/
-	private static void setQuestionType(QuestionDef def, String type){
+	private static void setQuestionType(QuestionDef def, String type, Element node){
 		if(type != null){
 			if(type.equals(DATA_TYPE_TEXT) || type.indexOf("string") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_TEXT);
@@ -1058,6 +1070,15 @@ public class XformConverter implements Serializable{
 				def.setDataType(QuestionDef.QTN_TYPE_DATE);
 			else if(type.equals(DATA_TYPE_BOOLEAN) || type.indexOf("boolean") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_BOOLEAN);
+			else if(type.equals(DATA_TYPE_BINARY) || type.indexOf("base64Binary") != -1 ){
+				String format = node.getAttribute("format");
+				if("video".equals(format))
+					def.setDataType(QuestionDef.QTN_TYPE_VIDEO);
+				else if("audio".equals(format))
+					def.setDataType(QuestionDef.QTN_TYPE_AUDIO);
+				else
+					def.setDataType(QuestionDef.QTN_TYPE_IMAGE);
+			}
 		}
 		else
 			def.setDataType(QuestionDef.QTN_TYPE_TEXT); //QTN_TYPE_REPEAT
@@ -1363,7 +1384,7 @@ public class XformConverter implements Serializable{
 		if(child.getAttribute(ATTRIBUTE_NAME_TYPE) == null)
 			qtn.setDataType(QuestionDef.QTN_TYPE_TEXT);
 		else
-			setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE));
+			setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE),child);
 
 		if(child.getAttribute(ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(ATTRIBUTE_NAME_REQUIRED).equals(XPATH_VALUE_TRUE))
 			qtn.setRequired(true);

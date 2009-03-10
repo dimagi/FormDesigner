@@ -21,6 +21,10 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
+		RootPanel rootPanel = RootPanel.get("purcformsdesigner");
+		if(rootPanel == null)
+			return;
 
 		FormUtil.setupUncaughtExceptionHandler();
 
@@ -52,7 +56,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 		// Finally, add the designer widget to the RootPanel, so that it will be
 		// displayed.
-		RootPanel.get("purcformsdesigner").add(designer);
+		rootPanel.add(designer);
 
 		// Call the window resized handler to get the initial sizes setup. Doing
 		// this in a deferred command causes it to occur after all widgets' sizes

@@ -117,6 +117,10 @@ public class QuestionDef implements Serializable{
 
 	/** Question with image. */
 	public static final int QTN_TYPE_IMAGE = 11;
+	
+	public static final byte QTN_TYPE_VIDEO = 12;
+	
+	public static final byte QTN_TYPE_AUDIO = 13;
 
 	private Element dataNode;
 	private Element labelNode;
@@ -588,7 +592,7 @@ public class QuestionDef implements Serializable{
 				}
 			}
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(dataType));
+				node.setAttribute(XformConverter.ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(dataType,node));
 			if(node.getAttribute(XformConverter.ATTRIBUTE_NAME_NODESET) != null)
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET,binding);
 			if(node.getAttribute(XformConverter.ATTRIBUTE_NAME_REF) != null)

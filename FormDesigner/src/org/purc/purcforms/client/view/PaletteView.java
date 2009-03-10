@@ -3,16 +3,9 @@ package org.purc.purcforms.client.view;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
 
-import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.allen_sauer.gwt.dnd.client.drop.AbsolutePositionDropController;
-import com.allen_sauer.gwt.dnd.client.drop.DropController;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ImageBundle;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,15 +19,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PaletteView extends Composite {
 
-	  /**
-	   * An image bundle for this widget and an example of the use of @gwt.resource.
-	   */
-	  public interface Images extends ImageBundle {
-		/**
-		 * ImageBundle.@resource org.purc.purcform.client.default_photo.jpg
-		 */
-	    AbstractImagePrototype defaultPhoto();
-	  }
 	  
 	  private VerticalPanel verticalPanel = new VerticalPanel();
 	  private ScrollPanel scrollPanel = new ScrollPanel();
@@ -55,7 +39,7 @@ public class PaletteView extends Composite {
 		  	HorizontalPanel hPanel = new HorizontalPanel();
 			hPanel.setSpacing(0);
 			hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			hPanel.add(images.defaultPhoto().createImage());
+			hPanel.add(images.add().createImage());
 			hPanel.add(new PushButton("Label"));
 			FormDesignerUtil.maximizeWidget(hPanel);
 		  	verticalPanel.add(hPanel);

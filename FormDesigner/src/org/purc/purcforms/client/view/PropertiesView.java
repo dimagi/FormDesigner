@@ -51,6 +51,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private static final byte DT_MULTIPLE_SELECT = 8;
 	private static final byte DT_REPEAT = 9;
 	private static final byte DT_IMAGE = 10;
+	private static final byte DT_VIDEO = 11;
+	private static final byte DT_AUDIO = 12;
 
 	private FlexTable table = new FlexTable();
 	private ListBox cbDataType = new ListBox(false);
@@ -120,6 +122,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem("Multiple Select");
 		cbDataType.addItem("Repeat");
 		cbDataType.addItem("Picture");
+		cbDataType.addItem("Video");
+		cbDataType.addItem("Audio");
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -372,6 +376,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_IMAGE:
 			dataType = QuestionDef.QTN_TYPE_IMAGE;
 			break;
+		case DT_VIDEO:
+			dataType = QuestionDef.QTN_TYPE_VIDEO;
+			break;
+		case DT_AUDIO:
+			dataType = QuestionDef.QTN_TYPE_AUDIO;
+			break;
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
@@ -499,6 +509,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_IMAGE:
 			index = DT_IMAGE;
+			break;
+		case QuestionDef.QTN_TYPE_VIDEO:
+			index = DT_VIDEO;
+			break;
+		case QuestionDef.QTN_TYPE_AUDIO:
+			index = DT_AUDIO;
 			break;
 		}
 

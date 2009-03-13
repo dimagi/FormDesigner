@@ -258,7 +258,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			horizontalPanel.remove(valueHyperlink);
 			horizontalPanel.add(txtValue1);
 			
-			if(!valueHyperlink.getText().equals(EMPTY_VALUE) && prevQuestionDef == questionDef)
+			if(!valueHyperlink.getText().equals(EMPTY_VALUE) && (prevQuestionDef == questionDef || prevQuestionDef == null))
 				txtValue1.setText(valueHyperlink.getText());
 				
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL){

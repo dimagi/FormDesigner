@@ -1,7 +1,6 @@
 package org.purc.purcforms.client.widget;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,13 +8,12 @@ import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -49,6 +47,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private AbstractImagePrototype errorImageProto;
 	private boolean locked = false;
 
+	private ValidationRule validationRule ;
+	
 	public RuntimeWidgetWrapper(){
 
 	}
@@ -114,6 +114,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			});
 
 			((TextBox)widget).addKeyboardListener(new KeyboardListenerAdapter(){
+				public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+					questionDef.setAnswer(getTextBoxAnswer());
+					isValid();
+					editListener.onValueChanged(null, null, questionDef.getAnswer());
+				}
+				
 				public void onKeyDown(Widget sender, char keyCode, int modifiers) {
 					if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
 						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
@@ -510,8 +516,24 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.isRequired() && !this.isAnswered()){
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
+			
+			errorImage.setTitle("Please answer this required question.");
 			return false;
 		}
+		
+		if(validationRule != null && !validationRule.isValid()){
+			if(panel.getWidgetCount() < 2)
+				panel.add(errorImage);
+			
+			errorImage.setTitle(validationRule.getErrorMessage());
+			return false;
+		}
+		/*FormDef formDef = null;
+		ValidationRule rule = new ValidationRule();
+		if(!rule.isValid(formDef)){
+			
+		}*/
+		
 		if(panel.getWidgetCount() > 1)
 			panel.remove(errorImage);
 		return true;
@@ -575,5 +597,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	public void onDataTypeChanged(int dataType){
 
+	}
+
+	public ValidationRule getValidationRule() {
+		return validationRule;
+	}
+
+	public void setValidationRule(ValidationRule validationRule) {
+		this.validationRule = validationRule;
 	}
 }

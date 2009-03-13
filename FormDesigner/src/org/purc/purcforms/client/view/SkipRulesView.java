@@ -2,6 +2,7 @@ package org.purc.purcforms.client.view;
 
 import java.util.Vector;
 
+import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -27,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class SkipRulesView extends Composite{
+public class SkipRulesView extends Composite implements IConditionController{
 
 	private static final int HORIZONTAL_SPACING = 5;
 	private static final int VERTICAL_SPACING = 0;
@@ -119,7 +120,9 @@ public class SkipRulesView extends Composite{
 	public void addCondition(){
 		if(formDef != null){
 			verticalPanel.remove(addConditionLink);
-			verticalPanel.add(new ConditionWidget(formDef,this));
+			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true);
+			conditionWidget.setQuestionDef(questionDef);
+			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 		}
 	}
@@ -222,7 +225,7 @@ public class SkipRulesView extends Composite{
 			Vector conditions = skipRule.getConditions();
 			Vector lostConditions = new Vector();
 			for(int i=0; i<conditions.size(); i++){
-				ConditionWidget conditionWidget = new ConditionWidget(formDef,this);
+				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true);
 				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))
 					verticalPanel.add(conditionWidget);
 				else

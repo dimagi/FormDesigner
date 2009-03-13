@@ -18,34 +18,38 @@ public class ActionHyperlink extends Hyperlink {
 
 	private PopupPanel popup;
 	private ConditionWidget condWidget;
-	
-	public ActionHyperlink(String text, String targetHistoryToken,ConditionWidget condWidget){
+	private boolean allowBrackets;
+
+	public ActionHyperlink(String text, String targetHistoryToken,ConditionWidget condWidget, boolean allowBrackets){
 		super(text,targetHistoryToken);
 		this.condWidget = condWidget;
+		this.allowBrackets = allowBrackets;
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
-	  
+
 	public void onBrowserEvent(Event event) {
-		  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
-			  setupPopup();
-		      popup.setPopupPosition(event.getClientX(), event.getClientY());
-		      popup.show();
-		  }
+		if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+			setupPopup();
+			popup.setPopupPosition(event.getClientX(), event.getClientY());
+			popup.show();
+		}
 	}
-	
+
 	private void setupPopup(){
 		popup = new PopupPanel(true,true);
-		
+
 		MenuBar menuBar = new MenuBar(true);
 		menuBar.addItem("Add Condition",true, new Command(){
-		    public void execute() {popup.hide(); condWidget.addCondition();}});
-	  
-		menuBar.addItem("Add Bracket",true, new Command(){
- 		    public void execute() {popup.hide(); condWidget.addBracket();}});
-		
+			public void execute() {popup.hide(); condWidget.addCondition();}});
+
+		if(allowBrackets){
+			menuBar.addItem("Add Bracket",true, new Command(){
+				public void execute() {popup.hide(); condWidget.addBracket();}});
+		}
+
 		menuBar.addItem("Delete Condition",true, new Command(){
- 		    public void execute() {popup.hide(); condWidget.deleteCurrentRow();}});
-			  
+			public void execute() {popup.hide(); condWidget.deleteCurrentRow();}});
+
 		popup.setWidget(menuBar);
 	}
 

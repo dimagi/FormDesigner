@@ -139,9 +139,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void adjustHeight(String height){
 		txtXformsSource.setHeight(height);
-		designSurfaceView.setHeight(height);
+		//designSurfaceView.setHeight(height);
 		txtLayoutXml.setHeight(height);
-		previewView.setHeight(height);
+		//previewView.setHeight(height);
 		txtModelXml.setHeight(height);
 	}
 
@@ -162,6 +162,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void onWindowResized(int width, int height){
 		propertiesView.onWindowResized(width, height);
+		designSurfaceView.onWindowResized(width, height);
+		previewView.onWindowResized(width, height);
 	}
 
 	public void loadForm(FormDef formDef, String layoutXml){
@@ -322,5 +324,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	
 	public FormDef getFormDef(){
 		return formDef;
+	}
+	
+	public void setEmbeddedHeightOffset(int offset){
+		designSurfaceView.setEmbeddedHeightOffset(offset);
 	}
 }

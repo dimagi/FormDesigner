@@ -40,6 +40,9 @@ public class FormDef implements Serializable{
 	/** The collection of rules (SkipRule objects) for this form. */
 	private Vector skipRules;
 	
+	/** The collection of rules (ValidationRule objects) for this form. */
+	private Vector validationRules;
+	
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  PurcConstants.EMPTY_STRING;
 	
@@ -64,7 +67,8 @@ public class FormDef implements Serializable{
 		
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
 		copyPages(formDef.getPages());
-		copyRules(formDef.getSkipRules());
+		copySkipRules(formDef.getSkipRules());
+		copyValidationRules(formDef.getValidationRules());
 	}
 	
 	/**
@@ -76,7 +80,7 @@ public class FormDef implements Serializable{
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String variableName,Vector pages, Vector rules, String descTemplate) {
+	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, String descTemplate) {
 		setId(id);
 		setName(name);
 		
@@ -84,7 +88,8 @@ public class FormDef implements Serializable{
 		setVariableName(variableName);
 		
 		setPages(pages);
-		setSkipRules(rules);
+		setSkipRules(skipRules);
+		setValidationRules(validationRules);
 		setDescriptionTemplate((descTemplate == null) ? PurcConstants.EMPTY_STRING : descTemplate);
 	}
 
@@ -130,6 +135,12 @@ public class FormDef implements Serializable{
 			return null;
 		return (SkipRule)skipRules.elementAt(index);
 	}
+	
+	public ValidationRule getValidationRuleAt(int index) {
+		if(validationRules == null)
+			return null;
+		return (ValidationRule)validationRules.elementAt(index);
+	}
 
 	public void setPages(Vector pages) {
 		this.pages = pages;
@@ -164,8 +175,16 @@ public class FormDef implements Serializable{
 		return skipRules;
 	}
 
-	public void setSkipRules(Vector rules) {
-		this.skipRules = rules;
+	public void setSkipRules(Vector skipRules) {
+		this.skipRules = skipRules;
+	}
+	
+	public Vector getValidationRules() {
+		return validationRules;
+	}
+
+	public void setValidationRules(Vector validationRules) {
+		this.validationRules = validationRules;
 	}
 
 	public String getDescriptionTemplate() {
@@ -192,6 +211,19 @@ public class FormDef implements Serializable{
 		return null;
 	}
 	
+	public ValidationRule getValidationRule(QuestionDef questionDef){
+		if(validationRules == null)
+			return null;
+		
+		for(int i=0; i<validationRules.size(); i++){
+			ValidationRule rule = (ValidationRule)validationRules.elementAt(i);
+			if(questionDef.getId() == rule.getQuestionId())
+				return rule;
+		}
+		
+		return null;
+	}
+	
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
 		if(!dataNode.getNodeName().equalsIgnoreCase(variableName))
@@ -213,6 +245,13 @@ public class FormDef implements Serializable{
 			for(int i=0; i<skipRules.size(); i++){
 				SkipRule skipRule = (SkipRule)skipRules.elementAt(i);
 				skipRule.updateDoc(this);
+			}
+		}
+		
+		if(validationRules != null){
+			for(int i=0; i<validationRules.size(); i++){
+				ValidationRule validationRule = (ValidationRule)validationRules.elementAt(i);
+				validationRule.updateDoc(this);
 			}
 		}
 	}
@@ -288,12 +327,21 @@ public class FormDef implements Serializable{
 			this.pages.addElement(new PageDef((PageDef)pages.elementAt(i),this));
 	}
 	
-	private void copyRules(Vector rules){
+	private void copySkipRules(Vector rules){
 		if(rules != null)
 		{
 			this.skipRules =  new Vector();
 			for(int i=0; i<rules.size(); i++)
 				this.skipRules.addElement(new SkipRule((SkipRule)rules.elementAt(i)));
+		}
+	}
+	
+	private void copyValidationRules(Vector rules){
+		if(rules != null)
+		{
+			this.validationRules =  new Vector();
+			for(int i=0; i<rules.size(); i++)
+				this.validationRules.addElement(new ValidationRule((ValidationRule)rules.elementAt(i)));
 		}
 	}
 	
@@ -444,6 +492,12 @@ public class FormDef implements Serializable{
 		return skipRules.size();
 	}
 	
+	public int getValidationRuleCount(){
+		if(validationRules == null)
+			return 0;
+		return validationRules.size();
+	}
+	
 	public void moveQuestion2Page(QuestionDef qtn, int pageNo){
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
@@ -488,14 +542,30 @@ public class FormDef implements Serializable{
 		return skipRules.contains(skipRule);
 	}
 	
+	public boolean containsValidationRule(ValidationRule validationRule){
+		if(validationRules == null)
+			return false;
+		return validationRules.contains(validationRule);
+	}
+	
 	public void addSkipRule(SkipRule skipRule){
 		if(skipRules == null)
 			skipRules = new Vector();
 		skipRules.addElement(skipRule);
 	}
 	
+	public void addValidationRule(ValidationRule validationRule){
+		if(validationRules == null)
+			validationRules = new Vector();
+		validationRules.addElement(validationRule);
+	}
+	
 	public boolean removeSkipRule(SkipRule skipRule){
 		return skipRules.remove(skipRule);
+	}
+	
+	public boolean removeValidationRule(ValidationRule validationRule){
+		return validationRules.remove(validationRule);
 	}
 	
 	/**

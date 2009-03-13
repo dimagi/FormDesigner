@@ -14,6 +14,7 @@ import org.purc.purcforms.client.model.PurcConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
+import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
@@ -96,6 +97,8 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_LOCKED = "locked";
 	public static final String ATTRIBUTE_NAME_READONLY = "readonly";
 	public static final String ATTRIBUTE_NAME_RELEVANT = "relevant";
+	public static final String ATTRIBUTE_NAME_CONSTRAINT = "constraint";
+	private static final String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
 	public static final String ATTRIBUTE_NAME_REQUIRED = "required";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";
 	public static final String ATTRIBUTE_NAME_NAME = "name";
@@ -117,8 +120,8 @@ public class XformConverter implements Serializable{
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String XPATH_VALUE_FALSE = "false()";
 
-	private static final String CONDITIONS_OPERATOR_TEXT_AND = " AND ";
-	private static final String CONDITIONS_OPERATOR_TEXT_OR = " OR ";
+	private static final String CONDITIONS_OPERATOR_TEXT_AND = " and ";
+	private static final String CONDITIONS_OPERATOR_TEXT_OR = " or ";
 
 
 	public XformConverter(){
@@ -197,6 +200,23 @@ public class XformConverter implements Serializable{
 		return fromDoc2String(doc);
 	}
 
+	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
+		String constratint = "";
+		Vector conditions  = rule.getConditions();
+		for(int i=0; i<conditions.size(); i++){
+			if(constratint.length() > 0)
+				constratint += getConditionsOperatorText(rule.getConditionsOperator());
+			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,PurcConstants.ACTION_ENABLE);
+		}
+		
+		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
+		Element node = questionDef.getBindNode();
+		if(node == null)
+			node = questionDef.getControlNode();
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT, constratint);
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
+	}
+	
 	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
 		String relevant = "";
 		Vector conditions  = rule.getConditions();
@@ -255,9 +275,28 @@ public class XformConverter implements Serializable{
 			relevant = questionDef.getVariableName();
 			if(!relevant.contains(formDef.getVariableName()))
 				relevant = "/" + formDef.getVariableName() + "/" + questionDef.getVariableName();
-			relevant += " " + getOperator(condition.getOperator(),action)+" '" + condition.getValue() + "'";
+			
+			String value = " '" + condition.getValue() + "'";
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
+				value = " " + condition.getValue();
+			
+			relevant += " " + getOperator(condition.getOperator(),action)+value;
 		}
 		return relevant;
+	}
+	
+	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action){
+		String constraint = null;
+
+		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
+		if(questionDef != null){			
+			String value = " '" + condition.getValue() + "'";
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
+				value = " " + condition.getValue();
+			
+			constraint = ". " + getOperator(condition.getOperator(),action)+value;
+		}
+		return constraint;
 	}
 
 	public static void fromPageDef2Xform(PageDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
@@ -602,13 +641,15 @@ public class XformConverter implements Serializable{
 		formDef.setDoc(doc);
 		HashMap id2VarNameMap = new HashMap();
 		HashMap relevants = new HashMap();
+		HashMap constraints = new HashMap();
 		Vector repeats = new Vector();
 		HashMap rptKidMap = new HashMap();
-		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null);
+		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints);
 		if(formDef.getName() == null || formDef.getName().length() == 0)
 			formDef.setName(formDef.getVariableName());
 		setDefaultValues(getInstanceDataNode(doc),formDef,id2VarNameMap); //TODO Very slow needs optimisation for very big forms
 		addSkipRules(formDef,id2VarNameMap,relevants);
+		addValidationRules(formDef,id2VarNameMap,constraints);
 		return formDef;
 	}
 
@@ -748,7 +789,7 @@ public class XformConverter implements Serializable{
 		return null;
 	}
 
-	private static QuestionDef parseElement(FormDef formDef, Element element, HashMap map,QuestionDef questionDef,HashMap relevants,Vector repeats, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn){
+	private static QuestionDef parseElement(FormDef formDef, Element element, HashMap map,QuestionDef questionDef,HashMap relevants,Vector repeats, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints){
 		String label = "";
 		String hint = "";
 		String value = "";
@@ -768,9 +809,9 @@ public class XformConverter implements Serializable{
 				if(tagname.equals(NODE_NAME_SUBMIT) || tagname.equals(NODE_NAME_SUBMIT_MINUS_PREFIX))
 					continue;
 				else if (tagname.equals("head"))
-					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				else if (tagname.equals("body"))
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				else if (tagname.equals("title")){
 					if(child.getChildNodes().getLength() != 0)
 						formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
@@ -778,7 +819,7 @@ public class XformConverter implements Serializable{
 				else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 					formDef.setModelNode((Element)child);
 					formDef.setXformsNode((Element)child.getParentNode());
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				}
 				else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
@@ -787,7 +828,7 @@ public class XformConverter implements Serializable{
 							formDef.addPage();
 						formDef.setPageGroupNode((Element)child);
 					}
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				}
 				else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
 					Element dataNode = null;
@@ -835,6 +876,9 @@ public class XformConverter implements Serializable{
 
 					if(child.getAttribute(ATTRIBUTE_NAME_RELEVANT) != null)
 						relevants.put(qtn,child.getAttribute(ATTRIBUTE_NAME_RELEVANT));
+					
+					if(child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT) != null)
+						constraints.put(qtn,child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT));
 
 					if(qtn.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 						RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(qtn);
@@ -855,7 +899,7 @@ public class XformConverter implements Serializable{
 
 					//new addition may cause bugs
 					if(varName == null){
-						varName = addNonBindControl(formDef,child,relevants,ref,bind);
+						varName = addNonBindControl(formDef,child,relevants,ref,bind,constraints);
 						if(ref != null)
 							map.put(ref, ref);
 					}
@@ -900,7 +944,7 @@ public class XformConverter implements Serializable{
 						}
 
 						questionDef = qtn;
-						parseElement(formDef, child, map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+						parseElement(formDef, child, map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 					}
 				} else if(tagname.equals(NODE_NAME_LABEL)||tagname.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
@@ -938,7 +982,7 @@ public class XformConverter implements Serializable{
 					}
 				}
 				else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
 					if(child.getChildNodes().getLength() != 0){
 						value = child.getChildNodes().item(0).getNodeValue().trim();
@@ -946,7 +990,7 @@ public class XformConverter implements Serializable{
 					}
 				}
 				else
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				// TODO - how are other elements like html:p or br handled?
 			}
 		}
@@ -1105,6 +1149,21 @@ public class XformConverter implements Serializable{
 
 		formDef.setSkipRules(rules);
 	}
+	
+	private static void addValidationRules(FormDef formDef, HashMap map, HashMap constraints){
+		Vector rules = new Vector();
+
+		Iterator keys = constraints.keySet().iterator();
+		int id = 0;
+		while(keys.hasNext()){
+			QuestionDef qtn = (QuestionDef)keys.next();
+			ValidationRule validationRule = buildValidationRule(formDef, qtn.getId(),(String)constraints.get(qtn));
+			if(validationRule != null)
+				rules.add(validationRule);
+		}
+
+		formDef.setValidationRules(rules);
+	}
 
 	private static int getAction(QuestionDef qtn){
 		Element node = qtn.getBindNode();
@@ -1152,6 +1211,24 @@ public class XformConverter implements Serializable{
 			return null;
 		return skipRule;
 	}
+	
+	private static ValidationRule buildValidationRule(FormDef formDef, int questionId, String constraint){
+
+		ValidationRule validationRule = new ValidationRule(questionId,formDef);
+		validationRule.setConditions(getValidationRuleConditions(formDef,constraint,questionId));
+		validationRule.setConditionsOperator(getConditionsOperator(constraint));
+
+		QuestionDef questionDef = formDef.getQuestion(questionId);
+		Element node = questionDef.getBindNode();
+		if(node == null)
+			validationRule.setErrorMessage("");
+		else
+			validationRule.setErrorMessage(node.getAttribute(ATTRIBUTE_NAME_CONSTRAINT_MESSAGE));
+
+		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0)
+			return null;
+		return validationRule;
+	}
 
 	private static Vector getSkipRuleConditions(FormDef formDef, String relevant, int action){
 		Vector conditions = new Vector();
@@ -1161,6 +1238,21 @@ public class XformConverter implements Serializable{
 		Condition condition  = new Condition();
 		for(int i=0; i<list.size(); i++){
 			condition = getSkipRuleCondition(formDef,(String)list.elementAt(i),(int)(i+1),action);
+			if(condition != null)
+				conditions.add(condition);
+		}
+
+		return conditions;
+	}
+	
+	private static Vector getValidationRuleConditions(FormDef formDef, String constraint, int questionId){
+		Vector conditions = new Vector();
+
+		Vector list = getConditionsOperatorTokens(constraint);
+
+		Condition condition  = new Condition();
+		for(int i=0; i<list.size(); i++){
+			condition = getValidationRuleCondition(formDef,(String)list.elementAt(i),questionId);
 			if(condition != null)
 				conditions.add(condition);
 		}
@@ -1203,7 +1295,50 @@ public class XformConverter implements Serializable{
 			value = relevant.substring(pos1,pos2);
 		}
 		else //else we take whole value after operator	
-			value = relevant.substring(pos+1,relevant.length());
+			value = relevant.substring(pos+getOperatorSize(condition.getOperator()),relevant.length());
+
+		if(!(value.equals("null") || value.equals(""))){
+			condition.setValue(value.trim());
+
+			if(condition.getOperator() == PurcConstants.OPERATOR_NULL)
+				return null; //no operator set hence making the condition invalid
+		}
+		else
+			condition.setOperator(PurcConstants.OPERATOR_IS_NULL);
+
+		return condition;
+	}
+	
+	private static Condition getValidationRuleCondition(FormDef formDef, String constraint, int questionId){		
+		Condition condition  = new Condition();
+		condition.setId(questionId);
+		condition.setOperator(getOperator(constraint,PurcConstants.ACTION_ENABLE));
+		condition.setQuestionId(questionId);
+		
+		//eg . &lt;= 40"
+		int pos = getOperatorPos(constraint);
+		if(pos < 0)
+			return null;
+
+		QuestionDef questionDef = formDef.getQuestion(questionId);
+		if(questionDef == null)
+				return null;
+		
+		String value;
+		//first try a value delimited by '
+		int pos2 = constraint.lastIndexOf('\'');
+		if(pos2 > 0){
+			//pos1++;
+			int pos1 = constraint.substring(0, pos2).lastIndexOf('\'',pos2);
+			if(pos1 < 0){
+				System.out.println("constraint value not closed with ' characher");
+				return null;
+			}
+			pos1++;
+			value = constraint.substring(pos1,pos2);
+		}
+		else //else we take whole value after operator	
+			value = constraint.substring(pos+getOperatorSize(condition.getOperator()),constraint.length());
 
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value.trim());
@@ -1266,6 +1401,19 @@ public class XformConverter implements Serializable{
 		}
 
 		return PurcConstants.OPERATOR_NULL;
+	}
+	
+	private static int getOperatorSize(int operator){
+		if(operator == PurcConstants.OPERATOR_GREATER_EQUAL || 
+				operator == PurcConstants.OPERATOR_LESS_EQUAL ||
+				operator == PurcConstants.OPERATOR_NOT_EQUAL)
+			return 2;
+		else if(operator == PurcConstants.OPERATOR_LESS ||
+				operator == PurcConstants.OPERATOR_GREATER || 
+				operator == PurcConstants.OPERATOR_EQUAL)
+			return 1;
+		
+		return 0;
 	}
 
 	private static boolean isPositiveAction(int action){
@@ -1332,19 +1480,19 @@ public class XformConverter implements Serializable{
 	}
 
 	private static int extractConditionsOperatorTokens(String relevant,int startPos, Vector list){
-		int pos,pos2,opSize = 3;
+		int pos,pos2,opSize = CONDITIONS_OPERATOR_TEXT_AND.length();
 
-		pos = relevant.toUpperCase().indexOf(CONDITIONS_OPERATOR_TEXT_AND,startPos);
+		pos = relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_AND,startPos);
 		if(pos <0){
-			pos = relevant.toUpperCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR,startPos);
-			opSize = 2;
+			pos = relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR,startPos);
+			opSize = CONDITIONS_OPERATOR_TEXT_OR.length();
 		}
 
 		//AND may be the last token when we have starting ORs hence skipping them. eg (relevant="/data/question10=7 OR /data/question6=4    OR  /data/question8=1 AND /data/question1='daniel'")
-		pos2 = relevant.toUpperCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR,startPos);
+		pos2 = relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR,startPos);
 		if(pos2 > 0 && pos2 < pos){
 			pos = pos2;
-			opSize = 2;
+			opSize = CONDITIONS_OPERATOR_TEXT_OR.length();
 		}
 
 
@@ -1359,9 +1507,9 @@ public class XformConverter implements Serializable{
 	}
 
 	private static int getConditionsOperator(String relevant){
-		if(relevant.toUpperCase().indexOf(CONDITIONS_OPERATOR_TEXT_AND) > 0)
+		if(relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_AND) > 0)
 			return PurcConstants.CONDITIONS_OPERATOR_AND;
-		else if(relevant.toUpperCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR) > 0)
+		else if(relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR) > 0)
 			return PurcConstants.CONDITIONS_OPERATOR_OR;
 		return PurcConstants.CONDITIONS_OPERATOR_NULL;
 	}
@@ -1371,7 +1519,7 @@ public class XformConverter implements Serializable{
 		return false; //((PageDef)formDef.getPages().elementAt(0)).getQuestions().size() > 126;
 	}
 
-	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind){
+	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind,HashMap constraints){
 		QuestionDef qtn = new QuestionDef(null);
 		if(formDef.getPages() == null)
 			qtn.setId(Integer.parseInt("1"));
@@ -1398,6 +1546,9 @@ public class XformConverter implements Serializable{
 
 		if(child.getAttribute(ATTRIBUTE_NAME_RELEVANT) != null)
 			relevants.put(qtn,child.getAttribute(ATTRIBUTE_NAME_RELEVANT));
+		
+		if(child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT) != null)
+			constraints.put(qtn,child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT));
 
 		return qtn.getVariableName();
 	}

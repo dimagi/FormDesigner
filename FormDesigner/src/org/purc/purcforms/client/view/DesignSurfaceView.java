@@ -2,7 +2,6 @@ package org.purc.purcforms.client.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,7 +30,6 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -66,7 +64,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class DesignSurfaceView extends Composite implements WindowResizeListener,TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
+public class DesignSurfaceView extends Composite implements /*WindowResizeListener,*/ TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
 
 	private MouseListenerCollection mouseListeners;
 	private static final int MOVE_LEFT = 1;
@@ -111,6 +109,8 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	//DropController dropController;
 	Vector<FormDesignerDragController> dragControllers = new Vector<FormDesignerDragController>();
 	FormDef formDef;
+	
+	private int embeddedHeightOffset = 0;
 
 	public DesignSurfaceView(Images images){
 		this.images = images;
@@ -139,7 +139,7 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 
 		setupPopup();
 
-		Window.addWindowResizeListener(this);
+		//Window.addWindowResizeListener(this);
 
 		rubberBand.addStyleName("rubberBand");
 
@@ -696,7 +696,8 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 	}
 
 	public void onWindowResized(int width, int height){
-		height -= 160;
+		height -= (160+embeddedHeightOffset); //(160 + 30);
+		//height = DOM.getIntStyleAttribute(getElement(), "height") - 45;
 		sHeight = height+"px";
 		super.setHeight(sHeight);
 
@@ -1465,5 +1466,9 @@ public class DesignSurfaceView extends Composite implements WindowResizeListener
 			if(!bindings.containsKey(questionDef.getVariableName()))
 				newQuestions.add(questionDef);
 		}
+	}
+	
+	public void setEmbeddedHeightOffset(int offset){
+		embeddedHeightOffset = offset;
 	}
 }

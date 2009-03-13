@@ -56,13 +56,13 @@ public class FormDesignerController implements IFormDesignerListener{
 		leftPanel.addNewChildItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#closeForm()
-	 */
+	public static native void back() /*-{
+		window.history.go(-1);
+	}-*/;
+	
 	public void closeForm() {
-		// TODO Auto-generated method stub
-
-	}
+		back();
+	} 
 
 	/* (non-Javadoc)
 	 * @see org.purc.purcform.client.controller.IFormDesignerController#deleteSelectedItem()

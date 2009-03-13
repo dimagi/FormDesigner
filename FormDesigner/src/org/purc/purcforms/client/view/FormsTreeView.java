@@ -386,7 +386,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	public void addNewForm(){
 		int id = tree.getItemCount()+1;
-		FormDef formDef = new FormDef(id,"New Form"+id, "newform"+id,null,null,null);
+		FormDef formDef = new FormDef(id,"New Form"+id, "newform"+id,null,null,null,null);
 		TreeItem item = new CompositeTreeItem(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 		item.setUserObject(formDef);
 		tree.addItem(item);
@@ -710,5 +710,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(obj instanceof FormDef)
 			return obj;
 		return getSelectedForm(item.getParentItem());
+	}
+	
+	public void clear(){
+		tree.clear();
 	}
 }

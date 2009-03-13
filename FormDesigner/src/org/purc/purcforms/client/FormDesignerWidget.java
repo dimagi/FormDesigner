@@ -64,7 +64,7 @@ public class FormDesignerWidget extends Composite{
 		hsplitClient.setLeftWidget(leftPanel);
 		hsplitClient.setRightWidget(centerPanel);
 		hsplitClient.setSplitPosition("25%");
-
+		
 		VerticalPanel panel = new VerticalPanel();
 		if(showMenubar)
 			panel.add(menu);
@@ -75,11 +75,12 @@ public class FormDesignerWidget extends Composite{
 
 		dockPanel.add(panel, DockPanel.CENTER);
 		FormDesignerUtil.maximizeWidget(dockPanel);
+		FormDesignerUtil.maximizeWidget(hsplitClient);
 
 		initWidget(dockPanel);
 	}
 
-	public void onWindowResized(int width, int height){
+	public void onWindowResized(int width, int height){		
 		int shortcutHeight = height - leftPanel.getAbsoluteTop() - 0;//8;
 		if (shortcutHeight < 1) 
 			shortcutHeight = 1;
@@ -89,11 +90,27 @@ public class FormDesignerWidget extends Composite{
 		shortcutHeight = height - centerPanel.getAbsoluteTop();
 		centerPanel.adjustHeight(shortcutHeight-50 + "px");
 		centerPanel.onWindowResized(width, height);
-		hsplitClient.setSize(width+"px", shortcutHeight+"px");
+		hsplitClient.setHeight(shortcutHeight+"px");
+		//hsplitClient.setSize(width+"px", shortcutHeight+"px");
 	}
 	
 	public void loadForm(int formId){
 		if(formId != -1)
 			controller.loadForm(formId);
+	}
+	
+	//These are for external users of this widget
+	public void setEmbeddedHeightOffset(int offset){
+		centerPanel.setEmbeddedHeightOffset(offset);
+	}
+	
+	public void loadForm(String xform, String layout){
+		centerPanel.setXformsSource(xform, false);
+		centerPanel.setLayoutXml(layout, false);
+		controller.openFormDeffered();
+	}
+	
+	public void clear(){
+		leftPanel.clear();
 	}
 }

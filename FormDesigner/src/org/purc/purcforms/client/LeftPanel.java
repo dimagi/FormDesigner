@@ -164,4 +164,8 @@ public class LeftPanel extends Composite {
 	  public void refresh(){
 		  widgetPropertiesView.refresh();
 	  }
+	  
+	  public void clear(){
+		  formsTreeView.clear();
+	  }
 }

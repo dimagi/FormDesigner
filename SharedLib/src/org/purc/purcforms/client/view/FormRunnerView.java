@@ -274,8 +274,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
 		boolean loadWidget = true;
 		
-		if(questionDef != null)
+		if(questionDef != null){
 			wrapper.setQuestionDef(questionDef,false);
+			wrapper.setValidationRule(formDef.getValidationRule(questionDef));
+		}
 		
 		if(binding != null)
 			wrapper.setBinding(binding);

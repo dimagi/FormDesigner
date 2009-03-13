@@ -71,6 +71,8 @@
 			</fileset>
 		</jar>
 		
+		<copy tofile="F:/omevac/Manager/OmevacServerAdmin/lib/${appname}-${version}.jar" file="dist/${appname}-${version}.jar"/>
+		
 	</target>
 
 </project>

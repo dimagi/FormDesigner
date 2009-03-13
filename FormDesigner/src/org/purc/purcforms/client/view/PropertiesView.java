@@ -71,6 +71,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private Object propertiesObj;
 	private IFormChangeListener formChangeListener;
 	private SkipRulesView skipRulesView = new SkipRulesView();
+	private ValidationRulesView validationRulesView = new ValidationRulesView();
 
 	public PropertiesView(){
 
@@ -143,8 +144,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		verticalPanel.add(table);
 
 		DecoratedTabPanel tabs = new DecoratedTabPanel();
-		tabs.add(skipRulesView, "Conditional Logic");
+		tabs.add(skipRulesView, "Skip Logic");
+		tabs.add(validationRulesView, "Validation Logic");
 		//tabs.add(new Label(), "Constraints/Validations");
+		
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
 		FormDesignerUtil.maximizeWidget(tabs);
@@ -445,6 +448,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				skipRulesView.setQuestionDef((QuestionDef)propertiesObj);
+				validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
 			}
 		});
 	}
@@ -469,6 +473,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultValue.setEnabled(enable);
 		txtHelpText.setEnabled(enable);
 		skipRulesView.setEnabled(enable);
+		validationRulesView.setEnabled(enable);
 
 		clearProperties();
 	}
@@ -563,11 +568,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	public void onWindowResized(int width, int height){
-
+		setWidth("100%");
+		setHeight("100%");
+		validationRulesView.onWindowResized(width, height);
 	}
 
 	public void commitChanges(){
 		skipRulesView.updateSkipRule();
+		validationRulesView.updateValidationRule();
 	}
 
 	public void onItemSelected(Object sender, Object item) {

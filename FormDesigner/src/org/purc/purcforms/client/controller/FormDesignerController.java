@@ -5,6 +5,7 @@ import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.LeftPanel;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.ErrorDialog;
@@ -99,11 +100,12 @@ public class FormDesignerController implements IFormDesignerListener{
 	 */
 	public void openForm() {
 		if(isOfflineMode())
-			openFormDeffered();
+			openFormDeffered(ModelConstants.NULL_ID);
 	}
 
-	public void openFormDeffered() {
-
+	public void openFormDeffered(int id) {
+		final int tempFormId = id;
+		
 		dlg.setText("Opening Form");
 		dlg.center();
 
@@ -113,6 +115,9 @@ public class FormDesignerController implements IFormDesignerListener{
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						if(tempFormId != ModelConstants.NULL_ID)
+							formDef.setId(tempFormId);
+						
 						leftPanel.loadForm(formDef);
 						centerPanel.loadForm(formDef,centerPanel.getLayoutXml());
 						centerPanel.format();
@@ -379,8 +384,8 @@ public class FormDesignerController implements IFormDesignerListener{
 		}
 	}
 
-	public void loadForm(int formId){
-		this.formId = formId;
+	public void loadForm(int frmId){
+		this.formId = frmId;
 
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefDownloadUrlSuffix();
@@ -411,7 +416,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 					centerPanel.setLayoutXml(layoutXml,false);
-					openFormDeffered();
+					openFormDeffered(formId);
 				}
 
 				public void onError(Request request, Throwable exception){

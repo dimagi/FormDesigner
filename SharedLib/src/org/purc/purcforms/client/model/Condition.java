@@ -15,21 +15,21 @@ import org.zenika.widget.client.util.DateUtil;
 public class Condition implements Serializable{
 	
 	/** The unique identifier of the question referenced by this condition. */
-	private int questionId = PurcConstants.NULL_ID;
+	private int questionId = ModelConstants.NULL_ID;
 	
 	/** The operator of the condition. Eg Equal to, Greater than, etc. */
-	private int operator = PurcConstants.OPERATOR_NULL;
+	private int operator = ModelConstants.OPERATOR_NULL;
 	
 	/** The value checked to see if the condition is true or false.
 	 * For the above example, the value would be 4 or the id of the Male option.
 	 * For a list of options this value is the option id, not the value or text value.
 	 */
-	private String value = PurcConstants.EMPTY_STRING;
+	private String value = ModelConstants.EMPTY_STRING;
 	
-	private String secondValue = PurcConstants.EMPTY_STRING;
+	private String secondValue = ModelConstants.EMPTY_STRING;
 	
 	/** The unique identifier of a condition. */
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 	
 	/** Creates a new condition object. */
 	public Condition(){
@@ -124,10 +124,10 @@ public class Condition implements Serializable{
 		//return value.equals(qtn.getAnswer());
 		try{
 			if(qtn.getAnswer() == null || qtn.getAnswer().trim().length() == 0){
-				if(operator == PurcConstants.OPERATOR_NOT_EQUAL ||
-				   operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+				if(operator == ModelConstants.OPERATOR_NOT_EQUAL ||
+				   operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 						return true;
-				return operator == PurcConstants.OPERATOR_IS_NULL;
+				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 				
 			int answer = Integer.parseInt(qtn.getAnswer());
@@ -137,21 +137,21 @@ public class Condition implements Serializable{
 			if(secondValue != null && secondValue.trim().length() > 0)
 				secondIntValue = Integer.parseInt(secondValue);
 					
-			if(operator == PurcConstants.OPERATOR_EQUAL)
+			if(operator == ModelConstants.OPERATOR_EQUAL)
 				return intValue == answer;
-			else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 				return intValue != answer;
-			else if(operator == PurcConstants.OPERATOR_LESS)
+			else if(operator == ModelConstants.OPERATOR_LESS)
 				return answer < intValue;
-			else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
 				return answer < intValue || intValue == answer;
-			else if(operator == PurcConstants.OPERATOR_GREATER)
+			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer > intValue;
-			else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
 				return answer > intValue || intValue == answer;
-			else if(operator == PurcConstants.OPERATOR_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
 				return answer > intValue && intValue < secondIntValue;
-			else if(operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 				return !(answer > intValue && intValue < secondIntValue);
 		}
 		catch(Exception ex){
@@ -165,25 +165,25 @@ public class Condition implements Serializable{
 	private boolean isTextTrue(QuestionDef qtn){
 		String answer = qtn.getAnswer();
 		if(answer == null || answer.trim().length() == 0){
-			if(operator == PurcConstants.OPERATOR_NOT_EQUAL ||
-			   operator == PurcConstants.OPERATOR_NOT_START_WITH ||
-			   operator == PurcConstants.OPERATOR_NOT_CONTAIN)
+			if(operator == ModelConstants.OPERATOR_NOT_EQUAL ||
+			   operator == ModelConstants.OPERATOR_NOT_START_WITH ||
+			   operator == ModelConstants.OPERATOR_NOT_CONTAIN)
 				return true;
 			
-			return operator == PurcConstants.OPERATOR_IS_NULL;
+			return operator == ModelConstants.OPERATOR_IS_NULL;
 		}
 			
-		if(operator == PurcConstants.OPERATOR_EQUAL)
+		if(operator == ModelConstants.OPERATOR_EQUAL)
 			return value.equals(qtn.getAnswer());
-		else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 			return !value.equals(qtn.getAnswer());
-		else if(operator == PurcConstants.OPERATOR_STARTS_WITH)
+		else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
 			return answer.startsWith(value);
-		else if(operator == PurcConstants.OPERATOR_NOT_START_WITH)
+		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
 			return !answer.startsWith(value);
-		else if(operator == PurcConstants.OPERATOR_CONTAINS)
+		else if(operator == ModelConstants.OPERATOR_CONTAINS)
 			return answer.contains(value);
-		else if(operator == PurcConstants.OPERATOR_NOT_CONTAIN)
+		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
 			return !answer.contains(value);
 		
 		return false;
@@ -199,10 +199,10 @@ public class Condition implements Serializable{
 		//return value.equals(qtn.getAnswer());
 		try{
 			if(qtn.getAnswer() == null || qtn.getAnswer().trim().length() == 0){
-				if(operator == PurcConstants.OPERATOR_NOT_EQUAL ||
-				   operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+				if(operator == ModelConstants.OPERATOR_NOT_EQUAL ||
+				   operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 						return true;
-				return operator == PurcConstants.OPERATOR_IS_NULL;
+				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 				
 			Date answer = DateUtil.getDateTimeFormat().parse(qtn.getAnswer());
@@ -212,21 +212,21 @@ public class Condition implements Serializable{
 			if(secondValue != null && secondValue.trim().length() > 0)
 				secondDateValue = DateUtil.getDateTimeFormat().parse(secondValue);
 					
-			if(operator == PurcConstants.OPERATOR_EQUAL)
+			if(operator == ModelConstants.OPERATOR_EQUAL)
 				return dateValue.equals(answer);
-			else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 				return !dateValue.equals(answer);
-			else if(operator == PurcConstants.OPERATOR_LESS)
+			else if(operator == ModelConstants.OPERATOR_LESS)
 				return answer.before(dateValue);
-			else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
 				return answer.before(dateValue) || dateValue.equals(answer);
-			else if(operator == PurcConstants.OPERATOR_GREATER)
+			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer.after(dateValue);
-			else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
 				return answer.after(dateValue) || dateValue.equals(answer);
-			else if(operator == PurcConstants.OPERATOR_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
 				return answer.after(dateValue) && dateValue.before(secondDateValue);
-			else if(operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 				return !(answer.after(dateValue) && dateValue.before(secondDateValue));
 		}
 		catch(Exception ex){
@@ -250,21 +250,21 @@ public class Condition implements Serializable{
 		//return value.equals(qtn.getAnswer());
 		try{
 			if(qtn.getAnswer() == null || qtn.getAnswer().trim().length() == 0){
-				if(operator == PurcConstants.OPERATOR_NOT_EQUAL || 
-				   operator == PurcConstants.OPERATOR_NOT_IN_LIST)
+				if(operator == ModelConstants.OPERATOR_NOT_EQUAL || 
+				   operator == ModelConstants.OPERATOR_NOT_IN_LIST)
 					return true;
-				return operator == PurcConstants.OPERATOR_IS_NULL;
+				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 			//return qtn.getAnswer().contains(value);
 			
 			switch(operator){
-				case PurcConstants.OPERATOR_EQUAL:
+				case ModelConstants.OPERATOR_EQUAL:
 					return qtn.getAnswer().equals(value);
-				case PurcConstants.OPERATOR_NOT_EQUAL:
+				case ModelConstants.OPERATOR_NOT_EQUAL:
 					return !qtn.getAnswer().equals(value);
-				case PurcConstants.OPERATOR_IN_LIST:
+				case ModelConstants.OPERATOR_IN_LIST:
 					return value.contains(qtn.getAnswer());
-				case PurcConstants.OPERATOR_NOT_IN_LIST:
+				case ModelConstants.OPERATOR_NOT_IN_LIST:
 					return !value.contains(qtn.getAnswer());
 				default:
 				return false;
@@ -281,20 +281,20 @@ public class Condition implements Serializable{
 		try{
 			if(qtn.getAnswer() == null || qtn.getAnswer().trim().length() == 0){
 				//return operator != PurcConstants.OPERATOR_EQUAL;
-				if(operator == PurcConstants.OPERATOR_NOT_EQUAL || 
-				   operator == PurcConstants.OPERATOR_NOT_IN_LIST)
+				if(operator == ModelConstants.OPERATOR_NOT_EQUAL || 
+				   operator == ModelConstants.OPERATOR_NOT_IN_LIST)
 					return true;
-				return operator == PurcConstants.OPERATOR_IS_NULL;
+				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 	
 			switch(operator){
-				case PurcConstants.OPERATOR_EQUAL:
+				case ModelConstants.OPERATOR_EQUAL:
 					return qtn.getAnswer().equals(value);
-				case PurcConstants.OPERATOR_NOT_EQUAL:
+				case ModelConstants.OPERATOR_NOT_EQUAL:
 					return !qtn.getAnswer().equals(value);
-				case PurcConstants.OPERATOR_IN_LIST:
+				case ModelConstants.OPERATOR_IN_LIST:
 					return value.contains(qtn.getAnswer());
-				case PurcConstants.OPERATOR_NOT_IN_LIST:
+				case ModelConstants.OPERATOR_NOT_IN_LIST:
 					return !value.contains(qtn.getAnswer());
 				default:
 					return false;
@@ -312,10 +312,10 @@ public class Condition implements Serializable{
 		
 		try{
 			if(qtn.getAnswer() == null || qtn.getAnswer().trim().length() == 0){
-				if(operator == PurcConstants.OPERATOR_NOT_EQUAL ||
-				   operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+				if(operator == ModelConstants.OPERATOR_NOT_EQUAL ||
+				   operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 						return true;
-				return operator == PurcConstants.OPERATOR_IS_NULL;
+				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 				
 			float answer = Float.parseFloat(qtn.getAnswer());
@@ -325,21 +325,21 @@ public class Condition implements Serializable{
 			if(secondValue != null && secondValue.trim().length() > 0)
 				secondFloatValue = Float.parseFloat(secondValue);
 					
-			if(operator == PurcConstants.OPERATOR_EQUAL)
+			if(operator == ModelConstants.OPERATOR_EQUAL)
 				return floatValue == answer;
-			else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 				return floatValue != answer;
-			else if(operator == PurcConstants.OPERATOR_LESS)
+			else if(operator == ModelConstants.OPERATOR_LESS)
 				return answer < floatValue;
-			else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
 				return answer < floatValue || floatValue == answer;
-			else if(operator == PurcConstants.OPERATOR_GREATER)
+			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer > floatValue;
-			else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
 				return answer > floatValue || floatValue == answer;
-			else if(operator == PurcConstants.OPERATOR_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
 				return answer > floatValue && floatValue < secondFloatValue;
-			else if(operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 				return !(answer > floatValue && floatValue < secondFloatValue);
 		}
 		catch(Exception ex){

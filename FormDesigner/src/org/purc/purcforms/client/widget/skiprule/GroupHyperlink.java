@@ -1,6 +1,6 @@
 package org.purc.purcforms.client.widget.skiprule;
 
-import org.purc.purcforms.client.model.PurcConstants;
+import org.purc.purcforms.client.model.ModelConstants;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -64,17 +64,17 @@ public class GroupHyperlink extends Hyperlink{
 	
 	public byte getConditionsOperator(){
 		if(getText().equals(CONDITIONS_OPERATOR_TEXT_ALL))
-			return PurcConstants.CONDITIONS_OPERATOR_AND;
+			return ModelConstants.CONDITIONS_OPERATOR_AND;
 		else if(getText().equals(CONDITIONS_OPERATOR_TEXT_ANY))
-			return PurcConstants.CONDITIONS_OPERATOR_OR;
+			return ModelConstants.CONDITIONS_OPERATOR_OR;
 		
-		return PurcConstants.CONDITIONS_OPERATOR_NULL;
+		return ModelConstants.CONDITIONS_OPERATOR_NULL;
 	}
 	
 	public void setCondionsOperator(int operator){
-		if(operator == PurcConstants.CONDITIONS_OPERATOR_AND)
+		if(operator == ModelConstants.CONDITIONS_OPERATOR_AND)
 			setText(CONDITIONS_OPERATOR_TEXT_ALL);
-		else if(operator == PurcConstants.CONDITIONS_OPERATOR_OR)
+		else if(operator == ModelConstants.CONDITIONS_OPERATOR_OR)
 			setText(CONDITIONS_OPERATOR_TEXT_ANY);	
 	}
 	

@@ -29,13 +29,13 @@ public class FormDef implements Serializable{
 	//TODO May not need to serialize this property for smaller pay load. Then we may just rely on the id.
 	//afterall it is not even guaranteed to be unique.
 	/** The string unique identifier of the form definition. */
-	private String variableName = PurcConstants.EMPTY_STRING;
+	private String variableName = ModelConstants.EMPTY_STRING;
 	
 	/** The display name of the form. */
-	private String name = PurcConstants.EMPTY_STRING;
+	private String name = ModelConstants.EMPTY_STRING;
 	
 	/** The numeric unique identifier of the form definition. */
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 	
 	/** The collection of rules (SkipRule objects) for this form. */
 	private Vector skipRules;
@@ -44,7 +44,7 @@ public class FormDef implements Serializable{
 	private Vector validationRules;
 	
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
-	private String descriptionTemplate =  PurcConstants.EMPTY_STRING;
+	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
 	
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
 	private Document doc;
@@ -90,7 +90,7 @@ public class FormDef implements Serializable{
 		setPages(pages);
 		setSkipRules(skipRules);
 		setValidationRules(validationRules);
-		setDescriptionTemplate((descTemplate == null) ? PurcConstants.EMPTY_STRING : descTemplate);
+		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
 	}
 
 	public void addPage(PageDef pageDef){
@@ -267,7 +267,7 @@ public class FormDef implements Serializable{
 	 * @return the question reference.
 	 */
 	public QuestionDef getQuestion(String varName){
-		if(varName == null)
+		if(varName == null || pages == null)
 			return null;
 		
 		for(int i=0; i<getPages().size(); i++){
@@ -286,6 +286,9 @@ public class FormDef implements Serializable{
 	 * @return the question reference.
 	 */
 	public QuestionDef getQuestion(int id){		
+		if(pages == null)
+			return null;
+		
 		for(int i=0; i<getPages().size(); i++){
 			QuestionDef def = ((PageDef)getPages().elementAt(i)).getQuestion(id);
 			if(def != null)
@@ -306,7 +309,7 @@ public class FormDef implements Serializable{
 		if(qtn != null)
 			return qtn.getId();
 		
-		return PurcConstants.NULL_ID;
+		return ModelConstants.NULL_ID;
 	}
 
 	public void addQuestion(QuestionDef qtn){

@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.model.OptionDef;
-import org.purc.purcforms.client.model.PurcConstants;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
@@ -43,7 +43,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	private static final String LIST_SEPARATOR = " , ";
 	
 	private QuestionDef questionDef;
-	private int operator = PurcConstants.OPERATOR_NULL;
+	private int operator = ModelConstants.OPERATOR_NULL;
 	
 	private HorizontalPanel horizontalPanel;
 	private TextBox txtValue1 = new TextBox();
@@ -66,7 +66,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	
 	public void setOperator(int operator){
 		if(this.operator != operator){ 
-			if(this.operator == PurcConstants.OPERATOR_IS_NULL)
+			if(this.operator == ModelConstants.OPERATOR_IS_NULL)
 				valueHyperlink.setText(EMPTY_VALUE);
 			
 		    /*if((this.operator == PurcConstants.OPERATOR_IN_LIST || this.operator == PurcConstants.OPERATOR_NOT_IN_LIST) &&
@@ -76,9 +76,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		
 		this.operator = operator;
 		
-		if(operator == PurcConstants.OPERATOR_IS_NULL)
+		if(operator == ModelConstants.OPERATOR_IS_NULL)
 			valueHyperlink.setText("");
-		else if(operator == PurcConstants.OPERATOR_BETWEEN || operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+		else if(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			valueHyperlink.setText(EMPTY_VALUE + BETWEEN_VALUE_SEPARATOR + EMPTY_VALUE);
 	}
 	
@@ -121,7 +121,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			}
 		});
 		
-		if(!(operator == PurcConstants.OPERATOR_BETWEEN || operator == PurcConstants.OPERATOR_NOT_BETWEEN)){
+		if(!(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)){
 			txtValue1.addFocusListener(new FocusListenerAdapter(){
 				public void onLostFocus(Widget sender){
 					stopEdit(true);
@@ -160,7 +160,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		    popup.show();
 		}
 		else if( (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-				(operator == PurcConstants.OPERATOR_EQUAL || operator == PurcConstants.OPERATOR_NOT_EQUAL) ){
+				(operator == ModelConstants.OPERATOR_EQUAL || operator == ModelConstants.OPERATOR_NOT_EQUAL) ){
 			
 			MenuBar menuBar = new MenuBar(true);
 			
@@ -195,7 +195,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		    popup.show();
 		}
 		else if( (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-				(operator == PurcConstants.OPERATOR_IN_LIST || operator == PurcConstants.OPERATOR_NOT_IN_LIST) ){
+				(operator == ModelConstants.OPERATOR_IN_LIST || operator == ModelConstants.OPERATOR_NOT_IN_LIST) ){
 			
 			String values = valueHyperlink.getText();
 			String[] vals = null;
@@ -272,8 +272,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			txtValue1.setFocus(true);
 			txtValue1.setFocus(true);
 			
-			if(operator ==  PurcConstants.OPERATOR_BETWEEN ||
-					operator ==  PurcConstants.OPERATOR_NOT_BETWEEN){
+			if(operator ==  ModelConstants.OPERATOR_BETWEEN ||
+					operator ==  ModelConstants.OPERATOR_NOT_BETWEEN){
 				horizontalPanel.add(lblAnd);
 				horizontalPanel.add(txtValue2);
 				
@@ -328,8 +328,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		}
 		
 		String val = val1 + 
-		((operator == PurcConstants.OPERATOR_BETWEEN || 
-				operator == PurcConstants.OPERATOR_NOT_BETWEEN) ? (BETWEEN_VALUE_SEPARATOR + val2 ): "");
+		((operator == ModelConstants.OPERATOR_BETWEEN || 
+				operator == ModelConstants.OPERATOR_NOT_BETWEEN) ? (BETWEEN_VALUE_SEPARATOR + val2 ): "");
 		
 		if(updateValue)
 			valueHyperlink.setText(val);

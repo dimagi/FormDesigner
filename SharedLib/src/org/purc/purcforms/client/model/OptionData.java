@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class OptionData  implements Serializable {
 	
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 	private OptionDef def;
 	
 	public OptionData(){

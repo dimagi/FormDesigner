@@ -10,7 +10,7 @@ import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.model.PurcConstants;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
@@ -206,7 +206,7 @@ public class XformConverter implements Serializable{
 		for(int i=0; i<conditions.size(); i++){
 			if(constratint.length() > 0)
 				constratint += getConditionsOperatorText(rule.getConditionsOperator());
-			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,PurcConstants.ACTION_ENABLE);
+			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE);
 		}
 		
 		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
@@ -239,19 +239,19 @@ public class XformConverter implements Serializable{
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT, relevant);
 
 			String value = ATTRIBUTE_VALUE_ENABLE;
-			if((rule.getAction() & PurcConstants.ACTION_ENABLE) != 0)
+			if((rule.getAction() & ModelConstants.ACTION_ENABLE) != 0)
 				value = ATTRIBUTE_VALUE_ENABLE;
-			else if((rule.getAction() & PurcConstants.ACTION_DISABLE) != 0)
+			else if((rule.getAction() & ModelConstants.ACTION_DISABLE) != 0)
 				value = ATTRIBUTE_VALUE_DISABLE;
-			else if((rule.getAction() & PurcConstants.ACTION_SHOW) != 0)
+			else if((rule.getAction() & ModelConstants.ACTION_SHOW) != 0)
 				value = ATTRIBUTE_VALUE_SHOW;
-			else if((rule.getAction() & PurcConstants.ACTION_HIDE) != 0)
+			else if((rule.getAction() & ModelConstants.ACTION_HIDE) != 0)
 				value = ATTRIBUTE_VALUE_HIDE;
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_ACTION, value);
 
-			if((rule.getAction() & PurcConstants.ACTION_MAKE_MANDATORY) != 0)
+			if((rule.getAction() & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
 				value = XPATH_VALUE_TRUE;
-			else if((rule.getAction() & PurcConstants.ACTION_MAKE_OPTIONAL) != 0)
+			else if((rule.getAction() & ModelConstants.ACTION_MAKE_OPTIONAL) != 0)
 				value = XPATH_VALUE_FALSE;
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED, value);
 		}
@@ -259,9 +259,9 @@ public class XformConverter implements Serializable{
 
 	private static String getConditionsOperatorText(int operator){
 		String operatorText = null;
-		if(operator == PurcConstants.CONDITIONS_OPERATOR_AND)
+		if(operator == ModelConstants.CONDITIONS_OPERATOR_AND)
 			operatorText = CONDITIONS_OPERATOR_TEXT_AND;
-		else if(operator == PurcConstants.CONDITIONS_OPERATOR_OR)
+		else if(operator == ModelConstants.CONDITIONS_OPERATOR_OR)
 			operatorText = CONDITIONS_OPERATOR_TEXT_OR;
 
 		return /*" " +*/ operatorText /*+ " "*/;
@@ -1168,27 +1168,27 @@ public class XformConverter implements Serializable{
 	private static int getAction(QuestionDef qtn){
 		Element node = qtn.getBindNode();
 		if(node == null)
-			return PurcConstants.ACTION_DISABLE;
+			return ModelConstants.ACTION_DISABLE;
 
 		String value = node.getAttribute(ATTRIBUTE_NAME_ACTION);
 		if(value == null)
-			return PurcConstants.ACTION_DISABLE;
+			return ModelConstants.ACTION_DISABLE;
 
 		int action = 0;
 		if(value.equalsIgnoreCase(ATTRIBUTE_VALUE_ENABLE))
-			action |= PurcConstants.ACTION_ENABLE;
+			action |= ModelConstants.ACTION_ENABLE;
 		else if(value.equalsIgnoreCase(ATTRIBUTE_VALUE_DISABLE))
-			action |= PurcConstants.ACTION_DISABLE;
+			action |= ModelConstants.ACTION_DISABLE;
 		else if(value.equalsIgnoreCase(ATTRIBUTE_VALUE_SHOW))
-			action |= PurcConstants.ACTION_SHOW;
+			action |= ModelConstants.ACTION_SHOW;
 		else if(value.equalsIgnoreCase(ATTRIBUTE_VALUE_HIDE))
-			action |= PurcConstants.ACTION_HIDE;
+			action |= ModelConstants.ACTION_HIDE;
 
 		value = node.getAttribute(ATTRIBUTE_NAME_REQUIRED);
 		if(value.equalsIgnoreCase(XPATH_VALUE_TRUE))
-			action |= PurcConstants.ACTION_MAKE_MANDATORY;
+			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else 
-			action |= PurcConstants.ACTION_MAKE_OPTIONAL;
+			action |= ModelConstants.ACTION_MAKE_OPTIONAL;
 
 		return action;
 	}
@@ -1300,11 +1300,11 @@ public class XformConverter implements Serializable{
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value.trim());
 
-			if(condition.getOperator() == PurcConstants.OPERATOR_NULL)
+			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid
 		}
 		else
-			condition.setOperator(PurcConstants.OPERATOR_IS_NULL);
+			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);
 
 		return condition;
 	}
@@ -1312,7 +1312,7 @@ public class XformConverter implements Serializable{
 	private static Condition getValidationRuleCondition(FormDef formDef, String constraint, int questionId){		
 		Condition condition  = new Condition();
 		condition.setId(questionId);
-		condition.setOperator(getOperator(constraint,PurcConstants.ACTION_ENABLE));
+		condition.setOperator(getOperator(constraint,ModelConstants.ACTION_ENABLE));
 		condition.setQuestionId(questionId);
 		
 		//eg . &lt;= 40"
@@ -1343,11 +1343,11 @@ public class XformConverter implements Serializable{
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value.trim());
 
-			if(condition.getOperator() == PurcConstants.OPERATOR_NULL)
+			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid
 		}
 		else
-			condition.setOperator(PurcConstants.OPERATOR_IS_NULL);
+			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);
 
 		return condition;
 	}
@@ -1371,67 +1371,67 @@ public class XformConverter implements Serializable{
 
 		if(relevant.indexOf(">=") > 0 || relevant.indexOf("&gt;=") > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_GREATER_EQUAL;
-			return PurcConstants.OPERATOR_LESS;
+				return ModelConstants.OPERATOR_GREATER_EQUAL;
+			return ModelConstants.OPERATOR_LESS;
 		}
 		else if(relevant.indexOf('>') > 0 || relevant.indexOf("&gt;") > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_GREATER;
-			return PurcConstants.OPERATOR_LESS_EQUAL;
+				return ModelConstants.OPERATOR_GREATER;
+			return ModelConstants.OPERATOR_LESS_EQUAL;
 		}
 		else if(relevant.indexOf("<=") > 0 || relevant.indexOf("&lt;=") > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_LESS_EQUAL;
-			return PurcConstants.OPERATOR_GREATER;
+				return ModelConstants.OPERATOR_LESS_EQUAL;
+			return ModelConstants.OPERATOR_GREATER;
 		}
 		else if(relevant.indexOf('<') > 0 || relevant.indexOf("&lt;") > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_LESS;
-			return PurcConstants.OPERATOR_GREATER_EQUAL;
+				return ModelConstants.OPERATOR_LESS;
+			return ModelConstants.OPERATOR_GREATER_EQUAL;
 		}
 		else if(relevant.indexOf("!=") > 0 || relevant.indexOf("!=") > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_NOT_EQUAL;
-			return PurcConstants.OPERATOR_EQUAL;
+				return ModelConstants.OPERATOR_NOT_EQUAL;
+			return ModelConstants.OPERATOR_EQUAL;
 		}
 		else if(relevant.indexOf('=') > 0){
 			if(isPositiveAction(action))
-				return PurcConstants.OPERATOR_EQUAL;
-			return PurcConstants.OPERATOR_NOT_EQUAL;
+				return ModelConstants.OPERATOR_EQUAL;
+			return ModelConstants.OPERATOR_NOT_EQUAL;
 		}
 
-		return PurcConstants.OPERATOR_NULL;
+		return ModelConstants.OPERATOR_NULL;
 	}
 	
 	private static int getOperatorSize(int operator){
-		if(operator == PurcConstants.OPERATOR_GREATER_EQUAL || 
-				operator == PurcConstants.OPERATOR_LESS_EQUAL ||
-				operator == PurcConstants.OPERATOR_NOT_EQUAL)
+		if(operator == ModelConstants.OPERATOR_GREATER_EQUAL || 
+				operator == ModelConstants.OPERATOR_LESS_EQUAL ||
+				operator == ModelConstants.OPERATOR_NOT_EQUAL)
 			return 2;
-		else if(operator == PurcConstants.OPERATOR_LESS ||
-				operator == PurcConstants.OPERATOR_GREATER || 
-				operator == PurcConstants.OPERATOR_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_LESS ||
+				operator == ModelConstants.OPERATOR_GREATER || 
+				operator == ModelConstants.OPERATOR_EQUAL)
 			return 1;
 		
 		return 0;
 	}
 
 	private static boolean isPositiveAction(int action){
-		return ((action & PurcConstants.ACTION_ENABLE) != 0) || ((action & PurcConstants.ACTION_SHOW) != 0);
+		return ((action & ModelConstants.ACTION_ENABLE) != 0) || ((action & ModelConstants.ACTION_SHOW) != 0);
 	}
 
 	private static String getOperator(int operator, int action){
-		if(operator == PurcConstants.OPERATOR_EQUAL)
+		if(operator == ModelConstants.OPERATOR_EQUAL)
 			return isPositiveAction(action) ? "=" : "!=";
-		else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 			return isPositiveAction(action) ? "!=" : "=";
-		else if(operator == PurcConstants.OPERATOR_LESS)
+		else if(operator == ModelConstants.OPERATOR_LESS)
 			return isPositiveAction(action) ? "<" : ">=";
-		else if(operator == PurcConstants.OPERATOR_GREATER)
+		else if(operator == ModelConstants.OPERATOR_GREATER)
 			return isPositiveAction(action) ? ">" : "<=";
-		else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
 			return isPositiveAction(action) ? "<=" : ">";
-		else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
 			return isPositiveAction(action) ? ">=" : "<";
 		return "=";
 	}
@@ -1508,10 +1508,10 @@ public class XformConverter implements Serializable{
 
 	private static int getConditionsOperator(String relevant){
 		if(relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_AND) > 0)
-			return PurcConstants.CONDITIONS_OPERATOR_AND;
+			return ModelConstants.CONDITIONS_OPERATOR_AND;
 		else if(relevant.toLowerCase().indexOf(CONDITIONS_OPERATOR_TEXT_OR) > 0)
-			return PurcConstants.CONDITIONS_OPERATOR_OR;
-		return PurcConstants.CONDITIONS_OPERATOR_NULL;
+			return ModelConstants.CONDITIONS_OPERATOR_OR;
+		return ModelConstants.CONDITIONS_OPERATOR_NULL;
 	}
 
 

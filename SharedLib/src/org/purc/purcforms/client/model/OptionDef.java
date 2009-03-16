@@ -17,14 +17,14 @@ import com.google.gwt.xml.client.Element;
  */
 public class OptionDef implements Serializable {
 	/** The numeric unique identifier of an answer option. */
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 	
 	/** The display text of the answer option. */
-	private String text = PurcConstants.EMPTY_STRING;
+	private String text = ModelConstants.EMPTY_STRING;
 	
 	//TODO May not need to serialize this property for smaller pay load. Then we would just rely on the id.
 	/** The unique text ientifier of an answer option. */
-	private String variableName = PurcConstants.EMPTY_STRING;
+	private String variableName = ModelConstants.EMPTY_STRING;
 	
 	public static final char SEPARATOR_CHAR = ',';
 	

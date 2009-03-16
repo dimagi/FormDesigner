@@ -6,7 +6,7 @@ import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.model.PurcConstants;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.widget.skiprule.ConditionWidget;
@@ -177,28 +177,28 @@ public class SkipRulesView extends Composite implements IConditionController{
 	private int getAction(){
 		int action = 0;
 		if(rdEnable.isChecked())
-			action |= PurcConstants.ACTION_ENABLE;
+			action |= ModelConstants.ACTION_ENABLE;
 		else if(rdShow.isChecked())
-			action |= PurcConstants.ACTION_SHOW;
+			action |= ModelConstants.ACTION_SHOW;
 		else if(rdHide.isChecked())
-			action |= PurcConstants.ACTION_HIDE;
+			action |= ModelConstants.ACTION_HIDE;
 		else
-			action |= PurcConstants.ACTION_DISABLE;
+			action |= ModelConstants.ACTION_DISABLE;
 		
 		if(chkMakeRequired.isChecked())
-			action |= PurcConstants.ACTION_MAKE_MANDATORY;
+			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else
-			action |= PurcConstants.ACTION_MAKE_OPTIONAL;
+			action |= ModelConstants.ACTION_MAKE_OPTIONAL;
 		
 		return action;
 	}
 	
 	private void setAction(int action){
-		rdEnable.setChecked((action & PurcConstants.ACTION_ENABLE) != 0);
-		rdDisable.setChecked((action & PurcConstants.ACTION_DISABLE) != 0);
-		rdShow.setChecked((action & PurcConstants.ACTION_SHOW) != 0);
-		rdHide.setChecked((action & PurcConstants.ACTION_HIDE) != 0);
-		chkMakeRequired.setChecked((action & PurcConstants.ACTION_MAKE_MANDATORY) != 0);
+		rdEnable.setChecked((action & ModelConstants.ACTION_ENABLE) != 0);
+		rdDisable.setChecked((action & ModelConstants.ACTION_DISABLE) != 0);
+		rdShow.setChecked((action & ModelConstants.ACTION_SHOW) != 0);
+		rdHide.setChecked((action & ModelConstants.ACTION_HIDE) != 0);
+		chkMakeRequired.setChecked((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0);
 		updateMakeRequired();
 	}
 	
@@ -274,37 +274,37 @@ public class SkipRulesView extends Composite implements IConditionController{
 	}
 	
 	private int getInvertedOperator(int operator){
-		if(operator == PurcConstants.OPERATOR_EQUAL)
-			return PurcConstants.OPERATOR_NOT_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
-			return PurcConstants.OPERATOR_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_LESS)
-			return PurcConstants.OPERATOR_GREATER;
-		else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
-			return PurcConstants.OPERATOR_GREATER_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_GREATER)
-			return PurcConstants.OPERATOR_LESS;
-		else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
-			return PurcConstants.OPERATOR_LESS_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_IS_NULL)
-			return PurcConstants.OPERATOR_IS_NOT_NULL;
-		else if(operator == PurcConstants.OPERATOR_IN_LIST)
-			return PurcConstants.OPERATOR_NOT_IN_LIST;
-		else if(operator == PurcConstants.OPERATOR_NOT_IN_LIST)
-			return PurcConstants.OPERATOR_IN_LIST;
-		else if(operator == PurcConstants.OPERATOR_STARTS_WITH)
-			return PurcConstants.OPERATOR_NOT_START_WITH;
-		else if(operator == PurcConstants.OPERATOR_NOT_START_WITH)
-			return PurcConstants.OPERATOR_STARTS_WITH;
-		else if(operator == PurcConstants.OPERATOR_CONTAINS)
-			return PurcConstants.OPERATOR_NOT_CONTAIN;
-		else if(operator == PurcConstants.OPERATOR_NOT_CONTAIN)
-			return PurcConstants.OPERATOR_CONTAINS;
-		else if(operator == PurcConstants.OPERATOR_BETWEEN)
-			return PurcConstants.OPERATOR_NOT_BETWEEN;
-		else if(operator == PurcConstants.OPERATOR_NOT_BETWEEN)
-			return PurcConstants.OPERATOR_BETWEEN;
+		if(operator == ModelConstants.OPERATOR_EQUAL)
+			return ModelConstants.OPERATOR_NOT_EQUAL;
+		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
+			return ModelConstants.OPERATOR_EQUAL;
+		else if(operator == ModelConstants.OPERATOR_LESS)
+			return ModelConstants.OPERATOR_GREATER;
+		else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
+			return ModelConstants.OPERATOR_GREATER_EQUAL;
+		else if(operator == ModelConstants.OPERATOR_GREATER)
+			return ModelConstants.OPERATOR_LESS;
+		else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
+			return ModelConstants.OPERATOR_LESS_EQUAL;
+		else if(operator == ModelConstants.OPERATOR_IS_NULL)
+			return ModelConstants.OPERATOR_IS_NOT_NULL;
+		else if(operator == ModelConstants.OPERATOR_IN_LIST)
+			return ModelConstants.OPERATOR_NOT_IN_LIST;
+		else if(operator == ModelConstants.OPERATOR_NOT_IN_LIST)
+			return ModelConstants.OPERATOR_IN_LIST;
+		else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
+			return ModelConstants.OPERATOR_NOT_START_WITH;
+		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
+			return ModelConstants.OPERATOR_STARTS_WITH;
+		else if(operator == ModelConstants.OPERATOR_CONTAINS)
+			return ModelConstants.OPERATOR_NOT_CONTAIN;
+		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
+			return ModelConstants.OPERATOR_CONTAINS;
+		else if(operator == ModelConstants.OPERATOR_BETWEEN)
+			return ModelConstants.OPERATOR_NOT_BETWEEN;
+		else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
+			return ModelConstants.OPERATOR_BETWEEN;
 		
-		return PurcConstants.OPERATOR_NOT_EQUAL;
+		return ModelConstants.OPERATOR_NOT_EQUAL;
 	}
 }

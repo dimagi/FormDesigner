@@ -19,7 +19,7 @@ public class SkipRule implements Serializable{
 	/** The numeric identifier of a rule. This is assigned in code and hence
 	 * is not known by the user.
 	 */
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 	
 	/** A list of conditions (Condition object) to be tested for a rule. 
 	 * E.g. If sex is Male. If age is greatern than 4. etc
@@ -29,7 +29,7 @@ public class SkipRule implements Serializable{
 	/** The action taken when conditions are true.
 	 * Example of actions are Disable, Hide, Show, etc
 	 */
-	private int action = PurcConstants.ACTION_NONE;
+	private int action = ModelConstants.ACTION_NONE;
 	
 	/** A list of question identifiers (int) acted upon when conditions for the rule are true. */
 	private Vector actionTargets;
@@ -38,7 +38,7 @@ public class SkipRule implements Serializable{
 	//private String name; (No use found for this as for now)
 	
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
-	private int conditionsOperator = PurcConstants.CONDITIONS_OPERATOR_NULL;
+	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
 	
 		
 	/** Constructs a rule object ready to be initialized. */
@@ -201,9 +201,9 @@ public class SkipRule implements Serializable{
 				falseFound = true;
 		}
 		
-		if(getConditions().size() == 1 || getConditionsOperator() == PurcConstants.CONDITIONS_OPERATOR_AND)
+		if(getConditions().size() == 1 || getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_AND)
 			ExecuteAction(formDef,!falseFound);
-		else if(getConditionsOperator() == PurcConstants.CONDITIONS_OPERATOR_OR)
+		else if(getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_OR)
 			ExecuteAction(formDef,trueFound);
 		//else do nothing
 	}
@@ -221,16 +221,16 @@ public class SkipRule implements Serializable{
 		qtn.setEnabled(true);
 		qtn.setRequired(false);
 		
-		if((action & PurcConstants.ACTION_ENABLE) != 0)
+		if((action & ModelConstants.ACTION_ENABLE) != 0)
 			qtn.setEnabled(conditionTrue);
-		else if((action & PurcConstants.ACTION_DISABLE) != 0)
+		else if((action & ModelConstants.ACTION_DISABLE) != 0)
 			qtn.setEnabled(!conditionTrue);
-		else if((action & PurcConstants.ACTION_SHOW) != 0)
+		else if((action & ModelConstants.ACTION_SHOW) != 0)
 			qtn.setVisible(conditionTrue);
-		else if((action & PurcConstants.ACTION_HIDE) != 0)
+		else if((action & ModelConstants.ACTION_HIDE) != 0)
 			qtn.setVisible(!conditionTrue);
 		
-		if((action & PurcConstants.ACTION_MAKE_MANDATORY) != 0)
+		if((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
 			qtn.setRequired(conditionTrue);
 	}
 	

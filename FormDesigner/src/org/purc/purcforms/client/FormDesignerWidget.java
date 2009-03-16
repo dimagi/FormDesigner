@@ -104,13 +104,27 @@ public class FormDesignerWidget extends Composite{
 		centerPanel.setEmbeddedHeightOffset(offset);
 	}
 	
-	public void loadForm(String xform, String layout){
+	public void loadForm(int formId,String xform, String layout){
+		if(leftPanel.formExists(formId))
+			return;
+		
 		centerPanel.setXformsSource(xform, false);
 		centerPanel.setLayoutXml(layout, false);
-		controller.openFormDeffered();
+		controller.openFormDeffered(formId);
+	}
+	
+	public void addNewForm(String name, String varName, int formId){
+		if(leftPanel.formExists(formId))
+			return;
+		
+		leftPanel.addNewForm(name, varName, formId);
 	}
 	
 	public void clear(){
 		leftPanel.clear();
+	}
+	
+	public void setSplitPos(String pos){
+		hsplitClient.setSplitPosition(pos);
 	}
 }

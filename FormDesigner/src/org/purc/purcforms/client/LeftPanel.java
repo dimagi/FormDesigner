@@ -121,6 +121,10 @@ public class LeftPanel extends Composite {
 		  formsTreeView.addNewForm();
 	  }
 	  
+	  public void addNewForm(String name, String varName, int formId){
+		  formsTreeView.addNewForm(name, varName, formId);
+	  }
+	  
 	  public void addNewItem(){
 		  formsTreeView.addNewItem();
 	  }
@@ -167,5 +171,9 @@ public class LeftPanel extends Composite {
 	  
 	  public void clear(){
 		  formsTreeView.clear();
+	  }
+	  
+	  public boolean formExists(int formId){
+		  return formsTreeView.formExists(formId);
 	  }
 }

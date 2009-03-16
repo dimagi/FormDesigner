@@ -14,7 +14,7 @@ import org.purc.purcforms.client.xforms.XformConverter;
 public class ValidationRule implements Serializable{
 	
 	/** The unique identifier of the question referenced by this condition. */
-	private int questionId = PurcConstants.NULL_ID;
+	private int questionId = ModelConstants.NULL_ID;
 	
 	/** A list of conditions (Condition object) to be tested for a rule. 
 	 * E.g. age is greater than 4. etc
@@ -26,7 +26,7 @@ public class ValidationRule implements Serializable{
 	private String errorMessage;
 	
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
-	private int conditionsOperator = PurcConstants.CONDITIONS_OPERATOR_NULL;
+	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
 	
 	
 	private FormDef formDef;
@@ -163,9 +163,9 @@ public class ValidationRule implements Serializable{
 				falseFound = true;
 		}
 		
-		if(getConditions().size() == 1 || getConditionsOperator() == PurcConstants.CONDITIONS_OPERATOR_AND)
+		if(getConditions().size() == 1 || getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_AND)
 			return !falseFound;
-		else if(getConditionsOperator() == PurcConstants.CONDITIONS_OPERATOR_OR)
+		else if(getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_OR)
 			return trueFound;
 		
 		return false;

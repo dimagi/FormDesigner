@@ -1,15 +1,17 @@
 package org.purc.purcforms.client.widget.skiprule;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.model.PurcConstants;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.widget.SelectItemCommand;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 
 
 /**
@@ -99,7 +101,17 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			menuBar.addItem(OP_TEXT_CONTAINS,true,new SelectItemCommand(OP_TEXT_CONTAINS,this));	  
 			menuBar.addItem(OP_TEXT_NOT_CONTAIN,true, new SelectItemCommand(OP_TEXT_NOT_CONTAIN,this));
 		}
-			  
+		 
+		/*ScrollPanel scrollPanel = new ScrollPanel();
+		scrollPanel.setWidget(menuBar);
+		scrollPanel.setWidth("300px");
+		scrollPanel.setHeight("200px"); //"200px"
+		
+		int pos = popup.getOffsetHeight();
+		int h = Window.getClientHeight();
+		int y = Window.getScrollTop();
+		int x = h - pos;*/
+		
 		popup.setWidget(menuBar);
 	}
 	
@@ -113,36 +125,36 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	
 	private Byte fromOperatorText2Value(String text){
 		if(text.equals(OP_TEXT_EQUAL))
-			return PurcConstants.OPERATOR_EQUAL;
+			return ModelConstants.OPERATOR_EQUAL;
 		else if(text.equals(OP_TEXT_NOT_EQUAL))
-			return PurcConstants.OPERATOR_NOT_EQUAL;
+			return ModelConstants.OPERATOR_NOT_EQUAL;
 		else if(text.equals(OP_TEXT_LESS_THAN))
-			return PurcConstants.OPERATOR_LESS;
+			return ModelConstants.OPERATOR_LESS;
 		else if(text.equals(OP_TEXT_LESS_THAN_EQUAL))
-			return PurcConstants.OPERATOR_LESS_EQUAL;
+			return ModelConstants.OPERATOR_LESS_EQUAL;
 		else if(text.equals(OP_TEXT_GREATER_THAN))
-			return PurcConstants.OPERATOR_GREATER;
+			return ModelConstants.OPERATOR_GREATER;
 		else if(text.equals(OP_TEXT_GREATER_THAN_EQUAL))
-			return PurcConstants.OPERATOR_GREATER_EQUAL;
+			return ModelConstants.OPERATOR_GREATER_EQUAL;
 		else if(text.equals(OP_TEXT_NULL))
-			return PurcConstants.OPERATOR_IS_NULL;
+			return ModelConstants.OPERATOR_IS_NULL;
 		else if(text.equals(OP_TEXT_IN_LIST))
-			return PurcConstants.OPERATOR_IN_LIST;
+			return ModelConstants.OPERATOR_IN_LIST;
 		else if(text.equals(OP_TEXT_NOT_IN_LIST))
-			return PurcConstants.OPERATOR_NOT_IN_LIST;
+			return ModelConstants.OPERATOR_NOT_IN_LIST;
 		else if(text.equals(OP_TEXT_STARTS_WITH))
-			return PurcConstants.OPERATOR_STARTS_WITH;
+			return ModelConstants.OPERATOR_STARTS_WITH;
 		else if(text.equals(OP_TEXT_NOT_START_WITH))
-			return PurcConstants.OPERATOR_NOT_START_WITH;
+			return ModelConstants.OPERATOR_NOT_START_WITH;
 		else if(text.equals(OP_TEXT_CONTAINS))
-			return PurcConstants.OPERATOR_CONTAINS;
+			return ModelConstants.OPERATOR_CONTAINS;
 		else if(text.equals(OP_TEXT_NOT_CONTAIN))
-			return PurcConstants.OPERATOR_NOT_CONTAIN;
+			return ModelConstants.OPERATOR_NOT_CONTAIN;
 		else if(text.equals(OP_TEXT_BETWEEN))
-			return PurcConstants.OPERATOR_BETWEEN;
+			return ModelConstants.OPERATOR_BETWEEN;
 		else if(text.equals(OP_TEXT_NOT_BETWEEN))
-			return PurcConstants.OPERATOR_NOT_BETWEEN;
-		return PurcConstants.OPERATOR_NULL;
+			return ModelConstants.OPERATOR_NOT_BETWEEN;
+		return ModelConstants.OPERATOR_NULL;
 	}
 	
 	public void onStartItemSelection(Object sender){
@@ -152,35 +164,35 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	public void setOperator(int operator){
 		String operatorText = null;
 		
-		if(operator == PurcConstants.OPERATOR_EQUAL)
+		if(operator == ModelConstants.OPERATOR_EQUAL)
 			operatorText = OP_TEXT_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_NOT_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
 			operatorText = OP_TEXT_NOT_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_LESS)
+		else if(operator == ModelConstants.OPERATOR_LESS)
 			operatorText = OP_TEXT_LESS_THAN;
-		else if(operator == PurcConstants.OPERATOR_LESS_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
 			operatorText = OP_TEXT_LESS_THAN_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_GREATER)
+		else if(operator == ModelConstants.OPERATOR_GREATER)
 			operatorText = OP_TEXT_GREATER_THAN;
-		else if(operator == PurcConstants.OPERATOR_GREATER_EQUAL)
+		else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
 			operatorText = OP_TEXT_GREATER_THAN_EQUAL;
-		else if(operator == PurcConstants.OPERATOR_IS_NULL)
+		else if(operator == ModelConstants.OPERATOR_IS_NULL)
 			operatorText = OP_TEXT_NULL;
-		else if(operator == PurcConstants.OPERATOR_IN_LIST)
+		else if(operator == ModelConstants.OPERATOR_IN_LIST)
 			operatorText = OP_TEXT_IN_LIST;
-		else if(operator == PurcConstants.OPERATOR_NOT_IN_LIST)
+		else if(operator == ModelConstants.OPERATOR_NOT_IN_LIST)
 			operatorText = OP_TEXT_NOT_IN_LIST;
-		else if(operator == PurcConstants.OPERATOR_STARTS_WITH)
+		else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
 			operatorText = OP_TEXT_STARTS_WITH;
-		else if(operator == PurcConstants.OPERATOR_NOT_START_WITH)
+		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
 			operatorText = OP_TEXT_NOT_START_WITH;
-		else if(operator == PurcConstants.OPERATOR_CONTAINS)
+		else if(operator == ModelConstants.OPERATOR_CONTAINS)
 			operatorText = OP_TEXT_CONTAINS;
-		else if(operator == PurcConstants.OPERATOR_NOT_CONTAIN)
+		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
 			operatorText = OP_TEXT_NOT_CONTAIN;
-		else if(operator == PurcConstants.OPERATOR_BETWEEN)
+		else if(operator == ModelConstants.OPERATOR_BETWEEN)
 			operatorText = OP_TEXT_BETWEEN;
-		else if(operator == PurcConstants.OPERATOR_NOT_BETWEEN)
+		else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			operatorText = OP_TEXT_NOT_BETWEEN;
 		
 		setText(operatorText);

@@ -22,10 +22,10 @@ public class PageDef implements Serializable{
 	private Vector questions;
 
 	/** The page number. */
-	private int pageNo = PurcConstants.NULL_ID;
+	private int pageNo = ModelConstants.NULL_ID;
 
 	/** The name of the page. */
-	private String name = PurcConstants.EMPTY_STRING;
+	private String name = ModelConstants.EMPTY_STRING;
 
 	private Element labelNode;
 	private Element groupNode;

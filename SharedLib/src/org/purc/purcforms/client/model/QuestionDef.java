@@ -34,10 +34,10 @@ public class QuestionDef implements Serializable{
 	public static final String FALSE_DISPLAY_VALUE = "No";
 
 	/** The prompt text. The text the user sees. */
-	private String text = PurcConstants.EMPTY_STRING;
+	private String text = ModelConstants.EMPTY_STRING;
 
 	/** The help text. */
-	private String helpText = PurcConstants.EMPTY_STRING;
+	private String helpText = ModelConstants.EMPTY_STRING;
 
 	/** The type of question. eg Numeric,Date,Text etc. */
 	private int dataType = QTN_TYPE_TEXT;
@@ -69,7 +69,7 @@ public class QuestionDef implements Serializable{
 	/** The text indentifier of the question. This is used by the users of the questionaire 
 	 * but in code we use the dynamically generated numeric id for speed. 
 	 */
-	private String variableName = PurcConstants.EMPTY_STRING;
+	private String variableName = ModelConstants.EMPTY_STRING;
 
 	/** The allowed set of values (OptionDef) for an answer of the question. 
 	 * This also holds repeat sets of questions (RepeatQtnsDef) for the QTN_TYPE_REPEAT.
@@ -83,7 +83,7 @@ public class QuestionDef implements Serializable{
 	 * given a unique (on a form) id starting from 1 up to 127. The assumption is that one will never need to have
 	 * a form with more than 127 questions for a mobile device (It would be too big).
 	 */
-	private int id = PurcConstants.NULL_ID;
+	private int id = ModelConstants.NULL_ID;
 
 	/** Text question type. */
 	public static final int QTN_TYPE_TEXT = 1;

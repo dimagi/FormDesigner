@@ -68,7 +68,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	private int nextQuestionId = 0;
 	private int nextOptionId = 0;
 	private IFormDesignerListener formDesignerListener;
-	
+
 
 	public FormsTreeView(Images images,IFormSelectionListener formSelectionListener) {
 
@@ -142,7 +142,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		menuBar.addSeparator();		  
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),"Save"),true,new Command(){
-			public void execute() {popup.hide(); /*saveItem()*/;}});
+			public void execute() {popup.hide(); saveItem();}});
 
 		menuBar.addSeparator();		  
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true,new Command(){
@@ -183,7 +183,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 
 	public void onTreeItemSelected(TreeItem item) {
-		
+
 		//Should not call this more than once for the same selected item.
 		if(item != this.item){
 			fireFormItemSelected(item.getUserObject());
@@ -203,6 +203,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	public void loadForm(FormDef formDef,boolean select){	
 		this.formDef = formDef;
+
+		if(formExists(formDef.getId()))
+			return;
 
 		//A temporary hack to ensure top level object is accessed.
 		fireFormItemSelected(formDef);
@@ -228,7 +231,20 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 
 	}
-	
+
+	public boolean formExists(int formId){
+		int count = tree.getItemCount();
+		for(int index = 0; index < count; index++){
+			TreeItem item = tree.getItem(index);
+			if(((FormDef)item.getUserObject()).getId() == formId){
+				tree.setSelectedItem(item);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public void refreshForm(FormDef formDef){
 		tree.clear();
 		loadForm(formDef,true);
@@ -286,8 +302,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	private void deleteItem(TreeItem item){
 		TreeItem parent = item.getParentItem();
+		int index;
 		if(parent != null){
-			int index = parent.getChildIndex(item);
+			index = parent.getChildIndex(item);
 
 			//If last item is the one selected, the select the previous, else the next.
 			if(index == parent.getChildCount()-1)
@@ -305,14 +322,29 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 				tree.setSelectedItem(parent.getChild(index));
 		}
 		else{ //Must be the form root
+			index = getRootItemIndex(item);
 			item.remove();
 
-			if(tree.getItemCount() > 0)
-				tree.setSelectedItem(tree.getItem(0));
+			int count = tree.getItemCount();
+			if(count > 0){
+				if(index == count)
+					index--;
+				tree.setSelectedItem(tree.getItem(index));
+			}
+			//tree.setSelectedItem(tree.getItem(0));
 		}
 
 		if(tree.getSelectedItem() == null)
 			fireFormItemSelected(null);
+	}
+
+	private int getRootItemIndex(TreeItem item){
+		int count = tree.getItemCount();
+		for(int index = 0; index < count; index++){
+			if(item == tree.getItem(index))
+				return index;
+		}
+		return 0;
 	}
 
 	private void removeFormDefItem(TreeItem item, TreeItem parent){
@@ -342,21 +374,21 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(item != null){
 			Object userObj = item.getUserObject();
 			if(userObj instanceof QuestionDef){
-				int id = item.getParentItem().getChildCount()+1;
+				int id = ++nextQuestionId;
 				QuestionDef questionDef = new QuestionDef(id,"Question"+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				addFormDefItem(questionDef,item.getParentItem());
 				tree.setSelectedItem(item);
 			}
 			else if(userObj instanceof OptionDef){
-				int id = item.getParentItem().getChildCount()+1;
+				int id = ++nextOptionId;
 				OptionDef optionDef = new OptionDef(id,"Option"+id,"option"+id,(QuestionDef)item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), optionDef.getText(), images.markRead(),optionDef,null);
 				addFormDefItem(optionDef,item.getParentItem());
 				tree.setSelectedItem(item);	
 			}
 			else if(userObj instanceof PageDef){
-				int id = item.getParentItem().getChildCount()+1;
+				int id = ++nextPageId;
 				PageDef pageDef = new PageDef("Page"+id,id,null,(FormDef)item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), pageDef.getName(), images.drafts(),pageDef,null);
 				addFormDefItem(pageDef,item.getParentItem());
@@ -385,8 +417,15 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void addNewForm(){
-		int id = tree.getItemCount()+1;
-		FormDef formDef = new FormDef(id,"New Form"+id, "newform"+id,null,null,null,null);
+		int id = ++nextFormId;
+		addNewForm("New Form"+id,"newform"+id,id);
+	}
+
+	public void addNewForm(String name, String varName, int formId){
+		if(formExists(formId))
+			return;
+
+		FormDef formDef = new FormDef(formId,name, varName,null,null,null,null);
 		TreeItem item = new CompositeTreeItem(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 		item.setUserObject(formDef);
 		tree.addItem(item);
@@ -407,7 +446,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(userObj instanceof PageDef || 
 				(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_REPEAT) ){
 
-			int id = item.getChildCount()+1;
+			int id = ++nextQuestionId;
 			QuestionDef questionDef = new QuestionDef(id,"Question"+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,userObj);
 			item = addImageItem(item, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 			addFormDefItem(questionDef,item.getParentItem());
@@ -418,7 +457,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 				( ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_MULTIPLE ) ){
 
-			int id = item.getChildCount()+1;
+			int id = ++nextOptionId;
 			OptionDef optionDef = new OptionDef(id,"Option"+id,"option"+id,(QuestionDef)userObj);
 			item = addImageItem(item, optionDef.getText(), images.markRead(),optionDef,null);
 			addFormDefItem(optionDef,item.getParentItem());
@@ -426,7 +465,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			item.getParentItem().setState(true);
 		}
 		else if(userObj instanceof FormDef){
-			int id = item.getChildCount()+1;
+			int id = ++nextPageId;
 			PageDef pageDef = new PageDef("Page"+id,id,null,(FormDef)userObj);
 			item = addImageItem(item, pageDef.getName(), images.drafts(),pageDef,null);
 			addFormDefItem(pageDef,item.getParentItem());
@@ -682,7 +721,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 					((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 				return;
 
-//			create a copy of the clipboard page.
+			//			create a copy of the clipboard page.
 			OptionDef optionDef = new OptionDef((OptionDef)clipboardItem,(QuestionDef)userObj);
 			optionDef.setId(item.getChildCount()+1);
 			((QuestionDef)userObj).addOption(optionDef);
@@ -698,6 +737,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		formDesignerListener.refresh(this);
 	}
 
+	public void saveItem(){
+		formDesignerListener.saveForm();
+	}
+
 	public Object getSelectedForm(){
 		TreeItem  item = tree.getSelectedItem();
 		if(item != null)
@@ -711,7 +754,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			return obj;
 		return getSelectedForm(item.getParentItem());
 	}
-	
+
 	public void clear(){
 		tree.clear();
 	}

@@ -206,6 +206,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 		centerPanel.setXformsSource(xml,formId == null);
 		centerPanel.buildLayoutXml();
+		formDef.setLayout(centerPanel.getLayoutXml());
 
 		if(!isOfflineMode())
 			saveForm(xml,centerPanel.getLayoutXml());

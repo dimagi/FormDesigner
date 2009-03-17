@@ -64,6 +64,9 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	protected FormDef formDef;
 	protected SubmitListener submitListener;
 	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
+	
+	
+	private int embeddedHeightOffset = 0;
 
 
 	public FormRunnerView(Images images){
@@ -223,6 +226,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
+			
+			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
+			if(defaultValue != null && defaultValue.contains(binding))
+				((CheckBox)widget).setChecked(true);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -466,7 +473,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	}
 
 	public void onWindowResized(int width, int height) {
-		height -= 110;
+		height -= (110+embeddedHeightOffset);
 		sHeight = height+"px";
 		super.setHeight(sHeight);
 
@@ -480,5 +487,9 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			tabs.clear();
 
 		this.formDef = formDef;
+	}
+	
+	public void setEmbeddedHeightOffset(int offset){
+		embeddedHeightOffset = offset;
 	}
 }

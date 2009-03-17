@@ -7,9 +7,12 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
+import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
 
 
 
@@ -42,7 +45,19 @@ public class FormRunnerWidget extends Composite{
 		view.loadForm(formDef, layoutXml,externalSourceWidgets);
 	}
 	
-	public void loadForm(int formId, int patientId){
-		controller.loadForm(formId,patientId);
+	public void loadForm(int formId, int entityId){
+		controller.loadForm(formId,entityId);
+	}
+	
+	public void loadForm(String xformXml, String layoutXml){
+		view.loadForm(XformConverter.fromXform2FormDef(xformXml), layoutXml, null);
+	}
+	
+	public void loadForm(String xformXml, String modelXml,String layoutXml){
+		view.loadForm(XformConverter.fromXform2FormDef(xformXml,modelXml), layoutXml, null);
+	}
+	
+	public void setEmbeddedHeightOffset(int offset){
+		view.setEmbeddedHeightOffset(offset);
 	}
 }

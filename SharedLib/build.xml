@@ -12,7 +12,7 @@
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
-	<target name="init" description="initialization">
+	<target name="init" depends="clean" description="initialization">
 		<path id="classpath">
 			<fileset dir="lib">
 				<include name="**/*.jar"/>

@@ -186,15 +186,17 @@ public class XformConverter implements Serializable{
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 
-		for(int pageNo=0; pageNo<formDef.getPages().size(); pageNo++){
-			PageDef pageDef = (PageDef)formDef.getPages().elementAt(pageNo);
-			fromPageDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode);
-		}
+		if(formDef.getPages() != null){
+			for(int pageNo=0; pageNo<formDef.getPages().size(); pageNo++){
+				PageDef pageDef = (PageDef)formDef.getPages().elementAt(pageNo);
+				fromPageDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode);
+			}
 
-		Vector rules = formDef.getSkipRules();
-		if(rules != null){
-			for(int i=0; i<rules.size(); i++)
-				fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef);
+			Vector rules = formDef.getSkipRules();
+			if(rules != null){
+				for(int i=0; i<rules.size(); i++)
+					fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef);
+			}
 		}
 
 		return fromDoc2String(doc);
@@ -208,7 +210,7 @@ public class XformConverter implements Serializable{
 				constratint += getConditionsOperatorText(rule.getConditionsOperator());
 			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE);
 		}
-		
+
 		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
 		Element node = questionDef.getBindNode();
 		if(node == null)
@@ -216,7 +218,7 @@ public class XformConverter implements Serializable{
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT, constratint);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}
-	
+
 	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
 		String relevant = "";
 		Vector conditions  = rule.getConditions();
@@ -275,16 +277,16 @@ public class XformConverter implements Serializable{
 			relevant = questionDef.getVariableName();
 			if(!relevant.contains(formDef.getVariableName()))
 				relevant = "/" + formDef.getVariableName() + "/" + questionDef.getVariableName();
-			
+
 			String value = " '" + condition.getValue() + "'";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
 				value = " " + condition.getValue();
-			
+
 			relevant += " " + getOperator(condition.getOperator(),action)+value;
 		}
 		return relevant;
 	}
-	
+
 	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action){
 		String constraint = null;
 
@@ -293,7 +295,7 @@ public class XformConverter implements Serializable{
 			String value = " '" + condition.getValue() + "'";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
 				value = " " + condition.getValue();
-			
+
 			constraint = ". " + getOperator(condition.getOperator(),action)+value;
 		}
 		return constraint;
@@ -630,6 +632,16 @@ public class XformConverter implements Serializable{
 		Document doc = getDocument(xml);
 		return getFormDef(doc);
 	}
+	
+	public static FormDef fromXform2FormDef(String xformXml, String modelXml){
+		Document doc = getDocument(xformXml);
+		Element node = getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
+		Element dataNode = XformConverter.getInstanceDataNode(doc);
+		Node parent = dataNode.getParentNode();
+		parent.appendChild(node);
+		parent.replaceChild(node,dataNode);
+		return getFormDef(doc);
+	}
 
 	public static Document getDocument(String xml){
 		return XMLParser.parse(xml);
@@ -876,7 +888,7 @@ public class XformConverter implements Serializable{
 
 					if(child.getAttribute(ATTRIBUTE_NAME_RELEVANT) != null)
 						relevants.put(qtn,child.getAttribute(ATTRIBUTE_NAME_RELEVANT));
-					
+
 					if(child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT) != null)
 						constraints.put(qtn,child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT));
 
@@ -1149,7 +1161,7 @@ public class XformConverter implements Serializable{
 
 		formDef.setSkipRules(rules);
 	}
-	
+
 	private static void addValidationRules(FormDef formDef, HashMap map, HashMap constraints){
 		Vector rules = new Vector();
 
@@ -1211,7 +1223,7 @@ public class XformConverter implements Serializable{
 			return null;
 		return skipRule;
 	}
-	
+
 	private static ValidationRule buildValidationRule(FormDef formDef, int questionId, String constraint){
 
 		ValidationRule validationRule = new ValidationRule(questionId,formDef);
@@ -1244,7 +1256,7 @@ public class XformConverter implements Serializable{
 
 		return conditions;
 	}
-	
+
 	private static Vector getValidationRuleConditions(FormDef formDef, String constraint, int questionId){
 		Vector conditions = new Vector();
 
@@ -1308,13 +1320,13 @@ public class XformConverter implements Serializable{
 
 		return condition;
 	}
-	
+
 	private static Condition getValidationRuleCondition(FormDef formDef, String constraint, int questionId){		
 		Condition condition  = new Condition();
 		condition.setId(questionId);
 		condition.setOperator(getOperator(constraint,ModelConstants.ACTION_ENABLE));
 		condition.setQuestionId(questionId);
-		
+
 		//eg . &lt;= 40"
 		int pos = getOperatorPos(constraint);
 		if(pos < 0)
@@ -1322,8 +1334,8 @@ public class XformConverter implements Serializable{
 
 		QuestionDef questionDef = formDef.getQuestion(questionId);
 		if(questionDef == null)
-				return null;
-		
+			return null;
+
 		String value;
 		//first try a value delimited by '
 		int pos2 = constraint.lastIndexOf('\'');
@@ -1402,7 +1414,7 @@ public class XformConverter implements Serializable{
 
 		return ModelConstants.OPERATOR_NULL;
 	}
-	
+
 	private static int getOperatorSize(int operator){
 		if(operator == ModelConstants.OPERATOR_GREATER_EQUAL || 
 				operator == ModelConstants.OPERATOR_LESS_EQUAL ||
@@ -1412,7 +1424,7 @@ public class XformConverter implements Serializable{
 				operator == ModelConstants.OPERATOR_GREATER || 
 				operator == ModelConstants.OPERATOR_EQUAL)
 			return 1;
-		
+
 		return 0;
 	}
 
@@ -1546,7 +1558,7 @@ public class XformConverter implements Serializable{
 
 		if(child.getAttribute(ATTRIBUTE_NAME_RELEVANT) != null)
 			relevants.put(qtn,child.getAttribute(ATTRIBUTE_NAME_RELEVANT));
-		
+
 		if(child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT) != null)
 			constraints.put(qtn,child.getAttribute(ATTRIBUTE_NAME_CONSTRAINT));
 

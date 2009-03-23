@@ -8,7 +8,6 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.ErrorDialog;
 import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.ProgressDialog;
 import org.purc.purcforms.client.xforms.XformConverter;
@@ -34,6 +33,7 @@ public class FormDesignerController implements IFormDesignerListener{
 	private CenterPanel centerPanel;
 	private LeftPanel leftPanel;
 	private Integer formId;	
+	private IFormSaveListener formSaveListener;
 
 	private static ProgressDialog dlg = new ProgressDialog();
 
@@ -60,7 +60,7 @@ public class FormDesignerController implements IFormDesignerListener{
 	public static native void back() /*-{
 		window.history.go(-1);
 	}-*/;
-	
+
 	public void closeForm() {
 		back();
 	} 
@@ -105,7 +105,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 	public void openFormDeffered(int id) {
 		final int tempFormId = id;
-		
+
 		dlg.setText("Opening Form");
 		dlg.center();
 
@@ -118,34 +118,14 @@ public class FormDesignerController implements IFormDesignerListener{
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
 						
+						formDef.setLayout(centerPanel.getLayoutXml());
 						leftPanel.loadForm(formDef);
-						centerPanel.loadForm(formDef,centerPanel.getLayoutXml());
+						centerPanel.loadForm(formDef,formDef.getLayout());
 						centerPanel.format();
 					}
 				}
 				catch(Exception ex){
-					ex.printStackTrace();
-
-					String text = "Uncaught exception: ";
-					String s = text;
-					while (ex != null) {
-						s = ex.getMessage();
-						StackTraceElement[] stackTraceElements = ex.getStackTrace();
-						text += ex.toString() + "\n";
-						for (int i = 0; i < stackTraceElements.length; i++) {
-							text += "    at " + stackTraceElements[i] + "\n";
-						}
-						ex = (Exception)ex.getCause();
-						if (ex != null) {
-							text += "Caused by: ";
-						}
-					}
-
-					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText("Unxpected Failure");
-					dialogBox.setBody(s);
-					dialogBox.setCallStack(text);
-					dialogBox.center();
+					FormUtil.displayException(ex);
 				}
 				dlg.hide();	
 			}
@@ -168,11 +148,7 @@ public class FormDesignerController implements IFormDesignerListener{
 					centerPanel.openFormLayout();
 				}
 				catch(Exception ex){
-					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText("Unxpected Failure while opening form layout.");
-					dialogBox.setBody(ex.getMessage());
-					dialogBox.center();
-					ex.printStackTrace();
+					FormUtil.displayException(ex);
 				}
 				dlg.hide();	
 			}
@@ -183,47 +159,76 @@ public class FormDesignerController implements IFormDesignerListener{
 	 * @see org.purc.purcform.client.controller.IFormDesignerController#saveForm()
 	 */
 	public void saveForm() {
-		Object obj = leftPanel.getSelectedForm();
+		final Object obj = leftPanel.getSelectedForm();
 		if(obj == null){
 			Window.alert("Please select the item to save.");
 			return;
 		}
 
-		centerPanel.commitChanges();
+		dlg.setText("Saving Form");
+		dlg.center();
+		
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					centerPanel.commitChanges();
 
-		//TODO Need to preserve user's model and any others.
-		String xml = null;
-		FormDef formDef = (FormDef)obj;
-		if(formDef.getDoc() == null){
-			xml = XformConverter.fromFormDef2Xform(formDef);
-			xml = FormDesignerUtil.formatXml(xml);
-		}
-		else{
-			formDef.updateDoc(false);
-			xml = XformConverter.fromDoc2String(formDef.getDoc());
-			xml = FormDesignerUtil.formatXml(xml);
-		}
+					//TODO Need to preserve user's model and any others.
+					String xml = null;
+					FormDef formDef = (FormDef)obj;
+					if(formDef.getDoc() == null){
+						xml = XformConverter.fromFormDef2Xform(formDef);
+						xml = FormDesignerUtil.formatXml(xml);
+					}
+					else{
+						formDef.updateDoc(false);
+						xml = XformConverter.fromDoc2String(formDef.getDoc());
+						xml = FormDesignerUtil.formatXml(xml);
+					}
 
-		centerPanel.setXformsSource(xml,formId == null);
-		centerPanel.buildLayoutXml();
-		formDef.setLayout(centerPanel.getLayoutXml());
+					centerPanel.setXformsSource(xml,formId == null);
+					centerPanel.buildLayoutXml();
+					//formDef.setLayout(centerPanel.getLayoutXml());
 
-		if(!isOfflineMode())
-			saveForm(xml,centerPanel.getLayoutXml());
+					if(!isOfflineMode())
+						saveForm(xml,centerPanel.getLayoutXml());
+
+					if(formSaveListener != null)
+						formSaveListener.onSaveForm(formDef.getId(), xml, formDef.getLayout());
+				}
+				catch(Exception ex){
+					FormUtil.displayException(ex);
+				}
+				dlg.hide();	
+			}
+		});
 	}
 
 	public void saveFormAs() {
 		if(isOfflineMode()){
-			Object obj = leftPanel.getSelectedForm();
+			final Object obj = leftPanel.getSelectedForm();
 			if(obj == null){
 				Window.alert("Please select the item to save.");
 				return;
 			}
 
-			String xml = null;
-			xml = XformConverter.fromFormDef2Xform((FormDef)obj);
-			xml = FormDesignerUtil.formatXml(xml);
-			centerPanel.setXformsSource(xml,formId == null);
+			dlg.setText("Saving Form Layout");
+			dlg.center();
+
+			DeferredCommand.addCommand(new Command(){
+				public void execute() {
+					try{
+						String xml = null;
+						xml = XformConverter.fromFormDef2Xform((FormDef)obj);
+						xml = FormDesignerUtil.formatXml(xml);
+						centerPanel.setXformsSource(xml,formId == null);
+					}
+					catch(Exception ex){
+						FormUtil.displayException(ex);
+					}
+					dlg.hide();	
+				}
+			});
 		}
 	}
 
@@ -237,11 +242,7 @@ public class FormDesignerController implements IFormDesignerListener{
 					centerPanel.saveFormLayout();
 				}
 				catch(Exception ex){
-					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText("Unxpected Failure while opening form layout.");
-					dialogBox.setBody(ex.getMessage());
-					dialogBox.center();
-					ex.printStackTrace();
+					FormUtil.displayException(ex);
 				}
 				dlg.hide();	
 			}
@@ -404,7 +405,7 @@ public class FormDesignerController implements IFormDesignerListener{
 						Window.alert("No data found.");
 						return;
 					}
-					
+
 					String xformXml, layoutXml = null;
 
 					int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
@@ -518,31 +519,14 @@ public class FormDesignerController implements IFormDesignerListener{
 					centerPanel.setXformsSource(FormUtil.formatXml(xml), false);
 				}
 				catch(Exception ex){
-					ex.printStackTrace();
-
-					String text = "Uncaught exception: ";
-					String s = text;
-					while (ex != null) {
-						s = ex.getMessage();
-						StackTraceElement[] stackTraceElements = ex.getStackTrace();
-						text += ex.toString() + "\n";
-						for (int i = 0; i < stackTraceElements.length; i++) {
-							text += "    at " + stackTraceElements[i] + "\n";
-						}
-						ex = (Exception)ex.getCause();
-						if (ex != null) {
-							text += "Caused by: ";
-						}
-					}
-
-					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText("Unxpected Failure");
-					dialogBox.setBody(s);
-					dialogBox.setCallStack(text);
-					dialogBox.center();
+					FormUtil.displayException(ex);
 				}
 				dlg.hide();	
 			}
 		});
+	}
+
+	public void setFormSaveListener(IFormSaveListener formSaveListener){
+		this.formSaveListener = formSaveListener;
 	}
 }

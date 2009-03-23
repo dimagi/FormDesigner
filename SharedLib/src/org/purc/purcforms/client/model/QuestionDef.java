@@ -219,21 +219,21 @@ public class QuestionDef implements Serializable{
 				||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"));
 	}
 
-	public boolean isDateTime(){
+	public boolean isDate(){
 		return (dataType == QuestionDef.QTN_TYPE_DATE_TIME || 
-				dataType == QuestionDef.QTN_TYPE_DATE ||
-				dataType == QuestionDef.QTN_TYPE_TIME);
+				dataType == QuestionDef.QTN_TYPE_DATE /*||
+				dataType == QuestionDef.QTN_TYPE_TIME*/);
 	}
 
 	public String getDefaultValueDisplay() {
-		if(isDateTime() && isDateFunction(defaultValue))
+		if(isDate() && isDateFunction(defaultValue))
 			return FormUtil.getDateTimeDisplayFormat().format(new Date());
 
 		return defaultValue;
 	}
 
 	public String getDefaultValueSubmit() {
-		if(isDateTime() && isDateFunction(defaultValue))
+		if(isDate() && isDateFunction(defaultValue))
 			return FormUtil.getDateTimeSubmitFormat().format(new Date());
 
 		return defaultValue;
@@ -899,6 +899,9 @@ public class QuestionDef implements Serializable{
 	}
 
 	public OptionDef getOptionWithText(String text){
+		if(options == null)
+			return null;
+		
 		Vector list = (Vector)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.elementAt(i);
@@ -909,6 +912,9 @@ public class QuestionDef implements Serializable{
 	}
 
 	public OptionDef getOptionWithValue(String value){
+		if(options == null)
+			return null;
+		
 		Vector list = (Vector)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.elementAt(i);

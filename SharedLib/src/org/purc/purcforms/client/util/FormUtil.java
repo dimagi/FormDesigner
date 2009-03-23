@@ -386,4 +386,29 @@ public class FormUtil {
 	public static boolean appendEntityIdAfterSubmit(){
 		return appendEntityIdAfterSubmit;
 	}
+	
+	public static void displayException(Exception ex){
+		ex.printStackTrace();
+
+		String text = "Uncaught exception: ";
+		String s = text;
+		while (ex != null) {
+			s = ex.getMessage();
+			StackTraceElement[] stackTraceElements = ex.getStackTrace();
+			text += ex.toString() + "\n";
+			for (int i = 0; i < stackTraceElements.length; i++) {
+				text += "    at " + stackTraceElements[i] + "\n";
+			}
+			ex = (Exception)ex.getCause();
+			if (ex != null) {
+				text += "Caused by: ";
+			}
+		}
+
+		ErrorDialog dialogBox = new ErrorDialog();
+		dialogBox.setText("Unxpected Failure");
+		dialogBox.setBody(s);
+		dialogBox.setCallStack(text);
+		dialogBox.center();
+	}
 }

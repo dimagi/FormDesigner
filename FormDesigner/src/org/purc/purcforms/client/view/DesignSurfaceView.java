@@ -35,6 +35,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -65,7 +67,7 @@ import com.google.gwt.xml.client.XMLParser;
  *
  */
 public class DesignSurfaceView extends Composite implements /*WindowResizeListener,*/ TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
-
+	
 	private MouseListenerCollection mouseListeners;
 	private static final int MOVE_LEFT = 1;
 	private static final int MOVE_RIGHT = 2;
@@ -392,10 +394,16 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			public void execute() {popup.hide(); addNewDatePicker();}});
 		
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
-			public void execute() {popup.hide(); addGroupBox();}});
+			public void execute() {popup.hide(); addNewGroupBox();}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Repeat Section"),true,new Command(){
 			public void execute() {popup.hide(); addNewRepeatSection();}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Picture"),true,new Command(){
+			public void execute() {popup.hide(); addNewPictureSection(null);}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Video/Audio"),true,new Command(){
+			public void execute() {popup.hide(); addNewVideoAudio(null);}});
 
 		/*addControlMenu.addSeparator();
 		
@@ -453,6 +461,10 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		menuBar.addSeparator();
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true,new Command(){
 			public void execute() {popup.hide(); refresh();}});
+		
+		menuBar.addSeparator();
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.open(),"load"),true,new Command(){
+			public void execute() {popup.hide(); load();}});
 
 		popup.setWidget(menuBar);
 	}
@@ -494,6 +506,16 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
+	
+	private DesignWidgetWrapper addNewVideoAudio(String text){
+		if(text == null)
+			text = "Click to play";
+		Hyperlink link = new Hyperlink(text,null);
+		
+		DesignWidgetWrapper wrapper = addNewWidget(link);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		return wrapper;
+	}
 
 	private DesignWidgetWrapper addNewRepeatSection(){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
@@ -529,6 +551,63 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			x += selectedPanel.getAbsoluteLeft();
 		addNewButton("Remove","remove");
 
+		selectedDragController.clearSelection();
+		
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+		
+		y = oldY;
+
+		return widget;
+	}
+	
+	private DesignWidgetWrapper addNewPictureSection(String parentBinding){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","220px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
+		
+		DesignWidgetWrapper widget = addNewWidget(repeat);
+		widget.setRepeated(false);
+
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+		
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
+
+		int oldY = y;
+		
+		y = 10;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+		addNewPicture().setBinding(parentBinding);
+		
+		y = 55 + 120;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+
+		addNewButton("Browse","browse").setParentBinding(parentBinding);
+		x = 120;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton("Clear","clear").setParentBinding(parentBinding);
+
+		selectedDragController.clearSelection();
+		
 		selectedDragController = selDragController;
 		selectedPanel = absPanel;
 		widgetPopup = wdpopup;
@@ -539,16 +618,24 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return widget;
 	}
 
-	private DesignWidgetWrapper addGroupBox(){
+
+	private DesignWidgetWrapper addNewGroupBox(){
 		DesignGroupWidget group = new DesignGroupWidget(images,this);
 		group.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(group.getElement(), "height","150px");
+		DOM.setStyleAttribute(group.getElement(), "height","200px");
 		DOM.setStyleAttribute(group.getElement(), "width","500px");
 		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
 		
 		DesignWidgetWrapper widget = addNewWidget(group);
 
 		return widget;
+	}
+	
+	private DesignWidgetWrapper addNewPicture(){
+		Image image = images.picture().createImage();
+		DOM.setStyleAttribute(image.getElement(), "height","155px");
+		DOM.setStyleAttribute(image.getElement(), "width","185px");
+		return addNewWidget(image);
 	}
 
 	private DesignWidgetWrapper addNewTextBox(){
@@ -607,6 +694,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList();
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+				widgetWrapper = addNewPicture();
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
+					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				widgetWrapper = addNewVideoAudio(null);
 			else
 				widgetWrapper = addNewTextBox();
 
@@ -616,6 +708,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			widgetWrapper.setTabIndex(index + 1);
 		}
 
+		selectedDragController.clearSelection();
+		
 		selectedDragController = selDragController;
 		selectedPanel = absPanel;
 		widgetPopup = wgpopup;
@@ -674,7 +768,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	private void addNewTab(String name){
 		initPanel();
 		if(name == null)
-			name = "Page"+(tabs.getWidgetCount()+1);
+			name = "Page"+(tabs.getWidgetCount());
 
 		tabs.add(selectedPanel, name);
 		selectedTabIndex = tabs.getWidgetCount() - 1;
@@ -809,6 +903,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		
 		tabs.clear();
 
+		if(xml == null || xml.trim().length() == 0){
+			addNewTab(null);
+			return;
+		}
+		
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
 		Element root = doc.getDocumentElement();
 		NodeList pages = root.getChildNodes();
@@ -855,6 +954,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			widget = new ListBox(false);
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA))
 			widget = new TextArea();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE))
+			widget = images.picture().createImage();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER))
 			widget = new DatePickerWidget();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX))
@@ -1032,12 +1133,12 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			return;
 		
 		if(!(widget.getWrappedWidget() instanceof TabBar)){
-			Event event = DOM.eventGetCurrentEvent();
-			if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
+			//Event event = DOM.eventGetCurrentEvent(); //TODO verify that this does not introduce a bug
+			//if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
 				if(selectedDragController.getSelectedWidgetCount() == 1)
 					selectedDragController.clearSelection();
 				selectedDragController.selectWidget(widget);
-			}
+			//}
 		}
 
 		this.widgetSelectionListener.onWidgetSelected(widget);
@@ -1132,6 +1233,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				widgetWrapper = addNewDropdownList();
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				widgetWrapper = addNewRepeatSet(questionDef,max,pageName);
+			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+				widgetWrapper = addNewPictureSection(questionDef.getVariableName());
+			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				widgetWrapper = addNewVideoAudio(null);
 			else
 				widgetWrapper = addNewTextBox();
 
@@ -1152,10 +1258,15 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			x = 20 + selectedPanel.getAbsoluteLeft();
 			y += 40;
 
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+				y += 195;
+			
 			int rptIncr = 0;
 			if(i < questions.size()-1){
 				if(((QuestionDef)questions.get(i+1)).getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 					rptIncr = 90;
+				else if(((QuestionDef)questions.get(i+1)).getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+					rptIncr = 195;
 			}
 
 			if((y+40+rptIncr) > max){
@@ -1403,6 +1514,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	public void setFormDef(FormDef formDef){	
+		if(this.formDef != formDef){
+			tabs.clear();
+			this.addNewTab(null);
+		}
+		
 		this.formDef = formDef;
 	}
 
@@ -1412,6 +1528,10 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			loadNewWidgets();
 		else
 			setLayout(formDef);
+	}
+	
+	public void load(){
+		this.setLayoutXml(formDef.getLayout(), formDef);
 	}
 
 	public void onCopy(Widget sender) {

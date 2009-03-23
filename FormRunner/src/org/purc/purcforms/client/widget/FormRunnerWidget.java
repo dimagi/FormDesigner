@@ -3,6 +3,7 @@ package org.purc.purcforms.client.widget;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.FormRunnerController;
+import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
@@ -53,11 +54,17 @@ public class FormRunnerWidget extends Composite{
 		view.loadForm(XformConverter.fromXform2FormDef(xformXml), layoutXml, null);
 	}
 	
-	public void loadForm(String xformXml, String modelXml,String layoutXml){
-		view.loadForm(XformConverter.fromXform2FormDef(xformXml,modelXml), layoutXml, null);
+	public void loadForm(int formId, String xformXml, String modelXml,String layoutXml){
+		FormDef formDef = XformConverter.fromXform2FormDef(xformXml,modelXml);
+		formDef.setId(formId);
+		view.loadForm(formDef, layoutXml, null);
 	}
 	
 	public void setEmbeddedHeightOffset(int offset){
 		view.setEmbeddedHeightOffset(offset);
+	}
+	
+	public void setSubmitListener(SubmitListener submitListener){
+		view.setSubmitListener(submitListener);
 	}
 }

@@ -9,6 +9,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -35,6 +37,8 @@ public class WidgetEx extends Composite{
 	public static final String WIDGET_TYPE_LISTBOX = "ListBox";
 	public static final String WIDGET_TYPE_LABEL = "Label";
 	public static final String WIDGET_TYPE_DATEPICKER = "DatePicker";
+	public static final String WIDGET_TYPE_IMAGE = "Picture";
+	public static final String WIDGET_TYPE_VIDEO_AUDIO = "VideoAudio";
 	
 	public static final String WIDGET_PROPERTY_TOP = "Top";
 	public static final String WIDGET_PROPERTY_LEFT = "Left";
@@ -136,6 +140,14 @@ public class WidgetEx extends Composite{
 			this.widget = new Label(((Label)widget.widget).getText());
 			((Label)this.widget).setWordWrap(false);
 		}
+		else if(widget.widget instanceof Image){
+			this.widget = new Image();
+			Image image = (Image)widget.widget;
+			((Image)this.widget).setUrl(image.getUrl());
+			((Image)this.widget).setVisibleRect(image.getOriginLeft(),image.getOriginTop(),image.getWidth(),image.getHeight());
+		}
+		else if(widget.widget instanceof Hyperlink)
+			this.widget = new Hyperlink(((Hyperlink)widget.widget).getText(),null);
 
 		if(height != null)
 			widget.setHeight(height);

@@ -27,7 +27,7 @@ public class LeftPanel extends Composite {
 	   * An image bundle specifying the images for this Widget and aggragating
 	   * images needed in child widgets.
 	   */
-	  public interface Images extends FormsTreeView.Images{
+	  public interface Images extends FormsTreeView.Images,FormDesignerImages{
 		  
 		/**
 		 * ImageBundle.@resource view.images.contactsgroup.gif

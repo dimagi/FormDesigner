@@ -472,6 +472,8 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			tree.setSelectedItem(item);
 			item.getParentItem().setState(true);
 		}
+		else
+			addNewItem();
 	}
 
 	public void moveItemUp() {

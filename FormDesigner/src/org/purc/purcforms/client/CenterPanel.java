@@ -6,6 +6,9 @@ import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.OptionDef;
+import org.purc.purcforms.client.model.PageDef;
+import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
@@ -150,14 +153,37 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	public void onFormItemSelected(Object formItem) {
 		propertiesView.onFormItemSelected(formItem);
-		if(formItem instanceof FormDef){
-			formDef = (FormDef)formItem;
+		
+		FormDef form = getFormDef(formItem);
+		
+		if(this.formDef != form){
+			setFormDef(form);
+			
+		//if(formItem instanceof FormDef){
 			designSurfaceView.setFormDef(formDef);
 			previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
+		//}
 		}
+	}
+	
+	private FormDef getFormDef(Object formItem){
+		if(formItem instanceof FormDef)
+			return (FormDef)formItem;
+		else if(formItem instanceof PageDef)
+			return ((PageDef)formItem).getParent();
+		else if(formItem instanceof QuestionDef){
+			Object item = ((QuestionDef)formItem).getParent();
+			return getFormDef(item);
+		}
+		else if(formItem instanceof OptionDef){
+			Object item = ((OptionDef)formItem).getParent();
+			return getFormDef(item);
+		}
+		
+		return null;
 	}
 
 	public void onWindowResized(int width, int height){
@@ -167,7 +193,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	public void loadForm(FormDef formDef, String layoutXml){
-		this.formDef = formDef;
+		setFormDef(formDef);
+		
 		//previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
 		if(layoutXml == null || layoutXml.trim().length() == 0)
 			designSurfaceView.setLayout(formDef);
@@ -201,7 +228,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 	
 	public void buildLayoutXml(){
-		txtLayoutXml.setText(designSurfaceView.getLayoutXml());
+		this.formDef.setLayout(designSurfaceView.getLayoutXml());
+		txtLayoutXml.setText(formDef.getLayout());
 	}
 
 	public void loadLayoutXml(String xml, boolean selectTabs){
@@ -217,6 +245,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		}
 		else if(selectTabs)
 			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
+		
+		if(formDef != null)
+			formDef.setLayout(xml);
 	}
 
 	public void openFormLayout(){
@@ -320,6 +351,17 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void refresh(){
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
 			previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
+	}
+	
+	public void setFormDef(FormDef formDef){
+		if(this.formDef == null || this.formDef != formDef){
+			if(formDef ==  null)
+				txtLayoutXml.setText(null);
+			else
+				txtLayoutXml.setText(formDef.getLayout());
+		}
+		
+		this.formDef = formDef;
 	}
 	
 	public FormDef getFormDef(){

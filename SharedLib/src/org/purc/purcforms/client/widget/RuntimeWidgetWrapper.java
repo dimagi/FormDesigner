@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListenerAdapter;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
@@ -191,6 +193,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((Button)widget).setText(text);
 		else if(widget instanceof Label)
 			((Label)widget).setText(text);
+		else if(widget instanceof HTML)
+			((HTML)widget).setText(text);
+		else if(widget instanceof Hyperlink)
+			((Label)widget).setText(text);
 		else if(widget instanceof TabBar && text != null && text.trim().length() > 0)
 			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
 	}
@@ -210,6 +216,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((TextBox)widget).setTitle(title);
 		else if(widget instanceof Label)
 			((Label)widget).setTitle(title);
+		else if(widget instanceof Hyperlink)
+			((Hyperlink)widget).setTitle(title);
+		else if(widget instanceof HTML)
+			((HTML)widget).setTitle(title);
 	}
 
 	public void setQuestionDef(QuestionDef questionDef ,boolean loadWidget){
@@ -275,8 +285,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					((TextBox)widget).setText(optionDef.getText());
 			}
 			else{
-				if(defaultValue.trim().length() > 0 && questionDef.isDateTime() && questionDef.isDateFunction(defaultValue))
+				if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
 					defaultValue = questionDef.getDefaultValueDisplay();
+				else if(defaultValue.trim().length() > 0 && questionDef.isDate())
+					defaultValue = FormUtil.getDateTimeDisplayFormat().format(FormUtil.getDateTimeSubmitFormat().parse(defaultValue));
 
 				((TextBox)widget).setText(defaultValue);
 			}
@@ -362,7 +374,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private String getTextBoxAnswer(){
 		String value = ((TextBox)widget).getText();
 		
-		if(questionDef.isDateTime() && value != null && value.trim().length() > 0)
+		if(questionDef.isDate() && value != null && value.trim().length() > 0)
 			value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
 
 		return value;

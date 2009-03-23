@@ -1,6 +1,7 @@
 package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.controller.FormDesignerController;
+import org.purc.purcforms.client.controller.IFormSaveListener;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
@@ -31,7 +32,7 @@ public class FormDesignerWidget extends Composite{
 	 * An aggragate image bundle that pulls together all the images for this
 	 * application into a single bundle.
 	 */
-	public interface Images extends LeftPanel.Images,Toolbar.Images,Menu.Images,PreviewView.Images {}
+	public interface Images extends LeftPanel.Images,Toolbar.Images,Menu.Images,PreviewView.Images,FormDesignerImages {}
 
 
 	private CenterPanel centerPanel = new CenterPanel(images);
@@ -126,5 +127,83 @@ public class FormDesignerWidget extends Composite{
 	
 	public void setSplitPos(String pos){
 		hsplitClient.setSplitPosition(pos);
+	}
+	
+	public void setFormSaveListener(IFormSaveListener formSaveListener){
+		controller.setFormSaveListener(formSaveListener);
+	}
+	
+	
+	
+	public void format(){
+		controller.format();
+	}
+	
+	public void alignLeft(){
+		controller.alignLeft();
+	}
+
+	public void alignRight(){
+		controller.alignRight();
+	}
+	
+	public void alignTop(){
+		controller.alignTop();
+	}
+	
+	public void makeSameSize(){
+		controller.makeSameSize();
+	}
+	
+	public void makeSameHeight(){
+		controller.makeSameHeight();
+	}
+	
+	public void makeSameWidth(){
+		controller.makeSameWidth();
+	}
+	
+	public void alignBottom(){
+		controller.alignBottom();
+	}
+	
+	public void openForm(){
+		controller.openForm();
+	}
+	
+	public void moveItemUp(){
+		controller.moveItemUp();
+	}
+	
+	public void moveItemDown(){
+		controller.moveItemDown();
+	}
+	
+	public void cutItem(){
+		controller.cutItem();
+	}
+	
+	public void copyItem(){
+		controller.copyItem();
+	}
+	
+	public void pasteItem(){
+		controller.pasteItem();
+	}
+	
+	public void addNewChildItem(){
+		controller.addNewChildItem();
+	}
+	
+	public void addNewItem(){
+		controller.addNewItem();
+	}
+	
+	public void deleteSelectedItem(){
+		controller.deleteSelectedItem();
+	}
+	
+	public void refreshItem(){
+		controller.refreshItem();
 	}
 }

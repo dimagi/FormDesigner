@@ -14,6 +14,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MouseListener;
@@ -34,7 +36,7 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents, QuestionChangeListener{
-
+	
 	private MouseListenerCollection mouseListeners;
 	private WidgetSelectionListener widgetSelectionListener;
 	private PopupPanel popup;
@@ -86,8 +88,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			popup.setPopupPosition(event.getClientX(), event.getClientY());
 			popup.show();
 			break;
-		case Event.ONMOUSEUP:
 		case Event.ONMOUSEDOWN:
+			if(!event.getCtrlKey())
+				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
+		case Event.ONMOUSEUP:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEOUT:
@@ -135,6 +139,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			((Button)widget).setText(text);
 		else if(widget instanceof Label)
 			((Label)widget).setText(text);
+		else if(widget instanceof Hyperlink)
+			((Hyperlink)widget).setText(text);
 		else if(widget instanceof TabBar && text != null && text.trim().length() > 0)
 			//((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), URL.encode(text));
 			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
@@ -157,6 +163,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			((TextBox)widget).setTitle(title);
 		else if(widget instanceof Label)
 			((Label)widget).setTitle(title);
+		else if(widget instanceof Image)
+			((Image)widget).setTitle(title);
+		else if(widget instanceof Hyperlink)
+			((Hyperlink)widget).setTitle(title);
 		else if(widget instanceof DesignGroupWidget)
 			((DesignGroupWidget)widget).setTitle(title);
 	}
@@ -174,6 +184,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return ((TextArea)widget).getText();
 		else if(widget instanceof TextBox)
 			return ((TextBox)widget).getText();
+		else if(widget instanceof Hyperlink)
+			return ((Hyperlink)widget).getText();
 		else if(widget instanceof TabBar)
 			return DesignWidgetWrapper.getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
 		return null;
@@ -205,6 +217,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return ((TextBox)widget).getTitle();
 		else if(widget instanceof Label)
 			return ((Label)widget).getTitle();
+		else if(widget instanceof Image)
+			return ((Image)widget).getTitle();
+		else if(widget instanceof Hyperlink)
+			return ((Hyperlink)widget).getTitle();
 		else if(widget instanceof DesignGroupWidget)
 			return ((DesignGroupWidget)widget).getTitle();
 		return null;
@@ -227,6 +243,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return WidgetEx.WIDGET_TYPE_TEXTBOX;
 		else if(widget instanceof Label)
 			return WidgetEx.WIDGET_TYPE_LABEL;
+		else if(widget instanceof Image)
+			return WidgetEx.WIDGET_TYPE_IMAGE;
+		else if(widget instanceof Hyperlink)
+			return WidgetEx.WIDGET_TYPE_VIDEO_AUDIO;
 		else if(widget instanceof DesignGroupWidget)
 			return WidgetEx.WIDGET_TYPE_GROUPBOX;
 		return null;
@@ -535,6 +555,23 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(!(widget instanceof ListBox || widget instanceof RadioButton)){
 				panel.remove(widget);
 				widget = new ListBox(false);
+				panel.add(widget);
+				refreshSize();
+			}
+		}
+		else if(dataType == QuestionDef.QTN_TYPE_IMAGE){
+			if(!(widget instanceof Image)){
+				panel.remove(widget);
+				widget = new Image();
+				panel.add(widget);
+				refreshSize();
+			}
+		}
+		else if(dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_VIDEO){
+			if(!(widget instanceof Hyperlink)){
+				panel.remove(widget);
+				widget = new Hyperlink();
+				((Hyperlink)widget).setText("Click to play");
 				panel.add(widget);
 				refreshSize();
 			}

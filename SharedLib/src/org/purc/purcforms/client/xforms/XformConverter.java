@@ -582,8 +582,14 @@ public class XformConverter implements Serializable{
 		for(int index = 0; index < attributes.getLength(); index++){
 			Node attribute = attributes.item(index);
 			String name = attribute.getNodeName();
-			if(name.startsWith("xmlns:"))
-				root.setAttribute(name, attribute.getNodeValue());
+			if(name.startsWith("xmlns:")){
+				try{
+					root.setAttribute(name, attribute.getNodeValue());
+				}
+				catch(Exception ex){
+					ex.printStackTrace();
+				}
+			}
 		}
 
 		return dataDoc;

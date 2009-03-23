@@ -137,6 +137,9 @@ public class PageDef implements Serializable{
 	}
 
 	public QuestionDef getQuestion(String varName){
+		if(questions == null)
+			return null;
+		
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getVariableName().equals(varName))
@@ -164,6 +167,9 @@ public class PageDef implements Serializable{
 	}
 
 	public QuestionDef getQuestion(int id){
+		if(questions == null)
+			return null;
+		
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)
@@ -359,6 +365,9 @@ public class PageDef implements Serializable{
 	}
 
 	public QuestionDef getQuestionWithText(String text){
+		if(questions == null)
+			return null;
+		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			if(questionDef.getText().equals(text))

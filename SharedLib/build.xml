@@ -54,6 +54,7 @@
 				<include name="**/*.java"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.png"/>
+				<include name="**/*.jpg"/>
 			</fileset>
 			<fileset dir="../FormDesigner/src/">
 				<include name="**/*.gwt.xml"/>
@@ -61,6 +62,7 @@
 				<include name="**/*.java"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.png"/>
+				<include name="**/*.jpg"/>
 			</fileset>
 			<fileset dir="../FormRunner/src/">
 				<include name="**/*.gwt.xml"/>
@@ -68,6 +70,7 @@
 				<include name="**/*.java"/>
 				<include name="**/*.gif"/>
 				<include name="**/*.png"/>
+				<include name="**/*.jpg"/>
 			</fileset>
 		</jar>
 		

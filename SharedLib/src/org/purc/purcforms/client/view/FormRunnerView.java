@@ -18,6 +18,7 @@ import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -29,6 +30,9 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -246,11 +250,6 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
 			widget = new DatePickerWidget();
 			((DatePicker)widget).setTabIndex(tabIndex);
-			/*((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
-				 public void onLostFocus(Widget sender){
-					 //((DatePicker)sender).selectAll();
-				 }
-			 });*/
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX)){
 			widget = new TextBox();
@@ -272,8 +271,27 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
 			
 			widget = new RuntimeGroupWidget(images,repeatQtnsDef,this,repeated);
-			((RuntimeGroupWidget)widget).loadWidgets(node.getChildNodes(),externalSourceWidgets);
+			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
+			widget = new Image();
+			String xpath = binding;
+			if(!xpath.startsWith(formDef.getVariableName()))
+				xpath = "/" + formDef.getVariableName() + "/" + binding;
+			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath));
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO)){
+			widget = new HTML();
+			String xpath = binding;
+			if(!xpath.startsWith(formDef.getVariableName()))
+				xpath = "/" + formDef.getVariableName() + "/" + binding;
+			
+			String contentType = "&contentType=video/mpeg";
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				contentType = "&contentType=audio/x-wav";
+			
+			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 		}
 		else
 			return tabIndex;

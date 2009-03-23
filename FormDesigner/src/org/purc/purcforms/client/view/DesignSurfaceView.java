@@ -898,14 +898,14 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return panel.getWidgetCount() > 0;
 	}
 
-	public void setLayoutXml(String xml, FormDef formDef){
+	public boolean setLayoutXml(String xml, FormDef formDef){
 		this.formDef = formDef;
 		
 		tabs.clear();
 
 		if(xml == null || xml.trim().length() == 0){
 			addNewTab(null);
-			return;
+			return false;
 		}
 		
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
@@ -923,6 +923,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			selectedTabIndex = 0;
 			tabs.selectTab(selectedTabIndex);
 		}
+		
+		return true;
 	}
 
 	private void loadPage(NodeList nodes){
@@ -1526,12 +1528,23 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		
 		if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
 			loadNewWidgets();
-		else
-			setLayout(formDef);
+		else{
+			if(formDef.getLayout() != null && selectedPanel != null && selectedPanel.getWidgetCount() == 0)
+				load();
+			else
+				setLayout(formDef);
+		}
 	}
 	
 	public void load(){
-		this.setLayoutXml(formDef.getLayout(), formDef);
+		//AbsolutePanel panel (AbsolutePanel)tabs.getWidget(i);
+		if(selectedPanel != null && selectedPanel.getWidgetCount() > 0){
+			Window.alert("Please first delete all the widgets.");
+			return;
+		}
+		
+		if(!setLayoutXml(formDef.getLayout(), formDef))
+			refresh();
 	}
 
 	public void onCopy(Widget sender) {

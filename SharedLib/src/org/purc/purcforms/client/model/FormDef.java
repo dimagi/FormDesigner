@@ -53,6 +53,7 @@ public class FormDef implements Serializable{
 	private Element modelNode;
 	
 	private String layout;
+	private String xform;
 	
 	
 	/** Constructs a form definition object. */
@@ -203,6 +204,14 @@ public class FormDef implements Serializable{
 
 	public void setLayout(String layout) {
 		this.layout = layout;
+	}
+
+	public String getXform() {
+		return xform;
+	}
+
+	public void setXform(String xform) {
+		this.xform = xform;
 	}
 
 	public SkipRule getSkipRule(QuestionDef questionDef){

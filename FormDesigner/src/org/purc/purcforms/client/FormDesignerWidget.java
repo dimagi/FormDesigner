@@ -114,6 +114,10 @@ public class FormDesignerWidget extends Composite{
 		controller.openFormDeffered(formId);
 	}
 	
+	public void saveSelectedForm(){
+		controller.saveForm();
+	}
+	
 	public void addNewForm(String name, String varName, int formId){
 		if(leftPanel.formExists(formId))
 			return;

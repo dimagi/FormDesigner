@@ -118,6 +118,7 @@ public class FormDesignerController implements IFormDesignerListener{
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
 						
+						formDef.setXform(centerPanel.getXformsSource());
 						formDef.setLayout(centerPanel.getLayoutXml());
 						leftPanel.loadForm(formDef);
 						centerPanel.loadForm(formDef,formDef.getLayout());
@@ -186,6 +187,7 @@ public class FormDesignerController implements IFormDesignerListener{
 						xml = FormDesignerUtil.formatXml(xml);
 					}
 
+					formDef.setXform(xml);
 					centerPanel.setXformsSource(xml,formId == null);
 					centerPanel.buildLayoutXml();
 					//formDef.setLayout(centerPanel.getLayoutXml());

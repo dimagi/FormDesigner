@@ -228,8 +228,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 	
 	public void buildLayoutXml(){
-		this.formDef.setLayout(designSurfaceView.getLayoutXml());
-		txtLayoutXml.setText(formDef.getLayout());
+		String layout = designSurfaceView.getLayoutXml();
+		
+		if(layout != null)
+			this.formDef.setLayout(layout);
+		
+		txtLayoutXml.setText(layout);
 	}
 
 	public void loadLayoutXml(String xml, boolean selectTabs){
@@ -355,10 +359,14 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	
 	public void setFormDef(FormDef formDef){
 		if(this.formDef == null || this.formDef != formDef){
-			if(formDef ==  null)
+			if(formDef ==  null){
 				txtLayoutXml.setText(null);
-			else
+				txtXformsSource.setText(null);
+			}
+			else{
 				txtLayoutXml.setText(formDef.getLayout());
+				txtXformsSource.setText(formDef.getXform());
+			}
 		}
 		
 		this.formDef = formDef;

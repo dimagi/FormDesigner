@@ -160,7 +160,10 @@ public class FormDesignerController implements IFormDesignerListener{
 	 * @see org.purc.purcform.client.controller.IFormDesignerController#saveForm()
 	 */
 	public void saveForm() {
-		final Object obj = leftPanel.getSelectedForm();
+		if(!leftPanel.isValidForm())
+			return;
+		
+		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj == null){
 			Window.alert("Please select the item to save.");
 			return;
@@ -176,7 +179,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					//TODO Need to preserve user's model and any others.
 					String xml = null;
-					FormDef formDef = (FormDef)obj;
+					FormDef formDef = obj;
 					if(formDef.getDoc() == null){
 						xml = XformConverter.fromFormDef2Xform(formDef);
 						xml = FormDesignerUtil.formatXml(xml);

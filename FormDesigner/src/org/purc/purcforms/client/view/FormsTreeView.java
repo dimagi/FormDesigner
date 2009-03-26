@@ -1,7 +1,9 @@
 package org.purc.purcforms.client.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.purc.purcforms.client.Toolbar;
@@ -76,13 +78,13 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		this.formSelectionListeners.add(formSelectionListener);
 
 		tree = new Tree(images);
-		tree.ensureSelectedItemVisible();
 
 		scrollPanel.setWidget(tree);
 		initWidget(scrollPanel);
 		FormDesignerUtil.maximizeWidget(scrollPanel);
 
 		tree.addTreeListener(this);
+		tree.ensureSelectedItemVisible();
 
 		//This is just for solving a wiered behaviour when one changes a node text
 		//and the click another node which gets the same text as the previously
@@ -743,21 +745,91 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		formDesignerListener.saveForm();
 	}
 
-	public Object getSelectedForm(){
+	public FormDef getSelectedForm(){
 		TreeItem  item = tree.getSelectedItem();
 		if(item != null)
 			return getSelectedForm(item);
 		return null;
 	}
 
-	private Object getSelectedForm(TreeItem item){
+	private FormDef getSelectedForm(TreeItem item){
 		Object obj = item.getUserObject();
 		if(obj instanceof FormDef)
-			return obj;
+			return (FormDef)obj;
 		return getSelectedForm(item.getParentItem());
+	}
+	
+	private TreeItem getSelectedItemRoot(TreeItem item){
+		if(item.getParentItem() == null)
+			return item;
+		return getSelectedItemRoot(item.getParentItem());
 	}
 
 	public void clear(){
 		tree.clear();
+	}
+	
+	public boolean isValidForm(){
+		TreeItem  parent = getSelectedItemRoot(tree.getSelectedItem());
+		if(parent == null)
+			return true;
+		
+		Map<String,String> bindings = new HashMap<String,String>();
+		int count = parent.getChildCount();
+		for(int index = 0; index < count; index++){
+			TreeItem child = parent.getChild(index);
+			if(!isValidQuestionList(child,bindings))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean isValidQuestionList(TreeItem  parent,Map<String,String> bindings){
+		int count = parent.getChildCount();
+		for(int index = 0; index < count; index++){
+			TreeItem child = parent.getChild(index);
+			QuestionDef questionDef = (QuestionDef)child.getUserObject();
+			String variableName = questionDef.getVariableName();
+			if(bindings.containsKey(variableName)){
+				tree.setSelectedItem(child);
+				tree.ensureSelectedItemVisible();
+				Window.alert("The selected question [" + questionDef.getText()+"] should not share the same binding with question [" + bindings.get(variableName)+ "]");
+				return false;
+			}
+			else
+				bindings.put(variableName, questionDef.getText());
+			
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+				if(!isValidQuestionList(child,bindings))
+					return false;
+			}
+			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
+				if(!isValidOptionList(child))
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isValidOptionList(TreeItem  parent){
+		Map<String,String> bindings = new HashMap<String,String>();
+		
+		int count = parent.getChildCount();
+		for(int index = 0; index < count; index++){
+			TreeItem child = parent.getChild(index);
+			OptionDef optionDef = (OptionDef)child.getUserObject();
+			String variableName = optionDef.getVariableName();
+			if(bindings.containsKey(variableName)){
+				tree.setSelectedItem(child);
+				tree.ensureSelectedItemVisible();
+				Window.alert("The selected option [" + optionDef.getText()+"] should not share the same binding with option [" + bindings.get(variableName)+ "]");
+				return false;
+			}
+			else
+				bindings.put(variableName, optionDef.getText());
+		}
+		return true;
 	}
 }

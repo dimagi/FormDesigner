@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -20,7 +23,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -38,7 +40,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class RuntimeGroupWidget extends Composite{
+public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEventListener{
 
 	private final Images images;
 	private RepeatQtnsDef repeatQtnsDef;
@@ -51,9 +53,13 @@ public class RuntimeGroupWidget extends Composite{
 	private List<Element> dataNodes = new ArrayList<Element>();
 	private AbsolutePanel selectedPanel = new AbsolutePanel();
 	private boolean isRepeated = false;
+	private Image image;
+	private FormDef formDef;
 
-	public RuntimeGroupWidget(Images images,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
+
+	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
+		this.formDef = formDef;
 		this.repeatQtnsDef = repeatQtnsDef;
 		this.editListener = editListener;
 		this.isRepeated = isRepeated;
@@ -180,19 +186,19 @@ public class RuntimeGroupWidget extends Composite{
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath));
+			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO)){
 			widget = new HTML();
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			
+
 			String contentType = "&contentType=video/mpeg";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
 				contentType = "&contentType=audio/x-wav";
-			
-			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+
+			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			//Not dealing with nexted repeats
@@ -204,6 +210,14 @@ public class RuntimeGroupWidget extends Composite{
 
 		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 		boolean loadWidget = true;
+
+		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
+			if(binding != null && binding.trim().length() > 0){
+				questionDef = formDef.getQuestion(binding);
+				if(questionDef != null)
+					questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
+			}
+		}
 
 		if(questionDef != null)
 			wrapper.setQuestionDef(questionDef,false);
@@ -274,8 +288,10 @@ public class RuntimeGroupWidget extends Composite{
 		//FormDesignerUtil.setWidgetPosition(wrapper,left,top);
 
 		if(widget instanceof Button && binding != null){
+			wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+
 			if(binding.equals("addnew")||binding.equals("remove") ||
-			   binding.equals("browse")||binding.equals("clear")){
+					binding.equals("browse")||binding.equals("clear")){
 				((Button)widget).addClickListener(new ClickListener(){
 					public void onClick(Widget sender){
 						execute(sender);
@@ -294,7 +310,7 @@ public class RuntimeGroupWidget extends Composite{
 	private void addWidget(RuntimeWidgetWrapper wrapper){
 		String binding = wrapper.getBinding();
 		if(wrapper.getWrappedWidget() instanceof Button && 
-		  !("browse".equals(binding) || "clear".equals(binding))){
+				!("browse".equals(binding) || "clear".equals(binding))){
 			buttons.add(wrapper);
 			return;
 		}
@@ -316,8 +332,9 @@ public class RuntimeGroupWidget extends Composite{
 	}
 
 	private void execute(Widget sender){
+		String binding = ((RuntimeWidgetWrapper)sender.getParent().getParent()).getBinding();
+
 		if(repeatQtnsDef != null){
-			String binding = ((RuntimeWidgetWrapper)sender.getParent().getParent()).getBinding();
 			if(binding.equalsIgnoreCase("addnew"))
 				addNewRow();
 			else if(binding.equalsIgnoreCase("remove")){
@@ -329,6 +346,33 @@ public class RuntimeGroupWidget extends Composite{
 				}
 			}
 		}
+		else{
+			if(binding.equalsIgnoreCase("clear")){
+				if(!Window.confirm("Do you really want to delete this picture?"))
+					return;
+
+				image = getCurrentImage(sender);
+				image.setUrl(null);
+				return;
+			}
+			else if(binding.equalsIgnoreCase("browse")){
+				image = getCurrentImage(sender);
+				OpenFileDialog dlg = new OpenFileDialog(this,"multimedia");
+				dlg.center();
+			}
+		}
+	}
+
+	private Image getCurrentImage(Widget sender){
+		RuntimeWidgetWrapper button = (RuntimeWidgetWrapper)sender.getParent().getParent();
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
+			if(widget.getWrappedWidget() instanceof Image){
+				if(widget.getBinding().equalsIgnoreCase(button.getParentBinding()))
+					return (Image)widget.getWrappedWidget();
+			}
+		}
+		return null;
 	}
 
 	private void addNewRow(){
@@ -452,6 +496,16 @@ public class RuntimeGroupWidget extends Composite{
 			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).saveValue(formDef);
 			}
+		}
+	}
+
+	public void onSetFileContents(String contents) {
+		//System.out.println(contents);
+		
+		if(contents != null && contents.trim().length() > 0){
+			image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
+			RuntimeWidgetWrapper widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
+			widgetWrapper.getQuestionDef().setAnswer(contents);
 		}
 	}
 }

@@ -163,6 +163,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtText.setEnabled(false);
 		txtDescTemplate.setEnabled(false);
 		btnDescTemplate.setEnabled(false);
+		
+		txtText.setTitle("The question text.");
+		txtHelpText.setTitle("The question description.");
+		txtBinding.setTitle("The question internal identifier. For Questions, it should be a valid xml node name.");
+		txtDefaultValue.setTitle("The default value or answer");
+		cbDataType.setTitle("The type of question or type of expected answers.");
+		cbControlType.setTitle("The question text.");
 	}
 
 	private void setupEventListeners(){

@@ -270,7 +270,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			if(value != null && value.trim().length() > 0)
 				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
 			
-			widget = new RuntimeGroupWidget(images,repeatQtnsDef,this,repeated);
+			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,this,repeated);
 			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
 		}

@@ -1203,7 +1203,7 @@ public class XformConverter implements Serializable{
 			action |= ModelConstants.ACTION_HIDE;
 
 		value = node.getAttribute(ATTRIBUTE_NAME_REQUIRED);
-		if(value.equalsIgnoreCase(XPATH_VALUE_TRUE))
+		if(XPATH_VALUE_TRUE.equalsIgnoreCase(value))
 			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else 
 			action |= ModelConstants.ACTION_MAKE_OPTIONAL;

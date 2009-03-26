@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.view.ErrorDialog;
+import org.purc.purcforms.client.view.ProgressDialog;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Node;
@@ -46,6 +47,7 @@ public class FormUtil {
 	
 	private static boolean appendEntityIdAfterSubmit;
 	
+	public static ProgressDialog dlg = new ProgressDialog();
 
 	/**
 	 * Maximizes a widget.

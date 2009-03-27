@@ -35,8 +35,6 @@ public class FormDesignerController implements IFormDesignerListener{
 	private Integer formId;	
 	private IFormSaveListener formSaveListener;
 
-	private static ProgressDialog dlg = new ProgressDialog();
-
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
@@ -106,8 +104,8 @@ public class FormDesignerController implements IFormDesignerListener{
 	public void openFormDeffered(int id) {
 		final int tempFormId = id;
 
-		dlg.setText("Opening Form");
-		dlg.center();
+		FormUtil.dlg.setText("Opening Form");
+		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
@@ -123,12 +121,13 @@ public class FormDesignerController implements IFormDesignerListener{
 						leftPanel.loadForm(formDef);
 						centerPanel.loadForm(formDef,formDef.getLayout());
 						centerPanel.format();
+						FormUtil.dlg.hide();
 					}
 				}
 				catch(Exception ex){
+					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
-				}
-				dlg.hide();	
+				}	
 			}
 		});
 	}
@@ -140,18 +139,19 @@ public class FormDesignerController implements IFormDesignerListener{
 	}
 
 	public void openFormLayoutDeffered() {
-		dlg.setText("Opening Form Layout");
-		dlg.center();
+		FormUtil.dlg.setText("Opening Form Layout");
+		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
 					centerPanel.openFormLayout();
+					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
+					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
-				}
-				dlg.hide();	
+				}	
 			}
 		});
 	}
@@ -169,8 +169,8 @@ public class FormDesignerController implements IFormDesignerListener{
 			return;
 		}
 
-		dlg.setText("Saving Form");
-		dlg.center();
+		FormUtil.dlg.setText("Saving Form");
+		FormUtil.dlg.center();
 		
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
@@ -200,11 +200,13 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					if(formSaveListener != null)
 						formSaveListener.onSaveForm(formDef.getId(), xml, formDef.getLayout());
+					
+					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
+					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
-				}
-				dlg.hide();	
+				}	
 			}
 		});
 	}
@@ -217,8 +219,8 @@ public class FormDesignerController implements IFormDesignerListener{
 				return;
 			}
 
-			dlg.setText("Saving Form Layout");
-			dlg.center();
+			FormUtil.dlg.setText("Saving Form Layout");
+			FormUtil.dlg.center();
 
 			DeferredCommand.addCommand(new Command(){
 				public void execute() {
@@ -227,29 +229,31 @@ public class FormDesignerController implements IFormDesignerListener{
 						xml = XformConverter.fromFormDef2Xform((FormDef)obj);
 						xml = FormDesignerUtil.formatXml(xml);
 						centerPanel.setXformsSource(xml,formId == null);
+						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){
+						FormUtil.dlg.hide();
 						FormUtil.displayException(ex);
-					}
-					dlg.hide();	
+					}	
 				}
 			});
 		}
 	}
 
 	public void saveFormLayout() {
-		dlg.setText("Saving Form Layout");
-		dlg.center();
+		FormUtil.dlg.setText("Saving Form Layout");
+		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
 					centerPanel.saveFormLayout();
+					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
+					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
-				}
-				dlg.hide();	
+				}	
 			}
 		});
 	}
@@ -374,13 +378,13 @@ public class FormDesignerController implements IFormDesignerListener{
 	public void refresh(Object sender) {
 		if(sender instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
 			if(formId != null){
-				dlg.setText("Refresing Form");
-				dlg.center();
+				FormUtil.dlg.setText("Refresing Form");
+				FormUtil.dlg.center();
 
 				DeferredCommand.addCommand(new Command(){
 					public void execute() {
 						refreshForm();
-						dlg.hide();	
+						FormUtil.dlg.hide();	
 					}
 				});
 			}
@@ -508,8 +512,8 @@ public class FormDesignerController implements IFormDesignerListener{
 	}
 
 	private void refreshFormDeffered(){
-		dlg.setText("Refreshing Form");
-		dlg.center();
+		FormUtil.dlg.setText("Refreshing Form");
+		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
@@ -522,16 +526,33 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					leftPanel.refresh(formDef);
 					centerPanel.setXformsSource(FormUtil.formatXml(xml), false);
+					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
+					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
-				dlg.hide();	
 			}
 		});
 	}
 
 	public void setFormSaveListener(IFormSaveListener formSaveListener){
 		this.formSaveListener = formSaveListener;
+	}
+	
+	public void moveUp(){
+		leftPanel.getFormActionListener().moveUp();
+	}
+	
+	public void moveDown(){
+		leftPanel.getFormActionListener().moveUp();
+	}
+	
+	public void moveToParent(){
+		leftPanel.getFormActionListener().moveToParent();
+	}
+	
+	public void moveToChild(){
+		leftPanel.getFormActionListener().moveToChild();
 	}
 }

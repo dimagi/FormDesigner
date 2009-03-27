@@ -11,4 +11,8 @@ public interface IFormActionListener {
 	public void copyItem();
 	public void pasteItem();
 	public void refreshItem();
+	public void moveUp();
+	public void moveDown();
+	public void moveToParent();
+	public void moveToChild();
 }

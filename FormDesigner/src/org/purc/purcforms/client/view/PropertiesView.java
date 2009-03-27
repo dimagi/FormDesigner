@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
@@ -12,7 +13,9 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.widget.DescTemplateWidget;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -22,6 +25,7 @@ import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -72,6 +76,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private IFormChangeListener formChangeListener;
 	private SkipRulesView skipRulesView = new SkipRulesView();
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
+	private IFormActionListener formActionListener;
 
 	public PropertiesView(){
 
@@ -147,7 +152,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(skipRulesView, "Skip Logic");
 		tabs.add(validationRulesView, "Validation Logic");
 		//tabs.add(new Label(), "Constraints/Validations");
-		
+
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
 		FormDesignerUtil.maximizeWidget(tabs);
@@ -163,13 +168,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtText.setEnabled(false);
 		txtDescTemplate.setEnabled(false);
 		btnDescTemplate.setEnabled(false);
-		
+
 		txtText.setTitle("The question text.");
 		txtHelpText.setTitle("The question description.");
 		txtBinding.setTitle("The question internal identifier. For Questions, it should be a valid xml node name.");
 		txtDefaultValue.setTitle("The default value or answer");
 		cbDataType.setTitle("The type of question or type of expected answers.");
 		cbControlType.setTitle("The question text.");
+
+		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 	}
 
 	private void setupEventListeners(){
@@ -223,6 +230,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				updateHelpText();
 			}
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
+					cbDataType.setFocus(true);
+				else if(keyCode == KeyboardListener.KEY_UP){
+					txtText.setFocus(true);
+					txtText.selectAll();
+				}
+			}
 		});
 
 		txtBinding.addChangeListener(new ChangeListener(){
@@ -234,6 +249,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				updateBinding();
 			}
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == KeyboardListener.KEY_UP){
+					if(cbDataType.isEnabled())
+						cbDataType.setFocus(true);
+					else{
+						txtText.setFocus(true);
+						txtText.selectAll();
+					}
+				}
+			}
 		});
 
 		txtText.addChangeListener(new ChangeListener(){
@@ -244,6 +269,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				updateText();
+			}
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN){
+					if(txtHelpText.isEnabled())
+						txtHelpText.setFocus(true);
+					else{
+						txtBinding.setFocus(true);
+						txtBinding.selectAll();
+					}
+				}
 			}
 		});
 
@@ -267,6 +302,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				updateDataType();
+			}
+		});
+		cbDataType.addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN){
+					txtBinding.setFocus(true);
+					txtBinding.selectAll();
+				}
+				else if(keyCode == KeyboardListener.KEY_UP){
+					txtHelpText.setFocus(true);
+					txtHelpText.selectAll();
+				}
 			}
 		});
 	}
@@ -417,7 +464,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//skipRulesView.setFormDef(formDef);
 
 		txtDescTemplate.setText(formDef.getDescriptionTemplate());
-		
+
 		btnDescTemplate.setFormDef(formDef);
 	}
 
@@ -574,6 +621,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			setQuestionOptionProperties((OptionDef)formItem);
 	}
 
+	public void setFocus(){
+		txtText.setFocus(true);
+		txtText.selectAll();
+	}
+
 	public void onWindowResized(int width, int height){
 		setWidth("100%");
 		setHeight("100%");
@@ -594,5 +646,41 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	public void onStartItemSelection(Object sender) {
 
+	}
+
+	public void setFormActionListener(IFormActionListener formActionListener){
+		this.formActionListener = formActionListener;
+	}
+
+	public void onBrowserEvent(Event event) {
+		switch (DOM.eventGetType(event)) {
+		case Event.ONKEYDOWN:
+			if(!isVisible())
+				return;
+
+			int keyCode = event.getKeyCode();
+			if(event.getCtrlKey()){
+				if(keyCode == 'N' || keyCode == 'n'){
+					formActionListener.addNewItem();
+					DOM.eventPreventDefault(event);
+				}
+				else if(keyCode == KeyboardListener.KEY_RIGHT){
+					formActionListener.moveToChild();
+					DOM.eventPreventDefault(event);
+				}
+				else if(keyCode == KeyboardListener.KEY_LEFT){
+					formActionListener.moveToParent();
+					DOM.eventPreventDefault(event);
+				}
+				else if(keyCode == KeyboardListener.KEY_UP){
+					formActionListener.moveUp();
+					DOM.eventPreventDefault(event);
+				}
+				else if(keyCode == KeyboardListener.KEY_DOWN){
+					formActionListener.moveDown();
+					DOM.eventPreventDefault(event);
+				}
+			}
+		}
 	}
 }

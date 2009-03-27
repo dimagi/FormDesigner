@@ -1,6 +1,7 @@
 package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.LeftPanel.Images;
+import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.SubmitListener;
@@ -153,6 +154,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	public void onFormItemSelected(Object formItem) {
 		propertiesView.onFormItemSelected(formItem);
+		
+		if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
+			propertiesView.setFocus();
 		
 		FormDef form = getFormDef(formItem);
 		
@@ -378,5 +382,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	
 	public void setEmbeddedHeightOffset(int offset){
 		designSurfaceView.setEmbeddedHeightOffset(offset);
+	}
+	
+	public void setFormActionListener(IFormActionListener formActionListener){
+		this.propertiesView.setFormActionListener(formActionListener);
 	}
 }

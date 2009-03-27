@@ -244,11 +244,11 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			txtValue1.removeKeyboardListener(keyboardListener1);
 			txtValue2.removeKeyboardListener(keyboardListener2);
 			
-			if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
+			/*if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
 				txtValue1 = new DatePickerWidget();
 				txtValue2 = new DatePickerWidget();
 			}
-			else{
+			else*/{
 				txtValue1 = new TextBox();
 				txtValue2 = new TextBox();
 			}

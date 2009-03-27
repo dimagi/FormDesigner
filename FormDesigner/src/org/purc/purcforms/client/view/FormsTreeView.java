@@ -433,11 +433,15 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.addItem(item);
 		tree.setSelectedItem(item);
 	}
+	
+	public void addNewChildItem(){
+		addNewChildItem(true);
+	}
 
 	/**
 	 * Adds a new child item.
 	 */
-	public void addNewChildItem(){
+	public void addNewChildItem(boolean addNewIfNoKids){
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -474,7 +478,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			tree.setSelectedItem(item);
 			item.getParentItem().setState(true);
 		}
-		else
+		else if(addNewIfNoKids)
 			addNewItem();
 	}
 
@@ -831,5 +835,75 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 				bindings.put(variableName, optionDef.getText());
 		}
 		return true;
+	}
+	
+	public void moveUp(){
+		TreeItem item = tree.getSelectedItem();
+		if(item == null)
+			return;
+		
+		int index;
+		TreeItem parent = item.getParentItem();
+		if(parent == null){
+			index = getRootItemIndex(parent);
+			if(index == 0)
+				return;
+			tree.setSelectedItem(tree.getItem(index - 1));
+		}
+		else{
+			index = parent.getChildIndex(item);
+			if(index == 0)
+				return;
+			tree.setSelectedItem(parent.getChild(index - 1));
+		}
+	}
+	
+	public void moveDown(){
+		TreeItem item = tree.getSelectedItem();
+		if(item == null)
+			return;
+		
+		int index;
+		TreeItem parent = item.getParentItem();
+		if(parent == null){
+			index = getRootItemIndex(parent);
+			if(index == tree.getItemCount() - 1)
+				return;
+			tree.setSelectedItem(tree.getItem(index + 1));
+		}
+		else{
+			index = parent.getChildIndex(item);
+			if(index == parent.getChildCount() - 1)
+				return;
+			tree.setSelectedItem(parent.getChild(index + 1));
+		}
+	}
+	
+	public void moveToParent(){
+		TreeItem item = tree.getSelectedItem();
+		if(item == null)
+			return;
+		
+		TreeItem parent = item.getParentItem();
+		if(parent == null)
+			return;
+		
+		tree.setSelectedItem(parent);
+		tree.ensureSelectedItemVisible();
+	}
+	
+	public void moveToChild(){
+		TreeItem item = tree.getSelectedItem();
+		if(item == null)
+			return;
+		
+		if(item.getChildCount() == 0){
+			addNewChildItem(false);
+			return;
+		}
+		
+		TreeItem child = item.getChild(0);
+		tree.setSelectedItem(child);
+		tree.ensureSelectedItemVisible();
 	}
 }

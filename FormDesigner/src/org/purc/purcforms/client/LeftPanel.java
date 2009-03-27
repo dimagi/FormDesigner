@@ -1,5 +1,6 @@
 package org.purc.purcforms.client;
 
+import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
@@ -179,5 +180,9 @@ public class LeftPanel extends Composite {
 
 	public boolean isValidForm(){
 		return formsTreeView.isValidForm();
+	}
+	
+	public IFormActionListener getFormActionListener(){
+		return formsTreeView;
 	}
 }

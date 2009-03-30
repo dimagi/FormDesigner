@@ -208,7 +208,7 @@ public class DatePickerWidget extends DatePicker{
 	 * Parse the date entered in the DatePicker.
 	 */
 	private void parseDate() {
-		if (getText() == null || getText().length() == 0) {
+		if (getText() == null || getText().trim().length() == 0) {
 			selectedDate = null;
 		} else {
 			try {

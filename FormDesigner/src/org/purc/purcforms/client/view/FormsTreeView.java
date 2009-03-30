@@ -248,7 +248,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void refreshForm(FormDef formDef){
-		tree.clear();
+		//tree.clear();
+		TreeItem item = tree.getSelectedItem();
+		if(item != null)
+			tree.removeItem(item);
+		
 		loadForm(formDef,true);
 	}
 
@@ -445,8 +449,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
-		if(item == null)
+		if(item == null){
+			if(addNewIfNoKids)
+				addNewItem();
 			return;
+		}
 
 		Object userObj = item.getUserObject();
 		if(userObj instanceof PageDef || 

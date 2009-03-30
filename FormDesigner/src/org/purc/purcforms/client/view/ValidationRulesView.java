@@ -201,6 +201,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	}
 	
 	public void onWindowResized(int width, int height){
-		txtErrorMessage.setWidth(width - 500 + "px");
+		if(width - 700 > 0)
+			txtErrorMessage.setWidth(width - 700 + "px");
 	}
 }

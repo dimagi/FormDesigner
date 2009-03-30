@@ -50,7 +50,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private boolean locked = false;
 
 	private ValidationRule validationRule ;
-	
+
 	public RuntimeWidgetWrapper(){
 
 	}
@@ -121,7 +121,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					isValid();
 					editListener.onValueChanged(null, null, questionDef.getAnswer());
 				}
-				
+
 				public void onKeyDown(Widget sender, char keyCode, int modifiers) {
 					if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
 						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
@@ -373,13 +373,18 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	private String getTextBoxAnswer(){
 		String value = ((TextBox)widget).getText();
-		
-		if(questionDef.isDate() && value != null && value.trim().length() > 0)
-			value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
 
+		try{
+			if(questionDef.isDate() && value != null && value.trim().length() > 0)
+				value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
+		}
+		catch(Exception ex){
+			value = null;
+		}
+		
 		return value;
 	}
-	
+
 	public void saveValue(FormDef formDef){
 		if(questionDef == null)
 			return;
@@ -528,24 +533,24 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.isRequired() && !this.isAnswered()){
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
-			
+
 			errorImage.setTitle("Please answer this required question.");
 			return false;
 		}
-		
+
 		if(validationRule != null && !validationRule.isValid()){
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
-			
+
 			errorImage.setTitle(validationRule.getErrorMessage());
 			return false;
 		}
 		/*FormDef formDef = null;
 		ValidationRule rule = new ValidationRule();
 		if(!rule.isValid(formDef)){
-			
+
 		}*/
-		
+
 		if(panel.getWidgetCount() > 1)
 			panel.remove(errorImage);
 		return true;

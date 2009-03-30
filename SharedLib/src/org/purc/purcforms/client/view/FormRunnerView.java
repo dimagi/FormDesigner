@@ -70,7 +70,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
 	
 	
-	private int embeddedHeightOffset = 0;
+	protected int embeddedHeightOffset = 0;
 
 
 	public FormRunnerView(Images images){
@@ -80,8 +80,6 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 		initWidget(tabs);
 		tabs.addTabListener(this);
-
-		addNewTab("Page1");
 
 		Window.addWindowResizeListener(this);
 
@@ -97,12 +95,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		this.formDef = formDef;
 
 		tabs.clear();
+		if(formDef == null || layoutXml == null || layoutXml.trim().length() == 0){
+			addNewTab("Page1");
+			return;
+		}
 
-		if(layoutXml != null && layoutXml.trim().length() > 0)
-			loadLayout(layoutXml,externalSourceWidgets);
-
+		loadLayout(layoutXml,externalSourceWidgets);
 		moveToFirstWidget();
-
 	}
 
 	public void moveToFirstWidget(){
@@ -159,7 +158,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		});
 	}
 
-	private void addNewTab(String name){
+	protected void addNewTab(String name){
 		initPanel();
 		if(name == null)
 			name = "Page"+tabs.getWidgetCount();
@@ -501,8 +500,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	} 
 
 	public void setFormDef(FormDef formDef){
-		if(this.formDef != formDef)
+		if(this.formDef != formDef){
 			tabs.clear();
+			addNewTab("Page1");
+		}
 
 		this.formDef = formDef;
 	}

@@ -66,6 +66,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		if(allowFieldSelection)
 			fieldWidget.setFormDef(formDef);
+		valueWidget.setFormDef(formDef);
 
 		operator = ModelConstants.OPERATOR_EQUAL;
 		valueWidget.setOperator(operator);
@@ -145,7 +146,10 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		this.questionDef = questionDef;
 		
 		operatorHyperlink.setDataType(questionDef.getDataType());
-		valueWidget.setQuestionDef(questionDef);
+		
+		if(!allowFieldSelection)
+			valueWidget.setQuestionDef(questionDef);
+		
 		operatorHyperlink.setDataType(questionDef.getDataType());
 
 		if(condition != null){

@@ -11,10 +11,13 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
 import org.purc.purcforms.client.view.PropertiesView;
 
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
@@ -93,10 +96,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		selectedTabIndex = tabIndex;
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
 			if(formDef != null){
-				if(!previewView.isPreviewing()){
-					commitChanges();
-					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
-				}
+				if(!previewView.isPreviewing())
+					loadPreview();
 				else
 					previewView.moveToFirstWidget();
 			}
@@ -105,6 +106,25 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 	}
 
+	private void loadPreview(){
+		FormUtil.dlg.setText("Loading Preview");
+		FormUtil.dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					commitChanges();
+					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.dlg.hide();
+					FormUtil.displayException(ex);
+				}
+			}
+		});
+	}
+	
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
 		return true;
 	}
@@ -167,7 +187,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			designSurfaceView.setFormDef(formDef);
 			previewView.setFormDef(formDef);
 
-			if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
+			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 		//}
 		}
@@ -382,6 +402,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	
 	public void setEmbeddedHeightOffset(int offset){
 		designSurfaceView.setEmbeddedHeightOffset(offset);
+		previewView.setEmbeddedHeightOffset(offset);
 	}
 	
 	public void setFormActionListener(IFormActionListener formActionListener){

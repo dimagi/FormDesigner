@@ -103,7 +103,7 @@ public class FieldWidget extends Composite{
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle);
 		
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();

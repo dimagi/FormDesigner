@@ -97,8 +97,13 @@ public class FormDesignerController implements IFormDesignerListener{
 	 * @see org.purc.purcform.client.controller.IFormDesignerController#openForm()
 	 */
 	public void openForm() {
-		if(isOfflineMode())
-			openFormDeffered(ModelConstants.NULL_ID);
+		if(isOfflineMode()){
+			FormDef formDef = leftPanel.getSelectedForm();
+			if(formDef != null)
+				refreshFormDeffered();
+			else
+				openFormDeffered(ModelConstants.NULL_ID);
+		}
 	}
 
 	public void openFormDeffered(int id) {
@@ -115,14 +120,14 @@ public class FormDesignerController implements IFormDesignerListener{
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
-						
+
 						formDef.setXform(centerPanel.getXformsSource());
 						formDef.setLayout(centerPanel.getLayoutXml());
 						leftPanel.loadForm(formDef);
 						centerPanel.loadForm(formDef,formDef.getLayout());
 						centerPanel.format();
-						FormUtil.dlg.hide();
 					}
+					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -162,7 +167,7 @@ public class FormDesignerController implements IFormDesignerListener{
 	public void saveForm() {
 		if(!leftPanel.isValidForm())
 			return;
-		
+
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj == null){
 			Window.alert("Please select the item to save.");
@@ -171,7 +176,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 		FormUtil.dlg.setText("Saving Form");
 		FormUtil.dlg.center();
-		
+
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
@@ -200,7 +205,7 @@ public class FormDesignerController implements IFormDesignerListener{
 
 					if(formSaveListener != null)
 						formSaveListener.onSaveForm(formDef.getId(), xml, formDef.getLayout());
-					
+
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -388,6 +393,8 @@ public class FormDesignerController implements IFormDesignerListener{
 					}
 				});
 			}
+			else
+				refreshFormDeffered();
 		}
 		else{
 			centerPanel.refresh();
@@ -519,13 +526,16 @@ public class FormDesignerController implements IFormDesignerListener{
 			public void execute() {
 				try{
 					String xml = centerPanel.getXformsSource();
-					FormDef formDef = XformConverter.fromXform2FormDef(xml);
-					formDef.refresh(centerPanel.getFormDef());
-					formDef.updateDoc(false);
-					xml = formDef.getDoc().toString();
+					if(xml != null && xml.trim().length() > 0){
+						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						formDef.refresh(centerPanel.getFormDef());
+						formDef.updateDoc(false);
+						xml = formDef.getDoc().toString();
 
-					leftPanel.refresh(formDef);
-					centerPanel.setXformsSource(FormUtil.formatXml(xml), false);
+						leftPanel.refresh(formDef);
+						formDef.setXform(FormUtil.formatXml(xml));
+						centerPanel.setXformsSource(formDef.getXform(), false);
+					}
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -539,19 +549,19 @@ public class FormDesignerController implements IFormDesignerListener{
 	public void setFormSaveListener(IFormSaveListener formSaveListener){
 		this.formSaveListener = formSaveListener;
 	}
-	
+
 	public void moveUp(){
 		leftPanel.getFormActionListener().moveUp();
 	}
-	
+
 	public void moveDown(){
 		leftPanel.getFormActionListener().moveUp();
 	}
-	
+
 	public void moveToParent(){
 		leftPanel.getFormActionListener().moveToParent();
 	}
-	
+
 	public void moveToChild(){
 		leftPanel.getFormActionListener().moveToChild();
 	}

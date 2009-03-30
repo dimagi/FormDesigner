@@ -1518,14 +1518,16 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	public void setFormDef(FormDef formDef){	
 		if(this.formDef != formDef){
 			tabs.clear();
-			this.addNewTab(null);
+			addNewTab(null);
 		}
 
 		this.formDef = formDef;
 	}
 
 	public void refresh(){
-
+		if(formDef == null)
+			return;
+		
 		FormUtil.dlg.setText("Refreshing Design Surface");
 		FormUtil.dlg.center();
 
@@ -1551,6 +1553,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	public void load(){
+		if(formDef == null)
+			return;
+		
 		//AbsolutePanel panel (AbsolutePanel)tabs.getWidget(i);
 		if((selectedPanel != null && selectedPanel.getWidgetCount() > 0) || tabs.getTabBar().getTabCount() > 1){
 			Window.alert("Please first delete all the widgets.");

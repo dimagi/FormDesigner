@@ -596,6 +596,8 @@ public class FormDef implements Serializable{
 	 * @param formDef
 	 */
 	public void refresh(FormDef formDef){
+		this.id = formDef.getId();
+		
 		if(variableName.equals(formDef.getVariableName()))
 			name = formDef.getName();
 		

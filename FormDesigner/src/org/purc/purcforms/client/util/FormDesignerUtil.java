@@ -103,12 +103,16 @@ public class FormDesignerUtil {
 		FormUtil.setWidgetPosition(w, left, top);
 	}
 
-	public static void loadQuestions(Vector questions, MultiWordSuggestOracle oracle){
+	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+			
+			if(refQuestion != null && refQuestion.getDataType() != questionDef.getDataType())
+				continue;
+			
 			oracle.add(questionDef.getText());	
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				;//loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),oracle); //TODO These have different id sets and hence we are leaving them out for now

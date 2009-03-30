@@ -195,7 +195,7 @@ public class SkipRule implements Serializable{
 		
 		for(int i=0; i<getConditions().size(); i++){
 			Condition condition = (Condition)this.getConditions().elementAt(i);
-			if(condition.isTrue(formDef))
+			if(condition.isTrue(formDef,false))
 				trueFound = true;
 			else
 				falseFound = true;

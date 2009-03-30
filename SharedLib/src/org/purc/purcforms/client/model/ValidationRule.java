@@ -157,7 +157,7 @@ public class ValidationRule implements Serializable{
 		
 		for(int i=0; i<getConditions().size(); i++){
 			Condition condition = (Condition)this.getConditions().elementAt(i);
-			if(condition.isTrue(formDef))
+			if(condition.isTrue(formDef,true))
 				trueFound = true;
 			else
 				falseFound = true;

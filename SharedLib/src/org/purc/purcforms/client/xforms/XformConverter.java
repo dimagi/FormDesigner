@@ -197,24 +197,37 @@ public class XformConverter implements Serializable{
 				for(int i=0; i<rules.size(); i++)
 					fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef);
 			}
+			
+			rules = formDef.getValidationRules();
+			if(rules != null){
+				for(int i=0; i<rules.size(); i++)
+					fromValidationRule2Xform((ValidationRule)rules.elementAt(i),formDef);
+			}
 		}
 
 		return fromDoc2String(doc);
 	}
 
 	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
-		String constratint = "";
+		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
+		Element node = questionDef.getBindNode();
+		if(node == null)
+			node = questionDef.getControlNode();
+
 		Vector conditions  = rule.getConditions();
+		if(conditions == null || conditions.size() == 0){
+			node.removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT);
+			node.removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+			return;
+		}
+
+		String constratint = "";
 		for(int i=0; i<conditions.size(); i++){
 			if(constratint.length() > 0)
 				constratint += getConditionsOperatorText(rule.getConditionsOperator());
 			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE);
 		}
 
-		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
-		Element node = questionDef.getBindNode();
-		if(node == null)
-			node = questionDef.getControlNode();
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT, constratint);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}
@@ -238,24 +251,32 @@ public class XformConverter implements Serializable{
 			Element node = questionDef.getBindNode();
 			if(node == null)
 				node = questionDef.getControlNode();
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT, relevant);
 
-			String value = ATTRIBUTE_VALUE_ENABLE;
-			if((rule.getAction() & ModelConstants.ACTION_ENABLE) != 0)
-				value = ATTRIBUTE_VALUE_ENABLE;
-			else if((rule.getAction() & ModelConstants.ACTION_DISABLE) != 0)
-				value = ATTRIBUTE_VALUE_DISABLE;
-			else if((rule.getAction() & ModelConstants.ACTION_SHOW) != 0)
-				value = ATTRIBUTE_VALUE_SHOW;
-			else if((rule.getAction() & ModelConstants.ACTION_HIDE) != 0)
-				value = ATTRIBUTE_VALUE_HIDE;
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_ACTION, value);
+			if(relevant.trim().length() == 0){
+				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT);
+				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_ACTION);
+				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED);
+			}
+			else{
+				node.setAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT, relevant);
 
-			if((rule.getAction() & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
-				value = XPATH_VALUE_TRUE;
-			else if((rule.getAction() & ModelConstants.ACTION_MAKE_OPTIONAL) != 0)
-				value = XPATH_VALUE_FALSE;
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED, value);
+				String value = ATTRIBUTE_VALUE_ENABLE;
+				if((rule.getAction() & ModelConstants.ACTION_ENABLE) != 0)
+					value = ATTRIBUTE_VALUE_ENABLE;
+				else if((rule.getAction() & ModelConstants.ACTION_DISABLE) != 0)
+					value = ATTRIBUTE_VALUE_DISABLE;
+				else if((rule.getAction() & ModelConstants.ACTION_SHOW) != 0)
+					value = ATTRIBUTE_VALUE_SHOW;
+				else if((rule.getAction() & ModelConstants.ACTION_HIDE) != 0)
+					value = ATTRIBUTE_VALUE_HIDE;
+				node.setAttribute(XformConverter.ATTRIBUTE_NAME_ACTION, value);
+
+				if((rule.getAction() & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
+					value = XPATH_VALUE_TRUE;
+				else if((rule.getAction() & ModelConstants.ACTION_MAKE_OPTIONAL) != 0)
+					value = XPATH_VALUE_FALSE;
+				node.setAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED, value);
+			}
 		}
 	}
 
@@ -638,7 +659,7 @@ public class XformConverter implements Serializable{
 		Document doc = getDocument(xml);
 		return getFormDef(doc);
 	}
-	
+
 	public static FormDef fromXform2FormDef(String xformXml, String modelXml){
 		Document doc = getDocument(xformXml);
 		Element node = getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());

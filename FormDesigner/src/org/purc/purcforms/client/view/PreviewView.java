@@ -4,6 +4,7 @@ import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.user.client.Command;
@@ -47,6 +48,8 @@ public class PreviewView extends FormRunnerView {
 
 		popup.setWidget(menuBar);
 
+		addNewTab("Page1");
+		
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN);
 
 		Window.addWindowResizeListener(this);
@@ -98,9 +101,13 @@ public class PreviewView extends FormRunnerView {
 	}
 
 	public void onWindowResized(int width, int height) {
-		height -= 160;
+		//height -= 160;
+		height -= (160+embeddedHeightOffset);
 		sHeight = height+"px";
 		super.setHeight(sHeight);
+		
+		for(int index=0; index<tabs.getWidgetCount(); index++)
+			tabs.getWidget(index).setHeight(sHeight);
 	} 
 
 	public void setSubmitListener(SubmitListener submitListener){
@@ -126,8 +133,22 @@ public class PreviewView extends FormRunnerView {
 	}
 
 	public void refresh(){
-		centerPanel.commitChanges();
-		loadForm(formDef, designSurfaceView.getLayoutXml(),null);
+		FormUtil.dlg.setText("Refreshing Preview");
+		FormUtil.dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					centerPanel.commitChanges();
+					loadForm(formDef, designSurfaceView.getLayoutXml(),null);
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.dlg.hide();
+					FormUtil.displayException(ex);
+				}
+			}
+		});
 	}
 	
 	public void clearPreview(){

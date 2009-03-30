@@ -737,7 +737,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)sgstBinding.getSuggestOracle();
 		oracle.clear();
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle);
 		oracle.add("submit");
 		oracle.add("addnew");
 		oracle.add("remove");

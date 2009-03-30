@@ -211,12 +211,16 @@ public class QuestionDef implements Serializable{
 		return defaultValue;
 	}
 
-	public boolean isDateFunction(String value){
+	public static boolean isDateFunction(String value){
 		if(value == null)
 			return false;
 		
 		return (value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
 				||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"));
+	}
+	
+	public static Date getDateFunctionValue(String function){
+		return new Date();
 	}
 
 	public boolean isDate(){
@@ -227,7 +231,7 @@ public class QuestionDef implements Serializable{
 
 	public String getDefaultValueDisplay() {
 		if(isDate() && isDateFunction(defaultValue))
-			return FormUtil.getDateTimeDisplayFormat().format(new Date());
+			return FormUtil.getDateTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
 
 		return defaultValue;
 	}

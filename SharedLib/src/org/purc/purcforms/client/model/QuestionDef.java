@@ -450,6 +450,11 @@ public class QuestionDef implements Serializable{
 		if(!changeListeners.contains(changeListener))
 			changeListeners.add(changeListener);
 	}
+	
+	public void clearChangeListeners(){
+		if(changeListeners != null)
+			changeListeners.clear();
+	}
 
 	public void addOption(OptionDef optionDef){
 		if(options == null)

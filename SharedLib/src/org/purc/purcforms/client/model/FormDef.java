@@ -245,6 +245,7 @@ public class FormDef implements Serializable{
 
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
+		
 		if(!dataNode.getNodeName().equalsIgnoreCase(variableName))
 			dataNode = XformConverter.renameNode(dataNode,variableName);
 

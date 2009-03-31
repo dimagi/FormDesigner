@@ -183,6 +183,7 @@ public class XformConverter implements Serializable{
 
 		Element formNode =  doc.createElement(formDef.getVariableName());
 		formNode.setAttribute(ATTRIBUTE_NAME_NAME, formDef.getName());
+		formNode.setAttribute(ATTRIBUTE_NAME_ID, String.valueOf(formDef.getId()));
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 
@@ -197,7 +198,7 @@ public class XformConverter implements Serializable{
 				for(int i=0; i<rules.size(); i++)
 					fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef);
 			}
-			
+
 			rules = formDef.getValidationRules();
 			if(rules != null){
 				for(int i=0; i<rules.size(); i++)
@@ -334,9 +335,11 @@ public class XformConverter implements Serializable{
 		pageDef.setGroupNode(groupNode);
 
 		Vector questions = pageDef.getQuestions();
-		for(int i=0; i<questions.size(); i++){
-			QuestionDef qtn = (QuestionDef)questions.elementAt(i);
-			fromQuestionDef2Xform(qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+		if(questions != null){
+			for(int i=0; i<questions.size(); i++){
+				QuestionDef qtn = (QuestionDef)questions.elementAt(i);
+				fromQuestionDef2Xform(qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+			}
 		}
 	}
 
@@ -662,11 +665,15 @@ public class XformConverter implements Serializable{
 
 	public static FormDef fromXform2FormDef(String xformXml, String modelXml){
 		Document doc = getDocument(xformXml);
-		Element node = getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
-		Element dataNode = XformConverter.getInstanceDataNode(doc);
-		Node parent = dataNode.getParentNode();
-		parent.appendChild(node);
-		parent.replaceChild(node,dataNode);
+
+		if(modelXml != null){
+			Element node = getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
+			Element dataNode = XformConverter.getInstanceDataNode(doc);
+			Node parent = dataNode.getParentNode();
+			parent.appendChild(node);
+			parent.replaceChild(node,dataNode);
+		}
+
 		return getFormDef(doc);
 	}
 
@@ -1276,7 +1283,7 @@ public class XformConverter implements Serializable{
 			int i = 0;
 			i++;
 		}
-		
+
 		Vector list = getConditionsOperatorTokens(relevant);
 
 		Condition condition  = new Condition();

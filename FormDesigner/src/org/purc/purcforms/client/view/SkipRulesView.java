@@ -32,11 +32,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 
 	private static final int HORIZONTAL_SPACING = 5;
 	private static final int VERTICAL_SPACING = 0;
-	
+
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	private Hyperlink addConditionLink = new Hyperlink("< Click here to add new condition >",null);
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
-	
+
 	private FormDef formDef;
 	private QuestionDef questionDef;
 	private SkipRule skipRule;
@@ -47,15 +47,15 @@ public class SkipRulesView extends Composite implements IConditionController{
 	private RadioButton rdHide = new RadioButton("action","Hide");
 	private CheckBox chkMakeRequired = new CheckBox("Make Required");
 	private Label lblAction = new Label("For question: ");
-	
+
 	public SkipRulesView(){
 		setupWidgets();
 	}
-	
+
 	private void setupWidgets(){
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
-		
+
 		HorizontalPanel actionPanel = new HorizontalPanel();
 		actionPanel.add(rdEnable);
 		actionPanel.add(rdDisable);
@@ -63,29 +63,29 @@ public class SkipRulesView extends Composite implements IConditionController{
 		actionPanel.add(rdHide);
 		actionPanel.add(chkMakeRequired);
 		actionPanel.setSpacing(10);
-		
+
 		verticalPanel.add(lblAction);
 		//verticalPanel.add(new Label(" "));
 		verticalPanel.add(actionPanel);
 		//verticalPanel.add(new Label(" "));
-		
+
 		//verticalPanel.setCellHeight(lblAction, "30px");
 		//verticalPanel.setCellHeight(actionPanel, "30px");
-		
+
 		horizontalPanel.add(new Label("When"));
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label("of the following apply"));
 		verticalPanel.add(horizontalPanel);
-		
+
 		//verticalPanel.add(new ConditionWidget(FormDefTest.getPatientFormDef(),this));
 		verticalPanel.add(addConditionLink);
-		
+
 		addConditionLink.addClickListener(new ClickListener(){
 			public void onClick(Widget sender){
 				addCondition();
 			}
 		});
-		
+
 		rdEnable.addClickListener(new ClickListener(){
 			public void onClick(Widget sender){
 				updateMakeRequired();
@@ -106,46 +106,49 @@ public class SkipRulesView extends Composite implements IConditionController{
 				updateMakeRequired();
 			}
 		});
-		
+
 		verticalPanel.setSpacing(VERTICAL_SPACING);
 		initWidget(verticalPanel);
 	}
-	
+
 	private void updateMakeRequired(){
 		chkMakeRequired.setEnabled(rdEnable.isChecked() || rdShow.isChecked());
 		if(!chkMakeRequired.isEnabled())
 			chkMakeRequired.setChecked(false);
 	}
-	
+
 	public void addCondition(){
-		if(formDef != null){
+		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
 			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
 			//conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
+
+			if(!(rdEnable.isChecked()||rdDisable.isChecked()||rdShow.isChecked()||rdHide.isChecked()))
+				rdEnable.setChecked(true);
 		}
 	}
-	
+
 	public void addBracket(){
-		
+
 	}
-	
+
 	public void deleteCondition(ConditionWidget conditionWidget){
 		if(skipRule != null)
 			skipRule.removeCondition(conditionWidget.getCondition());
 		verticalPanel.remove(conditionWidget);
 	}
-	
+
 	public void updateSkipRule(){
 		if(questionDef == null){
 			skipRule = null;
 			return;
 		}
-		
+
 		if(skipRule == null)
 			skipRule = new SkipRule();
-		
+
 		int count = verticalPanel.getWidgetCount();
 		for(int i=0; i<count; i++){
 			Widget widget = verticalPanel.getWidget(i);
@@ -153,14 +156,14 @@ public class SkipRulesView extends Composite implements IConditionController{
 				Condition condition = ((ConditionWidget)widget).getCondition();
 				//if(!(rdEnable.isChecked() || rdShow.isChecked()))
 				//	condition.setOperator(getInvertedOperator(condition.getOperator()));
-				
+
 				if(condition != null && !skipRule.containsCondition(condition))
 					skipRule.addCondition(condition);
 				else if(condition != null && skipRule.containsCondition(condition))
 					skipRule.updateCondition(condition);
 			}
 		}
-		
+
 		if(skipRule.getConditions() == null)
 			skipRule = null;
 		else{
@@ -169,11 +172,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 			skipRule.setConditionsOperator(groupHyperlink.getConditionsOperator());
 			skipRule.setAction(getAction());
 		}
-		
+
 		if(skipRule != null && !formDef.containsSkipRule(skipRule))
 			formDef.addSkipRule(skipRule);
 	}
-	
+
 	private int getAction(){
 		int action = 0;
 		if(rdEnable.isChecked())
@@ -184,15 +187,15 @@ public class SkipRulesView extends Composite implements IConditionController{
 			action |= ModelConstants.ACTION_HIDE;
 		else
 			action |= ModelConstants.ACTION_DISABLE;
-		
+
 		if(chkMakeRequired.isChecked())
 			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else
 			action |= ModelConstants.ACTION_MAKE_OPTIONAL;
-		
+
 		return action;
 	}
-	
+
 	private void setAction(int action){
 		rdEnable.setChecked((action & ModelConstants.ACTION_ENABLE) != 0);
 		rdDisable.setChecked((action & ModelConstants.ACTION_DISABLE) != 0);
@@ -201,22 +204,22 @@ public class SkipRulesView extends Composite implements IConditionController{
 		chkMakeRequired.setChecked((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0);
 		updateMakeRequired();
 	}
-	
+
 	public void setQuestionDef(QuestionDef questionDef){
 		clearConditions();
-		
+
 		if(questionDef.getParent() instanceof PageDef)
 			formDef = ((PageDef)questionDef.getParent()).getParent();
 		else
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
-		
+
 		if(questionDef != null)
 			lblAction.setText("For question:  " + questionDef.getText());
 		else
 			lblAction.setText("For question: ");
-		
+
 		this.questionDef = questionDef;
-		
+
 		skipRule = formDef.getSkipRule(questionDef);
 		if(skipRule != null){
 			groupHyperlink.setCondionsOperator(skipRule.getConditionsOperator());
@@ -237,26 +240,28 @@ public class SkipRulesView extends Composite implements IConditionController{
 				formDef.removeSkipRule(skipRule);
 				skipRule = null;
 			}
-			
+
 			verticalPanel.add(addConditionLink);
 		}
 	}
-	
+
 	public void setFormDef(FormDef formDef){
 		updateSkipRule();
 		this.formDef = formDef;
 		this.questionDef = null;
 		clearConditions();
 	}
-	
+
 	private void clearConditions(){
 		if(questionDef != null)
 			updateSkipRule();
+		
 		questionDef = null;
+		lblAction.setText("For question: ");
 		
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));
-		
+
 		rdEnable.setChecked(false);
 		rdDisable.setChecked(false);
 		rdShow.setChecked(false);
@@ -264,16 +269,23 @@ public class SkipRulesView extends Composite implements IConditionController{
 		chkMakeRequired.setChecked(false);
 		updateMakeRequired();
 	}
-	
+
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-		this.groupHyperlink.setEnabled(enabled);
+		
+		groupHyperlink.setEnabled(enabled);
+		
+		rdEnable.setEnabled(enabled);
+		rdDisable.setEnabled(enabled);
+		rdShow.setEnabled(enabled);
+		rdHide.setEnabled(enabled);
+		chkMakeRequired.setEnabled(enabled);
 		
 		if(!enabled)
 			clearConditions();
 	}
-	
-	private int getInvertedOperator(int operator){
+
+	/*private int getInvertedOperator(int operator){
 		if(operator == ModelConstants.OPERATOR_EQUAL)
 			return ModelConstants.OPERATOR_NOT_EQUAL;
 		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
@@ -304,7 +316,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 			return ModelConstants.OPERATOR_NOT_BETWEEN;
 		else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			return ModelConstants.OPERATOR_BETWEEN;
-		
+
 		return ModelConstants.OPERATOR_NOT_EQUAL;
-	}
+	}*/
 }

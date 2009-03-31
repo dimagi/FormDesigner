@@ -82,12 +82,18 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	}
 	
 	public void addCondition(){
-		if(formDef != null){
+		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
 			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false,questionDef);
 			//conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
+			
+			String text = txtErrorMessage.getText();
+			if(text != null && text.trim().length() == 0){
+				txtErrorMessage.setText("Error Message");
+				txtErrorMessage.selectAll();
+			}
 		}
 	}
 	
@@ -195,6 +201,8 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 		this.groupHyperlink.setEnabled(enabled);
+		
+		txtErrorMessage.setEnabled(enabled);
 		
 		if(!enabled)
 			clearConditions();

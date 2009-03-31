@@ -501,11 +501,25 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 	public void onSetFileContents(String contents) {
 		//System.out.println(contents);
-		
+
 		if(contents != null && contents.trim().length() > 0){
 			image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
 			RuntimeWidgetWrapper widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
 			widgetWrapper.getQuestionDef().setAnswer(contents);
+		}
+	}
+
+	public void clearValue(){
+		if(isRepeated){
+			while(table.getRowCount() > 1)
+				table.removeRow(1);
+
+			for(int col = 0; col < table.getCellCount(0); col++)
+				((RuntimeWidgetWrapper)table.getWidget(0, col)).clearValue();
+		}
+		else{
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++)
+				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).clearValue();
 		}
 	}
 }

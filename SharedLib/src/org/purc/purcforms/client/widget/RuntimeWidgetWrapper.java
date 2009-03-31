@@ -233,6 +233,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef == null)
 			return;
 
+		questionDef.clearChangeListeners();
 		questionDef.addChangeListener(this);
 		questionDef.setAnswer(questionDef.getDefaultValueSubmit());
 
@@ -584,11 +585,36 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return true;
 	}
 
+	public void clearValue(){
+		if(widget instanceof RadioButton)
+			((RadioButton)widget).setChecked(false);
+		else if(widget instanceof CheckBox)
+			((CheckBox)widget).setChecked(false);
+		else if(widget instanceof ListBox)
+			((ListBox)widget).setSelectedIndex(-1);
+		else if(widget instanceof TextArea)
+			((TextArea)widget).setText(null);
+		else if(widget instanceof TextBox)
+			((TextBox)widget).setText(null);
+		else if(widget instanceof DatePicker)
+			((DatePicker)widget).setText(null);
+		else if(widget instanceof Image)
+			((Image)widget).setUrl(null);
+		else if(widget instanceof RuntimeGroupWidget)
+			((RuntimeGroupWidget)widget).clearValue();
+	}
+	
 	public void onEnabledChanged(boolean enabled) {
+		if(!enabled)
+			clearValue();
+		
 		setEnabled(enabled);
 	}
 
 	public void onLockedChanged(boolean locked) {
+		if(locked)
+			clearValue();
+		
 		setLocked(locked);
 	}
 
@@ -600,6 +626,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	}
 
 	public void onVisibleChanged(boolean visible) {
+		if(!visible)
+			clearValue();
+		
 		setVisible(visible);
 	}
 

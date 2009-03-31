@@ -336,9 +336,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		int endX = event.getClientX() - selectedPanel.getAbsoluteLeft();
 		int endY = event.getClientY() - selectedPanel.getAbsoluteTop();
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
-			if(widget.isWidgetInRect(this.selectionXPos, this.selectionYPos, endX, endY))
-				this.selectedDragController.selectWidget(widget);
+			if(selectedPanel.getWidget(i) instanceof  DesignWidgetWrapper){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
+				if(widget.isWidgetInRect(this.selectionXPos, this.selectionYPos, endX, endY))
+					this.selectedDragController.selectWidget(widget);
+			}
 		}
 
 		if((event.getCtrlKey() || event.getShiftKey() || event.getAltKey()) && selectedDragController.getSelectedWidgetCount() == 1){

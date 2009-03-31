@@ -81,10 +81,10 @@ public class GroupHyperlink extends Hyperlink{
 	public void setEnabled(boolean enable){
 		this.enabled = enable;
 		
-		DeferredCommand.addCommand(new Command(){
+		/*DeferredCommand.addCommand(new Command(){
 	        public void execute() {
 	        	setEnabled(enabled);
 	        }
-	      });
+	      });*/
 	}
 }

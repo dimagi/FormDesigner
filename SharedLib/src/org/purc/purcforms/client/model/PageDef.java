@@ -139,7 +139,7 @@ public class PageDef implements Serializable{
 	public QuestionDef getQuestion(String varName){
 		if(questions == null)
 			return null;
-		
+
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getVariableName().equals(varName))
@@ -169,7 +169,7 @@ public class PageDef implements Serializable{
 	public QuestionDef getQuestion(int id){
 		if(questions == null)
 			return null;
-		
+
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)
@@ -215,7 +215,7 @@ public class PageDef implements Serializable{
 		questions.removeAllElements();*/
 		if(questions == null)
 			return;
-		
+
 		while(questions.size() > 0)
 			removeQuestion((QuestionDef)questions.elementAt(0));
 	}
@@ -346,16 +346,21 @@ public class PageDef implements Serializable{
 		if(labelNode != null)
 			XformConverter.setTextNodeValue(labelNode,name);
 
-		for(int i=0; i<questions.size(); i++){
-			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			if(questionDef.updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData)){
-				//for(int k=0; k<i; k++)
-				//moveQuestionUp(questionDef);
+		if(questions != null){
+			for(int i=0; i<questions.size(); i++){
+				QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+				if(questionDef.updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData)){
+					//for(int k=0; k<i; k++)
+					//moveQuestionUp(questionDef);
+				}
 			}
 		}
 	}
 
 	private boolean areAllQuestionsNew(){
+		if(questions == null)
+			return false;
+
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			if(questionDef.getControlNode() != null)
@@ -367,7 +372,7 @@ public class PageDef implements Serializable{
 	public QuestionDef getQuestionWithText(String text){
 		if(questions == null)
 			return null;
-		
+
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			if(questionDef.getText().equals(text))
@@ -380,7 +385,7 @@ public class PageDef implements Serializable{
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Updates this pageDef (as the main) with the parameter one
 	 * 
@@ -389,7 +394,7 @@ public class PageDef implements Serializable{
 	public void refresh(PageDef pageDef){
 		if(pageNo == pageDef.getPageNo())
 			name = pageDef.getName();
-		
+
 		int count = pageDef.getQuestionCount();
 		for(int index = 0; index < count; index++){
 			QuestionDef qtn = pageDef.getQuestionAt(index);

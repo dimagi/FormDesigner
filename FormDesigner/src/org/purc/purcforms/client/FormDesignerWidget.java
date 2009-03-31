@@ -2,6 +2,7 @@ package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSaveListener;
+import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
@@ -210,5 +211,9 @@ public class FormDesignerWidget extends Composite{
 	
 	public void refreshItem(){
 		controller.refreshItem();
+	}
+	
+	public FormDef getSelectedForm(){
+		return leftPanel.getSelectedForm();
 	}
 }

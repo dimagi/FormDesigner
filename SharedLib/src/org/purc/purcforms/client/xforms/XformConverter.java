@@ -1272,6 +1272,11 @@ public class XformConverter implements Serializable{
 	private static Vector getSkipRuleConditions(FormDef formDef, String relevant, int action){
 		Vector conditions = new Vector();
 
+		if(relevant.contains("D30")){
+			int i = 0;
+			i++;
+		}
+		
 		Vector list = getConditionsOperatorTokens(relevant);
 
 		Condition condition  = new Condition();
@@ -1286,7 +1291,6 @@ public class XformConverter implements Serializable{
 
 	private static Vector getValidationRuleConditions(FormDef formDef, String constraint, int questionId){
 		Vector conditions = new Vector();
-
 		Vector list = getConditionsOperatorTokens(constraint);
 
 		Condition condition  = new Condition();
@@ -1334,7 +1338,7 @@ public class XformConverter implements Serializable{
 			value = relevant.substring(pos1,pos2);
 		}
 		else //else we take whole value after operator	
-			value = relevant.substring(pos+getOperatorSize(condition.getOperator()),relevant.length());
+			value = relevant.substring(pos+getOperatorSize(condition.getOperator(),action),relevant.length());
 
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value.trim());
@@ -1377,7 +1381,7 @@ public class XformConverter implements Serializable{
 			value = constraint.substring(pos1,pos2);
 		}
 		else //else we take whole value after operator	
-			value = constraint.substring(pos+getOperatorSize(condition.getOperator()),constraint.length());
+			value = constraint.substring(pos+getOperatorSize(condition.getOperator(),ModelConstants.ACTION_ENABLE),constraint.length());
 
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value.trim());
@@ -1442,15 +1446,15 @@ public class XformConverter implements Serializable{
 		return ModelConstants.OPERATOR_NULL;
 	}
 
-	private static int getOperatorSize(int operator){
+	private static int getOperatorSize(int operator, int action){
 		if(operator == ModelConstants.OPERATOR_GREATER_EQUAL || 
 				operator == ModelConstants.OPERATOR_LESS_EQUAL ||
 				operator == ModelConstants.OPERATOR_NOT_EQUAL)
-			return 2;
+			return isPositiveAction(action) ? 2 : 1;
 		else if(operator == ModelConstants.OPERATOR_LESS ||
 				operator == ModelConstants.OPERATOR_GREATER || 
 				operator == ModelConstants.OPERATOR_EQUAL)
-			return 1;
+			return isPositiveAction(action) ? 1 : 2;
 
 		return 0;
 	}

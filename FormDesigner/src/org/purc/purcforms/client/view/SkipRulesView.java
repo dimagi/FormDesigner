@@ -120,8 +120,8 @@ public class SkipRulesView extends Composite implements IConditionController{
 	public void addCondition(){
 		if(formDef != null){
 			verticalPanel.remove(addConditionLink);
-			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true);
-			conditionWidget.setQuestionDef(questionDef);
+			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
+			//conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 		}
@@ -225,7 +225,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 			Vector conditions = skipRule.getConditions();
 			Vector lostConditions = new Vector();
 			for(int i=0; i<conditions.size(); i++){
-				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true);
+				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
 				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))
 					verticalPanel.add(conditionWidget);
 				else

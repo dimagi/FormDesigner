@@ -219,12 +219,14 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			tree.addItem(formRoot);
 		}
 
-		for(int currentPageNo =0; currentPageNo<formDef.getPages().size(); currentPageNo++){
-			TreeItem pageRoot = loadPage((PageDef)formDef.getPages().elementAt(currentPageNo),formRoot);
+		if(formDef.getPages() != null){
+			for(int currentPageNo =0; currentPageNo<formDef.getPages().size(); currentPageNo++){
+				TreeItem pageRoot = loadPage((PageDef)formDef.getPages().elementAt(currentPageNo),formRoot);
 
-			//We expand only the first page.
-			if(currentPageNo == 0)
-				pageRoot.setState(true);    
+				//We expand only the first page.
+				if(currentPageNo == 0)
+					pageRoot.setState(true);    
+			}
 		}
 
 		if(select && formRoot != null){
@@ -252,7 +254,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		TreeItem item = tree.getSelectedItem();
 		if(item != null)
 			tree.removeItem(item);
-		
+
 		loadForm(formDef,true);
 	}
 
@@ -437,7 +439,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.addItem(item);
 		tree.setSelectedItem(item);
 	}
-	
+
 	public void addNewChildItem(){
 		addNewChildItem(true);
 	}
@@ -769,7 +771,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			return (FormDef)obj;
 		return getSelectedForm(item.getParentItem());
 	}
-	
+
 	private TreeItem getSelectedItemRoot(TreeItem item){
 		if(item.getParentItem() == null)
 			return item;
@@ -779,12 +781,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void clear(){
 		tree.clear();
 	}
-	
+
 	public boolean isValidForm(){
 		TreeItem  parent = getSelectedItemRoot(tree.getSelectedItem());
 		if(parent == null)
 			return true;
-		
+
 		Map<String,String> bindings = new HashMap<String,String>();
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
@@ -792,10 +794,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			if(!isValidQuestionList(child,bindings))
 				return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public boolean isValidQuestionList(TreeItem  parent,Map<String,String> bindings){
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
@@ -810,7 +812,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			}
 			else
 				bindings.put(variableName, questionDef.getText());
-			
+
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 				if(!isValidQuestionList(child,bindings))
 					return false;
@@ -823,10 +825,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 		return true;
 	}
-	
+
 	public boolean isValidOptionList(TreeItem  parent){
 		Map<String,String> bindings = new HashMap<String,String>();
-		
+
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
 			TreeItem child = parent.getChild(index);
@@ -843,12 +845,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 		return true;
 	}
-	
+
 	public void moveUp(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
-		
+
 		int index;
 		TreeItem parent = item.getParentItem();
 		if(parent == null){
@@ -864,12 +866,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			tree.setSelectedItem(parent.getChild(index - 1));
 		}
 	}
-	
+
 	public void moveDown(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
-		
+
 		int index;
 		TreeItem parent = item.getParentItem();
 		if(parent == null){
@@ -885,30 +887,30 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			tree.setSelectedItem(parent.getChild(index + 1));
 		}
 	}
-	
+
 	public void moveToParent(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
-		
+
 		TreeItem parent = item.getParentItem();
 		if(parent == null)
 			return;
-		
+
 		tree.setSelectedItem(parent);
 		tree.ensureSelectedItemVisible();
 	}
-	
+
 	public void moveToChild(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
-		
+
 		if(item.getChildCount() == 0){
 			addNewChildItem(false);
 			return;
 		}
-		
+
 		TreeItem child = item.getChild(0);
 		tree.setSelectedItem(child);
 		tree.ensureSelectedItemVisible();

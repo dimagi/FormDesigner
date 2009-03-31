@@ -303,9 +303,9 @@ public class Condition implements Serializable{
 
 			switch(operator){
 			case ModelConstants.OPERATOR_EQUAL:
-				return qtn.getAnswer().equals(value);
+				return qtn.getAnswer().contains(value); //qtn.getAnswer().equals(value);
 			case ModelConstants.OPERATOR_NOT_EQUAL:
-				return !qtn.getAnswer().equals(value);
+				return !qtn.getAnswer().contains(value); //!qtn.getAnswer().equals(value);
 			case ModelConstants.OPERATOR_IN_LIST:
 				return value.contains(qtn.getAnswer());
 			case ModelConstants.OPERATOR_NOT_IN_LIST:

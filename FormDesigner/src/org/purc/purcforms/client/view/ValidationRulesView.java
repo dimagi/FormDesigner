@@ -84,8 +84,8 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	public void addCondition(){
 		if(formDef != null){
 			verticalPanel.remove(addConditionLink);
-			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false);
-			conditionWidget.setQuestionDef(questionDef);
+			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false,questionDef);
+			//conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 		}
@@ -157,7 +157,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			Vector conditions = validationRule.getConditions();
 			Vector lostConditions = new Vector();
 			for(int i=0; i<conditions.size(); i++){
-				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false);
+				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false,questionDef);
 				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))
 					verticalPanel.add(conditionWidget);
 				else

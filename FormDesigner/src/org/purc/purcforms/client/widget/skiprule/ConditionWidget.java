@@ -35,10 +35,11 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 	private boolean allowFieldSelection = false;
 
-	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection){
+	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef){
 		this.formDef = formDef;
 		this.view = view;
 		this.allowFieldSelection = allowFieldSelection;
+		this.questionDef = questionDef;
 		setupWidgets();
 	}
 
@@ -147,7 +148,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		
 		operatorHyperlink.setDataType(questionDef.getDataType());
 		
-		if(!allowFieldSelection)
+		//if(allowFieldSelection)
 			valueWidget.setQuestionDef(questionDef);
 		
 		operatorHyperlink.setDataType(questionDef.getDataType());

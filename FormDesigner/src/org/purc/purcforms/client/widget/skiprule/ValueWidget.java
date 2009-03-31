@@ -482,6 +482,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				}
 			}
 		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
+			if(val.equals(QuestionDef.TRUE_DISPLAY_VALUE))
+				val = QuestionDef.TRUE_VALUE;
+			else if(val.equals(QuestionDef.FALSE_DISPLAY_VALUE))
+				val = QuestionDef.FALSE_VALUE;
+		}
 
 		if(val != null && this.chkQuestionValue.isChecked())
 			val = formDef.getVariableName() + "/" + val;
@@ -523,6 +529,13 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				}
 			}
 		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
+			if(sValue.equals(QuestionDef.TRUE_VALUE))
+				sValue = QuestionDef.TRUE_DISPLAY_VALUE;
+			else if(sValue.equals(QuestionDef.FALSE_VALUE))
+				sValue = QuestionDef.FALSE_DISPLAY_VALUE;
+		}
+		
 		valueHyperlink.setText(sValue);
 	}
 

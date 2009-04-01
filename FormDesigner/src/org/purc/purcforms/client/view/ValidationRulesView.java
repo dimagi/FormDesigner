@@ -85,7 +85,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
 			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false,questionDef);
-			//conditionWidget.setQuestionDef(questionDef);
+			conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 			

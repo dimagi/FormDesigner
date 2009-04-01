@@ -602,6 +602,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((Image)widget).setUrl(null);
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).clearValue();
+		
+		if(questionDef != null)
+			questionDef.setAnswer(null);
 	}
 	
 	public void onEnabledChanged(boolean enabled) {

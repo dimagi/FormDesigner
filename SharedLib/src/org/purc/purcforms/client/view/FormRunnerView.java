@@ -503,7 +503,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			tabs.clear();
 			addNewTab("Page1");
 		}
-
+		
 		this.formDef = formDef;
 	}
 	

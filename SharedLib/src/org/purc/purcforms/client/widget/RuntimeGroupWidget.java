@@ -194,11 +194,14 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
 
+			String extension = ".mpeg";
 			String contentType = "&contentType=video/mpeg";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO){
 				contentType = "&contentType=audio/x-wav";
+				extension = ".wav";
+			}
 
-			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia"+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			//Not dealing with nexted repeats

@@ -12,6 +12,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
@@ -203,9 +204,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	}
 
-	public void loadForm(FormDef formDef,boolean select){	
+	public void loadForm(FormDef formDef,boolean select){
+		if(formDef.getId() == ModelConstants.NULL_ID)
+			formDef.setId(++nextFormId);
+		
 		this.formDef = formDef;
-
+		
 		if(formExists(formDef.getId()))
 			return;
 

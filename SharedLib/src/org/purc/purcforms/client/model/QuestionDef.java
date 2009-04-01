@@ -117,9 +117,9 @@ public class QuestionDef implements Serializable{
 
 	/** Question with image. */
 	public static final int QTN_TYPE_IMAGE = 11;
-	
+
 	public static final byte QTN_TYPE_VIDEO = 12;
-	
+
 	public static final byte QTN_TYPE_AUDIO = 13;
 
 	private Element dataNode;
@@ -214,11 +214,11 @@ public class QuestionDef implements Serializable{
 	public static boolean isDateFunction(String value){
 		if(value == null)
 			return false;
-		
+
 		return (value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
 				||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"));
 	}
-	
+
 	public static Date getDateFunctionValue(String function){
 		return new Date();
 	}
@@ -450,7 +450,7 @@ public class QuestionDef implements Serializable{
 		if(!changeListeners.contains(changeListener))
 			changeListeners.add(changeListener);
 	}
-	
+
 	public void clearChangeListeners(){
 		if(changeListeners != null)
 			changeListeners.clear();
@@ -636,8 +636,19 @@ public class QuestionDef implements Serializable{
 					firstOptionNode = optionDef.getControlNode();
 			}
 		}
-		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData);
+
+			if(!withData){
+				//Remove all repeating data kids
+				Element parent = (Element)dataNode.getParentNode();
+				NodeList nodes = parent.getElementsByTagName(dataNode.getNodeName());
+				for(int index = 1; index < nodes.getLength(); index++){
+					Node child = nodes.item(index);
+					child.getParentNode().removeChild(child);
+				}
+			}
+		}
 
 		//Put after options because it depends on the firstOptionNode
 		if(hintNode != null){
@@ -910,7 +921,7 @@ public class QuestionDef implements Serializable{
 	public OptionDef getOptionWithText(String text){
 		if(options == null)
 			return null;
-		
+
 		Vector list = (Vector)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.elementAt(i);
@@ -923,7 +934,7 @@ public class QuestionDef implements Serializable{
 	public OptionDef getOptionWithValue(String value){
 		if(options == null)
 			return null;
-		
+
 		Vector list = (Vector)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.elementAt(i);
@@ -942,11 +953,11 @@ public class QuestionDef implements Serializable{
 		setText(questionDef.getText());
 		setHelpText(questionDef.getHelpText());
 		setDefaultValue(questionDef.getDefaultValue());
-		
+
 		//The old data type can only overwrite the new one if its not text (The new one is this question)
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_TEXT)
 			setDataType(questionDef.getDataType());
-		
+
 		setEnabled(questionDef.isEnabled());
 		setRequired(questionDef.isRequired());
 		setLocked(questionDef.isLocked());
@@ -972,13 +983,13 @@ public class QuestionDef implements Serializable{
 			optionDef.setText(optn.getText());
 		}
 	}
-	
+
 	public int getOptionCount(){
 		if(options == null)
 			return 0;
 		return ((Vector)options).size();
 	}
-	
+
 	public void clearOptions(){
 		if(options != null)
 			((Vector)options).clear();

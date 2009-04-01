@@ -67,7 +67,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	protected FormDef formDef;
 	protected SubmitListener submitListener;
 	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
-	
+	protected RuntimeWidgetWrapper firstInvalidWidget;
 	
 	protected int embeddedHeightOffset = 0;
 
@@ -398,6 +398,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	protected boolean isValid(){
 		boolean valid = true;
 		int pageNo = -1;
+		firstInvalidWidget = null;
 		for(int index=0; index<tabs.getWidgetCount(); index++){
 			if(!isValid((AbsolutePanel)tabs.getWidget(index))){
 				valid = false;
@@ -407,8 +408,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		}
 
 		if(!valid){
-			Window.alert("Please first correct the errors on the form.");
+			//Window.alert("Please first correct the errors on the form.");
 			tabs.selectTab(pageNo);
+			assert(firstInvalidWidget != null);
+			firstInvalidWidget.setFocus();
 		}
 		return valid;
 	}
@@ -416,12 +419,23 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	private boolean isValid(AbsolutePanel panel){
 		boolean valid = true;
 		for(int index=0; index<panel.getWidgetCount(); index++){
-			if(!((RuntimeWidgetWrapper)panel.getWidget(index)).isValid())
+			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)panel.getWidget(index);
+			if(!widget.isValid()){
 				valid = false;
+				if(firstInvalidWidget == null && isFocusable(widget))
+					firstInvalidWidget = widget;
+			}
 		}
 		return valid;
 	}
 
+	private boolean isFocusable(RuntimeWidgetWrapper widget){
+		Widget wg = widget.getWrappedWidget();
+		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||
+				wg instanceof CheckBox || wg instanceof RadioButton || 
+				wg instanceof RuntimeGroupWidget || wg instanceof ListBox);
+	}
+	
 	protected void saveValues(){
 		for(int index=0; index<tabs.getWidgetCount(); index++)
 			savePageValues((AbsolutePanel)tabs.getWidget(index));

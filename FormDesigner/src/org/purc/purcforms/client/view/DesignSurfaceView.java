@@ -1248,7 +1248,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				widgetWrapper = addNewTextBox();
 
 			if(widgetWrapper != null){
-				widgetWrapper.setBinding(questionDef.getVariableName());
+				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE||
+						questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO||
+						questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO))
+					widgetWrapper.setBinding(questionDef.getVariableName());
+				
 				widgetWrapper.setQuestionDef(questionDef);
 
 				String helpText = questionDef.getHelpText();

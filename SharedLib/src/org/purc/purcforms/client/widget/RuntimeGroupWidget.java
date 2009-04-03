@@ -11,6 +11,7 @@ import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
+import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -118,6 +119,17 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				addWidget(widget);
 		}
 
+		if(isRepeated){
+			RuntimeWidgetWrapper widget = this.widgets.get(0);
+			if(!(widget.getQuestionDef() == null || widget.getQuestionDef().getDataNode() == null)){
+				Element dataNode = (Element)widget.getQuestionDef().getDataNode().getParentNode();
+				Element parent = (Element)dataNode.getParentNode();
+				NodeList nodeList = parent.getElementsByTagName(dataNode.getNodeName());
+				for(int index = 1; index < nodeList.getLength(); index++)
+					addNewRow((Element)nodeList.item(index));
+			}
+		}
+
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.setSpacing(5);
 		for(int index = 0; index < buttons.size(); index++)
@@ -134,10 +146,20 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		QuestionDef questionDef = null;
 		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
-		if(binding != null && binding.trim().length() > 0 && repeatQtnsDef != null){
-			questionDef = repeatQtnsDef.getQuestion(binding);
-			if(questionDef != null)
-				questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
+
+		if(isRepeated){
+			if(binding != null && binding.trim().length() > 0 && repeatQtnsDef != null){
+				questionDef = repeatQtnsDef.getQuestion(binding);
+				if(questionDef != null)
+					questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
+			}
+		}
+		else{
+			if(binding != null && binding.trim().length() > 0){
+				questionDef = formDef.getQuestion(binding);
+				if(questionDef != null)
+					questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
+			}
 		}
 
 		Widget widget = null;
@@ -354,7 +376,15 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				if(!Window.confirm("Do you really want to delete this picture?"))
 					return;
 
-				image = getCurrentImage(sender);
+				RuntimeWidgetWrapper widget = getCurrentImageWrapper(sender);
+				if(widget == null)
+					return;
+
+				QuestionDef questionDef = widget.getQuestionDef();
+				if(questionDef != null)
+					questionDef.setAnswer(null);
+
+				image = (Image)widget.getWrappedWidget();
 				image.setUrl(null);
 				return;
 			}
@@ -366,13 +396,21 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		}
 	}
 
-	private Image getCurrentImage(Widget sender){
+	private Image getCurrentImage(Widget sender){			
+		RuntimeWidgetWrapper wrapper = getCurrentImageWrapper(sender);
+		if(wrapper != null)
+			return (Image)wrapper.getWrappedWidget();
+
+		return null;
+	}
+
+	private RuntimeWidgetWrapper getCurrentImageWrapper(Widget sender){
 		RuntimeWidgetWrapper button = (RuntimeWidgetWrapper)sender.getParent().getParent();
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
 			if(widget.getWrappedWidget() instanceof Image){
 				if(widget.getBinding().equalsIgnoreCase(button.getParentBinding()))
-					return (Image)widget.getWrappedWidget();
+					return widget;
 			}
 		}
 		return null;
@@ -383,7 +421,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
 			RuntimeWidgetWrapper mainWidget = widgets.get(index);
-			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget);
+			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget,true);
 
 			table.setWidget(row, index, copyWidget);
 
@@ -397,7 +435,21 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				}
 			}
 
-			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding());
+			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
+		}
+	}
+
+	private void addNewRow(Element dataNode){
+		dataNodes.add(dataNode);
+
+		int row = table.getRowCount();
+		for(int index = 0; index < widgets.size(); index++){
+			RuntimeWidgetWrapper mainWidget = widgets.get(index);
+			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget,false);
+
+			table.setWidget(row, index, copyWidget);
+
+			setDataNode(copyWidget,dataNode,copyWidget.getBinding(),true);
 		}
 	}
 
@@ -417,7 +469,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		return getParentNodeWithName(parentNode,name);
 	}
 
-	private void setDataNode(RuntimeWidgetWrapper widget, Element parentNode, String binding){
+	private void setDataNode(RuntimeWidgetWrapper widget, Element parentNode, String binding, boolean loadQtn){
 		String name = binding;
 		int pos = name.indexOf('/');
 		if(pos > 0)
@@ -431,17 +483,24 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			if(child.getNodeName().equals(name) /*||
 					(child.getParentNode().getNodeName() + "/"+ child.getNodeName()).equals(widget.getBinding())*/){
 				if(pos > 0)
-					setDataNode(widget,(Element)child,binding.substring(pos+1));
-				else
+					setDataNode(widget,(Element)child,binding.substring(pos+1),loadQtn);
+				else{
 					widget.getQuestionDef().setDataNode((Element)child);
+					if(loadQtn){
+						widget.getQuestionDef().setDefaultValue(XformConverter.getTextValue((Element)child));
+						widget.loadQuestion();
+					}
+				}
 				return;
 			}
 		}
 	}
 
-	private RuntimeWidgetWrapper getPreparedWidget(RuntimeWidgetWrapper w){
+	private RuntimeWidgetWrapper getPreparedWidget(RuntimeWidgetWrapper w, boolean loadQtn){
 		RuntimeWidgetWrapper widget = new RuntimeWidgetWrapper(w);
-		widget.loadQuestion();
+		
+		if(loadQtn)
+			widget.loadQuestion();
 
 		QuestionDef questionDef = widget.getQuestionDef();
 		if(questionDef != null && (questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC 
@@ -503,11 +562,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	}
 
 	public void onSetFileContents(String contents) {
-		//System.out.println(contents);
-
 		if(contents != null && contents.trim().length() > 0){
 			image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
 			RuntimeWidgetWrapper widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
+			contents = contents.replace("<pre>", "");
+			contents = contents.replace("</pre>", "");
 			widgetWrapper.getQuestionDef().setAnswer(contents);
 		}
 	}

@@ -289,7 +289,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
 					defaultValue = questionDef.getDefaultValueDisplay();
 				else if(defaultValue.trim().length() > 0 && questionDef.isDate())
-					defaultValue = FormUtil.getDateTimeDisplayFormat().format(FormUtil.getDateTimeSubmitFormat().parse(defaultValue));
+					defaultValue = fromSubmit2DisplayDate(defaultValue);
 
 				((TextBox)widget).setText(defaultValue);
 			}
@@ -303,6 +303,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			setVisible(false);
 		if(questionDef.isLocked())
 			setLocked(true);
+	}
+	
+	private String fromSubmit2DisplayDate(String value){
+		try{
+			return FormUtil.getDateTimeDisplayFormat().format(FormUtil.getDateTimeSubmitFormat().parse(value));
+		}catch(Exception ex){}
+		return null;
 	}
 
 	public void setEnabled(boolean enabled){
@@ -387,8 +394,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	}
 
 	public void saveValue(FormDef formDef){
-		if(questionDef == null)
+		if(questionDef == null){
+			if(widget instanceof RuntimeGroupWidget)
+				((RuntimeGroupWidget)widget).saveValue(formDef);
+			
 			return;
+		}
 
 		String defaultValue = questionDef.getDefaultValueSubmit();
 

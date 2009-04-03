@@ -273,11 +273,20 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			}
 		});
 
-		/*txtBinding.addChangeListener(new ChangeListener(){
+		txtBinding.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				updateBinding();
+				if(txtBinding.getText().trim().length() == 0)
+					updateBinding();
 			}
-		});*/
+		});
+		
+		txtChildBinding.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				if(txtChildBinding.getText().trim().length() == 0)
+					updateChildBinding();
+			}
+		});
+		
 		txtChildBinding.addFocusListener(new FocusListenerAdapter(){
 			public void onFocus(Widget sender){
 				txtChildBinding.selectAll();
@@ -474,7 +483,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			OptionDef optionDef = questionDef.getOptionWithText(txtChildBinding.getText());
 			if(optionDef == null){
 				String text = txtChildBinding.getText();
-				if("browse".equalsIgnoreCase(text) || "clear".equalsIgnoreCase(text))
+				//if("browse".equalsIgnoreCase(text) || "clear".equalsIgnoreCase(text))
 					widget.setBinding(text);
 				return;
 			}
@@ -507,8 +516,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			questionDef = formDef.getQuestionWithText(txtBinding.getText());
 			if(questionDef == null){
 				String text = txtBinding.getText();
-				if(text.equals("submit")||text.equals("addnew")||text.equals("remove")
-						||text.equals("browse")||text.equals("clear"))
+				//if(text.equals("submit")||text.equals("addnew")||text.equals("remove")
+				//		||text.equals("browse")||text.equals("clear"))
 					widget.setBinding(text);
 				return;
 			}

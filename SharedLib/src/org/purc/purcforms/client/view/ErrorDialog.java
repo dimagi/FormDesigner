@@ -4,13 +4,13 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ErrorDialog extends DialogBox implements ClickListener {
-	private HTML body = new HTML("");
-	private HTML callStack = new HTML();
+	private TextArea body = new TextArea();
+	private TextArea callStack = new TextArea();
 
 	public ErrorDialog() {
 		//setStylePrimaryName("FormDesigner-ErrorDialog");
@@ -27,10 +27,15 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 		panel.add(advanced);
 
 		setWidget(panel);
+		
+		body.setWidth("500px");
+		body.setHeight("200px");
+		callStack.setWidth("500px");
+		callStack.setHeight("200px");
 	}
 
 	public String getBody() {
-		return body.getHTML();
+		return body.getText();
 	}
 
 	public void onClick(Widget sender) {
@@ -38,10 +43,10 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 	}
 
 	public void setBody(String html) {
-		body.setHTML(html);
+		body.setText(html);
 	}
 	
 	public void setCallStack(String stack){
-		callStack.setHTML(stack);
+		callStack.setText(stack);
 	}
 }

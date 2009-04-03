@@ -759,8 +759,10 @@ public class XformConverter implements Serializable{
 			Object obj = e.nextElement();
 			if (obj instanceof Element){
 				String value = ((Element) obj).getAttribute(attributeName);
-				if(value != null && value.trim().length() > 0) //we are not allowing empty strings for now.
+				if(value != null && value.trim().length() > 0){ //we are not allowing empty strings for now.
 					qtn.setDefaultValue(value);
+					break;
+				}
 			}
 		}
 	}
@@ -1097,6 +1099,8 @@ public class XformConverter implements Serializable{
 					qtn.setDataNode(((Element) obj)); //((Element) obj).setAttribute(attributeName, value);
 				else
 					qtn.setDataNode(((Element) obj));//((Element) obj).addChild(Node.TEXT_NODE, value);
+				
+				break;
 			}
 		}
 	}

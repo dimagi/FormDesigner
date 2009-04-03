@@ -695,10 +695,19 @@ public class QuestionDef implements Serializable{
 			if(variableName.contains("@"))
 				updateAttributeValue(formNode,value);
 			else if(dataNode != null){
-				if(dataNode.getChildNodes().getLength() > 0)
-					dataNode.getChildNodes().item(0).setNodeValue(value);
-				else
+				if(isBinaryType()){
+					NodeList childNodes = dataNode.getChildNodes();
+					while(childNodes.getLength() > 0)
+						dataNode.removeChild(childNodes.item(0));
+					
 					dataNode.appendChild(doc.createTextNode(value));
+				}
+				else{
+					if(dataNode.getChildNodes().getLength() > 0)
+						dataNode.getChildNodes().item(0).setNodeValue(value);
+					else
+						dataNode.appendChild(doc.createTextNode(value));
+				}
 			}
 		}
 		else{
@@ -713,6 +722,11 @@ public class QuestionDef implements Serializable{
 				}
 			}
 		}
+	}
+
+	private boolean isBinaryType(){
+		return (dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_VIDEO ||
+				dataType == QuestionDef.QTN_TYPE_AUDIO);
 	}
 
 	private void updateAttributeValue(Element formNode, String value){

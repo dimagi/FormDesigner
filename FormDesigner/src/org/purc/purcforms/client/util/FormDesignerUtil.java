@@ -76,12 +76,6 @@ public class FormDesignerUtil {
 
 	} 
 
-	public static int convertDimensionToInt(String dimension){
-		if(dimension == null || dimension.trim().length() == 0)
-			return 0;
-		return Integer.parseInt(dimension.substring(0,dimension.length()-2));
-	}
-
 	/**
 	 * Add formatting to an XML string
 	 */

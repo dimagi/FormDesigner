@@ -408,4 +408,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void setFormActionListener(IFormActionListener formActionListener){
 		this.propertiesView.setFormActionListener(formActionListener);
 	}
+	
+	public boolean isInLayoutMode(){
+		return tabs.getTabBar().getSelectedTab() == SELECTED_INDEX_LAYOUT_XML;
+	}
 }

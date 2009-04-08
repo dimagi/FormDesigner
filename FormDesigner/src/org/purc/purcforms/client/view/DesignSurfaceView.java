@@ -314,19 +314,19 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
 
 			if(dirrection == MOVE_LEFT){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos-1+"px");
 			}
 			else if(dirrection == MOVE_RIGHT){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos+1+"px");
 			}
 			else if(dirrection == MOVE_UP){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos-1+"px");		
 			}
 			else if(dirrection == MOVE_DOWN){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos+1+"px");
 			}
 		}
@@ -405,7 +405,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			public void execute() {popup.hide(); addNewPictureSection(null);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Video/Audio"),true,new Command(){
-			public void execute() {popup.hide(); addNewVideoAudio(null);}});
+			public void execute() {popup.hide(); addNewVideoAudioSection(null);}});
 
 		/*addControlMenu.addSeparator();
 
@@ -619,6 +619,62 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		return widget;
 	}
+	
+	private DesignWidgetWrapper addNewVideoAudioSection(String parentBinding){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
+
+		DesignWidgetWrapper widget = addNewWidget(repeat);
+		widget.setRepeated(false);
+
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
+
+		int oldY = y;
+
+		y = 20;
+		x = 45;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+		addNewVideoAudio(null).setBinding(parentBinding);
+
+		y = 60;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+
+		addNewButton("Browse","browse").setParentBinding(parentBinding);
+		x = 120;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton("Clear","clear").setParentBinding(parentBinding);
+
+		selectedDragController.clearSelection();
+
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		return widget;
+	}
+
 
 
 	private DesignWidgetWrapper addNewGroupBox(){
@@ -700,7 +756,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				widgetWrapper = addNewPicture();
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
 					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudio(null);
+				widgetWrapper = addNewVideoAudioSection(null);
 			else
 				widgetWrapper = addNewTextBox();
 
@@ -960,6 +1016,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			widget = new TextArea();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE))
 			widget = images.picture().createImage();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO))
+			widget = new Hyperlink(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT),null);
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER))
 			widget = new DatePickerWidget();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX))
@@ -1058,14 +1116,14 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
 			widget.storePosition();
 			if(i == 0){
-				clipboardLeftMostPos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());;
-				clipboardTopMostPos = FormDesignerUtil.convertDimensionToInt(widget.getTop());;
+				clipboardLeftMostPos = FormUtil.convertDimensionToInt(widget.getLeft());;
+				clipboardTopMostPos = FormUtil.convertDimensionToInt(widget.getTop());;
 			}
 			else{
-				int dimension = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				int dimension = FormUtil.convertDimensionToInt(widget.getLeft());
 				if(clipboardLeftMostPos > dimension)
 					clipboardLeftMostPos = dimension;
-				dimension = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				dimension = FormUtil.convertDimensionToInt(widget.getTop());
 				if(clipboardTopMostPos > dimension)
 					clipboardTopMostPos = dimension;
 			}
@@ -1210,7 +1268,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private void loadQuestions(List<QuestionDef> questions, String pageName){
-		int max = FormDesignerUtil.convertDimensionToInt(sHeight) - 40;
+		int max = FormUtil.convertDimensionToInt(sHeight) - 40;
 		int tabIndex = 0;
 		x = y = 20;
 
@@ -1243,7 +1301,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				widgetWrapper = addNewPictureSection(questionDef.getVariableName());
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudio(null);
+				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName());
 			else
 				widgetWrapper = addNewTextBox();
 
@@ -1270,13 +1328,18 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
 				y += 195;
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO || questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				y += 75;
 
 			int rptIncr = 0;
 			if(i < questions.size()-1){
-				if(((QuestionDef)questions.get(i+1)).getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+				int dataType = ((QuestionDef)questions.get(i+1)).getDataType();
+				if(dataType == QuestionDef.QTN_TYPE_REPEAT)
 					rptIncr = 90;
-				else if(((QuestionDef)questions.get(i+1)).getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+				else if(dataType == QuestionDef.QTN_TYPE_IMAGE)
 					rptIncr = 195;
+				else if(dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_AUDIO)
+					rptIncr = 75;
 			}
 
 			if((y+40+rptIncr) > max){
@@ -1316,7 +1379,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			if(widget.getWrappedWidget() instanceof Label){
 				if(widget.getElement().getScrollWidth() > longestLabelWidth){
 					longestLabelWidth = widget.getElement().getScrollWidth();
-					longestLabelLeft = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+					longestLabelLeft = FormUtil.convertDimensionToInt(widget.getLeft());
 				}
 				labels.add(widget);
 			}
@@ -1380,7 +1443,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollWidth() + FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+		int total = widget.getElement().getScrollWidth() + FormUtil.convertDimensionToInt(widget.getLeft());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setLeft((total - widget.getElement().getScrollWidth()+"px"));
@@ -1411,7 +1474,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollHeight() + FormDesignerUtil.convertDimensionToInt(widget.getTop());
+		int total = widget.getElement().getScrollHeight() + FormUtil.convertDimensionToInt(widget.getTop());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setTop((total - widget.getElement().getScrollHeight()+"px"));
@@ -1460,11 +1523,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	public int getRubberLeft(){
-		return FormDesignerUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "left"));
+		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "left"));
 	}
 
 	public int getRubberTop(){
-		return FormDesignerUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "top"));
+		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "top"));
 	}
 
 	public void startRubberBand(Event event){
@@ -1542,15 +1605,20 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
+					boolean loading = false;
 					if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
 						loadNewWidgets();
 					else{
-						if(formDef.getLayout() != null && selectedPanel != null && selectedPanel.getWidgetCount() == 0)
+						if(formDef.getLayout() != null && formDef.getLayout().trim().length() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() == 0){
+							loading = true;
 							load();
+						}
 						else
 							setLayout(formDef);
 					}
-					FormUtil.dlg.hide();
+					
+					if(!loading)
+						FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -1578,7 +1646,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				try{
 					if(!setLayoutXml(formDef.getLayout(), formDef))
 						refresh();
-					FormUtil.dlg.hide();
+					else
+						FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -1631,6 +1700,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			if(binding == null)
 				binding = widget.getBinding();
 			bindings.put(binding, binding); //Could possibly put widget as value.
+			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
+				fillBindings(((DesignGroupWidget)widget.getWrappedWidget()).getPanel(),bindings);
 		}
 	}
 

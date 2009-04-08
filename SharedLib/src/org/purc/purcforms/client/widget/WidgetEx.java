@@ -144,7 +144,8 @@ public class WidgetEx extends Composite{
 			this.widget = new Image();
 			Image image = (Image)widget.widget;
 			((Image)this.widget).setUrl(image.getUrl());
-			((Image)this.widget).setVisibleRect(image.getOriginLeft(),image.getOriginTop(),image.getWidth(),image.getHeight());
+			((Image)this.widget).setVisibleRect(image.getOriginLeft(),image.getOriginTop(),FormUtil.convertDimensionToInt(width) /*image.getWidth()*/,FormUtil.convertDimensionToInt(height) /*image.getHeight()*/);
+			//((Image)this.widget).setVisibleRect(image.getOriginLeft(),image.getOriginTop(),image.getWidth(),image.getHeight());
 		}
 		else if(widget.widget instanceof Hyperlink)
 			this.widget = new Hyperlink(((Hyperlink)widget.widget).getText(),null);

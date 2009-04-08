@@ -346,8 +346,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			//tree.setSelectedItem(tree.getItem(0));
 		}
 
-		if(tree.getSelectedItem() == null)
+		if(tree.getSelectedItem() == null){
+			formDef = null;
 			fireFormItemSelected(null);
+		}
 	}
 
 	private int getRootItemIndex(TreeItem item){
@@ -827,6 +829,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 					return false;
 			}
 		}
+		
 		return true;
 	}
 

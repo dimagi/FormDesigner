@@ -6,6 +6,7 @@ import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -268,19 +269,19 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}
 
 	public int getWidthInt(){
-		return FormDesignerUtil.convertDimensionToInt(getWidth());
+		return FormUtil.convertDimensionToInt(getWidth());
 	}
 
 	public int getHeightInt(){
-		return FormDesignerUtil.convertDimensionToInt(getHeight());
+		return FormUtil.convertDimensionToInt(getHeight());
 	}
 
 	public int getLeftInt(){
-		return FormDesignerUtil.convertDimensionToInt(getLeft());
+		return FormUtil.convertDimensionToInt(getLeft());
 	}
 
 	public int getTopInt(){
-		return FormDesignerUtil.convertDimensionToInt(getTop());
+		return FormUtil.convertDimensionToInt(getTop());
 	}
 
 	public void setLeftInt(int left){
@@ -292,8 +293,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}
 
 	public boolean isWidgetInRect(int left, int top, int right, int bottom){
-		int x = FormDesignerUtil.convertDimensionToInt(getLeft());
-		int y = FormDesignerUtil.convertDimensionToInt(getTop());
+		int x = FormUtil.convertDimensionToInt(getLeft());
+		int y = FormUtil.convertDimensionToInt(getTop());
 		return (x > left && x < right && y > top && y < bottom) ||
 		(x > right && x < left && y > bottom && y < top);
 	}

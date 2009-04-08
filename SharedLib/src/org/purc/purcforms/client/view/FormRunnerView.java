@@ -68,7 +68,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	protected SubmitListener submitListener;
 	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
 	protected RuntimeWidgetWrapper firstInvalidWidget;
-	
+
 	protected int embeddedHeightOffset = 0;
 
 
@@ -228,7 +228,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
-			
+
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
 			if(defaultValue != null && defaultValue.contains(binding))
 				((CheckBox)widget).setChecked(true);
@@ -267,7 +267,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
 			if(value != null && value.trim().length() > 0)
 				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
-			
+
 			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,this,repeated);
 			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
@@ -279,29 +279,34 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
 			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath));
 		}
-		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO)){
-			widget = new HTML();
-			String xpath = binding;
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			
-			String contentType = "&contentType=video/mpeg";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				contentType = "&contentType=audio/x-wav";
-			
-			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
+			String answer = questionDef.getAnswer();
+			if(answer != null && answer.trim().length() !=0 ){
+				widget = new HTML();
+				if(binding != null && binding.trim().length() > 0){
+					String xpath = binding;
+					if(!xpath.startsWith(formDef.getVariableName()))
+						xpath = "/" + formDef.getVariableName() + "/" + binding;
+
+					String contentType = "&contentType=video/mpeg";
+					if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+						contentType = "&contentType=audio/x-wav";
+
+					((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+				}
+			}
 		}
 		else
 			return tabIndex;
 
 		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
 		boolean loadWidget = true;
-		
+
 		if(questionDef != null){
 			wrapper.setQuestionDef(questionDef,false);
 			wrapper.setValidationRule(formDef.getValidationRule(questionDef));
 		}
-		
+
 		if(binding != null)
 			wrapper.setBinding(binding);
 
@@ -331,17 +336,17 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 		if(value != null && value.trim().length() > 0){
 			wrapper.setValueField(value);
-						
+
 			if(externalSourceWidgets != null && wrapper.getExternalSource() != null && wrapper.getDisplayField() != null
 					&& (wrapper.getWrappedWidget() instanceof TextBox || wrapper.getWrappedWidget() instanceof ListBox)
 					&& questionDef != null
 					&& (wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE
-						||wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+							||wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
 				externalSourceWidgets.add(wrapper);
 				loadWidget = false;
 			}
 		}
-		
+
 		if(loadWidget)
 			wrapper.loadQuestion();
 
@@ -389,12 +394,12 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			dlg.setText("Contents");
 			dlg.setBody(formDef.getDoc().toString());
 			dlg.center();*/
-			
+
 			saveValues();
 
 			if(!isValid())
 				return;
-			
+
 			String xml = XformConverter.getInstanceDataDoc(formDef.getDoc()).toString();
 			xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
 			submitListener.onSubmit(xml);
@@ -441,7 +446,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				wg instanceof CheckBox || wg instanceof RadioButton || 
 				wg instanceof RuntimeGroupWidget || wg instanceof ListBox);
 	}
-	
+
 	protected void saveValues(){
 		for(int index=0; index<tabs.getWidgetCount(); index++)
 			savePageValues((AbsolutePanel)tabs.getWidget(index));
@@ -523,10 +528,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			tabs.clear();
 			addNewTab("Page1");
 		}
-		
+
 		this.formDef = formDef;
 	}
-	
+
 	public void setEmbeddedHeightOffset(int offset){
 		embeddedHeightOffset = offset;
 	}

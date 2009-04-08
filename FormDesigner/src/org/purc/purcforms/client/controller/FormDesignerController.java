@@ -9,7 +9,8 @@ import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
-import org.purc.purcforms.client.view.ProgressDialog;
+import org.purc.purcforms.client.view.OpenFileDialog;
+import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.http.client.Request;
@@ -28,7 +29,7 @@ import com.google.gwt.user.client.Window;
  * @author daniel
  *
  */
-public class FormDesignerController implements IFormDesignerListener{
+public class FormDesignerController implements IFormDesignerListener, IOpenFileDialogEventListener{
 
 	private CenterPanel centerPanel;
 	private LeftPanel leftPanel;
@@ -98,11 +99,28 @@ public class FormDesignerController implements IFormDesignerListener{
 	 */
 	public void openForm() {
 		if(isOfflineMode()){
-			FormDef formDef = leftPanel.getSelectedForm();
-			if(formDef != null)
-				refreshFormDeffered();
-			else
-				openFormDeffered(ModelConstants.NULL_ID);
+			String xml = null;
+			if(centerPanel.isInLayoutMode()){
+				xml = centerPanel.getLayoutXml();
+				if(xml == null || xml.trim().length() == 0){
+					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
+					dlg.center();
+				}
+			}
+			else{
+				xml = centerPanel.getXformsSource();
+				if(xml != null && xml.trim().length() > 0){
+					FormDef formDef = leftPanel.getSelectedForm();
+					if(formDef != null)
+						refreshFormDeffered();
+					else
+						openFormDeffered(ModelConstants.NULL_ID);
+				}
+				else{
+					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
+					dlg.center();
+				}
+			}
 		}
 	}
 
@@ -204,7 +222,7 @@ public class FormDesignerController implements IFormDesignerListener{
 						saveForm(xml,centerPanel.getLayoutXml());
 
 					if(formSaveListener != null)
-						formSaveListener.onSaveForm(formDef.getId(), xml, formDef.getLayout());
+						formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());
 
 					FormUtil.dlg.hide();
 				}
@@ -532,9 +550,10 @@ public class FormDesignerController implements IFormDesignerListener{
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
 
-						leftPanel.refresh(formDef);
 						formDef.setXform(FormUtil.formatXml(xml));
-						centerPanel.setXformsSource(formDef.getXform(), false);
+						formDef.setLayout(centerPanel.getLayoutXml());
+						
+						leftPanel.refresh(formDef);
 					}
 					FormUtil.dlg.hide();
 				}
@@ -564,5 +583,57 @@ public class FormDesignerController implements IFormDesignerListener{
 
 	public void moveToChild(){
 		leftPanel.getFormActionListener().moveToChild();
+	}
+
+	public void onSetFileContents(String contents) {
+
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,"formopen");
+
+		try{
+			builder.sendRequest(null, new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+					String contents = response.getText();
+					if(contents != null && contents.trim().length() > 0){
+						if(centerPanel.isInLayoutMode())
+							centerPanel.setLayoutXml(contents, false);
+						else{
+							centerPanel.setXformsSource(contents, true);
+							openForm();
+						}
+					}
+				}
+
+				public void onError(Request request, Throwable exception){
+					exception.printStackTrace();
+					Window.alert(exception.getMessage());
+				}
+			});
+		}
+		catch(RequestException ex){
+			ex.printStackTrace();
+			Window.alert(ex.getMessage());
+		}
+	}
+
+	public void saveAs(){
+		try{
+			String data = (centerPanel.isInLayoutMode() ? centerPanel.getLayoutXml() : centerPanel.getXformsSource());
+			if(data == null || data.trim().length() == 0)
+				return;
+			
+			FormDef formDef = leftPanel.getSelectedForm();
+			String fileName = "filename";
+			if(formDef != null)
+				fileName = formDef.getName();
+
+			if(centerPanel.isInLayoutMode())
+				fileName += "-Layout";
+
+			SaveFileDialog dlg = new SaveFileDialog("formsave",data,fileName);
+			dlg.center();
+		}
+		catch(Exception ex){
+			FormUtil.displayException(ex);
+		}
 	}
 }

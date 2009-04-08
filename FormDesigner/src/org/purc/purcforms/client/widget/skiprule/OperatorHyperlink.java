@@ -102,17 +102,12 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			menuBar.addItem(OP_TEXT_NOT_CONTAIN,true, new SelectItemCommand(OP_TEXT_NOT_CONTAIN,this));
 		}
 		 
-		/*ScrollPanel scrollPanel = new ScrollPanel();
+		ScrollPanel scrollPanel = new ScrollPanel();
 		scrollPanel.setWidget(menuBar);
 		scrollPanel.setWidth("300px");
-		scrollPanel.setHeight("200px"); //"200px"
+		scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+"px");
 		
-		int pos = popup.getOffsetHeight();
-		int h = Window.getClientHeight();
-		int y = Window.getScrollTop();
-		int x = h - pos;*/
-		
-		popup.setWidget(menuBar);
+		popup.setWidget(scrollPanel);
 	}
 	
 	public void onItemSelected(Object sender, Object item) {

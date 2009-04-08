@@ -269,19 +269,19 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
 
 			if(dirrection == MOVE_LEFT){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos-1+"px");
 			}
 			else if(dirrection == MOVE_RIGHT){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				pos = FormUtil.convertDimensionToInt(widget.getLeft());
 				widget.setLeft(pos+1+"px");
 			}
 			else if(dirrection == MOVE_UP){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos-1+"px");		
 			}
 			else if(dirrection == MOVE_DOWN){
-				pos = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos+1+"px");
 			}
 		}
@@ -693,14 +693,14 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
 			widget.storePosition();
 			if(i == 0){
-				clipboardLeftMostPos = FormDesignerUtil.convertDimensionToInt(widget.getLeft());;
-				clipboardTopMostPos = FormDesignerUtil.convertDimensionToInt(widget.getTop());;
+				clipboardLeftMostPos = FormUtil.convertDimensionToInt(widget.getLeft());;
+				clipboardTopMostPos = FormUtil.convertDimensionToInt(widget.getTop());;
 			}
 			else{
-				int dimension = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+				int dimension = FormUtil.convertDimensionToInt(widget.getLeft());
 				if(clipboardLeftMostPos > dimension)
 					clipboardLeftMostPos = dimension;
-				dimension = FormDesignerUtil.convertDimensionToInt(widget.getTop());
+				dimension = FormUtil.convertDimensionToInt(widget.getTop());
 				if(clipboardTopMostPos > dimension)
 					clipboardTopMostPos = dimension;
 			}
@@ -794,7 +794,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 	private void loadPage(PageDef pageDef){
 
-		int max = FormDesignerUtil.convertDimensionToInt(sHeight) - 40;
+		int max = FormUtil.convertDimensionToInt(sHeight) - 40;
 		int pageParts = 0, tabIndex = 0;
 		Vector questions  = pageDef.getQuestions();
 		x = y = 20;
@@ -855,7 +855,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			if(widget.getWrappedWidget() instanceof Label){
 				if(widget.getElement().getScrollWidth() > longestLabelWidth){
 					longestLabelWidth = widget.getElement().getScrollWidth();
-					longestLabelLeft = FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+					longestLabelLeft = FormUtil.convertDimensionToInt(widget.getLeft());
 				}
 				labels.add(widget);
 			}
@@ -912,7 +912,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollWidth() + FormDesignerUtil.convertDimensionToInt(widget.getLeft());
+		int total = widget.getElement().getScrollWidth() + FormUtil.convertDimensionToInt(widget.getLeft());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setLeft((total - widget.getElement().getScrollWidth()+"px"));
@@ -943,7 +943,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollHeight() + FormDesignerUtil.convertDimensionToInt(widget.getTop());
+		int total = widget.getElement().getScrollHeight() + FormUtil.convertDimensionToInt(widget.getTop());
 		for(int index = 0; index < widgets.size(); index++){
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setTop((total - widget.getElement().getScrollHeight()+"px"));

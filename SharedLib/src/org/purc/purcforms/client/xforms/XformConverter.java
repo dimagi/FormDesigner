@@ -8,15 +8,17 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
+import org.purc.purcforms.client.view.ErrorDialog;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NamedNodeMap;
@@ -723,6 +725,7 @@ public class XformConverter implements Serializable{
 				val = getNodeTextValue(dataNode,id);
 				if(val == null || val.trim().length() == 0) //we are not allowing empty strings for now.
 					continue;
+
 				def.setDefaultValue(val);
 			}
 		}
@@ -781,8 +784,26 @@ public class XformConverter implements Serializable{
 	public static String getTextValue(Element node){
 		int numOfEntries = node.getChildNodes().getLength();
 		for (int i = 0; i < numOfEntries; i++) {
-			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE)
-				return node.getChildNodes().item(i).getNodeValue();
+			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
+
+				//These iterations are for particularly firefox which when comes accross
+				//text bigger than 4096, splits it into multiple adjacent text nodes
+				//each not exceeding the maximum 4096. This is as of 04/04/2009
+				//and for Firefox version 3.0.8
+				String s = "";
+				
+				for(int index = i; index<numOfEntries; index++){
+					Node currentNode = node.getChildNodes().item(index);
+					String value = currentNode.getNodeValue();
+					if(currentNode.getNodeType() == Node.TEXT_NODE && value != null)
+						s += value;
+					else
+						break;
+				}
+
+				return s;
+				//return node.getChildNodes().item(i).getNodeValue();
+			}
 
 			if(node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
 				String val = getTextValue((Element)node.getChildNodes().item(i));
@@ -1099,7 +1120,7 @@ public class XformConverter implements Serializable{
 					qtn.setDataNode(((Element) obj)); //((Element) obj).setAttribute(attributeName, value);
 				else
 					qtn.setDataNode(((Element) obj));//((Element) obj).addChild(Node.TEXT_NODE, value);
-				
+
 				break;
 			}
 		}

@@ -177,6 +177,10 @@ public class FormDesignerWidget extends Composite{
 		controller.openForm();
 	}
 	
+	public void saveAs(){
+		controller.saveAs();
+	}
+	
 	public void moveItemUp(){
 		controller.moveItemUp();
 	}

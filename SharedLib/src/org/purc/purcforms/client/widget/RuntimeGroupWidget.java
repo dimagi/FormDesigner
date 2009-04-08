@@ -55,6 +55,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private AbsolutePanel selectedPanel = new AbsolutePanel();
 	private boolean isRepeated = false;
 	private Image image;
+	private HTML html;
 	private FormDef formDef;
 
 
@@ -210,20 +211,24 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
 			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
 		}
-		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO)){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
 			widget = new HTML();
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
 
-			String extension = ".mpeg";
+			String extension = "";//".mpeg";
 			String contentType = "&contentType=video/mpeg";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO){
 				contentType = "&contentType=audio/x-wav";
-				extension = ".wav";
+				//extension = ".wav";
 			}
 
 			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia"+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+
+			String answer = questionDef.getAnswer();
+			if(answer == null || answer.trim().length() == 0 )
+				((HTML)widget).setVisible(false);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			//Not dealing with nexted repeats
@@ -373,42 +378,63 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		}
 		else{
 			if(binding.equalsIgnoreCase("clear")){
-				if(!Window.confirm("Do you really want to delete this picture?"))
+				RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
+				if(wrapper == null)
 					return;
 
-				RuntimeWidgetWrapper widget = getCurrentImageWrapper(sender);
-				if(widget == null)
+				if(wrapper.getWrappedWidget() instanceof Image && (((Image)wrapper.getWrappedWidget()).getUrl() == null ||
+						((Image)wrapper.getWrappedWidget()).getUrl().trim().length() == 0))
+					return;
+				if(wrapper.getWrappedWidget() instanceof HTML && !wrapper.getWrappedWidget().isVisible())
+					return;
+				
+				if(!Window.confirm("Do you really want to delete this item?"))
 					return;
 
-				QuestionDef questionDef = widget.getQuestionDef();
+				QuestionDef questionDef = wrapper.getQuestionDef();
 				if(questionDef != null)
 					questionDef.setAnswer(null);
 
-				image = (Image)widget.getWrappedWidget();
-				image.setUrl(null);
+				if(wrapper.getWrappedWidget() instanceof Image){
+					image = (Image)wrapper.getWrappedWidget();
+					image.setUrl(null);
+					html = null;
+				}
+				else{
+					html = (HTML)wrapper.getWrappedWidget();
+					html.setHTML("Click here to play");
+					html.setVisible(false);
+					image = null;
+				}
 				return;
 			}
 			else if(binding.equalsIgnoreCase("browse")){
-				image = getCurrentImage(sender);
+				RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
+				
+				if(wrapper.getWrappedWidget() instanceof Image)
+					image = (Image)wrapper.getWrappedWidget();
+				else
+					html = (HTML)wrapper.getWrappedWidget();
+				
 				OpenFileDialog dlg = new OpenFileDialog(this,"multimedia");
 				dlg.center();
 			}
 		}
 	}
 
-	private Image getCurrentImage(Widget sender){			
-		RuntimeWidgetWrapper wrapper = getCurrentImageWrapper(sender);
+	/*private Image getCurrentImage(Widget sender){			
+		RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
 		if(wrapper != null)
 			return (Image)wrapper.getWrappedWidget();
 
 		return null;
-	}
+	}*/
 
-	private RuntimeWidgetWrapper getCurrentImageWrapper(Widget sender){
+	private RuntimeWidgetWrapper getCurrentMultimediWrapper(Widget sender){
 		RuntimeWidgetWrapper button = (RuntimeWidgetWrapper)sender.getParent().getParent();
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
-			if(widget.getWrappedWidget() instanceof Image){
+			if(widget.getWrappedWidget() instanceof Image || widget.getWrappedWidget() instanceof HTML){
 				if(widget.getBinding().equalsIgnoreCase(button.getParentBinding()))
 					return widget;
 			}
@@ -498,7 +524,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 	private RuntimeWidgetWrapper getPreparedWidget(RuntimeWidgetWrapper w, boolean loadQtn){
 		RuntimeWidgetWrapper widget = new RuntimeWidgetWrapper(w);
-		
+
 		if(loadQtn)
 			widget.loadQuestion();
 
@@ -563,10 +589,32 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 	public void onSetFileContents(String contents) {
 		if(contents != null && contents.trim().length() > 0){
-			image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
-			RuntimeWidgetWrapper widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
 			contents = contents.replace("<pre>", "");
 			contents = contents.replace("</pre>", "");
+			RuntimeWidgetWrapper widgetWrapper = null;
+
+			if(image != null){
+				image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
+				widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
+			}
+			else{
+				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
+				
+				String xpath = widgetWrapper.getBinding();
+				if(!xpath.startsWith(formDef.getVariableName()))
+					xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
+
+				String extension = "";//".mpeg";
+				String contentType = "&contentType=video/mpeg";
+				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO){
+					contentType = "&contentType=audio/x-wav";
+					//extension = ".wav";
+				}
+
+				html.setVisible(true);
+				html.setHTML("<a href=" + URL.encode("multimedia"+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
+			}
+
 			widgetWrapper.getQuestionDef().setAnswer(contents);
 		}
 	}

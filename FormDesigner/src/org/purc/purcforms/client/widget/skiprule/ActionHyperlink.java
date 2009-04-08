@@ -39,16 +39,17 @@ public class ActionHyperlink extends Hyperlink {
 		popup = new PopupPanel(true,true);
 
 		MenuBar menuBar = new MenuBar(true);
+		
+		menuBar.addItem("Delete Condition",true, new Command(){
+			public void execute() {popup.hide(); condWidget.deleteCurrentRow();}});
+		
 		menuBar.addItem("Add Condition",true, new Command(){
 			public void execute() {popup.hide(); condWidget.addCondition();}});
 
-		if(allowBrackets){
+		/*if(allowBrackets){
 			menuBar.addItem("Add Bracket",true, new Command(){
 				public void execute() {popup.hide(); condWidget.addBracket();}});
-		}
-
-		menuBar.addItem("Delete Condition",true, new Command(){
-			public void execute() {popup.hide(); condWidget.deleteCurrentRow();}});
+		}*/
 
 		popup.setWidget(menuBar);
 	}

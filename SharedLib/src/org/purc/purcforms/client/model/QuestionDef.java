@@ -13,6 +13,7 @@ import org.purc.purcforms.client.xforms.XformConverter;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -699,7 +700,7 @@ public class QuestionDef implements Serializable{
 					NodeList childNodes = dataNode.getChildNodes();
 					while(childNodes.getLength() > 0)
 						dataNode.removeChild(childNodes.item(0));
-					
+					//Window.alert(variableName+"="+value.length());
 					dataNode.appendChild(doc.createTextNode(value));
 				}
 				else{

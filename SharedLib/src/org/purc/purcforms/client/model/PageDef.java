@@ -9,6 +9,7 @@ import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 
 
 /** The definition of a page in a form or questionaire. 
@@ -285,6 +286,9 @@ public class PageDef implements Serializable{
 			parentNode = (Element)parentNode.getParentNode();
 		}
 
+		Node parentDataNode = questionDef.getDataNode() != null ? questionDef.getDataNode().getParentNode() : null;
+		Node parentBindNode = questionDef.getBindNode() != null ? questionDef.getBindNode().getParentNode() : null;
+		
 		if(controlNode != null)
 			parentNode.removeChild(questionDef.getControlNode());
 
@@ -324,13 +328,15 @@ public class PageDef implements Serializable{
 			questions.add(questionDef);
 
 			if(controlNode != null){
-				if(questionDef.getControlNode() != null)
+				if(questionDef.getControlNode() != null && parentNode != null)
 					parentNode.appendChild(questionDef.getControlNode());
 
-				if(questionDef.getDataNode() != null)
-					questionDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), questionDef.getDataNode());
-				if(questionDef.getBindNode() != null)
-					questionDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), questionDef.getBindNode());
+				if(questionDef.getDataNode() != null && parentDataNode != null)
+					parentDataNode.appendChild(questionDef.getDataNode());
+					//parentDataNode.insertBefore(questionDef.getDataNode(), questionDef.getDataNode());
+				if(questionDef.getBindNode() != null && parentBindNode != null)
+					parentBindNode.appendChild(questionDef.getBindNode());
+					//parentBindNode.insertBefore(questionDef.getBindNode(), questionDef.getBindNode());
 			}
 		}
 	}

@@ -527,7 +527,7 @@ public class QuestionDef implements Serializable{
 		for(int i=0; i<list.size(); i++){
 			if(i == 0){
 				OptionDef optnDef = (OptionDef)list.get(i);
-				if(optnDef.getControlNode() != null)
+				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
 					controlNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
 			}
 			optns.add(list.get(i));
@@ -561,9 +561,11 @@ public class QuestionDef implements Serializable{
 			if(i == 1){
 				optns.add(optionDef); //Add after the first item but before the current (second).
 
-				OptionDef optnDef = (OptionDef)list.get(i);
-				if(optnDef.getControlNode() != null)
+				OptionDef optnDef = getNextSavedOption(list,i); //(OptionDef)list.get(i);
+				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
 					controlNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
+				else
+					controlNode.appendChild(optionDef.getControlNode());
 			}
 			optns.add(list.get(i));
 		}
@@ -575,6 +577,15 @@ public class QuestionDef implements Serializable{
 			if(optionDef.getControlNode() != null)
 				controlNode.appendChild(optionDef.getControlNode());
 		}
+	}
+	
+	private OptionDef getNextSavedOption(List options, int index){
+		for(int i=index; i<options.size(); i++){
+			OptionDef optionDef = (OptionDef)options.get(i);
+			if(optionDef.getControlNode() != null)
+				return optionDef;
+		}
+		return (OptionDef)options.get(index);
 	}
 
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData){
@@ -629,12 +640,29 @@ public class QuestionDef implements Serializable{
 
 		if((getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) && options != null){
+			
+			boolean allOptionsNew = areAllOptionsNew();
+			Vector newOptns = new Vector();
 			Vector optns = (Vector)options;
 			for(int i=0; i<optns.size(); i++){
 				OptionDef optionDef = (OptionDef)optns.elementAt(i);
+				
+				if(!allOptionsNew && optionDef.getControlNode() == null)
+					newOptns.add(optionDef);
+				
 				optionDef.updateDoc(doc,controlNode);
 				if(i == 0)
 					firstOptionNode = optionDef.getControlNode();
+			}
+			
+			for(int k = 0; k < newOptns.size(); k++){
+				OptionDef optionDef = (OptionDef)newOptns.elementAt(k);
+				int proposedIndex = optns.size() - (newOptns.size() - k);
+				int currentIndex = optns.indexOf(optionDef);
+				if(currentIndex == proposedIndex)
+					continue;
+
+				moveOptionNodesUp(optionDef,getRefOption(optns,newOptns,currentIndex /*currentIndex+1*/));
 			}
 		}
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -669,6 +697,32 @@ public class QuestionDef implements Serializable{
 			updateNodeValue(doc,formNode,defaultValue,withData);
 
 		return isNew;
+	}
+	
+	private boolean areAllOptionsNew(){
+		if(options == null)
+			return false;
+
+		Vector optns = (Vector)options;
+		for(int i=0; i<optns.size(); i++){
+			OptionDef optionDef = (OptionDef)optns.elementAt(i);
+			if(optionDef.getControlNode() != null)
+				return false;
+		}
+		return true;
+	}
+	
+	private OptionDef getRefOption(Vector options, Vector newOptions, int index){
+		OptionDef optionDef;
+		int i = index + 1;
+		while(i < options.size()){
+			optionDef = (OptionDef)options.get(i);
+			if(!newOptions.contains(optionDef))
+				return optionDef;
+			i++;
+		}
+		
+		return null;
 	}
 
 	public void updateNodeValue(FormDef formDef){
@@ -1008,6 +1062,17 @@ public class QuestionDef implements Serializable{
 	public void clearOptions(){
 		if(options != null)
 			((Vector)options).clear();
+	}
+	
+	public void moveOptionNodesUp(OptionDef optionDef, OptionDef refOptionDef){
+		Element controlNode = optionDef.getControlNode();
+		Element parentNode = controlNode != null ? (Element)controlNode.getParentNode() : null;
+
+		if(controlNode != null)
+			parentNode.removeChild(controlNode);
+
+		if(refOptionDef.getControlNode() != null)
+			parentNode.insertBefore(controlNode, refOptionDef.getControlNode());
 	}
 }
 

@@ -1304,11 +1304,6 @@ public class XformConverter implements Serializable{
 	private static Vector getSkipRuleConditions(FormDef formDef, String relevant, int action){
 		Vector conditions = new Vector();
 
-		if(relevant.contains("D30")){
-			int i = 0;
-			i++;
-		}
-
 		Vector list = getConditionsOperatorTokens(relevant);
 
 		Condition condition  = new Condition();

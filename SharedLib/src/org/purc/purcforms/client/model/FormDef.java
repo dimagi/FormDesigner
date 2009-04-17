@@ -621,4 +621,15 @@ public class FormDef implements Serializable{
 		for(int index = 0; index < pages.size(); index++)
 			((PageDef)pages.get(index)).refresh(pageDef);
 	}
+	
+	public int getQuestionCount(){
+		if(pages == null)
+			return 0;
+		
+		int count = 0;
+		for(int index = 0; index < pages.size(); index++)
+			count += getPageAt(index).getQuestionCount();
+		
+		return count;
+	}
 }

@@ -208,6 +208,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(formDef.getId() == ModelConstants.NULL_ID)
 			formDef.setId(++nextFormId);
 		
+		int count = formDef.getQuestionCount();
+		if(nextQuestionId <= count)
+			nextQuestionId = count;
+	
 		this.formDef = formDef;
 		
 		if(formExists(formDef.getId()))

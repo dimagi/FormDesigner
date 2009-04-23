@@ -310,25 +310,29 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 * @see org.purc.purcform.client.controller.IFormDesignerController#deleteSelectedItem()
 	 */
 	public void deleteSelectedItem() {
-		designSurfaceView.deleteSelectedItem();	
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.deleteSelectedItem();	
 	}
 
 	public void copyItem() {
-		designSurfaceView.copyItem();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.copyItem();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.purc.purcform.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem() {
-		designSurfaceView.cutItem();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.cutItem();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
-		designSurfaceView.pasteItem();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.pasteItem();
 	}
 
 	public void onSubmit(String xml) {
@@ -340,40 +344,47 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void alignLeft() {
-		designSurfaceView.alignLeft();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.alignLeft();
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
 	 */
 	public void alignRight() {
-		designSurfaceView.alignRight();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.alignRight();
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void alignTop() {
-		designSurfaceView.alignTop();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.alignTop();
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
 	 */
 	public void alignBottom() {
-		designSurfaceView.alignBottom();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.alignBottom();
 	}
 
 	public void makeSameHeight() {
-		designSurfaceView.makeSameHeight();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.makeSameHeight();
 	}
 
 	public void makeSameSize() {
-		designSurfaceView.makeSameSize();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.makeSameSize();
 	}
 
 	public void makeSameWidth() {
-		designSurfaceView.makeSameWidth();
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.makeSameWidth();
 	}
 
 	public void refresh(){

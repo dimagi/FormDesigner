@@ -109,17 +109,21 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((TextBox)widget).addChangeListener(new ChangeListener(){
 				public void onChange(Widget sender){
 					//questionDef.setAnswer(((TextBox)widget).getText());
-					questionDef.setAnswer(getTextBoxAnswer());
-					isValid();
-					editListener.onValueChanged(null, null, questionDef.getAnswer());
+					if(questionDef != null){
+						questionDef.setAnswer(getTextBoxAnswer());
+						isValid();
+						editListener.onValueChanged(null, null, questionDef.getAnswer());
+					}
 				}
 			});
 
 			((TextBox)widget).addKeyboardListener(new KeyboardListenerAdapter(){
 				public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-					questionDef.setAnswer(getTextBoxAnswer());
-					isValid();
-					editListener.onValueChanged(null, null, questionDef.getAnswer());
+					if(questionDef != null){
+						questionDef.setAnswer(getTextBoxAnswer());
+						isValid();
+						editListener.onValueChanged(null, null, questionDef.getAnswer());
+					}
 				}
 
 				public void onKeyDown(Widget sender, char keyCode, int modifiers) {
@@ -304,7 +308,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.isLocked())
 			setLocked(true);
 	}
-	
+
 	private String fromSubmit2DisplayDate(String value){
 		try{
 			return FormUtil.getDateTimeDisplayFormat().format(FormUtil.getDateTimeSubmitFormat().parse(value));
@@ -389,7 +393,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		catch(Exception ex){
 			value = null;
 		}
-		
+
 		return value;
 	}
 
@@ -397,7 +401,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef == null){
 			if(widget instanceof RuntimeGroupWidget)
 				((RuntimeGroupWidget)widget).saveValue(formDef);
-			
+
 			return;
 		}
 
@@ -613,22 +617,22 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((Image)widget).setUrl(null);
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).clearValue();
-		
+
 		if(questionDef != null)
 			questionDef.setAnswer(null);
 	}
-	
+
 	public void onEnabledChanged(boolean enabled) {
 		if(!enabled)
 			clearValue();
-		
+
 		setEnabled(enabled);
 	}
 
 	public void onLockedChanged(boolean locked) {
 		if(locked)
 			clearValue();
-		
+
 		setLocked(locked);
 	}
 
@@ -642,7 +646,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public void onVisibleChanged(boolean visible) {
 		if(!visible)
 			clearValue();
-		
+
 		setVisible(visible);
 	}
 

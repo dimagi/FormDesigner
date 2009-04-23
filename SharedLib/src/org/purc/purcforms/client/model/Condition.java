@@ -99,7 +99,9 @@ public class Condition implements Serializable{
 		
 		try{
 			QuestionDef qn = formDef.getQuestion(this.questionId);
-
+			if(qn == null)
+				return false; //possibly question deleted
+	
 			if(value.startsWith(formDef.getVariableName()+"/")){
 				QuestionDef qn2 = formDef.getQuestion(value.substring(value.indexOf('/')+1));
 				if(qn2 != null){
@@ -166,29 +168,29 @@ public class Condition implements Serializable{
 				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 
-			int answer = Integer.parseInt(qtn.getAnswer());
-			int intValue = Integer.parseInt(value);
+			long answer = Long.parseLong(qtn.getAnswer());
+			long longValue = Long.parseLong(value);
 
-			int secondIntValue = intValue;
+			long secondLongValue = longValue;
 			if(secondValue != null && secondValue.trim().length() > 0)
-				secondIntValue = Integer.parseInt(secondValue);
+				secondLongValue = Long.parseLong(secondValue);
 
 			if(operator == ModelConstants.OPERATOR_EQUAL)
-				return intValue == answer;
+				return longValue == answer;
 			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
-				return intValue != answer;
+				return longValue != answer;
 			else if(operator == ModelConstants.OPERATOR_LESS)
-				return answer < intValue;
+				return answer < longValue;
 			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
-				return answer < intValue || intValue == answer;
+				return answer < longValue || longValue == answer;
 			else if(operator == ModelConstants.OPERATOR_GREATER)
-				return answer > intValue;
+				return answer > longValue;
 				else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-					return answer > intValue || intValue == answer;
+					return answer > longValue || longValue == answer;
 					else if(operator == ModelConstants.OPERATOR_BETWEEN)
-						return answer > intValue && intValue < secondIntValue;
+						return answer > longValue && longValue < secondLongValue;
 						else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-							return !(answer > intValue && intValue < secondIntValue);
+							return !(answer > longValue && longValue < secondLongValue);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -362,29 +364,29 @@ public class Condition implements Serializable{
 				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 
-			float answer = Float.parseFloat(qtn.getAnswer());
-			float floatValue = Float.parseFloat(value);
+			double answer = Double.parseDouble(qtn.getAnswer());
+			double doubleValue = Double.parseDouble(value);
 
-			float secondFloatValue = floatValue;
+			double secondDoubleValue = doubleValue;
 			if(secondValue != null && secondValue.trim().length() > 0)
-				secondFloatValue = Float.parseFloat(secondValue);
+				secondDoubleValue = Double.parseDouble(secondValue);
 
 			if(operator == ModelConstants.OPERATOR_EQUAL)
-				return floatValue == answer;
+				return doubleValue == answer;
 			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
-				return floatValue != answer;
+				return doubleValue != answer;
 			else if(operator == ModelConstants.OPERATOR_LESS)
-				return answer < floatValue;
+				return answer < doubleValue;
 			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
-				return answer < floatValue || floatValue == answer;
+				return answer < doubleValue || doubleValue == answer;
 			else if(operator == ModelConstants.OPERATOR_GREATER)
-				return answer > floatValue;
+				return answer > doubleValue;
 				else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-					return answer > floatValue || floatValue == answer;
+					return answer > doubleValue || doubleValue == answer;
 					else if(operator == ModelConstants.OPERATOR_BETWEEN)
-						return answer > floatValue && floatValue < secondFloatValue;
+						return answer > doubleValue && doubleValue < secondDoubleValue;
 						else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-							return !(answer > floatValue && floatValue < secondFloatValue);
+							return !(answer > doubleValue && doubleValue < secondDoubleValue);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();

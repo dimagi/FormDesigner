@@ -213,6 +213,12 @@ public class XformConverter implements Serializable{
 
 	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
 		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
+		
+		if(questionDef == null){
+			formDef.removeValidationRule(rule);
+			return; //possibly question deleted.
+		}
+		
 		Element node = questionDef.getBindNode();
 		if(node == null)
 			node = questionDef.getControlNode();

@@ -876,7 +876,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	private DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef){
-		Vector options = questionDef.getOptions();
+		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
 			if(i != 0)
 				y += 40;

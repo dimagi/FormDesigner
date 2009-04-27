@@ -744,7 +744,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			if(index > 0)
 				x += 205;
 
-			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
+					qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				widgetWrapper = addNewDropdownList();
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker();
@@ -1287,7 +1288,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			widgetWrapper = null;
 
 			x += (questionDef.getText().length() * 10);
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				widgetWrapper = addNewDropdownList();
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker();
@@ -1399,7 +1401,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
-		Vector options = questionDef.getOptions();
+		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
 			if(i != 0){
 				y += 40;

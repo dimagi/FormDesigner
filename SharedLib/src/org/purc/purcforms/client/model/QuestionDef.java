@@ -13,7 +13,6 @@ import org.purc.purcforms.client.xforms.XformConverter;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -122,6 +121,9 @@ public class QuestionDef implements Serializable{
 	public static final byte QTN_TYPE_VIDEO = 12;
 
 	public static final byte QTN_TYPE_AUDIO = 13;
+	
+	public static final int QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC = 14;
+	
 
 	private Element dataNode;
 	private Element labelNode;
@@ -300,10 +302,10 @@ public class QuestionDef implements Serializable{
 			changeListeners.get(index).onRequiredChanged(required);
 	}
 
-	public Vector getOptions() {
+	public List getOptions() {
 		//if(!(type == QTN_TYPE_LIST_EXCLUSIVE || type == QTN_TYPE_LIST_MULTIPLE))
 		//	throw new Exception("Invalid Operation");
-		return (Vector)options;
+		return (List)options;
 	}
 
 	public void setOptions(Object options) {
@@ -482,10 +484,10 @@ public class QuestionDef implements Serializable{
 		return getText();
 	}
 
-	private void copyQuestionOptions(Vector options){
-		this.options = new Vector();
+	private void copyQuestionOptions(List options){
+		this.options = new ArrayList();
 		for(int i=0; i<options.size(); i++)
-			((Vector)this.options).addElement(new OptionDef((OptionDef)options.elementAt(i),this));
+			((Vector)this.options).addElement(new OptionDef((OptionDef)options.get(i),this));
 	}
 
 	public void removeOption(OptionDef optionDef){
@@ -988,7 +990,7 @@ public class QuestionDef implements Serializable{
 	}
 
 	public OptionDef getOptionWithText(String text){
-		if(options == null)
+		if(options == null || text == null)
 			return null;
 
 		Vector list = (Vector)options;
@@ -999,9 +1001,22 @@ public class QuestionDef implements Serializable{
 		}
 		return null;
 	}
+	
+	public OptionDef getOption(int id){
+		if(options == null)
+			return null;
+
+		Vector list = (Vector)options;
+		for(int i=0; i<list.size(); i++){
+			OptionDef optionDef = (OptionDef)list.elementAt(i);
+			if(optionDef.getId() == id)
+				return optionDef;
+		}
+		return null;
+	}
 
 	public OptionDef getOptionWithValue(String value){
-		if(options == null)
+		if(options == null || value == null)
 			return null;
 
 		Vector list = (Vector)options;
@@ -1040,7 +1055,7 @@ public class QuestionDef implements Serializable{
 	}
 
 	private void refreshOptions(QuestionDef questionDef){
-		Vector options2 = questionDef.getOptions();
+		List options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
 			return;
 
@@ -1073,6 +1088,13 @@ public class QuestionDef implements Serializable{
 
 		if(refOptionDef.getControlNode() != null)
 			parentNode.insertBefore(controlNode, refOptionDef.getControlNode());
+	}
+	
+	public void setOptionList(List<OptionDef> optionList){
+		options = optionList;
+		
+		for(int index = 0; index < changeListeners.size(); index++)
+			changeListeners.get(index).onOptionsChanged(optionList);
 	}
 }
 

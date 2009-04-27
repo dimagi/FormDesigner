@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.xforms.XformConverter;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -402,6 +403,11 @@ public class PageDef implements Serializable{
 
 		for(int k = 0; k < newQuestions.size(); k++){
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
+			if(questionDef.getDataNode() == null){
+				Window.alert("Missing data node for :" + questionDef.getText());
+				continue; //TODO This is a bug which should be resolved
+			}
+			
 			int proposedIndex = questions.size() - (newQuestions.size() - k);
 			int currentIndex = questions.indexOf(questionDef);
 			if(currentIndex == proposedIndex)

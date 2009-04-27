@@ -57,6 +57,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private static final byte DT_IMAGE = 10;
 	private static final byte DT_VIDEO = 11;
 	private static final byte DT_AUDIO = 12;
+	private static final byte DT_SINGLE_SELECT_DYNAMIC = 13;
 
 	private FlexTable table = new FlexTable();
 	private ListBox cbDataType = new ListBox(false);
@@ -68,7 +69,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private TextBox txtHelpText = new TextBox();
 	private TextBox txtBinding = new TextBox();
 	private TextBox txtDefaultValue = new TextBox();
-	private ListBox cbControlType = new ListBox(false);
+	//private ListBox cbControlType = new ListBox(false);
 	private TextBox txtDescTemplate = new TextBox();
 	private DescTemplateWidget btnDescTemplate; // = new Button("Create/Edit");
 
@@ -76,6 +77,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private IFormChangeListener formChangeListener;
 	private SkipRulesView skipRulesView = new SkipRulesView();
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
+	private DynamicListsView dynamicListsView = new DynamicListsView();
 	private IFormActionListener formActionListener;
 
 	public PropertiesView(){
@@ -93,8 +95,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(6, 0, new Label("Locked"));
 		table.setWidget(7, 0, new Label("Required"));
 		table.setWidget(8, 0, new Label("Default Value"));
-		table.setWidget(9, 0, new Label("Control Type"));
-		table.setWidget(10, 0, new Label("Description Template"));
+		//table.setWidget(9, 0, new Label("Control Type"));
+		table.setWidget(9, 0, new Label("Description Template"));
 
 		table.setWidget(0, 1, txtText);
 		table.setWidget(1, 1, txtHelpText);
@@ -105,7 +107,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(6, 1, chkLocked);
 		table.setWidget(7, 1, chkRequired);
 		table.setWidget(8, 1, txtDefaultValue);
-		table.setWidget(9, 1, cbControlType);
+		//table.setWidget(9, 1, cbControlType);
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(txtDescTemplate);
@@ -113,7 +115,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.setCellWidth(btnDescTemplate, "20%");
 		FormDesignerUtil.maximizeWidget(txtDescTemplate);
 		FormDesignerUtil.maximizeWidget(panel);
-		table.setWidget(10, 1, panel);
+		table.setWidget(9, 1, panel);
 
 		table.setStyleName("cw-FlexTable");
 
@@ -130,6 +132,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem("Picture");
 		cbDataType.addItem("Video");
 		cbDataType.addItem("Audio");
+		cbDataType.addItem("Single Select Dynamic");
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -143,7 +146,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setWidth("100%");
 		txtDefaultValue.setWidth("100%");
 		cbDataType.setWidth("100%");
-		cbControlType.setWidth("100%");
+		//cbControlType.setWidth("100%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.add(table);
@@ -151,7 +154,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		DecoratedTabPanel tabs = new DecoratedTabPanel();
 		tabs.add(skipRulesView, "Skip Logic");
 		tabs.add(validationRulesView, "Validation Logic");
-		//tabs.add(new Label(), "Constraints/Validations");
+		tabs.add(dynamicListsView, "Dynamic Lists");
 
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
@@ -174,7 +177,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setTitle("The question internal identifier. For Questions, it should be a valid xml node name.");
 		txtDefaultValue.setTitle("The default value or answer");
 		cbDataType.setTitle("The type of question or type of expected answers.");
-		cbControlType.setTitle("The question text.");
+		//cbControlType.setTitle("The question text.");
 
 		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 	}
@@ -439,6 +442,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_AUDIO:
 			dataType = QuestionDef.QTN_TYPE_AUDIO;
 			break;
+		case DT_SINGLE_SELECT_DYNAMIC:
+			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
+			break;
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
@@ -446,6 +452,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			questionDef.setRepeatQtnsDef(new RepeatQtnsDef(questionDef));
 
 		questionDef.setDataType(dataType);
+		
+		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+			dynamicListsView.setEnabled(false);
+		else if(!dynamicListsView.isEnabled())
+			dynamicListsView.setQuestionDef(questionDef);
 	}
 
 	public void setFormChangeListener(IFormChangeListener formChangeListener){
@@ -503,6 +514,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void execute() {
 				skipRulesView.setQuestionDef((QuestionDef)propertiesObj);
 				validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
+				dynamicListsView.setQuestionDef((QuestionDef)propertiesObj);
 			}
 		});
 	}
@@ -519,7 +531,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	private void enableQuestionOnlyProperties(boolean enable){
 		cbDataType.setEnabled(enable);
-		cbControlType.setEnabled(enable);
+		//cbControlType.setEnabled(enable);
 		chkVisible.setEnabled(enable);
 		chkEnabled.setEnabled(enable);
 		chkLocked.setEnabled(enable);
@@ -528,6 +540,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtHelpText.setEnabled(enable);
 		skipRulesView.setEnabled(enable);
 		validationRulesView.setEnabled(enable);
+		dynamicListsView.setEnabled(enable);
 
 		clearProperties();
 	}
@@ -575,6 +588,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case QuestionDef.QTN_TYPE_AUDIO:
 			index = DT_AUDIO;
 			break;
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
+			index = DT_SINGLE_SELECT_DYNAMIC;
+			break;
 		}
 
 		cbDataType.setSelectedIndex(index);
@@ -582,7 +598,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	public void clearProperties(){
 		cbDataType.setSelectedIndex(DT_NONE);
-		cbControlType.setSelectedIndex(DT_NONE);
+		//cbControlType.setSelectedIndex(DT_NONE);
 		chkVisible.setChecked(false);
 		chkEnabled.setChecked(false);
 		chkLocked.setChecked(false);
@@ -635,6 +651,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public void commitChanges(){
 		skipRulesView.updateSkipRule();
 		validationRulesView.updateValidationRule();
+		dynamicListsView.updateDynamicLists();
 	}
 
 	public void onItemSelected(Object sender, Object item) {

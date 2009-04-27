@@ -62,7 +62,7 @@ public class DescTemplateWidget extends Composite{
 		oracle.clear();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle,false);
 
 		setupPopup();
 	}

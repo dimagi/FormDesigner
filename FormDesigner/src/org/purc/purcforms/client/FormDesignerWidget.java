@@ -27,7 +27,7 @@ public class FormDesignerWidget extends Composite{
 	 * Instantiate an application-level image bundle. This object will provide
 	 * programmatic access to all the images needed by widgets.
 	 */
-	private static final Images images = (Images) GWT.create(Images.class);
+	public static final Images images = (Images) GWT.create(Images.class);
 
 	/**
 	 * An aggragate image bundle that pulls together all the images for this

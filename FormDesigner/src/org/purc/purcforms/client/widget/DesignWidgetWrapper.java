@@ -1,9 +1,12 @@
 package org.purc.purcforms.client.widget;
 
+import java.util.List;
+
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
@@ -577,5 +580,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				refreshSize();
 			}
 		}
+	}
+	
+	public void onOptionsChanged(List<OptionDef> optionList){
+		
 	}
 }

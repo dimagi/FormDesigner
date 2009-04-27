@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget.skiprule;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
@@ -215,9 +216,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			MenuBar menuBar = new MenuBar(true);
 
 			int size = 0, maxSize = 0; String text;
-			Vector options = questionDef.getOptions();
+			List options = questionDef.getOptions();
 			for(int i=0; i<options.size(); i++){
-				OptionDef optionDef = (OptionDef)options.elementAt(i);
+				OptionDef optionDef = (OptionDef)options.get(i);
 				text = optionDef.getText();
 				size = text.length();
 				if(maxSize < size)
@@ -254,9 +255,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 			int size = 0, maxSize = 0; String text;
 			VerticalPanel panel = new VerticalPanel();
-			Vector options = questionDef.getOptions();
+			List options = questionDef.getOptions();
 			for(int i=0; i<options.size(); i++){
-				OptionDef optionDef = (OptionDef)options.elementAt(i);
+				OptionDef optionDef = (OptionDef)options.get(i);
 
 				text = optionDef.getText();
 				size = text.length();
@@ -559,7 +560,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false);
 
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();

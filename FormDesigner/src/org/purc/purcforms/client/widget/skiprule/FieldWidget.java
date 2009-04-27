@@ -35,6 +35,8 @@ public class FieldWidget extends Composite{
 	private TextBox txtField = new TextBox();
 	private Hyperlink fieldHyperlink;
 	private ItemSelectionListener itemSelectionListener;
+	private boolean forDynamicOptions = false;
+	private QuestionDef dynamicQuestionDef;
 	
 	public FieldWidget(ItemSelectionListener itemSelectionListener){
 		this.itemSelectionListener = itemSelectionListener;
@@ -103,8 +105,9 @@ public class FieldWidget extends Composite{
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
 		
+		txtField = new TextBox(); //TODO New and hence could be buggy
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();
 		
@@ -147,6 +150,17 @@ public class FieldWidget extends Composite{
 	}
 	
 	public void setQuestion(QuestionDef questionDef){
-		fieldHyperlink.setText(questionDef.getText());
+		if(questionDef != null)
+			fieldHyperlink.setText(questionDef.getText());
+		else
+			fieldHyperlink.setText("");
+	}
+	
+	public void setForDynamicOptions(boolean forDynamicOptions){
+		this.forDynamicOptions = forDynamicOptions;
+	}
+	
+	public void setDynamicQuestionDef(QuestionDef dynamicQuestionDef){
+		this.dynamicQuestionDef = dynamicQuestionDef;
 	}
 }

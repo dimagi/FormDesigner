@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.SubmitListener;
+import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
@@ -457,8 +459,27 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			((RuntimeWidgetWrapper)panel.getWidget(index)).saveValue(formDef);
 	}
 
-	public void onValueChanged(Widget sender, Object oldValue, Object newValue) {
+	public void onValueChanged(QuestionDef questionDef) {
 		fireRules();
+		
+		int type = questionDef.getDataType();
+		if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+			return;
+		
+		DynamicOptionDef dynamicOptionDef = formDef.getDynamicOptions(questionDef.getId());
+		if(dynamicOptionDef == null)
+			return;
+		
+		QuestionDef childQuestionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
+		if(childQuestionDef == null)
+			return;
+		
+		OptionDef optionDef = questionDef.getOptionWithValue(questionDef.getAnswer());
+		List<OptionDef> optionList = null;
+		if(optionDef != null)
+			optionList = dynamicOptionDef.getOptionList(optionDef.getId());
+		
+		childQuestionDef.setOptionList(optionList);
 	}
 
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {

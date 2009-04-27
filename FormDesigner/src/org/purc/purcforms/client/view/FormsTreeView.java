@@ -284,9 +284,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			Vector options = questionDef.getOptions();
+			List options = questionDef.getOptions();
 			for(int currentOptionNo=0; currentOptionNo < options.size(); currentOptionNo++){
-				OptionDef optionDef = (OptionDef)options.elementAt(currentOptionNo);
+				OptionDef optionDef = (OptionDef)options.get(currentOptionNo);
 				addImageItem(questionRoot, optionDef.getText(), images.markRead(),optionDef,null);
 			}
 		}
@@ -443,7 +443,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(formExists(formId))
 			return;
 
-		FormDef formDef = new FormDef(formId,name, varName,null,null,null,null);
+		FormDef formDef = new FormDef(formId,name, varName,null,null,null,null,null);
 		TreeItem item = new CompositeTreeItem(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 		item.setUserObject(formDef);
 		tree.addItem(item);

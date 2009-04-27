@@ -1,5 +1,9 @@
 package org.purc.purcforms.client.controller;
 
+import java.util.List;
+
+import org.purc.purcforms.client.model.OptionDef;
+
 
 /**
  * 
@@ -13,4 +17,5 @@ public interface QuestionChangeListener {
 	public void onLockedChanged(boolean locked);
 	public void onBindingChanged(String newValue);
 	public void onDataTypeChanged(int dataType);
+	public void onOptionsChanged(List<OptionDef> optionList);
 }

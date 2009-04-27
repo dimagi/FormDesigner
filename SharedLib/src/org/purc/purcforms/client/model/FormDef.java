@@ -2,8 +2,11 @@ package org.purc.purcforms.client.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.purc.purcforms.client.xforms.XformConverter;
 
@@ -45,6 +48,12 @@ public class FormDef implements Serializable{
 
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
+	
+	/** A mapping of dynamic lists keyed by the id of the question whose values
+	 *  determine possible values of another question as specified in the DynamicOptionDef object.
+	*/
+	private HashMap<Integer,DynamicOptionDef>  dynamicOptions;
+	
 
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
 	private Document doc;
@@ -72,6 +81,7 @@ public class FormDef implements Serializable{
 		copyPages(formDef.getPages());
 		copySkipRules(formDef.getSkipRules());
 		copyValidationRules(formDef.getValidationRules());
+		copyDynamicOptions(formDef.getDynamicOptions());
 	}
 
 	/**
@@ -83,7 +93,7 @@ public class FormDef implements Serializable{
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, String descTemplate) {
+	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate) {
 		setId(id);
 		setName(name);
 
@@ -93,6 +103,7 @@ public class FormDef implements Serializable{
 		setPages(pages);
 		setSkipRules(skipRules);
 		setValidationRules(validationRules);
+		setDynamicOptions(dynamicOptions);
 		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
 	}
 
@@ -189,7 +200,15 @@ public class FormDef implements Serializable{
 	public void setValidationRules(Vector validationRules) {
 		this.validationRules = validationRules;
 	}
-
+	
+	public HashMap<Integer,DynamicOptionDef> getDynamicOptions() {
+		return dynamicOptions;
+	}
+	
+	public void setDynamicOptions(HashMap<Integer,DynamicOptionDef> dynamicOptions) {
+		this.dynamicOptions = dynamicOptions;
+	}
+	
 	public String getDescriptionTemplate() {
 		return descriptionTemplate;
 	}
@@ -280,6 +299,19 @@ public class FormDef implements Serializable{
 			for(int i=0; i<validationRules.size(); i++){
 				ValidationRule validationRule = (ValidationRule)validationRules.elementAt(i);
 				validationRule.updateDoc(this);
+			}
+		}
+		
+		if(dynamicOptions != null){
+			Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<Integer,DynamicOptionDef> entry = iterator.next();
+				DynamicOptionDef dynamicOptionDef = entry.getValue();
+				QuestionDef questionDef = getQuestion(entry.getKey());
+				if(questionDef == null)
+					continue;
+				
+				dynamicOptionDef.updateDoc(doc,this,questionDef);
 			}
 		}
 	}
@@ -375,7 +407,28 @@ public class FormDef implements Serializable{
 				this.validationRules.addElement(new ValidationRule((ValidationRule)rules.elementAt(i)));
 		}
 	}
+	
+	private void copyDynamicOptions(HashMap<Integer,DynamicOptionDef> options){
+		if(options != null)
+		{
+			dynamicOptions =  new HashMap<Integer,DynamicOptionDef>();
+			
+			Iterator<Entry<Integer,DynamicOptionDef>> iterator = options.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<Integer,DynamicOptionDef> entry = iterator.next();
+				DynamicOptionDef dynamicOptionDef = entry.getValue();
+				QuestionDef questionDef = getQuestion(dynamicOptionDef.getQuestionId());
+				if(questionDef == null)
+					return;
+				dynamicOptions.put(new Integer(entry.getKey()), new DynamicOptionDef(dynamicOptionDef,questionDef));
+			}
+		}
+	}
 
+	/*private void copyDynamicOptions(HashMap<Integer,DynamicOptionDef>){
+		
+	}*/
+	
 	public void removePage(PageDef pageDef){
 		/*for(int i=0; i<pages.size(); i++){
 			((PageDef)pages.elementAt(i)).removeAllQuestions();
@@ -597,6 +650,37 @@ public class FormDef implements Serializable{
 
 	public boolean removeValidationRule(ValidationRule validationRule){
 		return validationRules.remove(validationRule);
+	}
+	
+	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
+		if(dynamicOptions == null)
+			dynamicOptions = new HashMap<Integer,DynamicOptionDef>();
+		dynamicOptions.put(questionId, dynamicOptionDef);
+	}
+	
+	public DynamicOptionDef getDynamicOptions(Integer questionId){
+		if(dynamicOptions == null)
+			return null;
+		return dynamicOptions.get(questionId);
+	}
+	
+	public DynamicOptionDef getChildDynamicOptions(Integer questionId){
+		if(dynamicOptions == null)
+			return null;
+		
+		Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,DynamicOptionDef> entry = iterator.next();
+			DynamicOptionDef dynamicOptionDef = entry.getValue();
+			if(dynamicOptionDef.getQuestionId() == questionId)
+				return dynamicOptionDef;
+		}
+		return null;
+	}
+	
+	public void removeDynamicOptions(Integer questionId){
+		if(dynamicOptions != null)
+			dynamicOptions.remove(questionId);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package org.purc.purcforms.client.util;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.view.ErrorDialog;
@@ -99,9 +99,12 @@ public class FormUtil {
 		DOM.setStyleAttribute(h, "top", top);
 	}
 
-	public static void loadOptions(Vector options, MultiWordSuggestOracle oracle){
+	public static void loadOptions(List options, MultiWordSuggestOracle oracle){
+		if(options == null)
+			return;
+		
 		for(int i=0; i<options.size(); i++){
-			OptionDef optionDef = (OptionDef)options.elementAt(i);
+			OptionDef optionDef = (OptionDef)options.get(i);
 			oracle.add(optionDef.getText());	
 		}
 	}

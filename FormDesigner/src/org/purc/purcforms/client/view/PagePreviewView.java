@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.model.OptionDef;
@@ -70,9 +71,9 @@ public class PagePreviewView extends Composite{
 	    		ListBox listBox = new ListBox(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE);
 	    		table.setWidget(row, valueCol, listBox);
 	    		
-	    		Vector options = questionDef.getOptions();
+	    		List options = questionDef.getOptions();
 		    	for(int currentOptionNo=0; currentOptionNo < options.size(); currentOptionNo++){
-		    		OptionDef optionDef = (OptionDef)options.elementAt(currentOptionNo);
+		    		OptionDef optionDef = (OptionDef)options.get(currentOptionNo);
 		    		listBox.addItem(optionDef.getText(), optionDef.getVariableName());
 		    	}
 	    	}

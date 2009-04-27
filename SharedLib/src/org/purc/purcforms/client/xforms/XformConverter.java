@@ -1,12 +1,16 @@
 package org.purc.purcforms.client.xforms;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.purc.purcforms.client.model.Condition;
+import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
@@ -15,14 +19,13 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
-import org.purc.purcforms.client.view.ErrorDialog;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NamedNodeMap;
 import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 
@@ -67,6 +70,7 @@ public class XformConverter implements Serializable{
 	public static final String NODE_NAME_LABEL = PREFIX_XFORMS_AND_COLON+"label";
 	public static final String NODE_NAME_HINT = PREFIX_XFORMS_AND_COLON+"hint";
 	public static final String NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
+	public static final String NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
 	public static final String NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
 	public static final String NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
 	public static final String NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
@@ -83,6 +87,7 @@ public class XformConverter implements Serializable{
 	public static final String NODE_NAME_LABEL_MINUS_PREFIX = "label";
 	public static final String NODE_NAME_HINT_MINUS_PREFIX = "hint";
 	public static final String NODE_NAME_ITEM_MINUS_PREFIX = "item";
+	public static final String NODE_NAME_ITEMSET_MINUS_PREFIX = "itemset";
 	public static final String NODE_NAME_INPUT_MINUS_PREFIX = "input";
 	public static final String NODE_NAME_SELECT_MINUS_PREFIX = "select";
 	public static final String NODE_NAME_SELECT1_MINUS_PREFIX = "select1";
@@ -107,6 +112,7 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_XMLNS = "xmlns:"+PREFIX_XFORMS;
 	public static final String ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE = "description-template"; //eg ${/patient/family_name}$
 	public static final String ATTRIBUTE_NAME_ACTION = "action";
+	public static final String ATTRIBUTE_NAME_PARENT = "parent";
 
 	public static final String ATTRIBUTE_VALUE_ENABLE = "enable";
 	public static final String ATTRIBUTE_VALUE_DISABLE = "disable";
@@ -154,6 +160,7 @@ public class XformConverter implements Serializable{
 		case QuestionDef.QTN_TYPE_TEXT:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			return DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_IMAGE:
 		case QuestionDef.QTN_TYPE_VIDEO:
@@ -180,6 +187,7 @@ public class XformConverter implements Serializable{
 		xformsNode.appendChild(modelNode);
 
 		Element instanceNode =  doc.createElement(NODE_NAME_INSTANCE);
+		instanceNode.setAttribute(ATTRIBUTE_NAME_ID, formDef.getVariableName());
 		modelNode.appendChild(instanceNode);
 		formDef.setModelNode(modelNode);
 
@@ -206,6 +214,19 @@ public class XformConverter implements Serializable{
 				for(int i=0; i<rules.size(); i++)
 					fromValidationRule2Xform((ValidationRule)rules.elementAt(i),formDef);
 			}
+
+			HashMap<Integer,DynamicOptionDef> dynamicOptions = formDef.getDynamicOptions();
+			if(dynamicOptions != null){
+				Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+				while(iterator.hasNext()){
+					Entry<Integer,DynamicOptionDef> entry = iterator.next();
+					DynamicOptionDef dynamicOptionDef = entry.getValue();
+					QuestionDef questionDef = formDef.getQuestion(entry.getKey());
+					if(questionDef == null)
+						continue;
+					fromDynamicOptionDef2Xform(doc,dynamicOptionDef,questionDef,formDef);
+				}
+			}
 		}
 
 		return fromDoc2String(doc);
@@ -213,12 +234,12 @@ public class XformConverter implements Serializable{
 
 	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
 		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
-		
+
 		if(questionDef == null){
 			formDef.removeValidationRule(rule);
 			return; //possibly question deleted.
 		}
-		
+
 		Element node = questionDef.getBindNode();
 		if(node == null)
 			node = questionDef.getControlNode();
@@ -239,6 +260,95 @@ public class XformConverter implements Serializable{
 
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT, constratint);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
+	}
+
+	public static void fromDynamicOptionDef2Xform(Document doc, DynamicOptionDef dynamicOptionDef, QuestionDef parentQuestionDef, FormDef formDef){
+		QuestionDef questionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
+		if(questionDef == null)
+			return;
+
+		Element modelNode = formDef.getModelNode();
+		Element instanceNode =  doc.createElement(NODE_NAME_INSTANCE);
+		instanceNode.setAttribute(ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+		NodeList nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE);
+		if(nodes.getLength() == 0)
+			nodes = modelNode.getElementsByTagName("instance");
+		modelNode.insertBefore(instanceNode, getNextElementSibling((Element)nodes.item(nodes.getLength() - 1)));
+
+		Element dataNode =  doc.createElement(questionDef.getVariableName());
+		instanceNode.appendChild(dataNode);
+		dynamicOptionDef.setDataNode(dataNode);
+
+		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,List<OptionDef>> entry = iterator.next();
+			List<OptionDef> list = entry.getValue();
+
+			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+			if(parentOptionDef == null)
+				continue;
+
+			for(int index = 0; index < list.size(); index++)
+				addNewDynamicOption(doc, list.get(index), parentOptionDef, dataNode);
+		}
+
+		Element itemSetNode = questionDef.getFirstOptionNode();
+		itemSetNode.setAttribute(ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+	}
+	
+	private static void addNewDynamicOption(Document doc, OptionDef optionDef, OptionDef parentOptionDef, Element dataNode){
+		Element itemNode =  doc.createElement("item");
+		optionDef.setControlNode(itemNode);
+
+		Element node =  doc.createElement("label");
+		node.appendChild(doc.createTextNode(optionDef.getText()));
+		itemNode.appendChild(node);
+		optionDef.setLabelNode(node);
+
+		node =  doc.createElement("value");
+		node.appendChild(doc.createTextNode(optionDef.getVariableName()));
+		itemNode.appendChild(node);
+		optionDef.setValueNode(node);
+
+		itemNode.setAttribute(ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
+
+		dataNode.appendChild(itemNode);
+	}
+
+	public static void updateDynamicOptionDef(Document doc, QuestionDef parentQuestionDef, DynamicOptionDef dynamicOptionDef){
+		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,List<OptionDef>> entry = iterator.next();
+			List<OptionDef> list = entry.getValue();
+
+			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+			if(parentOptionDef == null)
+				continue;
+
+			for(int index = 0; index < list.size(); index++){
+				OptionDef optionDef = list.get(index);
+
+				if(optionDef.getControlNode() == null)
+					addNewDynamicOption(doc, list.get(index), parentOptionDef, dynamicOptionDef.getDataNode());
+				else{
+					setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
+					setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
+				}
+			}
+		}
+	}
+
+	public static Element getNextElementSibling(Element node){
+		Node sibling = node.getNextSibling();
+		while(sibling != null){
+			if(sibling.getNodeType() == Node.ELEMENT_NODE)
+				return (Element)sibling;
+			sibling = sibling.getNextSibling();
+		}
+
+		return node;
 	}
 
 	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
@@ -451,13 +561,17 @@ public class XformConverter implements Serializable{
 		addHelpTextNode(qtn,doc,inputNode,null);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			Vector options = qtn.getOptions();
-			if(options != null && options.size() > 0){
-				for(int j=0; j<options.size(); j++){
-					OptionDef optionDef = (OptionDef)options.elementAt(j);
-					Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
-					if(j == 0)
-						qtn.setFirstOptionNode(itemNode);
+			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+				qtn.setFirstOptionNode(createDynamicOptionDefNode(doc,inputNode));
+			else{
+				List options = qtn.getOptions();
+				if(options != null && options.size() > 0){
+					for(int j=0; j<options.size(); j++){
+						OptionDef optionDef = (OptionDef)options.get(j);
+						Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
+						if(j == 0)
+							qtn.setFirstOptionNode(itemNode);
+					}
 				}
 			}
 		}
@@ -504,6 +618,23 @@ public class XformConverter implements Serializable{
 		return itemNode;
 	}
 
+	public static Element createDynamicOptionDefNode(Document doc, Element inputNode){
+		Element itemSetNode =  doc.createElement(NODE_NAME_ITEMSET);
+		itemSetNode.setAttribute(ATTRIBUTE_NAME_NODESET, "");
+
+		Element node =  doc.createElement(NODE_NAME_LABEL);
+		node.setAttribute(ATTRIBUTE_NAME_REF, "label");
+		itemSetNode.appendChild(node);
+
+		node =  doc.createElement(NODE_NAME_VALUE);
+		node.setAttribute(ATTRIBUTE_NAME_REF, "value");
+		itemSetNode.appendChild(node);
+
+		inputNode.appendChild(itemSetNode);
+		//optionDef.setControlNode(itemSetNode);
+		return itemSetNode;
+	}
+
 	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
 		String name = qtnDef.getVariableName();
 
@@ -538,10 +669,10 @@ public class XformConverter implements Serializable{
 		addHelpTextNode(qtnDef,doc,inputNode,null);
 
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			Vector options = qtnDef.getOptions();
+			List options = qtnDef.getOptions();
 			if(options != null && options.size() > 0){
 				for(int j=0; j<options.size(); j++){
-					OptionDef optionDef = (OptionDef)options.elementAt(j);
+					OptionDef optionDef = (OptionDef)options.get(j);
 					Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
 					if(j == 0)
 						qtnDef.setFirstOptionNode(itemNode);
@@ -554,7 +685,7 @@ public class XformConverter implements Serializable{
 
 		String name = NODE_NAME_INPUT;
 
-		if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+		if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 			name = NODE_NAME_SELECT1;
 		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			name = NODE_NAME_SELECT;
@@ -569,8 +700,8 @@ public class XformConverter implements Serializable{
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
 
-		if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-			node.setAttribute("selection", "closed");
+		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		//	node.setAttribute("selection", "closed");
 
 		return node;
 	}
@@ -797,7 +928,7 @@ public class XformConverter implements Serializable{
 				//each not exceeding the maximum 4096. This is as of 04/04/2009
 				//and for Firefox version 3.0.8
 				String s = "";
-				
+
 				for(int index = i; index<numOfEntries; index++){
 					Node currentNode = node.getChildNodes().item(index);
 					String value = currentNode.getNodeValue();
@@ -906,6 +1037,9 @@ public class XformConverter implements Serializable{
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				}
 				else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
+					if(formDef.getDataNode() != null)
+						continue; //we only take the first instance node for formdef ref
+					
 					Element dataNode = null;
 					for(int k=0; k<child.getChildNodes().getLength(); k++){
 						if(child.getChildNodes().item(k).getNodeType() == Node.ELEMENT_NODE){
@@ -1064,6 +1198,11 @@ public class XformConverter implements Serializable{
 						valueNode = child;
 					}
 				}
+				else if(tagname.equals(NODE_NAME_ITEMSET)||tagname.equals(NODE_NAME_ITEMSET_MINUS_PREFIX)){
+					questionDef.setDataType(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC);
+					questionDef.setFirstOptionNode(child);
+					parseDynamicOptionsList(questionDef,child.getAttribute(ATTRIBUTE_NAME_NODESET),formDef);
+				}
 				else
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
 				// TODO - how are other elements like html:p or br handled?
@@ -1100,6 +1239,118 @@ public class XformConverter implements Serializable{
 		return questionDef;
 	}
 
+	private static void parseDynamicOptionsList(QuestionDef questionDef, String nodeset, FormDef formDef){
+		if(nodeset == null || nodeset.trim().length() == 0)
+			return;
+		
+		int pos1 = nodeset.lastIndexOf('/');
+		if(pos1 < 0)
+			return;
+		
+		int pos2 = nodeset.lastIndexOf(']');
+		if(pos2 < 0 || (pos1 == pos2))
+			return;
+		
+		String binding = nodeset.substring(pos1 + 1, pos2);
+		QuestionDef parentQuestionDef = formDef.getQuestion(binding);
+		if(parentQuestionDef == null)
+			return;
+		
+		pos1 = nodeset.indexOf('\'');
+		if(pos1 < 0)
+			return;
+		
+		pos2 = nodeset.indexOf('\'', pos1 + 1);
+		if(pos2 < 0 || (pos1 == pos2))
+			return;
+		
+		String instanceId = nodeset.substring(pos1 + 1, pos2);
+		String xpath = "instance[@id=" + instanceId + "]";
+		
+		XPathExpression xpls = new XPathExpression(formDef.getModelNode(), xpath);
+		Vector result = xpls.getResult();
+		if(result == null || result.size() == 0)
+			return;
+		
+		Element instanceNode = (Element)result.get(0);
+		
+		HashMap<String,Integer> parentOptionIdMap = new HashMap<String,Integer>();
+		DynamicOptionDef dynamicOptionDef = new DynamicOptionDef();
+		dynamicOptionDef.setQuestionId(questionDef.getId());
+		NodeList nodes = instanceNode.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() == Node.ELEMENT_NODE){
+				dynamicOptionDef.setDataNode((Element)child);
+				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,null,parentOptionIdMap);
+				break;
+			}
+		}
+		
+		formDef.setDynamicOptionDef(parentQuestionDef.getId(), dynamicOptionDef);
+	}
+	
+	private static void parseDynamicOptions(DynamicOptionDef dynamicOptionDef, QuestionDef questionDef, QuestionDef parentQuestionDef, Node node, OptionDef optionDef, HashMap<String,Integer> parentOptionIdMap){
+		String label = "";
+		String value = "";
+		Element labelNode = null;
+		Element valueNode = null;
+		
+		NodeList nodes = node.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			String name = child.getNodeName();
+			if(name.equals(NODE_NAME_ITEM_MINUS_PREFIX)){
+				String parent = ((Element)child).getAttribute(ATTRIBUTE_NAME_PARENT);
+				if(parent == null || parent.trim().length() == 0)
+					continue;
+				
+				optionDef = new OptionDef(dynamicOptionDef.getNextOptionId(true),label, value,questionDef);
+				optionDef.setControlNode((Element)child);
+				Integer optionId = parentOptionIdMap.get(parent);
+				if(optionId == null){
+					OptionDef optnDef = parentQuestionDef.getOptionWithValue(parent);
+					if(optnDef == null)
+						continue;
+					optionId = optnDef.getId();
+					parentOptionIdMap.put(parent, optionId);
+				}
+				List<OptionDef> optionList = dynamicOptionDef.getOptionList(optionId);
+				if(optionList == null){
+					optionList = new ArrayList<OptionDef>();
+					dynamicOptionDef.setOptionList(optionId, optionList);
+				}
+				optionList.add(optionDef);
+				
+				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,optionDef,parentOptionIdMap);
+			}
+			else if(name.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
+				if(child.getChildNodes().getLength() != 0){
+					label = child.getChildNodes().item(0).getNodeValue().trim(); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
+					labelNode = (Element)child;
+				}
+			}
+			else if(name.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
+				if(child.getChildNodes().getLength() != 0){
+					value = child.getChildNodes().item(0).getNodeValue().trim();
+					valueNode = (Element)child;
+				}
+			}
+		}
+		
+		if (!label.equals("") && !value.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
+			if (optionDef != null){
+				optionDef.setText(label);
+				optionDef.setVariableName(value);
+				optionDef.setLabelNode(labelNode);
+				optionDef.setValueNode(valueNode);
+			}
+		} 
+	}
+	
 	private static void setQuestionDataNode(QuestionDef qtn, FormDef formDef, PageDef pageDef,QuestionDef parentQtn){
 		String xpath = qtn.getVariableName();
 

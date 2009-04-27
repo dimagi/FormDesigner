@@ -1,9 +1,9 @@
 package org.purc.purcforms.client.util;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.view.ProgressDialog;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -97,15 +97,22 @@ public class FormDesignerUtil {
 		FormUtil.setWidgetPosition(w, left, top);
 	}
 
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle){
+	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			
-			if(refQuestion != null && refQuestion.getDataType() != questionDef.getDataType())
+			if(!dynamicOptions && refQuestion != null && refQuestion.getDataType() != questionDef.getDataType())
 				continue;
+			
+			if(dynamicOptions && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+				return;
+			
+			if(dynamicOptions && refQuestion == questionDef)
+				return;
 			
 			oracle.add(questionDef.getText());	
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
@@ -113,7 +120,7 @@ public class FormDesignerUtil {
 		}
 	}
 
-	public static void loadOptions(Vector options, MultiWordSuggestOracle oracle){
+	public static void loadOptions(List options, MultiWordSuggestOracle oracle){
 		FormUtil.loadOptions(options, oracle);
 	}
 

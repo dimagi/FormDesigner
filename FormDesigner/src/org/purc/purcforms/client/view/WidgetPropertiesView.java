@@ -1,6 +1,6 @@
 package org.purc.purcforms.client.view;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
@@ -732,7 +732,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtChildBinding.setEnabled(true);
 		}
 		else{
-			Vector options  = questionDef.getOptions();
+			List options  = questionDef.getOptions();
 			if(options != null){
 				FormDesignerUtil.loadOptions(options,oracle);
 				txtChildBinding.setEnabled(true);
@@ -746,7 +746,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)sgstBinding.getSuggestOracle();
 		oracle.clear();
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle);
+			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle,false);
 		oracle.add("submit");
 		oracle.add("addnew");
 		oracle.add("remove");

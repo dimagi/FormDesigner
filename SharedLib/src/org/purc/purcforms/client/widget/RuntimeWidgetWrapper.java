@@ -112,7 +112,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					if(questionDef != null){
 						questionDef.setAnswer(getTextBoxAnswer());
 						isValid();
-						editListener.onValueChanged(null, null, questionDef.getAnswer());
+						editListener.onValueChanged(questionDef);
 					}
 				}
 			});
@@ -122,7 +122,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					if(questionDef != null){
 						questionDef.setAnswer(getTextBoxAnswer());
 						isValid();
-						editListener.onValueChanged(null, null, questionDef.getAnswer());
+						editListener.onValueChanged(questionDef);
 					}
 				}
 
@@ -163,7 +163,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				public void onChange(Widget sender){
 					questionDef.setAnswer(((ListBox)widget).getValue(((ListBox)widget).getSelectedIndex()));
 					isValid();
-					editListener.onValueChanged(null, null, questionDef.getAnswer());
+					editListener.onValueChanged(questionDef);
 				}
 			});
 
@@ -243,24 +243,27 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		String defaultValue = questionDef.getDefaultValue();
 
-		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		int type = questionDef.getDataType();
+		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC
+				|| type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof ListBox){
-			Vector options  = questionDef.getOptions();
+			List options  = questionDef.getOptions();
 			int defaultValueIndex = 0;
 			ListBox listBox = (ListBox)widget;
 			listBox.clear(); //Could be called more than once.
 
 			listBox.addItem("","");
-			for(int index = 0; index < options.size(); index++){
-				OptionDef optionDef = (OptionDef)options.get(index);
-				listBox.addItem(optionDef.getText(), optionDef.getVariableName());
-				if(optionDef.getVariableName().equalsIgnoreCase(defaultValue))
-					defaultValueIndex = index+1;
+			if(options != null){
+				for(int index = 0; index < options.size(); index++){
+					OptionDef optionDef = (OptionDef)options.get(index);
+					listBox.addItem(optionDef.getText(), optionDef.getVariableName());
+					if(optionDef.getVariableName().equalsIgnoreCase(defaultValue))
+						defaultValueIndex = index+1;
+				}
 			}
 			listBox.setSelectedIndex(defaultValueIndex);
 		}
-		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && widget instanceof TextBox){ 
+		else if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC) && widget instanceof TextBox){ 
 			MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 			FormUtil.loadOptions(questionDef.getOptions(),oracle);
 			panel.remove(widget);
@@ -268,7 +271,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			panel.add(sgstBox);
 			sgstBox.setTabIndex(((TextBox)widget).getTabIndex());
 		}
-		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN && widget instanceof ListBox){
+		else if(type == QuestionDef.QTN_TYPE_BOOLEAN && widget instanceof ListBox){
 			ListBox listBox = (ListBox)widget;
 			listBox.addItem("","");
 			listBox.addItem(QuestionDef.TRUE_DISPLAY_VALUE, QuestionDef.TRUE_VALUE);
@@ -284,7 +287,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 
 		if(widget instanceof TextBox && defaultValue != null){
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+			if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 				OptionDef optionDef = questionDef.getOptionWithValue(defaultValue);
 				if(optionDef != null)
 					((TextBox)widget).setText(optionDef.getText());
@@ -530,7 +533,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					questionDef.setAnswer(answer);
 				}
 				isValid();
-				editListener.onValueChanged(null, null, questionDef.getAnswer());
+				editListener.onValueChanged(questionDef);
 			}
 		});
 	}
@@ -669,5 +672,18 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	public void setValidationRule(ValidationRule validationRule) {
 		this.validationRule = validationRule;
+	}
+
+	public void onOptionsChanged(List<OptionDef> optionList){
+		loadQuestion();
+
+		/*if(questionDef == null)
+			return;
+
+		questionDef.setAnswer(null);
+		if(widget instanceof TextBox)
+			((TextBox)widget).setText(null);
+		else if(widget instanceof ListBox)
+			((ListBox)widget).setSelectedIndex(-1);*/
 	}
 }

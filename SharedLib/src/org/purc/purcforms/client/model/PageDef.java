@@ -314,14 +314,14 @@ public class PageDef implements Serializable{
 				if(controlNode != null){
 					if(controlNode != null && parentNode != null)
 						parentNode.removeChild(questionDef.getControlNode());
-					
+
 					QuestionDef qtnDef = getNextSavedQuestion(list,i); //(QuestionDef)list.get(i);
 					if(qtnDef.getControlNode() != null)
 						parentNode.insertBefore(questionDef.getControlNode(), qtnDef.getControlNode());
 					else
 						parentNode.appendChild(questionDef.getControlNode());
 
-					
+
 					if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null)
 						parentDataNode.removeChild(questionDef.getDataNode());
 
@@ -329,8 +329,8 @@ public class PageDef implements Serializable{
 						parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
 					else
 						parentDataNode.appendChild(questionDef.getDataNode());
-						
-					
+
+
 					if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
 						parentBindNode.removeChild(questionDef.getBindNode());
 
@@ -365,7 +365,7 @@ public class PageDef implements Serializable{
 			}
 		}
 	}
-	
+
 	private QuestionDef getNextSavedQuestion(List questions, int index){
 		for(int i=index; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
@@ -407,7 +407,7 @@ public class PageDef implements Serializable{
 				Window.alert("Missing data node for :" + questionDef.getText());
 				continue; //TODO This is a bug which should be resolved
 			}
-			
+
 			int proposedIndex = questions.size() - (newQuestions.size() - k);
 			int currentIndex = questions.indexOf(questionDef);
 			if(currentIndex == proposedIndex)
@@ -416,12 +416,12 @@ public class PageDef implements Serializable{
 			moveQuestionNodesUp(questionDef,getRefQuestion(questions,newQuestions,currentIndex /*currentIndex+1*/));
 		}
 	}
-	
+
 	private QuestionDef getRefQuestion(Vector questions, Vector newQuestions, int index){
 		/*QuestionDef questionDef = (QuestionDef)questions.get(index);
 		if(!newQuestions.contains(questionDef))
 			return questionDef;
-		
+
 		int i = index - 1;
 		while(i >= 0){
 			questionDef = (QuestionDef)questions.get(i);
@@ -429,7 +429,7 @@ public class PageDef implements Serializable{
 				return questionDef;
 			i--;
 		}
-		
+
 		i = index + 1;
 		while(i < questions.size()){
 			questionDef = (QuestionDef)questions.get(i);
@@ -437,7 +437,7 @@ public class PageDef implements Serializable{
 				return questionDef;
 			i++;
 		}*/
-		
+
 		/*QuestionDef questionDef;
 		int i = index;
 		while(i >= 0){
@@ -446,7 +446,7 @@ public class PageDef implements Serializable{
 				return questionDef;
 			i--;
 		}
-		
+
 		i = index + 1;
 		while(i < questions.size()){
 			questionDef = (QuestionDef)questions.get(i);
@@ -454,7 +454,7 @@ public class PageDef implements Serializable{
 				return questionDef;
 			i++;
 		}*/
-		
+
 		QuestionDef questionDef;
 		int i = index + 1;
 		while(i < questions.size()){
@@ -463,7 +463,7 @@ public class PageDef implements Serializable{
 				return questionDef;
 			i++;
 		}
-		
+
 		return null;
 	}
 
@@ -541,5 +541,13 @@ public class PageDef implements Serializable{
 		if(refQuestionDef.getBindNode() != null)
 			refQuestionDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), refQuestionDef.getBindNode());
 
+	}
+
+	public void updateDataNodes(FormDef formDef){
+		if(questions == null)
+			return;
+
+		for(int i=0; i<questions.size(); i++)
+			((QuestionDef)questions.elementAt(i)).updateDataNodes(formDef);
 	}
 }

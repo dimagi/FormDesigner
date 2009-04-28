@@ -275,7 +275,7 @@ public class XformConverter implements Serializable{
 			nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE_MINUS_PREFIX);
 		modelNode.insertBefore(instanceNode, getNextElementSibling((Element)nodes.item(nodes.getLength() - 1)));
 
-		Element dataNode =  doc.createElement(questionDef.getVariableName());
+		Element dataNode =  doc.createElement("dynamiclist"/*questionDef.getVariableName()*/);
 		instanceNode.appendChild(dataNode);
 		dynamicOptionDef.setDataNode(dataNode);
 
@@ -316,14 +316,18 @@ public class XformConverter implements Serializable{
 		dataNode.appendChild(itemNode);
 	}
 
-	public static void updateDynamicOptionDef(Document doc, QuestionDef parentQuestionDef, DynamicOptionDef dynamicOptionDef){
+	public static void updateDynamicOptionDef(FormDef formDef, QuestionDef parentQuestionDef, DynamicOptionDef dynamicOptionDef){
 		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
 		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,List<OptionDef>> entry = iterator.next();
 			List<OptionDef> list = entry.getValue();
 
-			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+			OptionDef parentOptionDef = null;
+			if(parentQuestionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+				parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+			else if(parentQuestionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+				parentOptionDef = formDef.getDynamicOptionDef(parentQuestionDef.getId(), entry.getKey());
 			if(parentOptionDef == null)
 				continue;
 
@@ -331,10 +335,11 @@ public class XformConverter implements Serializable{
 				OptionDef optionDef = list.get(index);
 
 				if(optionDef.getControlNode() == null)
-					addNewDynamicOption(doc, list.get(index), parentOptionDef, dynamicOptionDef.getDataNode());
+					addNewDynamicOption(formDef.getDoc(), list.get(index), parentOptionDef, dynamicOptionDef.getDataNode());
 				else{
 					setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
 					setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
+					optionDef.getControlNode().setAttribute(ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
 				}
 			}
 		}
@@ -1243,7 +1248,7 @@ public class XformConverter implements Serializable{
 		if(nodeset == null || nodeset.trim().length() == 0)
 			return;
 		
-		int pos1 = nodeset.lastIndexOf('/');
+		/*int pos1 = nodeset.lastIndexOf('/');
 		if(pos1 < 0)
 			return;
 		
@@ -1251,12 +1256,17 @@ public class XformConverter implements Serializable{
 		if(pos2 < 0 || (pos1 == pos2))
 			return;
 		
-		String binding = nodeset.substring(pos1 + 1, pos2);
+		String binding = nodeset.substring(pos1 + 1, pos2);*/ 
+		
+		String binding = getDynamicOptionParentInstanceId(nodeset);
+		if(binding == null)
+			return;
+		
 		QuestionDef parentQuestionDef = formDef.getQuestion(binding);
 		if(parentQuestionDef == null)
 			return;
 		
-		pos1 = nodeset.indexOf('\'');
+		/*pos1 = nodeset.indexOf('\'');
 		if(pos1 < 0)
 			return;
 		
@@ -1264,7 +1274,12 @@ public class XformConverter implements Serializable{
 		if(pos2 < 0 || (pos1 == pos2))
 			return;
 		
-		String instanceId = nodeset.substring(pos1 + 1, pos2);
+		String instanceId = nodeset.substring(pos1 + 1, pos2);*/
+		
+		String instanceId = getDynamicOptionChildInstanceId(nodeset);
+		if(instanceId == null)
+			return;
+			
 		/*String xpath = "/model/instance[@id=" + instanceId + "]";
 		
 		XPathExpression xpls = new XPathExpression(formDef.getModelNode(), xpath);
@@ -1931,5 +1946,51 @@ public class XformConverter implements Serializable{
 		Element parent = (Element)node.getParentNode();
 		parent.replaceChild(child, node);
 		return child;
+	}
+	
+	public static String getDynamicOptionChildInstanceId(String nodeset){
+		if(nodeset == null)
+			return null;
+		
+		int pos1 = nodeset.indexOf('\'');
+		if(pos1 < 0)
+			return null;
+
+		int pos2 = nodeset.indexOf('\'', pos1 + 1);
+		if(pos2 < 0 || (pos1 == pos2))
+			return null;
+
+		return nodeset.substring(pos1 + 1, pos2);
+	}
+	
+	public static String getDynamicOptionParentInstanceId(String nodeset){
+		if(nodeset == null)
+			return null;
+		
+		int pos1 = nodeset.lastIndexOf('/');
+		if(pos1 < 0)
+			return null;
+		
+		int pos2 = nodeset.lastIndexOf(']');
+		if(pos2 < 0 || (pos1 == pos2))
+			return null;
+		
+		return nodeset.substring(pos1 + 1, pos2);
+	}
+	
+	public static String getDynamicOptionFormInstanceId(String nodeset){
+		if(nodeset == null)
+			return null;
+		
+		String token = "\')/item[@parent=instance(\'";
+		int pos1 = nodeset.indexOf(token);
+		if(pos1 < 0)
+			return null;
+
+		int pos2 = nodeset.indexOf("\')/", pos1 + token.length());
+		if(pos2 < 0 || (pos1 == pos2))
+			return null;
+
+		return nodeset.substring(pos1+token.length(), pos2);
 	}
 }

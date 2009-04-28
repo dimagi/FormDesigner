@@ -213,4 +213,12 @@ public class RepeatQtnsDef implements Serializable {
 				questionDef.refresh(qtn);
 		}
 	}
+	
+	public void updateDataNodes(FormDef formDef){
+		if(questions == null)
+			return;
+
+		for(int i=0; i<questions.size(); i++)
+			((QuestionDef)questions.elementAt(i)).updateDataNodes(formDef);
+	}
 }

@@ -48,12 +48,12 @@ public class FormDef implements Serializable{
 
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
-	
+
 	/** A mapping of dynamic lists keyed by the id of the question whose values
 	 *  determine possible values of another question as specified in the DynamicOptionDef object.
-	*/
+	 */
 	private HashMap<Integer,DynamicOptionDef>  dynamicOptions;
-	
+
 
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
 	private Document doc;
@@ -200,15 +200,15 @@ public class FormDef implements Serializable{
 	public void setValidationRules(Vector validationRules) {
 		this.validationRules = validationRules;
 	}
-	
+
 	public HashMap<Integer,DynamicOptionDef> getDynamicOptions() {
 		return dynamicOptions;
 	}
-	
+
 	public void setDynamicOptions(HashMap<Integer,DynamicOptionDef> dynamicOptions) {
 		this.dynamicOptions = dynamicOptions;
 	}
-	
+
 	public String getDescriptionTemplate() {
 		return descriptionTemplate;
 	}
@@ -264,15 +264,17 @@ public class FormDef implements Serializable{
 
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
-		
+
 		String val = dataNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
 		if(val == null || val.trim().length() == 0)
 			dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, String.valueOf(id));
 		else
 			setId(Integer.parseInt(val));
-		
-		if(!dataNode.getNodeName().equalsIgnoreCase(variableName))
+
+		if(!dataNode.getNodeName().equalsIgnoreCase(variableName)){
 			dataNode = XformConverter.renameNode(dataNode,variableName);
+			updateDataNodes();
+		}
 
 		if(dataNode != null){
 			if(descriptionTemplate == null || descriptionTemplate.trim().length() == 0)
@@ -301,7 +303,7 @@ public class FormDef implements Serializable{
 				validationRule.updateDoc(this);
 			}
 		}
-		
+
 		if(dynamicOptions != null){
 			Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
 			while(iterator.hasNext()){
@@ -310,10 +312,18 @@ public class FormDef implements Serializable{
 				QuestionDef questionDef = getQuestion(entry.getKey());
 				if(questionDef == null)
 					continue;
-				
-				dynamicOptionDef.updateDoc(doc,this,questionDef);
+
+				dynamicOptionDef.updateDoc(this,questionDef);
 			}
 		}
+	}
+
+	private void updateDataNodes(){
+		if(pages == null)
+			return;
+
+		for(int i=0; i<pages.size(); i++)
+			((PageDef)pages.elementAt(i)).updateDataNodes(this);
 	}
 
 	public String toString() {
@@ -407,12 +417,12 @@ public class FormDef implements Serializable{
 				this.validationRules.addElement(new ValidationRule((ValidationRule)rules.elementAt(i)));
 		}
 	}
-	
+
 	private void copyDynamicOptions(HashMap<Integer,DynamicOptionDef> options){
 		if(options != null)
 		{
 			dynamicOptions =  new HashMap<Integer,DynamicOptionDef>();
-			
+
 			Iterator<Entry<Integer,DynamicOptionDef>> iterator = options.entrySet().iterator();
 			while(iterator.hasNext()){
 				Entry<Integer,DynamicOptionDef> entry = iterator.next();
@@ -426,9 +436,9 @@ public class FormDef implements Serializable{
 	}
 
 	/*private void copyDynamicOptions(HashMap<Integer,DynamicOptionDef>){
-		
+
 	}*/
-	
+
 	public void removePage(PageDef pageDef){
 		/*for(int i=0; i<pages.size(); i++){
 			((PageDef)pages.elementAt(i)).removeAllQuestions();
@@ -651,23 +661,23 @@ public class FormDef implements Serializable{
 	public boolean removeValidationRule(ValidationRule validationRule){
 		return validationRules.remove(validationRule);
 	}
-	
+
 	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
 		if(dynamicOptions == null)
 			dynamicOptions = new HashMap<Integer,DynamicOptionDef>();
 		dynamicOptions.put(questionId, dynamicOptionDef);
 	}
-	
+
 	public DynamicOptionDef getDynamicOptions(Integer questionId){
 		if(dynamicOptions == null)
 			return null;
 		return dynamicOptions.get(questionId);
 	}
-	
+
 	public DynamicOptionDef getChildDynamicOptions(Integer questionId){
 		if(dynamicOptions == null)
 			return null;
-		
+
 		Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,DynamicOptionDef> entry = iterator.next();
@@ -677,11 +687,11 @@ public class FormDef implements Serializable{
 		}
 		return null;
 	}
-	
+
 	public QuestionDef getDynamicOptionsParent(Integer questionId){
 		if(dynamicOptions == null)
 			return null;
-		
+
 		Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,DynamicOptionDef> entry = iterator.next();
@@ -691,7 +701,21 @@ public class FormDef implements Serializable{
 		}
 		return null;
 	}
-	
+
+	public OptionDef getDynamicOptionDef(Integer questionId, int id){
+		if(dynamicOptions == null)
+			return null;
+
+		Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,DynamicOptionDef> entry = iterator.next();
+			DynamicOptionDef dynamicOptionDef = entry.getValue();
+			if(dynamicOptionDef.getQuestionId() == questionId)
+				return dynamicOptionDef.getOptionWithId(id);
+		}
+		return null;
+	}
+
 	public void removeDynamicOptions(Integer questionId){
 		if(dynamicOptions != null)
 			dynamicOptions.remove(questionId);
@@ -719,15 +743,15 @@ public class FormDef implements Serializable{
 		for(int index = 0; index < pages.size(); index++)
 			((PageDef)pages.get(index)).refresh(pageDef);
 	}
-	
+
 	public int getQuestionCount(){
 		if(pages == null)
 			return 0;
-		
+
 		int count = 0;
 		for(int index = 0; index < pages.size(); index++)
 			count += getPageAt(index).getQuestionCount();
-		
+
 		return count;
 	}
 }

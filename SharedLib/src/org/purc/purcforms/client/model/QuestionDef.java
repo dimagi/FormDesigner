@@ -645,9 +645,9 @@ public class QuestionDef implements Serializable{
 			
 			boolean allOptionsNew = areAllOptionsNew();
 			List newOptns = new ArrayList();
-			Vector optns = (Vector)options;
+			List optns = (List)options;
 			for(int i=0; i<optns.size(); i++){
-				OptionDef optionDef = (OptionDef)optns.elementAt(i);
+				OptionDef optionDef = (OptionDef)optns.get(i);
 				
 				if(!allOptionsNew && optionDef.getControlNode() == null)
 					newOptns.add(optionDef);
@@ -914,12 +914,12 @@ public class QuestionDef implements Serializable{
 			modified = true;
 		}
 		else if(name.equals(XformConverter.NODE_NAME_INPUT) &&
-				dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
 			modified = true;
 		}
 		else if(name.equals(XformConverter.NODE_NAME_SELECT) &&
-				dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
 			modified = true;
 		}
@@ -931,7 +931,8 @@ public class QuestionDef implements Serializable{
 		else if((name.equals(XformConverter.NODE_NAME_SELECT1) || 
 				name.equals(XformConverter.NODE_NAME_SELECT)) &&
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
+						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConverter.NODE_NAME_INPUT);
 			modified = true;
 		}
@@ -962,6 +963,11 @@ public class QuestionDef implements Serializable{
 				if(i == 0)
 					firstOptionNode = optionDef.getControlNode();
 			}
+		}
+		else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+			list = controlNode.getElementsByTagName(XformConverter.NODE_NAME_ITEMSET_MINUS_PREFIX);
+			if(list.getLength() > 0)
+				firstOptionNode = (Element)list.item(0);
 		}
 	}
 
@@ -1095,6 +1101,23 @@ public class QuestionDef implements Serializable{
 		
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onOptionsChanged(optionList);
+	}
+	
+	public void updateDataNodes(FormDef formDef){
+		if(dataNode == null)
+			return;
+		
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
+			getRepeatQtnsDef().updateDataNodes(formDef);
+		else{
+			String xpath = /*"/"+formDef.getVariableName()+"/"+*/dataNode.getNodeName();
+			XPathExpression xpls = new XPathExpression(formDef.getDataNode(), xpath);
+			Vector result = xpls.getResult();
+			if(result == null || result.size() == 0)
+				return;
+			
+			dataNode = (Element)result.elementAt(0);
+		}
 	}
 }
 

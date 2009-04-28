@@ -3,7 +3,6 @@ package org.purc.purcforms.client.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.purc.purcforms.client.FormDesignerWidget;
@@ -114,6 +113,10 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		this.questionDef = questionDef;
 		fieldWidget.setDynamicQuestionDef(questionDef);
 		fieldWidget.setFormDef(formDef);
+
+		QuestionDef parentQuestionDef = formDef.getDynamicOptionsParent(questionDef.getId());
+		if(parentQuestionDef != null)
+			fieldWidget.selectQuestion(parentQuestionDef);
 	}
 
 	public void setFormDef(FormDef formDef){
@@ -199,7 +202,18 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 							OptionDef optionDef = list.get(index);
 							lbValue.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));
 						}
-					}
+					} //This is commented out because of reversing the order
+					/*HashMap<Integer, List<OptionDef>> parentToChildOptions = options.getParentToChildOptions();
+					int count = parentToChildOptions.size();
+					Object[] keys = parentToChildOptions.keySet().toArray();
+					for(int index = count -1; index >= 0; index--){
+						List<OptionDef> list = parentToChildOptions.get(keys[index]);
+						for(int i = 0; i < list.size(); i++){
+							OptionDef optionDef = list.get(i);
+							lbValue.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));
+						}
+					}*/
+					
 				}
 			}
 

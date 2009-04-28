@@ -124,7 +124,7 @@ public class FieldWidget extends Composite{
 		});*/
 	}
 	
-	private void selectQuestion(QuestionDef questionDef){
+	public void selectQuestion(QuestionDef questionDef){
 		fieldHyperlink.setText(questionDef.getText());
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}

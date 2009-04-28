@@ -678,6 +678,20 @@ public class FormDef implements Serializable{
 		return null;
 	}
 	
+	public QuestionDef getDynamicOptionsParent(Integer questionId){
+		if(dynamicOptions == null)
+			return null;
+		
+		Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,DynamicOptionDef> entry = iterator.next();
+			DynamicOptionDef dynamicOptionDef = entry.getValue();
+			if(dynamicOptionDef.getQuestionId() == questionId)
+				return getQuestion(entry.getKey());
+		}
+		return null;
+	}
+	
 	public void removeDynamicOptions(Integer questionId){
 		if(dynamicOptions != null)
 			dynamicOptions.remove(questionId);

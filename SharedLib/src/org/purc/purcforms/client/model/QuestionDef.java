@@ -3,7 +3,7 @@ package org.purc.purcforms.client.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -461,8 +461,8 @@ public class QuestionDef implements Serializable{
 
 	public void addOption(OptionDef optionDef){
 		if(options == null)
-			options = new Vector();
-		((Vector)options).addElement(optionDef);
+			options = new ArrayList();
+		((List)options).add(optionDef);
 		optionDef.setParent(this);
 	}
 
@@ -487,14 +487,14 @@ public class QuestionDef implements Serializable{
 	private void copyQuestionOptions(List options){
 		this.options = new ArrayList();
 		for(int i=0; i<options.size(); i++)
-			((Vector)this.options).addElement(new OptionDef((OptionDef)options.get(i),this));
+			((List)this.options).add(new OptionDef((OptionDef)options.get(i),this));
 	}
 
 	public void removeOption(OptionDef optionDef){
-		if(options instanceof Vector){ //Could be a RepeatQtnsDef
-			((Vector)options).removeElement(optionDef);
+		if(options instanceof List){ //Could be a RepeatQtnsDef
+			((List)options).remove(optionDef);
 
-			if(((Vector)options).size() == 0)
+			if(((List)options).size() == 0)
 				firstOptionNode = null;
 		}
 
@@ -507,7 +507,7 @@ public class QuestionDef implements Serializable{
 				getDataType()==QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			return;
 
-		Vector optns = (Vector)options;
+		List optns = (List)options;
 		int index = optns.indexOf(optionDef);
 
 		optns.remove(optionDef);
@@ -520,7 +520,7 @@ public class QuestionDef implements Serializable{
 
 		//Remove all from index before selected all the way downwards
 		while(optns.size() >= index){
-			currentOptionDef = (OptionDef)optns.elementAt(index-1);
+			currentOptionDef = (OptionDef)optns.get(index-1);
 			list.add(currentOptionDef);
 			optns.remove(currentOptionDef);
 		}
@@ -541,7 +541,7 @@ public class QuestionDef implements Serializable{
 				getDataType()==QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			return;
 
-		Vector optns = (Vector)options;
+		List optns = (List)options;
 		int index = optns.indexOf(optionDef);	
 
 		optns.remove(optionDef);
@@ -554,7 +554,7 @@ public class QuestionDef implements Serializable{
 
 		//Remove all otions below selected index
 		while(optns.size() > 0 && optns.size() > index){
-			currentItem = (OptionDef)optns.elementAt(index);
+			currentItem = (OptionDef)optns.get(index);
 			list.add(currentItem);
 			optns.remove(currentItem);
 		}
@@ -644,7 +644,7 @@ public class QuestionDef implements Serializable{
 				getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) && options != null){
 			
 			boolean allOptionsNew = areAllOptionsNew();
-			Vector newOptns = new Vector();
+			List newOptns = new ArrayList();
 			Vector optns = (Vector)options;
 			for(int i=0; i<optns.size(); i++){
 				OptionDef optionDef = (OptionDef)optns.elementAt(i);
@@ -658,7 +658,7 @@ public class QuestionDef implements Serializable{
 			}
 			
 			for(int k = 0; k < newOptns.size(); k++){
-				OptionDef optionDef = (OptionDef)newOptns.elementAt(k);
+				OptionDef optionDef = (OptionDef)newOptns.get(k);
 				int proposedIndex = optns.size() - (newOptns.size() - k);
 				int currentIndex = optns.indexOf(optionDef);
 				if(currentIndex == proposedIndex)
@@ -705,16 +705,16 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			return false;
 
-		Vector optns = (Vector)options;
+		List optns = (List)options;
 		for(int i=0; i<optns.size(); i++){
-			OptionDef optionDef = (OptionDef)optns.elementAt(i);
+			OptionDef optionDef = (OptionDef)optns.get(i);
 			if(optionDef.getControlNode() != null)
 				return false;
 		}
 		return true;
 	}
 	
-	private OptionDef getRefOption(Vector options, Vector newOptions, int index){
+	private OptionDef getRefOption(List options, List newOptions, int index){
 		OptionDef optionDef;
 		int i = index + 1;
 		while(i < options.size()){
@@ -804,10 +804,10 @@ public class QuestionDef implements Serializable{
 				return;
 			}
 			XPathExpression xpls = new XPathExpression(elem, xpath);
-			Vector result = xpls.getResult();
+			List result = xpls.getResult();
 
-			for (Enumeration e = result.elements(); e.hasMoreElements();) {
-				Object obj = e.nextElement();
+			for (Iterator e = result.iterator(); e.hasNext();) {
+				Object obj = e.next();
 				if (obj instanceof Element){
 					if(pos > 0) //Check if we are to set attribute value.
 						((Element) obj).setAttribute(attributeName, value);
@@ -955,9 +955,9 @@ public class QuestionDef implements Serializable{
 
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			Vector optns = (Vector)options;
+			List optns = (List)options;
 			for(int i=0; i<optns.size(); i++){
-				OptionDef optionDef = (OptionDef)optns.elementAt(i);
+				OptionDef optionDef = (OptionDef)optns.get(i);
 				updateOptionNodeChildren(optionDef);
 				if(i == 0)
 					firstOptionNode = optionDef.getControlNode();
@@ -993,9 +993,9 @@ public class QuestionDef implements Serializable{
 		if(options == null || text == null)
 			return null;
 
-		Vector list = (Vector)options;
+		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
-			OptionDef optionDef = (OptionDef)list.elementAt(i);
+			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getText().equals(text))
 				return optionDef;
 		}
@@ -1006,9 +1006,9 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			return null;
 
-		Vector list = (Vector)options;
+		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
-			OptionDef optionDef = (OptionDef)list.elementAt(i);
+			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getId() == id)
 				return optionDef;
 		}
@@ -1019,9 +1019,9 @@ public class QuestionDef implements Serializable{
 		if(options == null || value == null)
 			return null;
 
-		Vector list = (Vector)options;
+		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
-			OptionDef optionDef = (OptionDef)list.elementAt(i);
+			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getVariableName().equals(value))
 				return optionDef;
 		}
@@ -1071,12 +1071,12 @@ public class QuestionDef implements Serializable{
 	public int getOptionCount(){
 		if(options == null)
 			return 0;
-		return ((Vector)options).size();
+		return ((List)options).size();
 	}
 
 	public void clearOptions(){
 		if(options != null)
-			((Vector)options).clear();
+			((List)options).clear();
 	}
 	
 	public void moveOptionNodesUp(OptionDef optionDef, OptionDef refOptionDef){

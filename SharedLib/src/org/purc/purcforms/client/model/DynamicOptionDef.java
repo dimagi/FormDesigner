@@ -19,39 +19,39 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public class DynamicOptionDef  implements Serializable{
-	
-	/** The question whose values are determined by or dependent on another question. **/
+
+	/** The question whose values are determined by or dependent on the answer of another question. **/
 	private int questionId;
-	
+
 	/** A map between each parent option and a list of possible options for the dependant question. */
 	private HashMap<Integer,List<OptionDef>> parentToChildOptions;
-	
+
 	/** This is not persisted but rather used only during design mode. **/
 	private int nextOptionId = 1;
-	
+
 	private Element dataNode;
-	
-	
+
+
 	public DynamicOptionDef(){
-		
+
 	}
-	
+
 	public DynamicOptionDef(DynamicOptionDef dynamicOptionDef, QuestionDef questionDef){
 		setQuestionId(dynamicOptionDef.getQuestionId());
 		parentToChildOptions = new HashMap<Integer,List<OptionDef>>();
-		
+
 		if(parentToChildOptions == null)
 			return;
-		
+
 		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,List<OptionDef>> entry = iterator.next();
 			List<OptionDef> list = entry.getValue();
-			
+
 			List<OptionDef> newList = new ArrayList<OptionDef>();
 			for(int index = 0; index < list.size(); index++)
 				newList.add(new OptionDef(list.get(index),questionDef));
-			
+
 			parentToChildOptions.put(new Integer(entry.getKey()), newList);
 		}
 	}
@@ -72,20 +72,20 @@ public class DynamicOptionDef  implements Serializable{
 			HashMap<Integer, List<OptionDef>> parentToChildOptions) {
 		this.parentToChildOptions = parentToChildOptions;
 	}
-	
+
 	public List<OptionDef> getOptionList(Integer optionId){
 		if(parentToChildOptions == null)
 			return null;
-		
+
 		return parentToChildOptions.get(optionId);
 	}
-	
+
 	public void setOptionList(Integer optionId, List<OptionDef> list){
 		if(parentToChildOptions == null)
 			parentToChildOptions = new HashMap<Integer, List<OptionDef>>();
 		parentToChildOptions.put(optionId, list);
 	}
-	
+
 	public void removeOptionList(Integer optionId){
 		parentToChildOptions.remove(optionId);
 	}
@@ -93,7 +93,7 @@ public class DynamicOptionDef  implements Serializable{
 	public int getNextOptionId() {
 		return nextOptionId;
 	}
-	
+
 	public int getNextOptionId(boolean increment) {
 		return nextOptionId++;
 	}
@@ -101,28 +101,51 @@ public class DynamicOptionDef  implements Serializable{
 	public void setNextOptionId(int nextOptionId) {
 		this.nextOptionId = nextOptionId;
 	}
-	
+
 	public int size(){
 		if(parentToChildOptions == null)
 			return 0;
 		return parentToChildOptions.size();
 	}
-	
+
 	public void setDataNode(Element node){
 		this.dataNode = node;
 	}
-	
+
 	public void updateDoc(Document doc, FormDef formDef, QuestionDef questionDef){
 		if(parentToChildOptions == null)
 			return;
-		
+
 		if(dataNode == null)
 			XformConverter.fromDynamicOptionDef2Xform(doc,this,questionDef,formDef);
 		else
 			XformConverter.updateDynamicOptionDef(doc, questionDef, this);
 	}
-	
+
 	public Element getDataNode(){
 		return dataNode;
+	}
+
+	public OptionDef getOptionWithValue(String value){
+		if(parentToChildOptions == null || value == null)
+			return null;
+
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			OptionDef optionDef = getOptionWithValue(iterator.next().getValue(),value);
+			if(optionDef != null)
+				return optionDef;
+		}
+		return null;
+	}
+
+	private OptionDef getOptionWithValue(List<OptionDef> options, String value){
+		List list = (List)options;
+		for(int i=0; i<list.size(); i++){
+			OptionDef optionDef = (OptionDef)list.get(i);
+			if(optionDef.getVariableName().equals(value))
+				return optionDef;
+		}
+		return null;
 	}
 }

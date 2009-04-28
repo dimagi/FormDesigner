@@ -2,7 +2,6 @@ package org.purc.purcforms.client.widget;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.model.FormDef;
@@ -30,6 +29,8 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestionEvent;
+import com.google.gwt.user.client.ui.SuggestionHandler;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -105,35 +106,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			});
 		}
 
-		if(widget instanceof TextBox){
-			((TextBox)widget).addChangeListener(new ChangeListener(){
-				public void onChange(Widget sender){
-					//questionDef.setAnswer(((TextBox)widget).getText());
-					if(questionDef != null){
-						questionDef.setAnswer(getTextBoxAnswer());
-						isValid();
-						editListener.onValueChanged(questionDef);
-					}
-				}
-			});
-
-			((TextBox)widget).addKeyboardListener(new KeyboardListenerAdapter(){
-				public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-					if(questionDef != null){
-						questionDef.setAnswer(getTextBoxAnswer());
-						isValid();
-						editListener.onValueChanged(questionDef);
-					}
-				}
-
-				public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-					if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
-						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
-					else if(keyCode == KeyboardListener.KEY_UP)
-						editListener.onMoveToPrevWidget((RuntimeWidgetWrapper)panel.getParent());
-				}
-			});
-		}
+		if(widget instanceof TextBox)
+			setupTextBoxEventListeners();
 		else if(widget instanceof CheckBox){
 			/*if(childWidgets != null){
 				 for(int index=0; index < childWidgets.size(); index++){
@@ -178,6 +152,53 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
+	}
+
+	private void setupTextBoxEventListeners(){
+		if(widget.getParent() instanceof SuggestBox){
+			((SuggestBox)widget.getParent()).addEventHandler(new SuggestionHandler(){
+				public void onSuggestionSelected(SuggestionEvent event){
+					if(questionDef != null){
+						OptionDef optionDef = questionDef.getOptionWithText(getTextBoxAnswer());
+						if(optionDef != null)
+							questionDef.setAnswer(optionDef.getVariableName());
+						else
+							questionDef.setAnswer(null);
+						isValid();
+						editListener.onValueChanged(questionDef);
+					}
+				}
+			});
+		}
+		else{
+			((TextBox)widget).addChangeListener(new ChangeListener(){
+				public void onChange(Widget sender){
+					//questionDef.setAnswer(((TextBox)widget).getText());
+					if(questionDef != null){
+						questionDef.setAnswer(getTextBoxAnswer());
+						isValid();
+						editListener.onValueChanged(questionDef);
+					}
+				}
+			});
+		}
+
+		((TextBox)widget).addKeyboardListener(new KeyboardListenerAdapter(){
+			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
+					questionDef.setAnswer(getTextBoxAnswer());
+					isValid();
+					editListener.onValueChanged(questionDef);
+				}
+			}
+
+			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
+					editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+				else if(keyCode == KeyboardListener.KEY_UP)
+					editListener.onMoveToPrevWidget((RuntimeWidgetWrapper)panel.getParent());
+			}
+		});
 	}
 
 	public void setWidth(String width){
@@ -266,10 +287,20 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC) && widget instanceof TextBox){ 
 			MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 			FormUtil.loadOptions(questionDef.getOptions(),oracle);
-			panel.remove(widget);
+			if(widget.getParent() != null){
+				RuntimeWidgetWrapper copyWidget = new RuntimeWidgetWrapper(this);
+				panel.remove(widget.getParent());
+				panel.remove(widget);
+
+				copyWidgetProperties(copyWidget);
+				setWidth(getWidth());
+				setHeight(getHeight());
+			}
+
 			SuggestBox sgstBox = new SuggestBox(oracle,(TextBox)widget);
 			panel.add(sgstBox);
 			sgstBox.setTabIndex(((TextBox)widget).getTabIndex());
+			setupTextBoxEventListeners();
 		}
 		else if(type == QuestionDef.QTN_TYPE_BOOLEAN && widget instanceof ListBox){
 			ListBox listBox = (ListBox)widget;

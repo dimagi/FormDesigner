@@ -93,6 +93,10 @@ public class WidgetEx extends Composite{
 	}
 	
 	public WidgetEx(WidgetEx widget){
+		copyWidgetProperties(widget);
+	}
+	
+	public void copyWidgetProperties(WidgetEx widget){
 		widget.storePosition();
 		
 		this.left = widget.left;

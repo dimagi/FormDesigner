@@ -305,6 +305,8 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		boolean loadWidget = true;
 
 		if(questionDef != null){
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+				questionDef.setOptions(null); //may have been set by the preview
 			wrapper.setQuestionDef(questionDef,false);
 			wrapper.setValidationRule(formDef.getValidationRule(questionDef));
 		}
@@ -480,6 +482,8 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			optionList = dynamicOptionDef.getOptionList(optionDef.getId());
 		
 		childQuestionDef.setOptionList(optionList);
+		
+		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
 	}
 
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {

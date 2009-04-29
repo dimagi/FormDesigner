@@ -1248,16 +1248,6 @@ public class XformConverter implements Serializable{
 		if(nodeset == null || nodeset.trim().length() == 0)
 			return;
 		
-		/*int pos1 = nodeset.lastIndexOf('/');
-		if(pos1 < 0)
-			return;
-		
-		int pos2 = nodeset.lastIndexOf(']');
-		if(pos2 < 0 || (pos1 == pos2))
-			return;
-		
-		String binding = nodeset.substring(pos1 + 1, pos2);*/ 
-		
 		String binding = getDynamicOptionParentInstanceId(nodeset);
 		if(binding == null)
 			return;
@@ -1265,17 +1255,7 @@ public class XformConverter implements Serializable{
 		QuestionDef parentQuestionDef = formDef.getQuestion(binding);
 		if(parentQuestionDef == null)
 			return;
-		
-		/*pos1 = nodeset.indexOf('\'');
-		if(pos1 < 0)
-			return;
-		
-		pos2 = nodeset.indexOf('\'', pos1 + 1);
-		if(pos2 < 0 || (pos1 == pos2))
-			return;
-		
-		String instanceId = nodeset.substring(pos1 + 1, pos2);*/
-		
+				
 		String instanceId = getDynamicOptionChildInstanceId(nodeset);
 		if(instanceId == null)
 			return;

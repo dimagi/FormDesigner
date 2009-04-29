@@ -8,6 +8,7 @@ import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
+import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
@@ -141,6 +142,8 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 		if(formDef != null)
 			fireRules();
+
+		updateDynamicOptions();
 
 		if(tabs.getWidgetCount() > 0)
 			tabs.selectTab(0);
@@ -463,27 +466,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 	public void onValueChanged(QuestionDef questionDef) {
 		fireRules();
-		
-		int type = questionDef.getDataType();
-		if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
-			return;
-		
-		DynamicOptionDef dynamicOptionDef = formDef.getDynamicOptions(questionDef.getId());
-		if(dynamicOptionDef == null)
-			return;
-		
-		QuestionDef childQuestionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
-		if(childQuestionDef == null)
-			return;
-		
-		OptionDef optionDef = questionDef.getOptionWithValue(questionDef.getAnswer());
-		List<OptionDef> optionList = null;
-		if(optionDef != null)
-			optionList = dynamicOptionDef.getOptionList(optionDef.getId());
-		
-		childQuestionDef.setOptionList(optionList);
-		
-		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
+		updateDynamicOptions(questionDef);
 	}
 
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -559,5 +542,36 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 	public void setEmbeddedHeightOffset(int offset){
 		embeddedHeightOffset = offset;
+	}
+
+	private void updateDynamicOptions(QuestionDef questionDef){
+		int type = questionDef.getDataType();
+		if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+			return;
+
+		DynamicOptionDef dynamicOptionDef = formDef.getDynamicOptions(questionDef.getId());
+		if(dynamicOptionDef == null)
+			return;
+
+		QuestionDef childQuestionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
+		if(childQuestionDef == null)
+			return;
+
+		OptionDef optionDef = questionDef.getOptionWithValue(questionDef.getAnswer());
+		List<OptionDef> optionList = null;
+		if(optionDef != null)
+			optionList = dynamicOptionDef.getOptionList(optionDef.getId());
+
+		childQuestionDef.setOptionList(optionList);
+
+		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
+	}
+
+	private void updateDynamicOptions(){
+		for(byte i=0; i<formDef.getPages().size(); i++){
+			PageDef pageDef = (PageDef)formDef.getPages().elementAt(i);
+			for(byte j=0; j<pageDef.getQuestions().size(); j++)
+				updateDynamicOptions((QuestionDef)pageDef.getQuestions().elementAt(j));
+		}
 	}
 }

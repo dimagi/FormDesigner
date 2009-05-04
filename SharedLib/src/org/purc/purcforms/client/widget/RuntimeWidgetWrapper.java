@@ -638,6 +638,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((TextBox)widget).setFocus(true);
 			((TextBox)widget).selectAll();
 		}
+		else if(widget instanceof RuntimeGroupWidget)
+			((RuntimeGroupWidget)widget).setFocus();
 		else
 			return false;
 		return true;
@@ -731,5 +733,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(widget instanceof RuntimeGroupWidget)
 			return ((RuntimeGroupWidget)widget).getInvalidWidget();
 		return this;
+	}
+	
+	public boolean isFocusable(){
+		Widget wg = getWrappedWidget();
+		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||
+				wg instanceof CheckBox || wg instanceof RadioButton || 
+				wg instanceof RuntimeGroupWidget || wg instanceof ListBox);
 	}
 }

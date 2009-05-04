@@ -675,6 +675,31 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	}
 	
 	public RuntimeWidgetWrapper getInvalidWidget(){
+		if(firstInvalidWidget == null)
+			return (RuntimeWidgetWrapper)getParent().getParent();
 		return firstInvalidWidget;
+	}
+	
+	public boolean setFocus(){
+		if(isRepeated){
+			for(int row = 0; row < table.getRowCount(); row++){
+				for(int col = 0; col < table.getCellCount(row); col++){
+					RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)table.getWidget(row, col);
+					if(widget.isFocusable()){
+						widget.setFocus();
+						return true;
+					}
+				}
+			}
+		}
+		else{
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
+				widget.setFocus();
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

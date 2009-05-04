@@ -444,18 +444,11 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)panel.getWidget(index);
 			if(!widget.isValid()){
 				valid = false;
-				if(firstInvalidWidget == null && isFocusable(widget))
+				if(firstInvalidWidget == null && widget.isFocusable())
 					firstInvalidWidget = widget.getInvalidWidget();
 			}
 		}
 		return valid;
-	}
-
-	private boolean isFocusable(RuntimeWidgetWrapper widget){
-		Widget wg = widget.getWrappedWidget();
-		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||
-				wg instanceof CheckBox || wg instanceof RadioButton || 
-				wg instanceof RuntimeGroupWidget || wg instanceof ListBox);
 	}
 
 	protected void saveValues(){

@@ -2,6 +2,7 @@ package org.purc.purcforms.client.model;
 
 import java.io.Serializable;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.xml.client.Document;
@@ -149,5 +150,29 @@ public class OptionDef implements Serializable {
     	
     	if(labelNode == null && valueNode == null) ////Must be new option.
     		XformConverter.fromOptionDef2Xform(this,doc,selectNode);
+    	
+    	if(controlNode != null)
+    		controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
 	}
+    
+    public void buildLanguageNodes(String parentXpath, com.google.gwt.xml.client.Document doc, Element parentNode){
+    	if(labelNode != null && controlNode != null){
+    		String xpath = parentXpath + "/" + FormUtil.getNodeName(controlNode);
+    		
+    		String id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+    		if(id != null && id.trim().length() > 0)
+    			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+    		
+    		/*String parent = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_PARENT);
+    		if(parent != null && parent.trim().length() > 0)
+    			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_PARENT + "='" + parent + "']";*/
+    		
+    		xpath += "/"+ FormUtil.getNodeName(labelNode);
+			
+    		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			parentNode.appendChild(node);
+		}
+    }
 }

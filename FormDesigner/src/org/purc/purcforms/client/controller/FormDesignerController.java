@@ -139,10 +139,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
 
-						formDef.setXform(centerPanel.getXformsSource());
-						formDef.setLayout(centerPanel.getLayoutXml());
+						formDef.setXformXml(centerPanel.getXformsSource());
+						formDef.setLayoutXml(centerPanel.getLayoutXml());
 						leftPanel.loadForm(formDef);
-						centerPanel.loadForm(formDef,formDef.getLayout());
+						centerPanel.loadForm(formDef,formDef.getLayoutXml());
 						centerPanel.format();
 					}
 					FormUtil.dlg.hide();
@@ -213,7 +213,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						xml = FormDesignerUtil.formatXml(xml);
 					}
 
-					formDef.setXform(xml);
+					formDef.setXformXml(xml);
 					centerPanel.setXformsSource(xml,formId == null);
 					centerPanel.buildLayoutXml();
 					//formDef.setLayout(centerPanel.getLayoutXml());
@@ -550,9 +550,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
 
-						formDef.setXform(FormUtil.formatXml(xml));
-						formDef.setLayout(centerPanel.getLayoutXml());
-						
+						formDef.setXformXml(FormUtil.formatXml(xml));
+						formDef.setLayoutXml(centerPanel.getLayoutXml());
+
 						leftPanel.refresh(formDef);
 					}
 					FormUtil.dlg.hide();
@@ -620,7 +620,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 			String data = (centerPanel.isInLayoutMode() ? centerPanel.getLayoutXml() : centerPanel.getXformsSource());
 			if(data == null || data.trim().length() == 0)
 				return;
-			
+
 			FormDef formDef = leftPanel.getSelectedForm();
 			String fileName = "filename";
 			if(formDef != null)
@@ -635,5 +635,53 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		catch(Exception ex){
 			FormUtil.displayException(ex);
 		}
+	}
+
+	public void openLanguageText(){
+		
+		FormUtil.dlg.setText("Translating Form Language");
+		FormUtil.dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					centerPanel.openLanguageXml();
+					FormDef orgFormDef = centerPanel.getFormDef();
+					
+					String xml = centerPanel.getXformsSource();
+					if(xml != null && xml.trim().length() > 0){
+						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						formDef.setXformXml(xml);
+						formDef.setLayoutXml(orgFormDef.getLayoutXml());
+						formDef.setLanguageXml(orgFormDef.getLanguageXml());
+						leftPanel.refresh(formDef);
+					}
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.dlg.hide();
+					FormUtil.displayException(ex);
+				}
+			}
+		});
+		
+	}
+
+	public void saveLanguageText(){
+		FormUtil.dlg.setText("Saving Language Text");
+		FormUtil.dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					centerPanel.saveLanguageText();
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.dlg.hide();
+					FormUtil.displayException(ex);
+				}	
+			}
+		});
 	}
 }

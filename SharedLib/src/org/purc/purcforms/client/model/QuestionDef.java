@@ -121,9 +121,9 @@ public class QuestionDef implements Serializable{
 	public static final byte QTN_TYPE_VIDEO = 12;
 
 	public static final byte QTN_TYPE_AUDIO = 13;
-	
+
 	public static final int QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC = 14;
-	
+
 
 	private Element dataNode;
 	private Element labelNode;
@@ -512,12 +512,12 @@ public class QuestionDef implements Serializable{
 
 		optns.remove(optionDef);
 
-		if(optionDef.getControlNode() != null)
+		//Store the question to replace
+		OptionDef currentOptionDef = (OptionDef)optns.get(index-1);
+		if(controlNode != null && optionDef.getControlNode() != null && currentOptionDef.getControlNode() != null)
 			controlNode.removeChild(optionDef.getControlNode());
 
-		OptionDef currentOptionDef;
 		List list = new ArrayList();
-
 		//Remove all from index before selected all the way downwards
 		while(optns.size() >= index){
 			currentOptionDef = (OptionDef)optns.get(index-1);
@@ -529,7 +529,7 @@ public class QuestionDef implements Serializable{
 		for(int i=0; i<list.size(); i++){
 			if(i == 0){
 				OptionDef optnDef = (OptionDef)list.get(i);
-				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
+				if(controlNode != null && optnDef.getControlNode() != null && optionDef.getControlNode() != null)
 					controlNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
 			}
 			optns.add(list.get(i));
@@ -546,7 +546,7 @@ public class QuestionDef implements Serializable{
 
 		optns.remove(optionDef);
 
-		if(optionDef.getControlNode() != null)
+		if(controlNode != null && optionDef.getControlNode() != null)
 			controlNode.removeChild(optionDef.getControlNode());
 
 		OptionDef currentItem; // = parent.getChild(index - 1);
@@ -563,11 +563,13 @@ public class QuestionDef implements Serializable{
 			if(i == 1){
 				optns.add(optionDef); //Add after the first item but before the current (second).
 
-				OptionDef optnDef = getNextSavedOption(list,i); //(OptionDef)list.get(i);
-				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
-					controlNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
-				else
-					controlNode.appendChild(optionDef.getControlNode());
+				if(controlNode != null){
+					OptionDef optnDef = getNextSavedOption(list,i); //(OptionDef)list.get(i);
+					if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
+						controlNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
+					else
+						controlNode.appendChild(optionDef.getControlNode());
+				}
 			}
 			optns.add(list.get(i));
 		}
@@ -576,11 +578,11 @@ public class QuestionDef implements Serializable{
 		if(list.size() == 1){
 			optns.add(optionDef);
 
-			if(optionDef.getControlNode() != null)
+			if(controlNode != null && optionDef.getControlNode() != null)
 				controlNode.appendChild(optionDef.getControlNode());
 		}
 	}
-	
+
 	private OptionDef getNextSavedOption(List options, int index){
 		for(int i=index; i<options.size(); i++){
 			OptionDef optionDef = (OptionDef)options.get(i);
@@ -590,7 +592,7 @@ public class QuestionDef implements Serializable{
 		return (OptionDef)options.get(index);
 	}
 
-	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData){
+	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
 		boolean isNew = controlNode == null;
 		if(controlNode == null) //Must be new question.
 			XformConverter.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
@@ -637,26 +639,26 @@ public class QuestionDef implements Serializable{
 				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED);
 
 			if(dataNode != null)
-				updateDataNode(doc,formDef);
+				updateDataNode(doc,formDef,orgFormVarName);
 		}
 
 		if((getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) && options != null){
-			
+
 			boolean allOptionsNew = areAllOptionsNew();
 			List newOptns = new ArrayList();
 			List optns = (List)options;
 			for(int i=0; i<optns.size(); i++){
 				OptionDef optionDef = (OptionDef)optns.get(i);
-				
+
 				if(!allOptionsNew && optionDef.getControlNode() == null)
 					newOptns.add(optionDef);
-				
+
 				optionDef.updateDoc(doc,controlNode);
 				if(i == 0)
 					firstOptionNode = optionDef.getControlNode();
 			}
-			
+
 			for(int k = 0; k < newOptns.size(); k++){
 				OptionDef optionDef = (OptionDef)newOptns.get(k);
 				int proposedIndex = optns.size() - (newOptns.size() - k);
@@ -668,7 +670,10 @@ public class QuestionDef implements Serializable{
 			}
 		}
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
-			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData);
+			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData,orgFormVarName);
+
+			if(controlNode != null)
+				((Element)controlNode.getParentNode()).setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
 
 			if(!withData){
 				//Remove all repeating data kids
@@ -700,7 +705,7 @@ public class QuestionDef implements Serializable{
 
 		return isNew;
 	}
-	
+
 	private boolean areAllOptionsNew(){
 		if(options == null)
 			return false;
@@ -713,7 +718,7 @@ public class QuestionDef implements Serializable{
 		}
 		return true;
 	}
-	
+
 	private OptionDef getRefOption(List options, List newOptions, int index){
 		OptionDef optionDef;
 		int i = index + 1;
@@ -723,7 +728,7 @@ public class QuestionDef implements Serializable{
 				return optionDef;
 			i++;
 		}
-		
+
 		return null;
 	}
 
@@ -820,7 +825,7 @@ public class QuestionDef implements Serializable{
 			;//updateRepeatModel(elem,qtnData);
 	}
 
-	private void updateDataNode(Document doc, FormDef formDef){
+	private void updateDataNode(Document doc, FormDef formDef, String orgFormVarName){
 		if(variableName.contains("@"))
 			return;
 
@@ -899,6 +904,11 @@ public class QuestionDef implements Serializable{
 				ref = ref.substring(0,ref.indexOf('/')) + variableName;*/
 			controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_REF,id);
 		}
+
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
+			getRepeatQtnsDef().updateDataNodes(dataNode);
+
+		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getVariableName()+"/"+variableName);
 	}
 
 	private void updateControlNodeName(){
@@ -1007,7 +1017,7 @@ public class QuestionDef implements Serializable{
 		}
 		return null;
 	}
-	
+
 	public OptionDef getOption(int id){
 		if(options == null)
 			return null;
@@ -1084,7 +1094,7 @@ public class QuestionDef implements Serializable{
 		if(options != null)
 			((List)options).clear();
 	}
-	
+
 	public void moveOptionNodesUp(OptionDef optionDef, OptionDef refOptionDef){
 		Element controlNode = optionDef.getControlNode();
 		Element parentNode = controlNode != null ? (Element)controlNode.getParentNode() : null;
@@ -1095,28 +1105,78 @@ public class QuestionDef implements Serializable{
 		if(refOptionDef.getControlNode() != null)
 			parentNode.insertBefore(controlNode, refOptionDef.getControlNode());
 	}
-	
+
 	public void setOptionList(List<OptionDef> optionList){
 		options = optionList;
-		
+
 		for(int index = 0; index < changeListeners.size(); index++)
 			changeListeners.get(index).onOptionsChanged(optionList);
 	}
-	
-	public void updateDataNodes(FormDef formDef){
+
+	public void updateDataNodes(Element parentDataNode){
 		if(dataNode == null)
 			return;
-		
+
+		String xpath = /*"/"+formDef.getVariableName()+"/"+*/dataNode.getNodeName();
+		XPathExpression xpls = new XPathExpression(parentDataNode, xpath);
+		Vector result = xpls.getResult();
+		if(result == null || result.size() == 0)
+			return;
+
+		dataNode = (Element)result.elementAt(0);
+
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
-			getRepeatQtnsDef().updateDataNodes(formDef);
+			getRepeatQtnsDef().updateDataNodes(dataNode);
+	}
+
+	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+		if(controlNode == null)
+			return;
+
+		String xpath = FormUtil.getNodePath(controlNode);
+
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+			Element parent = (Element)controlNode.getParentNode();
+			xpath = FormUtil.getNodePath(parent);
+
+			String id = parent.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+			if(id != null && id.trim().length() > 0)
+				xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+		}
 		else{
-			String xpath = /*"/"+formDef.getVariableName()+"/"+*/dataNode.getNodeName();
-			XPathExpression xpls = new XPathExpression(formDef.getDataNode(), xpath);
-			Vector result = xpls.getResult();
-			if(result == null || result.size() == 0)
-				return;
-			
-			dataNode = (Element)result.elementAt(0);
+			String id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_BIND);
+			if(id != null && id.trim().length() > 0)
+				xpath += "[@" + XformConverter.ATTRIBUTE_NAME_BIND + "='" + id + "']";
+			else{
+				id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_REF);
+				if(id != null && id.trim().length() > 0)
+					xpath += "[@" + XformConverter.ATTRIBUTE_NAME_REF + "='" + id + "']";
+			}
+		}
+
+		if(labelNode != null){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(labelNode));
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			parentNode.appendChild(node);
+		}
+
+		if(hintNode != null){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, helpText);
+			parentNode.appendChild(node);
+		}
+
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
+			getRepeatQtnsDef().buildLanguageNodes(doc,parentNode);
+
+		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
+			if(options != null){
+				List optionsList = (List)options;
+				for(int index = 0; index < optionsList.size(); index++)
+					((OptionDef)optionsList.get(index)).buildLanguageNodes(xpath, doc, parentNode);
+			}
 		}
 	}
 }

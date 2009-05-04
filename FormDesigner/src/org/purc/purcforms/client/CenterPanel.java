@@ -15,6 +15,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
 import org.purc.purcforms.client.view.PropertiesView;
+import org.purc.purcforms.client.xforms.LanguageUtil;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -23,6 +24,8 @@ import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -37,8 +40,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	private static final int SELECTED_INDEX_XFORMS_SOURCE = 1;
 	private static final int SELECTED_INDEX_DESIGN_SURFACE = 2;
 	private static final int SELECTED_INDEX_LAYOUT_XML = 3;
-	private static final int SELECTED_INDEX_PREVIEW = 4;
-	private static final int SELECTED_INDEX_MODEL_XML = 5;
+	private static final int SELECTED_INDEX_LANGUAGE_XML = 4;
+	private static final int SELECTED_INDEX_PREVIEW = 5;
+	private static final int SELECTED_INDEX_MODEL_XML = 6;
 
 	/**
 	 * Tab widget housing the contents.
@@ -62,6 +66,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	private TextArea txtLayoutXml = new TextArea();
 	private TextArea txtModelXml = new TextArea();
+	private TextArea txtLanguageXml = new TextArea();
 
 	/**
 	 * View used to display a form as it will look when the user is entering data in non-design mode.
@@ -78,6 +83,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		initXformsSource();
 		initDesignSurface();
 		initLayoutXml();
+		initLanguageXml();
 		initPreview();
 		initModelXml();
 
@@ -124,7 +130,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			}
 		});
 	}
-	
+
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
 		return true;
 	}
@@ -142,6 +148,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	private void initLayoutXml(){
 		tabs.add(txtLayoutXml, "Layout XML");
 		FormDesignerUtil.maximizeWidget(txtLayoutXml);
+	}
+
+	private void initLanguageXml(){
+		tabs.add(txtLanguageXml, "Language XML");
+		FormDesignerUtil.maximizeWidget(txtLanguageXml);
 	}
 
 	private void initPreview(){
@@ -167,6 +178,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		txtLayoutXml.setHeight(height);
 		//previewView.setHeight(height);
 		txtModelXml.setHeight(height);
+		txtLanguageXml.setHeight(height);
 	}
 
 	/**
@@ -174,25 +186,25 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	public void onFormItemSelected(Object formItem) {
 		propertiesView.onFormItemSelected(formItem);
-		
+
 		if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
 			propertiesView.setFocus();
-		
+
 		FormDef form = getFormDef(formItem);
-		
+
 		if(this.formDef != form){
 			setFormDef(form);
-			
-		//if(formItem instanceof FormDef){
+
+			//if(formItem instanceof FormDef){
 			designSurfaceView.setFormDef(formDef);
 			previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
-		//}
+			//}
 		}
 	}
-	
+
 	private FormDef getFormDef(Object formItem){
 		if(formItem instanceof FormDef)
 			return (FormDef)formItem;
@@ -206,7 +218,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			Object item = ((OptionDef)formItem).getParent();
 			return getFormDef(item);
 		}
-		
+
 		return null;
 	}
 
@@ -218,13 +230,13 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void loadForm(FormDef formDef, String layoutXml){
 		setFormDef(formDef);
-		
+
 		//previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
 		if(layoutXml == null || layoutXml.trim().length() == 0)
 			designSurfaceView.setLayout(formDef);
 		else
 			designSurfaceView.setLayoutXml(layoutXml,formDef);
-		
+
 		previewView.clearPreview();
 		tabs.selectTab(SELECTED_INDEX_PROPERTIES);
 	}
@@ -244,20 +256,49 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public String getLayoutXml(){
 		return txtLayoutXml.getText();
 	}
-	
+
+	public String getLanguageXml(){
+		return txtLanguageXml.getText();
+	}
+
 	public void setLayoutXml(String xml, boolean selectTabs){
 		txtLayoutXml.setText(xml);
 		if(selectTabs)
 			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
 	}
-	
+
+	public void setLanguageXml(String xml, boolean selectTab){
+		txtLanguageXml.setText(xml);
+		if(selectTab)
+			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+	}
+
 	public void buildLayoutXml(){
 		String layout = designSurfaceView.getLayoutXml();
-		
+
 		if(layout != null)
-			this.formDef.setLayout(layout);
-		
+			this.formDef.setLayoutXml(layout);
+
 		txtLayoutXml.setText(layout);
+	}
+
+	public void buildLanguageXml(){
+
+		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
+		Element rootNode = doc.createElement("LanguageText");
+		rootNode.setAttribute("lang", "en");
+		doc.appendChild(rootNode);
+
+		Element node = designSurfaceView.getLanguageNode();
+		if(node != null)
+			rootNode.appendChild(node);
+
+		node = formDef.getLanguageNode();
+		if(node != null)
+			rootNode.appendChild(node);
+
+		formDef.setLanguageXml(FormDesignerUtil.formatXml(doc.toString()));
+		txtLanguageXml.setText(formDef.getLanguageXml());
 	}
 
 	public void loadLayoutXml(String xml, boolean selectTabs){
@@ -273,18 +314,43 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		}
 		else if(selectTabs)
 			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
-		
+
 		if(formDef != null)
-			formDef.setLayout(xml);
+			formDef.setLayoutXml(xml);
 	}
 
 	public void openFormLayout(){
 		loadLayoutXml(null,true);
 	}
 
+	public void openLanguageXml(){
+		loadLanguageXml(null,true);
+	}
+
+	public void loadLanguageXml(String xml, boolean selectTabs){
+		if(xml != null)
+			txtLanguageXml.setText(xml);
+		else
+			xml = txtLanguageXml.getText();
+
+		if(xml != null && xml.trim().length() > 0){
+			txtXformsSource.setText(FormUtil.formatXml(LanguageUtil.translate(formDef.getDoc(), xml).toString()));
+			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			if(formDef != null)
+				formDef.setLanguageXml(xml);
+		}
+		else if(selectTabs)
+			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+	}
+
 	public void saveFormLayout(){
 		txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 		tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
+	}
+
+	public void saveLanguageText(){
+		buildLanguageXml();
+		tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 	}
 
 	public void format(){
@@ -296,6 +362,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			txtModelXml.setText(FormDesignerUtil.formatXml(txtModelXml.getText()));
 		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.format();
+		else if(selectedTabIndex == SELECTED_INDEX_LANGUAGE_XML)
+			txtLanguageXml.setText(FormDesignerUtil.formatXml(txtLanguageXml.getText()));
 	}
 
 	public void commitChanges(){
@@ -391,35 +459,37 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
 			previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 	}
-	
+
 	public void setFormDef(FormDef formDef){
 		if(this.formDef == null || this.formDef != formDef){
 			if(formDef ==  null){
 				txtLayoutXml.setText(null);
 				txtXformsSource.setText(null);
+				txtLanguageXml.setText(null);
 			}
 			else{
-				txtLayoutXml.setText(formDef.getLayout());
-				txtXformsSource.setText(formDef.getXform());
+				txtLayoutXml.setText(formDef.getLayoutXml());
+				txtXformsSource.setText(formDef.getXformXml());
+				txtLanguageXml.setText(formDef.getLanguageXml());
 			}
 		}
-		
+
 		this.formDef = formDef;
 	}
-	
+
 	public FormDef getFormDef(){
 		return formDef;
 	}
-	
+
 	public void setEmbeddedHeightOffset(int offset){
 		designSurfaceView.setEmbeddedHeightOffset(offset);
 		previewView.setEmbeddedHeightOffset(offset);
 	}
-	
+
 	public void setFormActionListener(IFormActionListener formActionListener){
 		this.propertiesView.setFormActionListener(formActionListener);
 	}
-	
+
 	public boolean isInLayoutMode(){
 		return tabs.getTabBar().getSelectedTab() == SELECTED_INDEX_LAYOUT_XML;
 	}

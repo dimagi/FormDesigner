@@ -900,6 +900,30 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			return FormDesignerUtil.formatXml(doc.toString());
 		return null;
 	}
+	
+	public Element getLanguageNode(){
+		if(tabs.getWidgetCount() == 0)
+			return null;
+
+		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
+		Element rootNode = doc.createElement("Form");
+		doc.appendChild(rootNode);
+
+		boolean hasWidgets = false;
+		for(int i=0; i<tabs.getWidgetCount(); i++){
+			/*Element node = doc.createElement("Page");
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
+			rootNode.appendChild(node);
+			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
+			boolean b = buildLayoutXml(node,panel,doc);
+			if(b)
+				hasWidgets = true;*/
+		}
+
+		if(hasWidgets)
+			return rootNode;
+		return null;
+	}
 
 	private boolean buildLayoutXml(Element parent, AbsolutePanel panel, com.google.gwt.xml.client.Document doc){
 		for(int i=0; i<panel.getWidgetCount(); i++){
@@ -908,50 +932,6 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				continue;
 			DesignWidgetWrapper wrapper = (DesignWidgetWrapper)widget;
 			wrapper.buildLayoutXml(parent, doc);
-			/*Element node = doc.createElement("Item");
-			 parent.appendChild(node);			 
-			 node.setAttribute("WidgetType", wrapper.getWidgetName());
-
-			 String value = wrapper.getText();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Text", value);
-			 else
-				 node.removeAttribute("Text");
-
-			 value = wrapper.getTitle();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("HelpText", value);
-			 else
-				 node.removeAttribute("HelpText");
-
-			 value = wrapper.getBinding();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Binding", value);
-			 else
-				 node.removeAttribute("Binding");
-
-			 value = wrapper.getParentBinding();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("ParentBinding", value);
-			 else
-				 node.removeAttribute("ParentBinding");
-
-			 node.setAttribute("Left", wrapper.getLeft());
-			 node.setAttribute("Top", wrapper.getTop());
-
-			 value = wrapper.getWidth();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Width", value);
-			 else
-				 node.removeAttribute("Width");
-
-			 value = wrapper.getHeight();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Height", value);
-			 else
-				 node.removeAttribute("Height");
-
-			 node.setAttribute("TabIndex", String.valueOf(wrapper.getTabIndex()));*/
 		}
 
 		return panel.getWidgetCount() > 0;
@@ -1611,7 +1591,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 					if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
 						loadNewWidgets();
 					else{
-						if(formDef.getLayout() != null && formDef.getLayout().trim().length() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() == 0){
+						if(formDef.getLayoutXml() != null && formDef.getLayoutXml().trim().length() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() == 0){
 							loading = true;
 							load();
 						}
@@ -1646,7 +1626,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
-					if(!setLayoutXml(formDef.getLayout(), formDef))
+					if(!setLayoutXml(formDef.getLayoutXml(), formDef))
 						refresh();
 					else
 						FormUtil.dlg.hide();

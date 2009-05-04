@@ -8,6 +8,7 @@ import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
+import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
@@ -57,7 +58,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private Image image;
 	private HTML html;
 	private FormDef formDef;
-
+	private Button btnAdd;
+	private RuntimeWidgetWrapper firstInvalidWidget;
 
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
@@ -366,14 +368,21 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		if(repeatQtnsDef != null){
 			if(binding.equalsIgnoreCase("addnew"))
-				addNewRow();
+				addNewRow(sender);
 			else if(binding.equalsIgnoreCase("remove")){
 				if(table.getRowCount() > 1){//There should be atleast one row{
 					table.removeRow(table.getRowCount()-1);
 					Element node = dataNodes.get(dataNodes.size() - 1);
 					node.getParentNode().removeChild(node);
 					dataNodes.remove(node);
+					if(btnAdd != null)
+						btnAdd.setEnabled(true);
 				}
+
+				RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
+				ValidationRule validationRule = parent.getValidationRule();
+				if(validationRule != null)
+					parent.getQuestionDef().setAnswer(table.getRowCount()+"");
 			}
 		}
 		else{
@@ -387,7 +396,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 					return;
 				if(wrapper.getWrappedWidget() instanceof HTML && !wrapper.getWrappedWidget().isVisible())
 					return;
-				
+
 				if(!Window.confirm("Do you really want to delete this item?"))
 					return;
 
@@ -410,12 +419,12 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 			else if(binding.equalsIgnoreCase("browse")){
 				RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
-				
+
 				if(wrapper.getWrappedWidget() instanceof Image)
 					image = (Image)wrapper.getWrappedWidget();
 				else
 					html = (HTML)wrapper.getWrappedWidget();
-				
+
 				OpenFileDialog dlg = new OpenFileDialog(this,"multimedia");
 				dlg.center();
 			}
@@ -442,27 +451,43 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		return null;
 	}
 
-	private void addNewRow(){
+	private void addNewRow(Widget sender){
 		Element newRepeatDataNode = null;
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
 			RuntimeWidgetWrapper mainWidget = widgets.get(index);
 			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget,true);
 
-			table.setWidget(row, index, copyWidget);
+			//table.setWidget(row, index, copyWidget);
 
 			if(index == 0){
 				Element dataNode = mainWidget.getQuestionDef().getDataNode();
-				if(dataNode != null){
-					Element repeatDataNode = getParentNode(dataNode,mainWidget.getBinding());
-					newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);
-					repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
-					dataNodes.add(newRepeatDataNode);
-				}
+				if(dataNode == null)
+					return; //possibly form not yet saved
+
+				Element repeatDataNode = getParentNode(dataNode,mainWidget.getBinding());
+				newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);
+				repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
+				dataNodes.add(newRepeatDataNode);
 			}
+
+			table.setWidget(row, index, copyWidget);
 
 			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
 		}
+
+		btnAdd = (Button)sender;
+		RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
+		ValidationRule validationRule = parent.getValidationRule();
+		if(validationRule != null){
+			row++;
+			parent.getQuestionDef().setAnswer(row+"");
+			if(validationRule.getMaxValue(formDef) == row)
+				((Button)sender).setEnabled(false);
+		}
+		//byte maxRows = repeatQtnsDef.getMaxRows();
+		//if(maxRows > 0 && row == maxRows)
+		//	((Button)sender).setEnabled(false);
 	}
 
 	private void addNewRow(Element dataNode){
@@ -585,6 +610,9 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).saveValue(formDef);
 			}
 		}
+		
+		if(repeatQtnsDef != null)
+			repeatQtnsDef.getQtnDef().setAnswer(table.getRowCount()+"");
 	}
 
 	public void onSetFileContents(String contents) {
@@ -599,7 +627,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 			else{
 				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
-				
+
 				String xpath = widgetWrapper.getBinding();
 				if(!xpath.startsWith(formDef.getVariableName()))
 					xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
@@ -631,5 +659,22 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			for(int index = 0; index < selectedPanel.getWidgetCount(); index++)
 				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).clearValue();
 		}
+	}
+	
+	public boolean isValid(){
+		for(int row = 0; row < table.getRowCount(); row++){
+			for(int col = 0; col < table.getCellCount(row); col++){
+				boolean valid = ((RuntimeWidgetWrapper)table.getWidget(row, col)).isValid();
+				if(!valid){
+					firstInvalidWidget = (RuntimeWidgetWrapper)table.getWidget(row, col);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public RuntimeWidgetWrapper getInvalidWidget(){
+		return firstInvalidWidget;
 	}
 }

@@ -357,6 +357,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			((OptionDef)propertiesObj).setVariableName(txtBinding.getText());
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setVariableName(txtBinding.getText());
+		else if(propertiesObj instanceof PageDef){
+			try{
+				((PageDef)propertiesObj).setPageNo(Integer.parseInt(txtBinding.getText()));
+			}catch(Exception ex){
+				return;
+			}
+		}
 
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
@@ -452,7 +459,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			questionDef.setRepeatQtnsDef(new RepeatQtnsDef(questionDef));
 
 		questionDef.setDataType(dataType);
-		
+
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 			dynamicListsView.setEnabled(false);
 		else if(!dynamicListsView.isEnabled())

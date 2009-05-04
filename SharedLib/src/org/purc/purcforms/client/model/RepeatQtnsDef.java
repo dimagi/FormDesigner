@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.xforms.XformConverter;
+
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 
@@ -23,6 +26,8 @@ public class RepeatQtnsDef implements Serializable {
 	
 	/** Reference to the parent question. */
 	private QuestionDef qtnDef;
+	
+	private byte maxRows = -1;
 	
 	public RepeatQtnsDef() {
 		 
@@ -66,17 +71,20 @@ public class RepeatQtnsDef implements Serializable {
 		if(questions == null)
 			questions = new Vector();
 		
-		qtn.setId((byte)(questions.size()+1));
+		//qtn.setId((byte)(questions.size()+1)); id should be set somewhere else
 		questions.addElement(qtn);
 	}
 	
-	public void removeQuestion(QuestionDef qtnDef){
+	public void removeQuestion(QuestionDef qtnDef, FormDef formDef){
 		if(qtnDef.getControlNode() != null)
 			qtnDef.getControlNode().getParentNode().removeChild(qtnDef.getControlNode());
 		if(qtnDef.getDataNode() != null)
 			qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
 		if(qtnDef.getBindNode() != null)
 			qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
+		
+		if(formDef != null)
+			formDef.removeQtnFromRules(qtnDef);
 		
 		questions.removeElement(qtnDef);
 	}
@@ -118,7 +126,7 @@ public class RepeatQtnsDef implements Serializable {
 	}
 	
 	public void moveQuestionUp(QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);
+		/*int index = questions.indexOf(questionDef);
 		
 		questions.remove(questionDef);
 		
@@ -133,11 +141,13 @@ public class RepeatQtnsDef implements Serializable {
 		
 		questions.add(questionDef);
 		for(int i=0; i<list.size(); i++)
-			questions.add(list.get(i));
+			questions.add(list.get(i));*/
+		
+		PageDef.moveQuestionUp(questions, questionDef);
 	}
 	
 	public void moveQuestionDown(QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);	
+		/*int index = questions.indexOf(questionDef);	
 		
 		questions.remove(questionDef);
 		
@@ -157,16 +167,18 @@ public class RepeatQtnsDef implements Serializable {
 		}
 		
 		if(list.size() == 1)
-			questions.add(questionDef);
+			questions.add(questionDef);*/
+		
+		PageDef.moveQuestionDown(questions, questionDef);
 	}
 	
-	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode, boolean withData){
+	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode, boolean withData, String orgFormVarName){
 		if(questions == null)
 			return;
 		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			questionDef.updateDoc(doc,xformsNode,formDef,qtnDef.getDataNode(),modelNode,qtnDef.getControlNode(),false,withData);
+			questionDef.updateDoc(doc,xformsNode,formDef,qtnDef.getDataNode(),modelNode,qtnDef.getControlNode(),false,withData,orgFormVarName);
 		}
 	}
 	
@@ -214,11 +226,27 @@ public class RepeatQtnsDef implements Serializable {
 		}
 	}
 	
-	public void updateDataNodes(FormDef formDef){
+	public void updateDataNodes(Element parentDataNode){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).updateDataNodes(formDef);
+			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
+	}
+	
+	public void setMaxRows(byte maxRows){
+		this.maxRows = maxRows;
+	}
+	
+	public byte getMaxRows(){
+		return maxRows;
+	}
+	
+	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+		if(questions == null)
+			return;
+
+		for(int i=0; i<questions.size(); i++)
+			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
 	}
 }

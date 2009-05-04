@@ -37,6 +37,7 @@ public class FieldWidget extends Composite{
 	private ItemSelectionListener itemSelectionListener;
 	private boolean forDynamicOptions = false;
 	private QuestionDef dynamicQuestionDef;
+
 	
 	public FieldWidget(ItemSelectionListener itemSelectionListener){
 		this.itemSelectionListener = itemSelectionListener;

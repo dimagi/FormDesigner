@@ -261,7 +261,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		//tree.clear();
 		TreeItem item = tree.getSelectedItem();
 		if(item != null)
-			tree.removeItem(item);
+			tree.removeItem(getSelectedItemRoot(item));
 
 		loadForm(formDef,true);
 	}
@@ -371,9 +371,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		if(userObj instanceof QuestionDef){
 			if(parentUserObj instanceof QuestionDef)
-				((QuestionDef)parentUserObj).getRepeatQtnsDef().removeQuestion((QuestionDef)userObj);
+				((QuestionDef)parentUserObj).getRepeatQtnsDef().removeQuestion((QuestionDef)userObj,formDef);
 			else
-				((PageDef)parentUserObj).removeQuestion((QuestionDef)userObj);			
+				((PageDef)parentUserObj).removeQuestion((QuestionDef)userObj,formDef);			
 		}
 		else if(userObj instanceof OptionDef){
 			((QuestionDef)parentUserObj).removeOption((OptionDef)userObj);

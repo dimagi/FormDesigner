@@ -124,15 +124,21 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			if(widget instanceof ConditionWidget){
 				Condition condition = ((ConditionWidget)widget).getCondition();
 				
-				if(condition != null && !validationRule.containsCondition(condition))
+				if(condition != null && !validationRule.containsCondition(condition) && condition.getValue() != null)
 					validationRule.addCondition(condition);
-				else if(condition != null && validationRule.containsCondition(condition))
-					validationRule.updateCondition(condition);
+				else if(condition != null && validationRule.containsCondition(condition)){
+					if(condition.getValue() != null)
+						validationRule.updateCondition(condition);
+					else
+						validationRule.removeCondition(condition);
+				}
 			}
 		}
 		
-		if(validationRule.getConditions() == null)
+		if(validationRule.getConditions() == null || validationRule.getConditionCount() == 0){
+			formDef.removeValidationRule(validationRule);
 			validationRule = null;
+		}
 		else
 			validationRule.setConditionsOperator(groupHyperlink.getConditionsOperator());
 		

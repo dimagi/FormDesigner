@@ -25,6 +25,13 @@ public class Condition implements Serializable{
 	 * For a list of options this value is the option id, not the value or text value.
 	 */
 	private String value = ModelConstants.EMPTY_STRING;
+	
+	/** The the question whose value is dynamically put in the value property. 
+	 * This is useful for only design mode when the question variablename changes
+	 * and hence we need to change the value or the value property.
+	 * */
+	private QuestionDef valueQtnDef;
+	
 
 	private String secondValue = ModelConstants.EMPTY_STRING;
 
@@ -123,6 +130,7 @@ public class Condition implements Serializable{
 			case QuestionDef.QTN_TYPE_TEXT:
 				ret = isTextTrue(qn,validation);
 				break;
+			case QuestionDef.QTN_TYPE_REPEAT:
 			case QuestionDef.QTN_TYPE_NUMERIC:
 				ret = isNumericTrue(qn,validation);
 				break;
@@ -136,6 +144,7 @@ public class Condition implements Serializable{
 				ret = isDecimalTrue(qn,validation);
 				break;
 			case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
+			case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 				ret = isListExclusiveTrue(qn,validation);
 				break;
 			case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
@@ -393,5 +402,27 @@ public class Condition implements Serializable{
 		}
 
 		return false;
+	}
+	
+	public String getValue(FormDef formDef){	
+		if(value.startsWith(formDef.getVariableName()+"/")){
+			QuestionDef qn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
+			if(qn != null)
+				return qn.getAnswer();
+		}
+		return value;
+	}
+	
+	public void updateValue(String origValue, String newValue){
+		if(origValue.equals(value))
+			value = newValue;
+	}
+	
+	public void setValueQtnDef(QuestionDef valueQtnDef){
+		this.valueQtnDef = valueQtnDef;
+	}
+	
+	public QuestionDef getValueQtnDef(){
+		return valueQtnDef;
 	}
 }

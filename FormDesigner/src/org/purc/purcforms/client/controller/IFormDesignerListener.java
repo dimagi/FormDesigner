@@ -34,4 +34,6 @@ public interface IFormDesignerListener extends IFormActionListener{
 	public void saveFormLayout();
 	public void refresh(Object sender);
 	//public void saveFormLayoutAs();
+	public void openLanguageText();
+	public void saveLanguageText();
 }

@@ -32,6 +32,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private int operator;
 	private IConditionController view;
 	private Condition condition;
+	private Label lbLabel = new Label("Value");
 
 	private boolean allowFieldSelection = false;
 
@@ -57,8 +58,11 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		if(allowFieldSelection)
 			horizontalPanel.add(fieldWidget);
-		else
-			horizontalPanel.add(new Label("Value"));
+		else{
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+				lbLabel.setText("Count");
+			horizontalPanel.add(lbLabel);
+		}
 
 		horizontalPanel.add(operatorHyperlink);
 		horizontalPanel.add(valueWidget);
@@ -125,6 +129,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		condition.setQuestionId(questionDef.getId());
 		condition.setOperator(operator);
 		condition.setValue(valueWidget.getValue());
+		condition.setValueQtnDef(valueWidget.getValueQtnDef());
 
 		if(condition.getValue() == null)
 			return null;
@@ -162,6 +167,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 			operatorHyperlink.setOperator(operator);
 			valueWidget.setOperator(operator);
+			valueWidget.setValueQtnDef(condition.getValueQtnDef()); //Should be set before value such that value processing finds it.
 			valueWidget.setValue(condition.getValue());
 		}
 	}

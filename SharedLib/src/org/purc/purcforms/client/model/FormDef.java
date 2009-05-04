@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.XMLParser;
 
 /**
  * Definition of a form. This has some meta data about the form definition and  
@@ -61,8 +64,9 @@ public class FormDef implements Serializable{
 	private Element xformsNode;
 	private Element modelNode;
 
-	private String layout;
-	private String xform;
+	private String layoutXml;
+	private String xformXml;
+	private String languageXml;
 
 
 	/** Constructs a form definition object. */
@@ -122,8 +126,10 @@ public class FormDef implements Serializable{
 		pages.add(new PageDef("Page"+pages.size(),(int)pages.size(),this));
 	}
 
-	public void setPageName(String name){
-		((PageDef)pages.elementAt(pages.size()-1)).setName(name);
+	public PageDef setPageName(String name){
+		PageDef pageDef = ((PageDef)pages.elementAt(pages.size()-1));
+		pageDef.setName(name);
+		return pageDef;
 	}
 
 	public void setPageLabelNode(Element labelNode){
@@ -217,20 +223,28 @@ public class FormDef implements Serializable{
 		this.descriptionTemplate = descriptionTemplate;
 	}
 
-	public String getLayout() {
-		return layout;
+	public String getLayoutXml() {
+		return layoutXml;
 	}
 
-	public void setLayout(String layout) {
-		this.layout = layout;
+	public void setLayoutXml(String layout) {
+		this.layoutXml = layout;
 	}
 
-	public String getXform() {
-		return xform;
+	public String getLanguageXml() {
+		return languageXml;
 	}
 
-	public void setXform(String xform) {
-		this.xform = xform;
+	public void setLanguageXml(String languageXml) {
+		this.languageXml = languageXml;
+	}
+
+	public String getXformXml() {
+		return xformXml;
+	}
+
+	public void setXformXml(String xform) {
+		this.xformXml = xform;
 	}
 
 	public SkipRule getSkipRule(QuestionDef questionDef){
@@ -271,7 +285,8 @@ public class FormDef implements Serializable{
 		else
 			setId(Integer.parseInt(val));
 
-		if(!dataNode.getNodeName().equalsIgnoreCase(variableName)){
+		String orgVarName = dataNode.getNodeName();
+		if(!orgVarName.equalsIgnoreCase(variableName)){
 			dataNode = XformConverter.renameNode(dataNode,variableName);
 			updateDataNodes();
 		}
@@ -286,7 +301,7 @@ public class FormDef implements Serializable{
 		if(pages != null){
 			for(int i=0; i<pages.size(); i++){
 				PageDef pageDef = (PageDef)pages.elementAt(i);
-				pageDef.updateDoc(doc,xformsNode,this,dataNode,modelNode,withData);
+				pageDef.updateDoc(doc,xformsNode,this,dataNode,modelNode,withData,orgVarName);
 			}
 		}
 
@@ -323,7 +338,7 @@ public class FormDef implements Serializable{
 			return;
 
 		for(int i=0; i<pages.size(); i++)
-			((PageDef)pages.elementAt(i)).updateDataNodes(this);
+			((PageDef)pages.elementAt(i)).updateDataNodes(dataNode);
 	}
 
 	public String toString() {
@@ -444,7 +459,7 @@ public class FormDef implements Serializable{
 			((PageDef)pages.elementAt(i)).removeAllQuestions();
 		}*/
 
-		pageDef.removeAllQuestions();
+		pageDef.removeAllQuestions(this);
 
 		if(pageDef.getGroupNode() != null)
 			pageDef.getGroupNode().getParentNode().removeChild(pageDef.getGroupNode());
@@ -568,10 +583,37 @@ public class FormDef implements Serializable{
 
 	public boolean removeQuestion(QuestionDef qtnDef){
 		for(int i=0; i<pages.size(); i++){
-			if(((PageDef)pages.elementAt(i)).removeQuestion(qtnDef))
+			if(((PageDef)pages.elementAt(i)).removeQuestion(qtnDef,this))
 				return true;
 		}
 		return false;
+	}
+
+	private void removeQtnFromValidationRules(QuestionDef questionDef){
+		for(int index = 0; index < this.getValidationRuleCount(); index++){
+			ValidationRule validationRule = getValidationRuleAt(index);
+			validationRule.removeQuestion(questionDef);
+			if(validationRule.getConditionCount() == 0){
+				removeValidationRule(validationRule);
+				index++;
+			}
+		}
+	}
+
+	private void removeQtnFromSkipRules(QuestionDef questionDef){
+		for(int index = 0; index < getSkipRuleCount(); index++){
+			SkipRule skipRule = getSkipRuleAt(index);
+			skipRule.removeQuestion(questionDef);
+			if(skipRule.getActionTargetCount() == 0 || skipRule.getConditionCount() == 0){
+				removeSkipRule(skipRule);
+				index++;
+			}
+		}
+	}
+
+	public void removeQtnFromRules(QuestionDef qtnDef){
+		removeQtnFromValidationRules(qtnDef);
+		removeQtnFromSkipRules(qtnDef);
 	}
 
 	public int getPageCount(){
@@ -655,11 +697,35 @@ public class FormDef implements Serializable{
 	}
 
 	public boolean removeSkipRule(SkipRule skipRule){
-		return skipRules.remove(skipRule);
+		if(skipRules == null)
+			return false;
+
+		boolean ret = skipRules.remove(skipRule);
+		if(dataNode != null){
+			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
+				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
+				if(questionDef != null && questionDef.getDataNode() != null){
+					questionDef.getDataNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT);
+					questionDef.getDataNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_ACTION);
+				}
+			}
+		}
+		return ret;
 	}
 
 	public boolean removeValidationRule(ValidationRule validationRule){
-		return validationRules.remove(validationRule);
+		if(validationRules == null)
+			return false;
+
+		boolean ret = validationRules.remove(validationRule);
+		if(dataNode != null){
+			QuestionDef questionDef = getQuestion(validationRule.getQuestionId());
+			if(questionDef != null && questionDef.getBindNode() != null){
+				questionDef.getBindNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT);
+				questionDef.getBindNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+			}
+		}
+		return ret;
 	}
 
 	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
@@ -753,5 +819,49 @@ public class FormDef implements Serializable{
 			count += getPageAt(index).getQuestionCount();
 
 		return count;
+	}
+
+	public void updateRuleConditionValue(String origValue, String newValue){
+		for(int index = 0; index < getSkipRuleCount(); index++)
+			getSkipRuleAt(index).updateConditionValue(origValue, newValue);
+
+		for(int index = 0; index < getValidationRuleCount(); index++)
+			getValidationRuleAt(index).updateConditionValue(origValue, newValue);
+	}
+
+	public Element getLanguageNode() {
+		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
+		Element rootNode = doc.createElement("xform");
+		doc.appendChild(rootNode);
+
+		if(dataNode != null){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, FormUtil.getNodePath(dataNode)+"[@name]");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
+			rootNode.appendChild(node);
+
+			if(pages != null){
+				for(int index = 0; index < pages.size(); index++)
+					((PageDef)pages.elementAt(index)).buildLanguageNodes(doc, rootNode);
+			}
+			
+			if(validationRules != null){
+				for(int index = 0; index < validationRules.size(); index++)
+					((ValidationRule)validationRules.elementAt(index)).buildLanguageNodes(this, rootNode);
+			}
+			
+			if(dynamicOptions != null){
+				Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
+				while(iterator.hasNext())
+					iterator.next().getValue().buildLanguageNodes(this, rootNode);
+			}
+			
+			/*XPathExpression xpls = new XPathExpression(this.doc, "xforms/model/instance/newform1"); //"/xforms/model/instance/newform1"
+			Vector result = xpls.getResult();
+			if(result.size() > 0)
+				System.out.println(result.get(0));*/
+		}
+
+		return rootNode;
 	}
 }

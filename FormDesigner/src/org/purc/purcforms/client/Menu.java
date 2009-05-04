@@ -52,8 +52,15 @@ public class Menu extends Composite {
 		    fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),"Open Layout"),true, new Command(){
 		    	public void execute() {controller.openFormLayout();}});
 		    
-		    fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),"Save Layout"),true, new Command(){
+		    fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),"Save Layout"),true, new Command(){
 		    	public void execute() {controller.saveFormLayout();}});
+		    
+		    fileMenu.addSeparator();
+		    fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),"Open Language Text"),true, new Command(){
+		    	public void execute() {controller.openLanguageText();}});
+		    
+		    fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),"Save Language Text"),true, new Command(){
+		    	public void execute() {controller.saveLanguageText();}});
 		    
 		    fileMenu.addSeparator();
 		    fileMenu.addItem("Close", new Command(){

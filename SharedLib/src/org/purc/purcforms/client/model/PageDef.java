@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.user.client.Window;
@@ -191,7 +192,7 @@ public class PageDef implements Serializable{
 			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),this));
 	}
 
-	public boolean removeQuestion(QuestionDef qtnDef){
+	public boolean removeQuestion(QuestionDef qtnDef, FormDef formDef){
 		if(qtnDef.getControlNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				qtnDef.getControlNode().getParentNode().getParentNode().removeChild(qtnDef.getControlNode().getParentNode());
@@ -203,6 +204,9 @@ public class PageDef implements Serializable{
 		if(qtnDef.getBindNode() != null && qtnDef.getBindNode() != null)
 			qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
 
+		if(formDef != null)
+			formDef.removeQtnFromRules(qtnDef);
+		
 		return questions.removeElement(qtnDef);
 	}
 
@@ -210,7 +214,7 @@ public class PageDef implements Serializable{
 		return questions.removeElement(qtnDef);
 	}
 
-	public void removeAllQuestions(){
+	public void removeAllQuestions(FormDef formDef){
 		/*for(int i=0; i<questions.size(); i++)
 			removeQuestion((QuestionDef)questions.elementAt(i));
 
@@ -219,7 +223,7 @@ public class PageDef implements Serializable{
 			return;
 
 		while(questions.size() > 0)
-			removeQuestion((QuestionDef)questions.elementAt(0));
+			removeQuestion((QuestionDef)questions.elementAt(0),formDef);
 	}
 
 	public int size(){
@@ -229,9 +233,11 @@ public class PageDef implements Serializable{
 	}
 
 	public void moveQuestionUp(QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);
+		moveQuestionUp(questions,questionDef);
+	}
 
-		questions.remove(questionDef);
+	public static void moveQuestionUp(Vector questions, QuestionDef questionDef){
+		int index = questions.indexOf(questionDef);
 
 		//Not relying on group node because some forms have no groups
 		Element controlNode = questionDef.getControlNode();
@@ -241,17 +247,22 @@ public class PageDef implements Serializable{
 			parentNode = (Element)parentNode.getParentNode();
 		}
 
-		if(controlNode != null && parentNode != null)
+		//if(parentNode == null && controlNode != null)
+		//	return; //we have a problem here
+
+		questions.remove(questionDef);
+
+		//Store the question to replace
+		QuestionDef currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
+		if(controlNode != null && parentNode != null && currentQuestionDef.getControlNode() != null)
 			parentNode.removeChild(controlNode);
 
-		if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null)
+		if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentQuestionDef.getDataNode() != null)
 			questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
-		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
+		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null && currentQuestionDef.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
-		QuestionDef currentQuestionDef;
 		List list = new ArrayList();
-
 		while(questions.size() >= index){
 			currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
 			list.add(currentQuestionDef);
@@ -262,12 +273,16 @@ public class PageDef implements Serializable{
 		for(int i=0; i<list.size(); i++){
 			if(i == 0 && controlNode != null){
 				QuestionDef qtnDef = (QuestionDef)list.get(i);
-				if(qtnDef.getControlNode() != null && parentNode != null)
-					parentNode.insertBefore(controlNode, qtnDef.getControlNode());
+				if(qtnDef.getControlNode() != null && parentNode != null){
+					Node sibNode = qtnDef.getControlNode();
+					if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+						sibNode = sibNode.getParentNode();
+					parentNode.insertBefore(controlNode, sibNode);
+				}
 
-				if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
+				if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
 					qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
-				if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
+				if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null && questionDef.getBindNode() != null)
 					qtnDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
 			}
 			questions.add(list.get(i));
@@ -275,9 +290,11 @@ public class PageDef implements Serializable{
 	}
 
 	public void moveQuestionDown(QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);	
+		moveQuestionDown(questions,questionDef);
+	}
 
-		questions.remove(questionDef);
+	public static void moveQuestionDown(Vector questions, QuestionDef questionDef){
+		int index = questions.indexOf(questionDef);	
 
 		//Not relying on group node because some forms have no groups
 		Element controlNode = questionDef.getControlNode();
@@ -286,6 +303,11 @@ public class PageDef implements Serializable{
 			controlNode = (Element)controlNode.getParentNode();
 			parentNode = (Element)parentNode.getParentNode();
 		}
+
+		//if(parentNode == null && controlNode != null)
+		//	return; //we have a problem here
+
+		questions.remove(questionDef);
 
 		Node parentDataNode = questionDef.getDataNode() != null ? questionDef.getDataNode().getParentNode() : null;
 		Node parentBindNode = questionDef.getBindNode() != null ? questionDef.getBindNode().getParentNode() : null;
@@ -313,13 +335,17 @@ public class PageDef implements Serializable{
 
 				if(controlNode != null){
 					if(controlNode != null && parentNode != null)
-						parentNode.removeChild(questionDef.getControlNode());
+						parentNode.removeChild(controlNode);
 
 					QuestionDef qtnDef = getNextSavedQuestion(list,i); //(QuestionDef)list.get(i);
-					if(qtnDef.getControlNode() != null)
-						parentNode.insertBefore(questionDef.getControlNode(), qtnDef.getControlNode());
+					if(qtnDef.getControlNode() != null){
+						Node sibNode = qtnDef.getControlNode();
+						if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+							sibNode = sibNode.getParentNode();
+						parentNode.insertBefore(controlNode, sibNode);
+					}
 					else
-						parentNode.appendChild(questionDef.getControlNode());
+						parentNode.appendChild(controlNode);
 
 
 					if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null)
@@ -330,14 +356,15 @@ public class PageDef implements Serializable{
 					else
 						parentDataNode.appendChild(questionDef.getDataNode());
 
+					if(parentBindNode != null){
+						if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
+							parentBindNode.removeChild(questionDef.getBindNode());
 
-					if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
-						parentBindNode.removeChild(questionDef.getBindNode());
-
-					if(qtnDef.getBindNode() != null)
-						parentBindNode.insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
-					else
-						parentBindNode.appendChild(questionDef.getBindNode());
+						if(qtnDef.getBindNode() != null)
+							parentBindNode.insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
+						else
+							parentBindNode.appendChild(questionDef.getBindNode());
+					}
 				}
 			}
 			questions.add(list.get(i));
@@ -348,8 +375,8 @@ public class PageDef implements Serializable{
 
 			if(controlNode != null){
 				if(questionDef.getControlNode() != null && parentNode != null){
-					parentNode.removeChild(questionDef.getControlNode());
-					parentNode.appendChild(questionDef.getControlNode());
+					parentNode.removeChild(controlNode);
+					parentNode.appendChild(controlNode);
 				}
 
 				if(questionDef.getDataNode() != null && parentDataNode != null){
@@ -366,8 +393,9 @@ public class PageDef implements Serializable{
 		}
 	}
 
-	private QuestionDef getNextSavedQuestion(List questions, int index){
-		for(int i=index; i<questions.size(); i++){
+	private static QuestionDef getNextSavedQuestion(List questions, int index){
+		int size = questions.size();
+		for(int i=index; i<size; i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
 			if(questionDef.getControlNode() != null)
 				return questionDef;
@@ -379,13 +407,16 @@ public class PageDef implements Serializable{
 		return questions.contains(qtn);
 	}
 
-	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData){
+	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
 		if(labelNode == null && groupNode == null && allQuestionsNew) //Must be new page{
 			XformConverter.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 
 		if(labelNode != null)
 			XformConverter.setTextNodeValue(labelNode,name);
+		
+		if(groupNode != null)
+			groupNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, pageNo+"");
 
 		Vector newQuestions = new Vector();
 		if(questions != null){
@@ -394,7 +425,7 @@ public class PageDef implements Serializable{
 				if(!allQuestionsNew && questionDef.getDataNode() == null)
 					newQuestions.add(questionDef);
 
-				if(questionDef.updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData)){
+				if(questionDef.updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData, orgFormVarName)){
 					//for(int k=0; k<i; k++)
 					//moveQuestionUp(questionDef);
 				}
@@ -533,8 +564,12 @@ public class PageDef implements Serializable{
 		if(questionDef.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
-		if(refQuestionDef.getControlNode() != null)
-			parentNode.insertBefore(controlNode, refQuestionDef.getControlNode());
+		if(refQuestionDef.getControlNode() != null){
+			Node sibNode = refQuestionDef.getControlNode();
+			if(refQuestionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+				sibNode = sibNode.getParentNode();
+			parentNode.insertBefore(controlNode, sibNode);
+		}
 
 		if(refQuestionDef.getDataNode() != null)
 			refQuestionDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), refQuestionDef.getDataNode());
@@ -543,11 +578,32 @@ public class PageDef implements Serializable{
 
 	}
 
-	public void updateDataNodes(FormDef formDef){
+	public void updateDataNodes(Element parentDataNode){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).updateDataNodes(formDef);
+			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
+	}
+	
+	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+		if(labelNode == null || groupNode == null)
+			return;
+		
+		String xpath = FormUtil.getNodePath(groupNode);
+		String id = groupNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		if(id != null && id.trim().length() > 0)
+			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+		
+		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
+		parentNode.appendChild(node);
+		
+		if(questions == null)
+			return;
+
+		for(int i=0; i<questions.size(); i++)
+			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
 	}
 }

@@ -96,28 +96,35 @@ public class FormDesignerUtil {
 	public static void setWidgetPosition(Widget w, String left, String top) {
 		FormUtil.setWidgetPosition(w, left, top);
 	}
-
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
+	
+	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			
-			if(!dynamicOptions && refQuestion != null && refQuestion.getDataType() != questionDef.getDataType())
+			if(!dynamicOptions && refQuestion != null && refQuestion.getDataType() != questionDef.getDataType() && sameTypesOnly)
 				continue;
 			
 			if(dynamicOptions && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
-				return;
+				continue;
 			
 			if(dynamicOptions && refQuestion == questionDef)
-				return;
+				continue;
+			
+			if(!dynamicOptions && refQuestion == questionDef)
+				continue;
 			
 			oracle.add(questionDef.getText());	
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				;//loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),oracle); //TODO These have different id sets and hence we are leaving them out for now
 		}
+	}
+
+	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
+		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true);
 	}
 
 	public static void loadOptions(List options, MultiWordSuggestOracle oracle){

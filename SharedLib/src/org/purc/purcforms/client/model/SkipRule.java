@@ -184,6 +184,24 @@ public class SkipRule implements Serializable{
 	public void removeCondition(Condition condition){
 		conditions.remove(condition);
 	}
+	
+	public void removeQuestion(QuestionDef questionDef){
+		for(int index = 0; index < getConditionCount(); index++){
+			Condition condition = getConditionAt(index);
+			if(condition.getQuestionId() == questionDef.getId()){
+				removeCondition(condition);
+				index++;
+			}
+		}
+		
+		for(int index = 0; index < getActionTargetCount(); index++){
+			Integer id = getActionTargetAt(index);
+			if(id.intValue() == questionDef.getId()){
+				this.actionTargets.remove(id);
+				index++;
+			}
+		}
+	}
 
 	/** 
 	 * Checks conditions of a rule and executes the corresponding actions
@@ -295,6 +313,11 @@ public class SkipRule implements Serializable{
 		
 		if(skipRule.getActionTargetCount() > 0)
 			dstFormDef.addSkipRule(skipRule);
+	}
+	
+	public void updateConditionValue(String origValue, String newValue){
+		for(int index = 0; index < this.getConditionCount(); index++)
+			getConditionAt(index).updateValue(origValue, newValue);
 	}
 }
  

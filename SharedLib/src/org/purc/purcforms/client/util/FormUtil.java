@@ -17,6 +17,8 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -421,5 +423,30 @@ public class FormUtil {
 		if(dimension == null || dimension.trim().length() == 0)
 			return 0;
 		return Integer.parseInt(dimension.substring(0,dimension.length()-2));
+	}
+	
+	public static String getNodePath(com.google.gwt.xml.client.Node node){
+		String path = removePrefix(node.getNodeName());
+		
+		if(node.getNodeType() == Node.ELEMENT_NODE){
+			com.google.gwt.xml.client.Node parent = node.getParentNode();
+			while(parent != null && !(parent instanceof Document)){
+				path = removePrefix(parent.getNodeName()) + "/" + path;
+				parent = parent.getParentNode();
+			}
+		}
+		
+		return path;
+	}
+	
+	private static String removePrefix(String name){
+		int pos = name.indexOf(':');
+		if(pos >= 0)
+			name = name.substring(pos + 1);
+		return name;
+	}
+	
+	public static String getNodeName(Element node){
+		return removePrefix(node.getNodeName());
 	}
 }

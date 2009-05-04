@@ -3,7 +3,10 @@ package org.purc.purcforms.client.model;
 import java.io.Serializable;
 import java.util.Vector;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
+
+import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -13,7 +16,7 @@ import org.purc.purcforms.client.xforms.XformConverter;
  */
 public class ValidationRule implements Serializable{
 	
-	/** The unique identifier of the question referenced by this condition. */
+	/** The unique identifier of the question referenced by this validation rule. */
 	private int questionId = ModelConstants.NULL_ID;
 	
 	/** A list of conditions (Condition object) to be tested for a rule. 
@@ -143,6 +146,17 @@ public class ValidationRule implements Serializable{
 		conditions.remove(condition);
 	}
 	
+	public void removeQuestion(QuestionDef questionDef){
+		for(int index = 0; index < getConditionCount(); index++){
+			Condition condition = getConditionAt(index);
+			if(condition.getQuestionId() == questionDef.getId() || 
+					(condition.getValueQtnDef() != null && condition.getValueQtnDef().getId() == questionDef.getId())){
+				removeCondition(condition);
+				index++;
+			}
+		}
+	}
+	
 	public boolean isValid(){
 		return isValid(formDef);
 	}
@@ -205,4 +219,36 @@ public class ValidationRule implements Serializable{
 			dstFormDef.addValidationRule(validationRule);
 	}
 
+	//TODO This should be smarter
+	public byte getMaxValue(FormDef formDef){
+		if(conditions == null || conditions.size() == 0)
+			return 127;
+		String value = ((Condition)conditions.get(0)).getValue(formDef);
+		if(value == null || value.trim().length() == 0)
+			return 127;
+		try{
+			return Byte.parseByte(value);
+		}
+		catch(Exception ex){}
+		return 127;
+	}
+	
+	public void updateConditionValue(String origValue, String newValue){
+		for(int index = 0; index < this.getConditionCount(); index++)
+			getConditionAt(index).updateValue(origValue, newValue);
+	}
+	
+	public void buildLanguageNodes(FormDef formDef, Element parentNode){
+		QuestionDef questionDef = formDef.getQuestion(questionId);
+		if(questionDef == null || questionDef.getBindNode() == null)
+			return;
+		
+		Element node = formDef.getDoc().createElement(XformConverter.NODE_NAME_TEXT);
+		String xpath = FormUtil.getNodePath(questionDef.getBindNode());
+		xpath += "[@"+XformConverter.ATTRIBUTE_NAME_ID+"='"+ questionDef.getBindNode().getAttribute(XformConverter.ATTRIBUTE_NAME_ID)+"']";
+		xpath += "[@"+XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE+"]";
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath);
+		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, errorMessage);
+		parentNode.appendChild(node);
+	}
 }

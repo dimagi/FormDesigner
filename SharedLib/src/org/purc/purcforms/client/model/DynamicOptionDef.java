@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.xml.client.Element;
@@ -77,6 +78,22 @@ public class DynamicOptionDef  implements Serializable{
 			return null;
 
 		return parentToChildOptions.get(optionId);
+	}
+	
+	public List<OptionDef> getOptions(){
+		if(parentToChildOptions == null)
+			return null;
+
+		List<OptionDef> options = new ArrayList<OptionDef>();
+		
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			List<OptionDef> list = iterator.next().getValue();
+			for(int index = 0; index < list.size(); index++)
+				options.add(list.get(index));
+		}
+		
+		return options;
 	}
 
 	public void setOptionList(Integer optionId, List<OptionDef> list){
@@ -171,6 +188,29 @@ public class DynamicOptionDef  implements Serializable{
 		}
 		return null;
 	}
+	
+	public OptionDef getOptionWithText(String text){
+		if(parentToChildOptions == null || text == null)
+			return null;
+
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			OptionDef optionDef = getOptionWithText(iterator.next().getValue(),text);
+			if(optionDef != null)
+				return optionDef;
+		}
+		return null;
+	}
+	
+	private OptionDef getOptionWithText(List<OptionDef> options, String text){
+		List list = (List)options;
+		for(int i=0; i<list.size(); i++){
+			OptionDef optionDef = (OptionDef)list.get(i);
+			if(optionDef.getText().equals(text))
+				return optionDef;
+		}
+		return null;
+	}
 
 	private OptionDef getOptionWithValue(List<OptionDef> options, String value){
 		List list = (List)options;
@@ -204,4 +244,30 @@ public class DynamicOptionDef  implements Serializable{
 		}
 		return null;
 	}
+	
+	public void buildLanguageNodes(FormDef formDef, Element parentNode){
+		if(parentToChildOptions == null)
+			return;
+		
+		if(dataNode == null)
+			return;
+		
+		QuestionDef questionDef = formDef.getQuestion(questionId);
+		if(questionDef == null)
+			return;
+		
+		String xpath = FormUtil.getNodePath(dataNode.getParentNode());
+		String id = ((Element)dataNode.getParentNode()).getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		if(id != null && id.trim().length() > 0)
+			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + questionDef.getVariableName() + "']";
+		
+		xpath += "/" + FormUtil.getNodeName(dataNode);
+		
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		while(iterator.hasNext()){
+			List<OptionDef> list = iterator.next().getValue();
+			for(int index = 0; index < list.size(); index++)
+				list.get(index).buildLanguageNodes(xpath,formDef.getDoc(), parentNode);
+		}
+	}	
 }

@@ -12,6 +12,7 @@ import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
+import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.EditListener;
@@ -311,7 +312,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				questionDef.setOptions(null); //may have been set by the preview
 			wrapper.setQuestionDef(questionDef,false);
-			wrapper.setValidationRule(formDef.getValidationRule(questionDef));
+			ValidationRule validationRule = formDef.getValidationRule(questionDef);
+			wrapper.setValidationRule(validationRule);
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && validationRule != null)
+				questionDef.setAnswer("1");
 		}
 
 		if(binding != null)
@@ -441,7 +445,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			if(!widget.isValid()){
 				valid = false;
 				if(firstInvalidWidget == null && isFocusable(widget))
-					firstInvalidWidget = widget;
+					firstInvalidWidget = widget.getInvalidWidget();
 			}
 		}
 		return valid;

@@ -96,6 +96,10 @@ public class XformConverter implements Serializable{
 	public static final String NODE_NAME_SUBMIT_MINUS_PREFIX = "submit";
 	public static final String NODE_NAME_VALUE_MINUS_PREFIX = "value";
 	public static final String NODE_NAME_GROUP_MINUS_PREFIX = "group";
+	
+	public static final String NODE_NAME_TEXT = "text";
+	public static final String ATTRIBUTE_NAME_XPATH = "xpath";
+	public static final String ATTRIBUTE_NAME_VALUE = "value";
 
 	public static final String ATTRIBUTE_NAME_ID = "id";
 	public static final String ATTRIBUTE_NAME_BIND = "bind";
@@ -105,7 +109,7 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_READONLY = "readonly";
 	public static final String ATTRIBUTE_NAME_RELEVANT = "relevant";
 	public static final String ATTRIBUTE_NAME_CONSTRAINT = "constraint";
-	private static final String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
+	public static final String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
 	public static final String ATTRIBUTE_NAME_REQUIRED = "required";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";
 	public static final String ATTRIBUTE_NAME_NAME = "name";
@@ -131,11 +135,21 @@ public class XformConverter implements Serializable{
 	private static final String CONDITIONS_OPERATOR_TEXT_AND = " and ";
 	private static final String CONDITIONS_OPERATOR_TEXT_OR = " or ";
 
+	private static int currentQuestionId = 1;
+	private static int currentPageNo = 1;
 
 	public XformConverter(){
 
 	}
 
+	private static int getNextQuestionId(){
+		return currentQuestionId++;
+	}
+	
+	private static int getNextPageNo(){
+		return currentPageNo++;
+	}
+	
 	public static String getXmlType(int type, Element node){
 		if(type == QuestionDef.QTN_TYPE_VIDEO)
 			node.setAttribute("format", "video");
@@ -255,7 +269,7 @@ public class XformConverter implements Serializable{
 		for(int i=0; i<conditions.size(); i++){
 			if(constratint.length() > 0)
 				constratint += getConditionsOperatorText(rule.getConditionsOperator());
-			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE);
+			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE,questionDef);
 		}
 
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT, constratint);
@@ -311,6 +325,7 @@ public class XformConverter implements Serializable{
 		itemNode.appendChild(node);
 		optionDef.setValueNode(node);
 
+		itemNode.setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
 		itemNode.setAttribute(ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
 
 		dataNode.appendChild(itemNode);
@@ -339,6 +354,7 @@ public class XformConverter implements Serializable{
 				else{
 					setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
 					setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
+					optionDef.getControlNode().setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
 					optionDef.getControlNode().setAttribute(ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
 				}
 			}
@@ -432,16 +448,19 @@ public class XformConverter implements Serializable{
 		return relevant;
 	}
 
-	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action){
+	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action, QuestionDef actionQtnDef){
 		String constraint = null;
 
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef != null){			
 			String value = " '" + condition.getValue() + "'";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				value = " " + condition.getValue();
 
-			constraint = ". " + getOperator(condition.getOperator(),action)+value;
+			constraint = ". ";
+			if(actionQtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+				constraint = "count(.) ";
+			constraint += getOperator(condition.getOperator(),action)+value;
 		}
 		return constraint;
 	}
@@ -457,6 +476,8 @@ public class XformConverter implements Serializable{
 		pageDef.setLabelNode(labelNode);
 		pageDef.setGroupNode(groupNode);
 
+		groupNode.setAttribute(ATTRIBUTE_NAME_ID, pageDef.getPageNo()+"");
+		
 		Vector questions = pageDef.getQuestions();
 		if(questions != null){
 			for(int i=0; i<questions.size(); i++){
@@ -607,7 +628,8 @@ public class XformConverter implements Serializable{
 
 	public static Element fromOptionDef2Xform(OptionDef optionDef, Document doc, Element inputNode){
 		Element itemNode =  doc.createElement(NODE_NAME_ITEM);
-
+		itemNode.setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
+		
 		Element node =  doc.createElement(NODE_NAME_LABEL);
 		node.appendChild(doc.createTextNode(optionDef.getText()));
 		itemNode.appendChild(node);
@@ -834,6 +856,8 @@ public class XformConverter implements Serializable{
 		HashMap constraints = new HashMap();
 		Vector repeats = new Vector();
 		HashMap rptKidMap = new HashMap();
+		currentQuestionId = 1;
+		currentPageNo = 1;
 		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints);
 		if(formDef.getName() == null || formDef.getName().length() == 0)
 			formDef.setName(formDef.getVariableName());
@@ -1063,7 +1087,7 @@ public class XformConverter implements Serializable{
 					QuestionDef qtn = new QuestionDef(null);
 					qtn.setBindNode(child);
 					//qtn.setId(Integer.parseInt(String.valueOf(i)));
-					if(formDef.getPages() == null)
+					/*if(formDef.getPages() == null)
 						qtn.setId(Integer.parseInt("1"));
 					else{
 						//This limitation was only for mobile devices and hence does not make sense for browser xform clients.
@@ -1072,8 +1096,9 @@ public class XformConverter implements Serializable{
 							//break;
 						}*/
 						//System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
-						qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
-					}
+						/*qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
+					}*/
+					qtn.setId(getNextQuestionId());
 					qtn.setVariableName(getQuestionVariableName(child,formDef));
 					setQuestionType(qtn,child.getAttribute(ATTRIBUTE_NAME_TYPE),child);
 					if(child.getAttribute(ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(ATTRIBUTE_NAME_REQUIRED).equals(XPATH_VALUE_TRUE))
@@ -1153,6 +1178,7 @@ public class XformConverter implements Serializable{
 						if(parent.getNodeName().equals(NODE_NAME_REPEAT)||parent.getNodeName().equals(NODE_NAME_REPEAT_MINUS_PREFIX)){
 							varName = (String)map.get(parent.getAttribute(ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(ATTRIBUTE_NAME_BIND) : parent.getAttribute(ATTRIBUTE_NAME_NODESET));
 							QuestionDef rptQtnDef = formDef.getQuestion(varName);
+							qtn.setId(getNextQuestionId());
 							rptQtnDef.addRepeatQtnsDef(qtn);
 							formDef.removeQuestion(qtn);
 						}
@@ -1236,8 +1262,9 @@ public class XformConverter implements Serializable{
 				setQuestionDataNode(questionDef,formDef,formDef.getPageAt(pageNo-1),parentQtn);
 			}
 			else{
-				formDef.setPageName(label);
-				formDef.setPageLabelNode(labelNode);
+				PageDef pageDef = formDef.setPageName(label);
+				pageDef.setLabelNode(labelNode);
+				pageDef.setPageNo(getNextPageNo());
 			}
 		}
 
@@ -1643,8 +1670,13 @@ public class XformConverter implements Serializable{
 		else //else we take whole value after operator	
 			value = relevant.substring(pos+getOperatorSize(condition.getOperator(),action),relevant.length());
 
+		value = value.trim();
 		if(!(value.equals("null") || value.equals(""))){
-			condition.setValue(value.trim());
+			condition.setValue(value);
+			
+			//This is just for the designer
+			if(value.startsWith(formDef.getVariableName() + "/"))
+				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
 
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid
@@ -1686,8 +1718,13 @@ public class XformConverter implements Serializable{
 		else //else we take whole value after operator	
 			value = constraint.substring(pos+getOperatorSize(condition.getOperator(),ModelConstants.ACTION_ENABLE),constraint.length());
 
+		value = value.trim();
 		if(!(value.equals("null") || value.equals(""))){
-			condition.setValue(value.trim());
+			condition.setValue(value);
+			
+			//This is just for the designer
+			if(value.startsWith(formDef.getVariableName() + "/"))
+				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
 
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid
@@ -1867,13 +1904,15 @@ public class XformConverter implements Serializable{
 
 	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind,HashMap constraints){
 		QuestionDef qtn = new QuestionDef(null);
-		if(formDef.getPages() == null)
+		/*if(formDef.getPages() == null)
 			qtn.setId(Integer.parseInt("1"));
 		else{
 			if(isNumQuestionsBiggerThanMax(formDef))
 				return null;
 			qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1)));
-		}
+		}*/
+		
+		qtn.setId(getNextQuestionId());
 
 		if(child.getAttribute(ATTRIBUTE_NAME_TYPE) == null)
 			qtn.setDataType(QuestionDef.QTN_TYPE_TEXT);

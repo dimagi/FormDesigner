@@ -116,6 +116,11 @@ public class XPathLocationStep implements Serializable{
 						Element childNode = (Element) node.getChildNodes().item(j);
 						String childName = childNode.getNodeName();
 
+						//Small addition to cater for nodes with prefixes
+						int pos = childName.indexOf(':');
+						if(pos >= 0)
+							childName = childName.substring(pos+1);
+						
 						String prefix = null;
 						if (nodePrefix != null) {
 							Element element = (Element) childNode;

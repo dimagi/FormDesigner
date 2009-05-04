@@ -50,7 +50,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private AbstractImagePrototype errorImageProto;
 	private boolean locked = false;
 
-	private ValidationRule validationRule ;
+	private ValidationRule validationRule;
 
 	public RuntimeWidgetWrapper(){
 
@@ -333,6 +333,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			questionDef.setAnswer("1");
+		
 		isValid();
 
 		if(!questionDef.isEnabled())
@@ -587,6 +590,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			errorImage.setTitle("Please answer this required question.");
 			return false;
 		}
+		
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			boolean valid = ((RuntimeGroupWidget)widget).isValid();
+			if(!valid)
+				return false;
+		}
 
 		if(validationRule != null && !validationRule.isValid()){
 			if(panel.getWidgetCount() < 2)
@@ -716,5 +725,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((TextBox)widget).setText(null);
 		else if(widget instanceof ListBox)
 			((ListBox)widget).setSelectedIndex(-1);*/
+	}
+	
+	public RuntimeWidgetWrapper getInvalidWidget(){
+		if(widget instanceof RuntimeGroupWidget)
+			return ((RuntimeGroupWidget)widget).getInvalidWidget();
+		return this;
 	}
 }

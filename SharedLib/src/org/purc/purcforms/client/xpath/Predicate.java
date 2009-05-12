@@ -54,8 +54,14 @@ public class Predicate  implements Serializable
 			operation = ">";
 		} else {
 			//shouldn't be here
+			//Added by me on 11/05/2009 to cater for attributes without criteria values. eg [@name]
+			for(Enumeration e = inNodeSet.elements(); e.hasMoreElements(); ) {
+				Object obj = e.nextElement();
+				resultSet.addElement(obj);	
+			}
 			return;
 		}
+		
 		Member member1 = new Member(new String(predicateExpr.toCharArray(), 0, index));
 		Member member2 = new Member(new String(predicateExpr.toCharArray(), index+1, predicateExpr.length()-index-1));
 

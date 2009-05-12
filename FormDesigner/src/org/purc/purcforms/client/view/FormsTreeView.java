@@ -797,10 +797,22 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(parent == null)
 			return true;
 
+		Map<String,String> pageNos = new HashMap<String,String>();
 		Map<String,String> bindings = new HashMap<String,String>();
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
 			TreeItem child = parent.getChild(index);
+			PageDef pageDef = (PageDef)child.getUserObject();
+			String pageNo = String.valueOf(pageDef.getPageNo());
+			if(pageNos.containsKey(pageNo)){
+				tree.setSelectedItem(child);
+				tree.ensureSelectedItemVisible();
+				Window.alert("The selected page [" + pageDef.getName() +"] should not share the same page number/binding with page [" + pageNos.get(pageNo)+ "]");
+				return false;
+			}
+			else
+				pageNos.put(pageNo, pageDef.getName());
+			
 			if(!isValidQuestionList(child,bindings))
 				return false;
 		}

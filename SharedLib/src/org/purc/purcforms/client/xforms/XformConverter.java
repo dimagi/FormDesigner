@@ -982,6 +982,9 @@ public class XformConverter implements Serializable{
 	}
 
 	public static boolean setTextNodeValue(Element node, String value){
+		if(node == null)
+			return false;
+		
 		int numOfEntries = node.getChildNodes().getLength();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){

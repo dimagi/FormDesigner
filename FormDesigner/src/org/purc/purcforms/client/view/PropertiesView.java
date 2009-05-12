@@ -252,6 +252,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				updateBinding();
 			}
+
 			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
 				if(keyCode == KeyboardListener.KEY_UP){
 					if(cbDataType.isEnabled())
@@ -259,6 +260,27 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 					else{
 						txtText.setFocus(true);
 						txtText.selectAll();
+					}
+				}
+			}
+
+			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+				if(propertiesObj instanceof PageDef){
+					if(!Character.isDigit(keyCode)){
+						((TextBox) sender).cancelKey(); 
+						return;
+					}
+				}
+				else{
+					if(((TextBox) sender).getCursorPos() == 0){
+						if(!isAllowedXmlNodeNameStartChar(keyCode)){
+							((TextBox) sender).cancelKey(); 
+							return;
+						}
+					}
+					else if(!isAllowedXmlNodeNameChar(keyCode)){
+						((TextBox) sender).cancelKey(); 
+						return;
 					}
 				}
 			}
@@ -319,6 +341,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 			}
 		});
+	}
+
+	private boolean isAllowedXmlNodeNameStartChar(char keyCode){
+		return ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z'));
+	}
+
+	private boolean isAllowedXmlNodeNameChar(char keyCode){
+		return isAllowedXmlNodeNameStartChar(keyCode) || Character.isDigit(keyCode) || keyCode == '-' || keyCode == '_' || keyCode == '.';
 	}
 
 	private void updateText(){

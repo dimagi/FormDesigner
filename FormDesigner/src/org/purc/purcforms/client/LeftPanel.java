@@ -74,7 +74,7 @@ public class LeftPanel extends Composite {
 		paletteView =  new PaletteView(images);
 
 		add(images,formsTreeView , images.tasksgroup(), "Forms");
-		add(images,widgetPropertiesView , images.filtersgroup(), "Properties");
+		add(images,widgetPropertiesView , images.filtersgroup(), "Widget Properties");
 		//add(images,paletteView, images.contactsgroup(), "Palette");
 
 		formsTreeView.addFormSelectionListener(widgetPropertiesView);

@@ -312,6 +312,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		textBox.setFocus(true);
 		textBox.selectAll();
 		addAddButton();
+		addNewOptionDef();
 	}
 
 	private TextBox addValue(String text, String value, int row){
@@ -388,16 +389,21 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				if(optionList.size() > row)
 					optionDef = optionList.get(row);
 
-				if(optionDef == null){
-					optionDef = new OptionDef(parentQuestionDef);
-					optionDef.setId(dynamicOptionDef.getNextOptionId());
-					dynamicOptionDef.setNextOptionId(optionDef.getId() + 1);
-					optionList.add(optionDef);
-				}
+				if(optionDef == null)
+					optionDef = addNewOptionDef();
+				
 				optionDef.setText(txtName.getText());
 				break;
 			}
 		}
+	}
+	
+	private OptionDef addNewOptionDef(){
+		OptionDef optionDef = new OptionDef(parentQuestionDef);
+		optionDef.setId(dynamicOptionDef.getNextOptionId());
+		dynamicOptionDef.setNextOptionId(optionDef.getId() + 1);
+		optionList.add(optionDef);
+		return optionDef;
 	}
 
 	private void updateValue(TextBox txtValue){
@@ -408,12 +414,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				if(optionList.size() > row)
 					optionDef = optionList.get(row);
 
-				if(optionDef == null){
-					optionDef = new OptionDef(parentQuestionDef);
-					optionDef.setId(dynamicOptionDef.getNextOptionId());
-					dynamicOptionDef.setNextOptionId(optionDef.getId() + 1);
-					optionList.add(optionDef);
-				}
+				if(optionDef == null)
+					optionDef = addNewOptionDef();
+				
 				optionDef.setVariableName(txtValue.getText());
 				break;
 			}

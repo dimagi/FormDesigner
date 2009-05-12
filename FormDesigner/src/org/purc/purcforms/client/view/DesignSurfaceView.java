@@ -427,7 +427,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Attachment"),true,new Command(){
 			public void execute() {popup.hide(); ;}});*/
 
-		menuBar.addItem("     AddControl",addControlMenu);
+		menuBar.addItem("     Add Widget",addControlMenu);
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();

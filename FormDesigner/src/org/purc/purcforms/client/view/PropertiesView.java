@@ -694,6 +694,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof DescTemplateWidget){
 			txtDescTemplate.setText(txtDescTemplate.getText() + item);
+			updateDescTemplate(); //Added for IE which does not properly throw change events for the desc template textbox
 			txtDescTemplate.setFocus(true);
 		}
 	}

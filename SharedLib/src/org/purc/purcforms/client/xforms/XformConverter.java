@@ -1327,7 +1327,7 @@ public class XformConverter implements Serializable{
 			return null;
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element node = (Element)nodes.item(index);
-			if(node.getAttribute(ATTRIBUTE_NAME_ID).equalsIgnoreCase(instanceId))
+			if(instanceId.equalsIgnoreCase(node.getAttribute(ATTRIBUTE_NAME_ID)))
 				return node;
 		}
 		return null;

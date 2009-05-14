@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
@@ -27,18 +28,18 @@ import com.google.gwt.xml.client.Element;
  */
 public class WidgetEx extends Composite{
 	
-	public static final String WIDGET_TYPE_CHECKBOX = "CheckBox";
-	public static final String WIDGET_TYPE_RADIOBUTTON = "RadioButton";
-	public static final String WIDGET_TYPE_TEXTBOX = "TextBox";
-	public static final String WIDGET_TYPE_TEXTAREA = "TextArea";
-	public static final String WIDGET_TYPE_GROUPBOX = "GroupBox";
-	public static final String WIDGET_TYPE_BUTTON = "Button";
-	public static final String WIDGET_TYPE_REPEATSECTION = "RepeatSection";
-	public static final String WIDGET_TYPE_LISTBOX = "ListBox";
-	public static final String WIDGET_TYPE_LABEL = "Label";
-	public static final String WIDGET_TYPE_DATEPICKER = "DatePicker";
-	public static final String WIDGET_TYPE_IMAGE = "Picture";
-	public static final String WIDGET_TYPE_VIDEO_AUDIO = "VideoAudio";
+	public static final String WIDGET_TYPE_CHECKBOX = LocaleText.get("checkBox");
+	public static final String WIDGET_TYPE_RADIOBUTTON = LocaleText.get("radioButton");
+	public static final String WIDGET_TYPE_TEXTBOX = LocaleText.get("textBox");
+	public static final String WIDGET_TYPE_TEXTAREA = LocaleText.get("textArea");
+	public static final String WIDGET_TYPE_GROUPBOX = LocaleText.get("groupBox");
+	public static final String WIDGET_TYPE_BUTTON = LocaleText.get("button");
+	public static final String WIDGET_TYPE_REPEATSECTION = LocaleText.get("repeatSection");
+	public static final String WIDGET_TYPE_LISTBOX = LocaleText.get("listBox");
+	public static final String WIDGET_TYPE_LABEL = LocaleText.get("label");
+	public static final String WIDGET_TYPE_DATEPICKER = LocaleText.get("datePicker");
+	public static final String WIDGET_TYPE_IMAGE = LocaleText.get("picture");
+	public static final String WIDGET_TYPE_VIDEO_AUDIO = LocaleText.get("videoAudio");
 	
 	public static final String WIDGET_PROPERTY_TOP = "Top";
 	public static final String WIDGET_PROPERTY_LEFT = "Left";

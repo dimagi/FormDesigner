@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.PurcConstants;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
@@ -66,7 +67,7 @@ public class FormRunnerController implements SubmitListener{
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
 					if(xml == null || xml.length() == 0){
-						Window.alert("No data found.");
+						Window.alert(LocaleText.get("noDataFound"));
 						return;
 					}
 
@@ -79,7 +80,7 @@ public class FormRunnerController implements SubmitListener{
 						openForm();
 					}
 					else
-						Window.alert("No form layout found. Please first design and save the form.");
+						Window.alert(LocaleText.get("noFormLayout"));
 				}
 
 				public void onError(Request request, Throwable exception){
@@ -95,7 +96,7 @@ public class FormRunnerController implements SubmitListener{
 	}
 
 	public void openForm() {
-		dlg.setText("Opening Form");
+		dlg.setText(LocaleText.get("openingForm"));
 		dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -122,12 +123,12 @@ public class FormRunnerController implements SubmitListener{
 						}
 						ex = (Exception)ex.getCause();
 						if (ex != null) {
-							text += "Caused by: ";
+							text += LocaleText.get("causedBy");
 						}
 					}
 
 					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText("Unxpected Failure");
+					dialogBox.setText(LocaleText.get("unxpectedFailure"));
 					dialogBox.setBody(s);//("<pre>" + text + "</pre>");
 					dialogBox.setCallStack(text);
 					dialogBox.center();
@@ -148,7 +149,7 @@ public class FormRunnerController implements SubmitListener{
 		try{
 			builder.sendRequest(xml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
-					Window.alert("Form Data Submitted Successfully");
+					Window.alert(LocaleText.get("formSubmitSuccess"));
 
 					String url = FormUtil.getHostPageBaseURL();
 					url += FormUtil.getAfterSubmitUrlSuffix();

@@ -11,6 +11,7 @@ import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -372,7 +373,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		MenuBar addControlMenu = new MenuBar(true);
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_LABEL),true,new Command(){
-			public void execute() {popup.hide(); addNewLabel("Label");}});
+			public void execute() {popup.hide(); addNewLabel(LocaleText.get("label"));}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_TEXTBOX),true,new Command(){
 			public void execute() {popup.hide(); addNewTextBox();}});
@@ -1141,7 +1142,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private void deleteWidgets(){
-		if(!Window.confirm("Do you really want to delete the selected widget(s)?"))
+		if(!Window.confirm(LocaleText.get("deleteWidgetPrompt")))
 			return;
 
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++)
@@ -1152,16 +1153,16 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 	private void deleteTab(){
 		if(tabs.getWidgetCount() == 1){
-			Window.alert("This tab cannot be deleted because there should be atleast one tab.");
+			Window.alert(LocaleText.get("cantDeleteAllTabs"));
 			return;
 		}
 
 		if(selectedPanel.getWidgetCount() > 0){
-			Window.alert("This tab has one or more widgets, please first delete them");
+			Window.alert(LocaleText.get("deleteAllTabWidgetsFirst"));
 			return;
 		}
 
-		if(!Window.confirm("Do you really want to delete this tab?"))
+		if(!Window.confirm(LocaleText.get("deleteTabPrompt")))
 			return;
 
 		dragControllers.remove(selectedTabIndex);
@@ -1581,7 +1582,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(formDef == null)
 			return;
 
-		FormUtil.dlg.setText("Refreshing Design Surface");
+		FormUtil.dlg.setText(LocaleText.get("refreshingDesignSurface"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -1616,11 +1617,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		//AbsolutePanel panel (AbsolutePanel)tabs.getWidget(i);
 		if((selectedPanel != null && selectedPanel.getWidgetCount() > 0) || tabs.getTabBar().getTabCount() > 1){
-			Window.alert("Please first delete all the widgets.");
+			Window.alert(LocaleText.get("deleteAllWidgetsFirst"));
 			return;
 		}
 
-		FormUtil.dlg.setText("Loading Design Surface");
+		FormUtil.dlg.setText(LocaleText.get("loadingDesignSurface"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){

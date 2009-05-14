@@ -4,6 +4,7 @@ import org.purc.purcforms.client.AboutDialog;
 import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.LeftPanel;
 import org.purc.purcforms.client.PurcConstants;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -127,7 +128,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void openFormDeffered(int id) {
 		final int tempFormId = id;
 
-		FormUtil.dlg.setText("Opening Form");
+		FormUtil.dlg.setText(LocaleText.get("openingForm"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -162,7 +163,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void openFormLayoutDeffered() {
-		FormUtil.dlg.setText("Opening Form Layout");
+		FormUtil.dlg.setText(LocaleText.get("openingFormLayout"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -188,11 +189,11 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj == null){
-			Window.alert("Please select the item to save.");
+			Window.alert(LocaleText.get("selectSaveItem"));
 			return;
 		}
 
-		FormUtil.dlg.setText("Saving Form");
+		FormUtil.dlg.setText(LocaleText.get("savingForm"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -238,11 +239,11 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		if(isOfflineMode()){
 			final Object obj = leftPanel.getSelectedForm();
 			if(obj == null){
-				Window.alert("Please select the item to save.");
+				Window.alert(LocaleText.get("selectSaveItem"));
 				return;
 			}
 
-			FormUtil.dlg.setText("Saving Form Layout");
+			FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
 			FormUtil.dlg.center();
 
 			DeferredCommand.addCommand(new Command(){
@@ -264,7 +265,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void saveFormLayout() {
-		FormUtil.dlg.setText("Saving Form Layout");
+		FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -401,7 +402,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void refresh(Object sender) {
 		if(sender instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
 			if(formId != null){
-				FormUtil.dlg.setText("Refresing Form");
+				FormUtil.dlg.setText(LocaleText.get("refresingForm"));
 				FormUtil.dlg.center();
 
 				DeferredCommand.addCommand(new Command(){
@@ -436,7 +437,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
 					if(xml == null || xml.length() == 0){
-						Window.alert("No data found.");
+						Window.alert(LocaleText.get("noDataFound"));
 						return;
 					}
 
@@ -482,7 +483,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 			builder.sendRequest(xml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
-					Window.alert("Form saved successfully");
+					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
 				public void onError(Request request, Throwable exception){
@@ -515,7 +516,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				public void onResponseReceived(Request request, Response response){
 					String xml = response.getText();
 					if(xml == null || xml.length() == 0){
-						Window.alert("No data found.");
+						Window.alert(LocaleText.get("noDataFound"));
 						return;
 					}
 
@@ -537,7 +538,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	private void refreshFormDeffered(){
-		FormUtil.dlg.setText("Refreshing Form");
+		FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -627,7 +628,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				fileName = formDef.getName();
 
 			if(centerPanel.isInLayoutMode())
-				fileName += "-Layout";
+				fileName += "-" + LocaleText.get("layout");
 
 			SaveFileDialog dlg = new SaveFileDialog("formsave",data,fileName);
 			dlg.center();
@@ -639,7 +640,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	public void openLanguageText(){
 		
-		FormUtil.dlg.setText("Translating Form Language");
+		FormUtil.dlg.setText(LocaleText.get("translatingFormLanguage"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
@@ -668,7 +669,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void saveLanguageText(){
-		FormUtil.dlg.setText("Saving Language Text");
+		FormUtil.dlg.setText(LocaleText.get("savingLanguageText"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){

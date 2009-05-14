@@ -5,12 +5,14 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.PaletteView;
 import org.purc.purcforms.client.view.WidgetPropertiesView;
 
+import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
@@ -73,13 +75,10 @@ public class LeftPanel extends Composite {
 		widgetPropertiesView = new WidgetPropertiesView();
 		paletteView =  new PaletteView(images);
 
-		add(images,formsTreeView , images.tasksgroup(), "Forms");
-		add(images,widgetPropertiesView , images.filtersgroup(), "Widget Properties");
-		//add(images,paletteView, images.contactsgroup(), "Palette");
+		add(images,formsTreeView , images.tasksgroup(), LocaleText.get("forms"));
+		add(images,widgetPropertiesView , images.filtersgroup(), LocaleText.get("widgetProperties"));
 
 		formsTreeView.addFormSelectionListener(widgetPropertiesView);
-
-		//stackPanel.setTitle("Form Questions");
 		FormDesignerUtil.maximizeWidget(stackPanel);
 
 		initWidget(stackPanel);

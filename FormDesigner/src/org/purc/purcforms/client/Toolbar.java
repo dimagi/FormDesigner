@@ -1,6 +1,7 @@
 package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.controller.IFormDesignerListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -109,28 +110,28 @@ public class Toolbar extends Composite{
 		btnPaste = new PushButton(images.paste().createImage());
 		btnRefresh = new PushButton(images.loading().createImage());
 		
-		btnNewForm.setTitle("New Form");
-		btnOpenForm.setTitle("Open form from Xforms Source Tab");
-		btnSaveForm.setTitle("Save Form");
+		btnNewForm.setTitle(LocaleText.get("newForm"));
+		//btnOpenForm.setTitle(LocaleText.get("Open form from Xforms Source Tab"));
+		btnSaveForm.setTitle(LocaleText.get("save"));
 		
-		btnAddNewItem.setTitle("Add New");
-		btnAddNewChildItem.setTitle("Add New Child");
-		btnDeleteItem.setTitle("Delete Selected");
-		btnMoveItemUp.setTitle("Move Up");
-		btnMoveItemDown.setTitle("Move Down");
+		btnAddNewItem.setTitle(LocaleText.get("addNew"));
+		btnAddNewChildItem.setTitle(LocaleText.get("addNewChild"));
+		btnDeleteItem.setTitle(LocaleText.get("deleteSelected"));
+		btnMoveItemUp.setTitle(LocaleText.get("moveUp"));
+		btnMoveItemDown.setTitle(LocaleText.get("moveDown"));
 		
-		btnCut.setTitle("Cut");
-		btnCopy.setTitle("Copy");
-		btnPaste.setTitle("Paste");
-		btnRefresh.setTitle("Refresh");
+		btnCut.setTitle(LocaleText.get("cut"));
+		btnCopy.setTitle(LocaleText.get("copy"));
+		btnPaste.setTitle(LocaleText.get("paste"));
+		btnRefresh.setTitle(LocaleText.get("refresh"));
 		
-		btnAlignLeft.setTitle("Align Left");
-		btnAlignRight.setTitle("Align Right");
-		btnAlignTop.setTitle("Align Top");
-		btnAlignBottom.setTitle("Align Bottom");
-		btnSameWidth.setTitle("Make Same Width");
-		btnSameHeight.setTitle("Make Same Height");
-		btnSameSize.setTitle("Make Same Size");
+		btnAlignLeft.setTitle(LocaleText.get("alignLeft"));
+		btnAlignRight.setTitle(LocaleText.get("alignRight"));
+		btnAlignTop.setTitle(LocaleText.get("alignTop"));
+		btnAlignBottom.setTitle(LocaleText.get("alignBottom"));
+		btnSameWidth.setTitle(LocaleText.get("makeSameWidth"));
+		btnSameHeight.setTitle(LocaleText.get("makeSameHeight"));
+		btnSameSize.setTitle(LocaleText.get("makeSameSize"));
 		
 		panel.add(btnNewForm);
 		panel.add(btnOpenForm);
@@ -172,7 +173,7 @@ public class Toolbar extends Composite{
 		panel.setCellWidth(l,"100%");
 		panel.setCellHorizontalAlignment(l,HasHorizontalAlignment.ALIGN_CENTER);
 		
-		Label label = new Label("Language:");
+		Label label = new Label(LocaleText.get("language"));
 		panel.add(label);
 		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_RIGHT);
 		

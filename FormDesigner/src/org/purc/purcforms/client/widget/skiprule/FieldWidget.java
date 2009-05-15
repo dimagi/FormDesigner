@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class FieldWidget extends Composite{
 
-	private static final int HORIZONTAL_SPACING = 5;
+	//private static final int HORIZONTAL_SPACING = 5;
 	private static final String EMPTY_VALUE = "_____";
 	
 	private FormDef formDef;
@@ -50,7 +50,7 @@ public class FieldWidget extends Composite{
 	}
 	
 	private void setupWidgets(){
-		fieldHyperlink = new Hyperlink("Field 1",null);
+		fieldHyperlink = new Hyperlink("",null); //Field 1
 		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);

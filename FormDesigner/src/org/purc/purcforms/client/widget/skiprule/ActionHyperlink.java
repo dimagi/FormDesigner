@@ -1,6 +1,8 @@
 package org.purc.purcforms.client.widget.skiprule;
 
 
+import org.purc.purcforms.client.locale.LocaleText;
+
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -40,10 +42,10 @@ public class ActionHyperlink extends Hyperlink {
 
 		MenuBar menuBar = new MenuBar(true);
 		
-		menuBar.addItem("Delete Condition",true, new Command(){
+		menuBar.addItem(LocaleText.get("deleteCondition"),true, new Command(){
 			public void execute() {popup.hide(); condWidget.deleteCurrentRow();}});
 		
-		menuBar.addItem("Add Condition",true, new Command(){
+		menuBar.addItem(LocaleText.get("addCondition"),true, new Command(){
 			public void execute() {popup.hide(); condWidget.addCondition();}});
 
 		/*if(allowBrackets){

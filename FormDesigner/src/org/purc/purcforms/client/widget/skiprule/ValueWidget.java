@@ -3,6 +3,7 @@ package org.purc.purcforms.client.widget.skiprule;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -43,8 +44,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class ValueWidget extends Composite implements ItemSelectionListener, PopupListener{
 
 	private static final String EMPTY_VALUE = "_____";
-	private static final String BETWEEN_WIDGET_SEPARATOR = "   and   ";
-	private static final String BETWEEN_VALUE_SEPARATOR = " and ";
+	private static final String BETWEEN_WIDGET_SEPARATOR = "   "+ LocaleText.get("and") + "   ";
+	private static final String BETWEEN_VALUE_SEPARATOR = " " + LocaleText.get("and") + " ";
 	private static final String LIST_SEPARATOR = " , ";
 
 	private QuestionDef questionDef;
@@ -59,7 +60,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	private KeyboardListenerAdapter keyboardListener1;
 	private KeyboardListenerAdapter keyboardListener2;
 	private QuestionDef prevQuestionDef;
-	private CheckBox chkQuestionValue = new CheckBox("Question value");
+	private CheckBox chkQuestionValue = new CheckBox(LocaleText.get("questionValue"));
 	private FormDef formDef;
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;

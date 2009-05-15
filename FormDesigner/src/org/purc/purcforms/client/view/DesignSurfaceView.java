@@ -129,13 +129,13 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		widgetPopup = new PopupPanel(true,true);
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {widgetPopup.hide(); cutWidgets();}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {widgetPopup.hide(); copyWidgets(false);}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true, new Command(){
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
 
 		widgetPopup.setWidget(menuBar);
@@ -372,40 +372,40 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		MenuBar addControlMenu = new MenuBar(true);
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_LABEL),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("label")),true,new Command(){
 			public void execute() {popup.hide(); addNewLabel(LocaleText.get("label"));}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_TEXTBOX),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewTextBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_CHECKBOX),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("checkBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewCheckBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_RADIOBUTTON),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("radioButton")),true,new Command(){
 			public void execute() {popup.hide(); addNewRadioButton();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"DropdownList"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("listBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewDropdownList();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_TEXTAREA),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textArea")),true,new Command(){
 			public void execute() {popup.hide(); addTextArea();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),WidgetEx.WIDGET_TYPE_BUTTON),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
 			public void execute() {popup.hide(); addNewButton();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date Picker"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewGroupBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Repeat Section"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("repeatSection")),true,new Command(){
 			public void execute() {popup.hide(); addNewRepeatSection();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Picture"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("picture")),true,new Command(){
 			public void execute() {popup.hide(); addNewPictureSection(null);}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Video/Audio"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("videoAudio")),true,new Command(){
 			public void execute() {popup.hide(); addNewVideoAudioSection(null);}});
 
 		/*addControlMenu.addSeparator();
@@ -432,41 +432,41 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();
-		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Delete Selected Widgets"),true,new Command(){
+		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("deleteSelected")),true,new Command(){
 			public void execute() {popup.hide(); deleteWidgets();}});
 		//}
 
 		menuBar.addSeparator();	
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"New Tab"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("newTab")),true, new Command(){
 			public void execute() {popup.hide(); addNewTab(null);}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete Tab"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteTab")),true, new Command(){
 			public void execute() {popup.hide(); deleteTab();}});
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		cutCopySeparator = menuBar.addSeparator();
-		cutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		cutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {popup.hide(); cutWidgets();}});
 
-		copyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		copyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {popup.hide(); copyWidgets(false);}});
 		//}
 		//else if(clipBoardWidgets.size() > 0){
 		pasteSeparator = menuBar.addSeparator();
-		pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),"Paste"),true,new Command(){
+		pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
 			public void execute() {popup.hide(); pasteWidgets();}});
 		//}
 
 		menuBar.addSeparator();	
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Select All"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("selectAll")),true, new Command(){
 			public void execute() {popup.hide(); selectAll();}});
 
 		menuBar.addSeparator();
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true,new Command(){
 			public void execute() {popup.hide(); refresh();}});
 
 		menuBar.addSeparator();
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.open(),"load"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.open(),LocaleText.get("load")),true,new Command(){
 			public void execute() {popup.hide(); load();}});
 
 		popup.setWidget(menuBar);
@@ -548,11 +548,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton("Add New","addnew");
+		addNewButton(LocaleText.get("addNew"),"addnew");
 		x = 150;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton("Remove","remove");
+		addNewButton(LocaleText.get("remove"),"remove");
 
 		selectedDragController.clearSelection();
 
@@ -603,11 +603,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton("Browse","browse").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("browse"),"browse").setParentBinding(parentBinding);
 		x = 120;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton("Clear","clear").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("clear"),"clear").setParentBinding(parentBinding);
 
 		selectedDragController.clearSelection();
 
@@ -658,11 +658,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton("Browse","browse").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("browse"),"browse").setParentBinding(parentBinding);
 		x = 120;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton("Clear","clear").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("clear"),"clear").setParentBinding(parentBinding);
 
 		selectedDragController.clearSelection();
 
@@ -793,11 +793,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private DesignWidgetWrapper addNewCheckBox(){
-		return addNewWidget(new CheckBox("CheckBox"));
+		return addNewWidget(new CheckBox(LocaleText.get("checkBox")));
 	}
 
 	private DesignWidgetWrapper addNewRadioButton(){
-		return addNewWidget(new RadioButton("RadioButton","RadioButton"));
+		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")));
 	}
 
 	private DesignWidgetWrapper addNewDropdownList(){
@@ -822,13 +822,13 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private DesignWidgetWrapper addNewButton(){
-		return addNewButton("Submit","submit");
+		return addNewButton(LocaleText.get("submit"),"submit");
 	}
 
 	private void addNewTab(String name){
 		initPanel();
 		if(name == null)
-			name = "Page"+(tabs.getWidgetCount());
+			name = LocaleText.get("page")+(tabs.getWidgetCount());
 
 		tabs.add(selectedPanel, name);
 		selectedTabIndex = tabs.getWidgetCount() - 1;
@@ -1670,7 +1670,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			fillNewQuestions(formDef.getPageAt(index),newQuestions,bindings);
 
 		if(newQuestions.size() > 0){
-			String pageName = "Page"+(tabs.getTabBar().getTabCount()+1);
+			String pageName = LocaleText.get("page")+(tabs.getTabBar().getTabCount()+1);
 			addNewTab(pageName);
 			loadQuestions(newQuestions,pageName);
 		}

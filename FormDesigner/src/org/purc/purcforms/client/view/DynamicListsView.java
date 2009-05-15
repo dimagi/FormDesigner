@@ -43,12 +43,12 @@ import com.google.gwt.xml.client.Node;
 public class DynamicListsView extends Composite implements ItemSelectionListener, ClickListener{
 
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private Label lblAction = new Label("Values for: ");
-	private Label lblEqual = new Label(" is equal to: ");
+	private Label lblAction = new Label(LocaleText.get("valuesFor"));
+	private Label lblEqual = new Label(" "+LocaleText.get("isEqualTo"));
 	private FieldWidget fieldWidget;
 	private ListBox lbValue = new ListBox(false);
 	private FlexTable table = new FlexTable();
-	private Button btnAdd = new Button("Add New");
+	private Button btnAdd = new Button(LocaleText.get("addNew"));
 	private FormDef formDef;
 	private QuestionDef questionDef;
 	private boolean enabled;
@@ -266,7 +266,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			for(int row = 0; row < rowCount; row++){
 				if(sender == table.getWidget(row, 2)){
 					OptionDef optionDef = optionList.get(row);
-					if(!Window.confirm("Do you really want to remove this row? [" + optionDef.getText() + " - " + optionDef.getVariableName() + "]"))
+					if(!Window.confirm(LocaleText.get("removeRowPrompt") + " [" + optionDef.getText() + " - " + optionDef.getVariableName() + "]"))
 						return;
 					
 					table.removeRow(row);

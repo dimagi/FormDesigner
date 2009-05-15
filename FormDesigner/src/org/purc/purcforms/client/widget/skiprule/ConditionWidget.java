@@ -33,7 +33,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private int operator;
 	private IConditionController view;
 	private Condition condition;
-	private Label lbLabel = new Label("Value");
+	private Label lbLabel = new Label(LocaleText.get("value"));
 
 	private boolean allowFieldSelection = false;
 

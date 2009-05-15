@@ -116,40 +116,40 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		popup = new PopupPanel(true,true);
 
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Add New"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("addNew")),true, new Command(){
 			public void execute() {popup.hide(); addNewItem();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Add Child"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("addNewChild")),true, new Command(){
 			public void execute() {popup.hide(); addNewChildItem();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true,new Command(){
 			public void execute() {popup.hide(); deleteSelectedItem();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),"Move Up"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),LocaleText.get("moveUp")),true, new Command(){
 			public void execute() {popup.hide(); moveItemUp();}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),"Move Down"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),LocaleText.get("moveDown")),true, new Command(){
 			public void execute() {popup.hide(); moveItemDown();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {popup.hide(); cutItem();}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {popup.hide(); copyItem();}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),"Paste"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
 			public void execute() {popup.hide(); pasteItem();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),"Save"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true,new Command(){
 			public void execute() {popup.hide(); saveItem();}});
 
 		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true,new Command(){
 			public void execute() {popup.hide(); refreshItem();}});
 
 		popup.setWidget(menuBar);
@@ -394,21 +394,21 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			Object userObj = item.getUserObject();
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,"Question"+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,item.getParentItem().getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				addFormDefItem(questionDef,item.getParentItem());
 				tree.setSelectedItem(item);
 			}
 			else if(userObj instanceof OptionDef){
 				int id = ++nextOptionId;
-				OptionDef optionDef = new OptionDef(id,"Option"+id,"option"+id,(QuestionDef)item.getParentItem().getUserObject());
+				OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), optionDef.getText(), images.markRead(),optionDef,null);
 				addFormDefItem(optionDef,item.getParentItem());
 				tree.setSelectedItem(item);	
 			}
 			else if(userObj instanceof PageDef){
 				int id = ++nextPageId;
-				PageDef pageDef = new PageDef("Page"+id,id,null,(FormDef)item.getParentItem().getUserObject());
+				PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)item.getParentItem().getUserObject());
 				item = addImageItem(item.getParentItem(), pageDef.getName(), images.drafts(),pageDef,null);
 				addFormDefItem(pageDef,item.getParentItem());
 				tree.setSelectedItem(item);
@@ -473,7 +473,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 				(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_REPEAT) ){
 
 			int id = ++nextQuestionId;
-			QuestionDef questionDef = new QuestionDef(id,"Question"+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,userObj);
+			QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,userObj);
 			item = addImageItem(item, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 			addFormDefItem(questionDef,item.getParentItem());
 			tree.setSelectedItem(item);
@@ -484,7 +484,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 						((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_MULTIPLE ) ){
 
 			int id = ++nextOptionId;
-			OptionDef optionDef = new OptionDef(id,"Option"+id,"option"+id,(QuestionDef)userObj);
+			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
 			item = addImageItem(item, optionDef.getText(), images.markRead(),optionDef,null);
 			addFormDefItem(optionDef,item.getParentItem());
 			tree.setSelectedItem(item);
@@ -492,7 +492,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 		else if(userObj instanceof FormDef){
 			int id = ++nextPageId;
-			PageDef pageDef = new PageDef("Page"+id,id,null,(FormDef)userObj);
+			PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)userObj);
 			item = addImageItem(item, pageDef.getName(), images.drafts(),pageDef,null);
 			addFormDefItem(pageDef,item.getParentItem());
 			tree.setSelectedItem(item);

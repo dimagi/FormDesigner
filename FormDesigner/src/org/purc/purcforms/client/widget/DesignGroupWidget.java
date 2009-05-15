@@ -10,6 +10,7 @@ import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -106,13 +107,13 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		widgetPopup = new PopupPanel(true,true);
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {widgetPopup.hide(); cutWidgets();}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {widgetPopup.hide(); copyWidgets(false);}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("delete")),true, new Command(){
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
 
 		widgetPopup.setWidget(menuBar);
@@ -302,34 +303,34 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		MenuBar addControlMenu = new MenuBar(true);
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Label"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("label")),true,new Command(){
 			public void execute() {popup.hide(); addNewLabel("Label");}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"TextBox"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewTextBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"CheckBox"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("checkBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewCheckBox();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"RadioButton"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("radioButton")),true,new Command(){
 			public void execute() {popup.hide(); addNewRadioButton();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"DropdownList"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("dropdownList")),true,new Command(){
 			public void execute() {popup.hide(); addNewDropdownList();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"TextArea"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textArea")),true,new Command(){
 			public void execute() {popup.hide(); addTextArea();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Button"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
 			public void execute() {popup.hide(); addNewButton();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Date Picker"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker();}});
 		
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Picture"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("picture")),true,new Command(){
 			public void execute() {popup.hide(); addNewPicture();}});
 
-		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Video/Audio"),true,new Command(){
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("videoAudio")),true,new Command(){
 			public void execute() {popup.hide(); addNewVideoAudio(null);}});
 
 		/*addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Group Box"),true,new Command(){
@@ -358,40 +359,40 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();
-		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Delete Selected Widgets"),true,new Command(){
+		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("deleteSelected")),true,new Command(){
 			public void execute() {popup.hide(); deleteWidgets();}});
 		//}
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		cutCopySeparator = menuBar.addSeparator();
-		cutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		cutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {popup.hide(); cutWidgets();}});
 
-		copyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		copyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {popup.hide(); copyWidgets(false);}});
 		//}
 		//else if(clipBoardWidgets.size() > 0){
 		pasteSeparator = menuBar.addSeparator();
-		pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),"Paste"),true,new Command(){
+		pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
 			public void execute() {popup.hide(); pasteWidgets();}});
 		//}
 
 		parentMenuSeparator = menuBar.addSeparator();
 
 		final Widget widget = this;
-		parentCutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),"Cut"),true,new Command(){
+		parentCutMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
 			public void execute() {popup.hide(); widgetPopupMenuListener.onCut(widget);}});
 
-		parentCopyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),"Copy"),true,new Command(){
+		parentCopyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {popup.hide(); widgetPopupMenuListener.onCopy(widget);}});
 
-		parentDeleteWidgetMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),"Delete"),true, new Command(){
+		parentDeleteWidgetMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("delete")),true, new Command(){
 			public void execute() {popup.hide(); widgetPopupMenuListener.onDelete(widget);}});
 
 		menuBar.addSeparator();
 
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Select All"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("selectAll")),true, new Command(){
 			public void execute() {popup.hide(); selectAll();}});
 
 		popup.setWidget(menuBar);
@@ -481,7 +482,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	private DesignWidgetWrapper addNewRadioButton(){
-		return addNewWidget(new RadioButton("RadioButton","RadioButton"));
+		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")));
 	}
 
 	private DesignWidgetWrapper addNewDropdownList(){
@@ -500,7 +501,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	private DesignWidgetWrapper addNewButton(){
-		DesignWidgetWrapper wrapper = addNewWidget(new Button("Submit"));
+		DesignWidgetWrapper wrapper = addNewWidget(new Button(LocaleText.get("submit")));
 		wrapper.setBinding("submit");
 		return wrapper;
 	}
@@ -733,7 +734,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	private void deleteWidgets(){
-		if(!Window.confirm("Do you really want to delete the selected widget(s)?"))
+		if(!Window.confirm(LocaleText.get("deleteWidgetPrompt")))
 			return;
 
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++)

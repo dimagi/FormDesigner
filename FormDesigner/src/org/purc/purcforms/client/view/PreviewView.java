@@ -40,11 +40,11 @@ public class PreviewView extends FormRunnerView {
 
 		popup = new PopupPanel(true,true);
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),"Refresh"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true,new Command(){
 			public void execute() {popup.hide(); refresh();}});
 
 		menuBar.addSeparator();
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),"Submit"),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("submit")),true,new Command(){
 			public void execute() {popup.hide(); submit();}});
 
 		popup.setWidget(menuBar);

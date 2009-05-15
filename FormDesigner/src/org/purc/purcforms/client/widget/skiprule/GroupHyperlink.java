@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget.skiprule;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 
 import com.google.gwt.user.client.Command;
@@ -11,17 +12,17 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
-/**
+/*
  * 
  * @author daniel
  *
  */
 public class GroupHyperlink extends Hyperlink{
 
-	public static final String CONDITIONS_OPERATOR_TEXT_ALL = "all";
-	public static final String CONDITIONS_OPERATOR_TEXT_ANY = "any";
-	public static final String CONDITIONS_OPERATOR_TEXT_NONE = "none";
-	public static final String CONDITIONS_OPERATOR_TEXT_NOT_ALL= "not all";
+	public static final String CONDITIONS_OPERATOR_TEXT_ALL = LocaleText.get("all");
+	public static final String CONDITIONS_OPERATOR_TEXT_ANY = LocaleText.get("any");
+	public static final String CONDITIONS_OPERATOR_TEXT_NONE = LocaleText.get("none");
+	public static final String CONDITIONS_OPERATOR_TEXT_NOT_ALL= LocaleText.get("notAll");
 	
 	private PopupPanel popup;
 	private boolean enabled;

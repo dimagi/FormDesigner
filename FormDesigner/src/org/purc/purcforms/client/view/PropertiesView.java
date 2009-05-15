@@ -425,7 +425,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				!(index == DT_SINGLE_SELECT || index == DT_MULTIPLE_SELECT)){
-			if(!Window.confirm("Do you really want to change to this type and lose all the options created, if any?")){
+			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
 				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_SINGLE_SELECT : DT_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
 				return;

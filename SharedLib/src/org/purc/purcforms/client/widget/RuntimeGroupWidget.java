@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
@@ -397,7 +398,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				if(wrapper.getWrappedWidget() instanceof HTML && !wrapper.getWrappedWidget().isVisible())
 					return;
 
-				if(!Window.confirm("Do you really want to delete this item?"))
+				if(!Window.confirm(LocaleText.get("deleteItemPrompt")))
 					return;
 
 				QuestionDef questionDef = wrapper.getQuestionDef();
@@ -411,7 +412,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				}
 				else{
 					html = (HTML)wrapper.getWrappedWidget();
-					html.setHTML("Click here to play");
+					html.setHTML(LocaleText.get("clickToPlay"));
 					html.setVisible(false);
 					image = null;
 				}

@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.widget.skiprule;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.widget.SelectItemCommand;
@@ -21,21 +22,21 @@ import com.google.gwt.user.client.ui.ScrollPanel;
  */
 public class OperatorHyperlink extends Hyperlink implements ItemSelectionListener {
 	
-	public static final String OP_TEXT_EQUAL = "is equal to";
-	public static final String OP_TEXT_NOT_EQUAL = "is not equal to";
-	public static final String OP_TEXT_LESS_THAN = "is less than";
-	public static final String OP_TEXT_LESS_THAN_EQUAL = "is less than or equal to";
-	public static final String OP_TEXT_GREATER_THAN = "is greater than";
-	public static final String OP_TEXT_GREATER_THAN_EQUAL = "is greater than or equal to";
-	public static final String OP_TEXT_NULL = "is null";
-	public static final String OP_TEXT_IN_LIST = "is in list";
-	public static final String OP_TEXT_NOT_IN_LIST = "is not in list";
-	public static final String OP_TEXT_STARTS_WITH = "starts with";
-	public static final String OP_TEXT_NOT_START_WITH = "does not start with";
-	public static final String OP_TEXT_CONTAINS = "contains";
-	public static final String OP_TEXT_NOT_CONTAIN = "does not contain";
-	public static final String OP_TEXT_BETWEEN = "is between";
-	public static final String OP_TEXT_NOT_BETWEEN = "is not between";
+	public static final String OP_TEXT_EQUAL = LocaleText.get("isEqualTo");
+	public static final String OP_TEXT_NOT_EQUAL = LocaleText.get("isNotEqual");
+	public static final String OP_TEXT_LESS_THAN = LocaleText.get("isLessThan");
+	public static final String OP_TEXT_LESS_THAN_EQUAL = LocaleText.get("isLessThanOrEqual");
+	public static final String OP_TEXT_GREATER_THAN = LocaleText.get("isGreaterThan");
+	public static final String OP_TEXT_GREATER_THAN_EQUAL = LocaleText.get("isGreaterThanOrEqual");
+	public static final String OP_TEXT_NULL = LocaleText.get("isNull");
+	public static final String OP_TEXT_IN_LIST = LocaleText.get("isInList");
+	public static final String OP_TEXT_NOT_IN_LIST = LocaleText.get("isNotInList");
+	public static final String OP_TEXT_STARTS_WITH = LocaleText.get("startsWith");
+	public static final String OP_TEXT_NOT_START_WITH = LocaleText.get("doesNotStartWith");
+	public static final String OP_TEXT_CONTAINS = LocaleText.get("contains");
+	public static final String OP_TEXT_NOT_CONTAIN = LocaleText.get("doesNotContain");
+	public static final String OP_TEXT_BETWEEN = LocaleText.get("isBetween");
+	public static final String OP_TEXT_NOT_BETWEEN = LocaleText.get("isNotBetween");
 
 	private PopupPanel popup;
 	private int dataType =  QuestionDef.QTN_TYPE_TEXT;

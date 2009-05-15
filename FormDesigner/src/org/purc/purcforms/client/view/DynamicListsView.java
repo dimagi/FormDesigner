@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.purc.purcforms.client.FormDesignerWidget;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
@@ -106,9 +107,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
 		if(questionDef != null)
-			lblAction.setText("Values for:  " + questionDef.getText() + "  when the answer for: ");
+			lblAction.setText(LocaleText.get("valuesFor") + questionDef.getText() + "  "+LocaleText.get("whenAnswerFor"));
 		else
-			lblAction.setText("Values for: ");
+			lblAction.setText(LocaleText.get("valuesFor"));
 
 		this.questionDef = questionDef;
 		fieldWidget.setDynamicQuestionDef(questionDef);
@@ -134,7 +135,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			updateDynamicLists();
 
 		questionDef = null;
-		lblAction.setText("Values for: ");
+		lblAction.setText(LocaleText.get("valuesFor"));
 		lbValue.clear();
 
 		while(verticalPanel.getWidgetCount() > 4)

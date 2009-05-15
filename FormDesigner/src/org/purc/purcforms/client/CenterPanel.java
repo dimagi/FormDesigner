@@ -6,6 +6,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -113,7 +114,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	private void loadPreview(){
-		FormUtil.dlg.setText("Loading Preview");
+		FormUtil.dlg.setText(LocaleText.get("loadingPreview"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){

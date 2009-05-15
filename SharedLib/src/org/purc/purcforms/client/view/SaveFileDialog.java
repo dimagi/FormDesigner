@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.locale.LocaleText;
+
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -61,7 +63,7 @@ public class SaveFileDialog extends DialogBox{
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button("Save", new ClickListener(){
+		horizontalPanel.add(new Button(LocaleText.get("save"), new ClickListener(){
 			public void onClick(Widget sender){
 				String fileName = txtName.getText();
 				if(fileName != null && fileName.trim().length() > 0){
@@ -79,7 +81,7 @@ public class SaveFileDialog extends DialogBox{
 			}
 		}));
 
-		horizontalPanel.add(new Button("Cancel", new ClickListener(){
+		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickListener(){
 			public void onClick(Widget sender){
 				hide();
 			}
@@ -99,6 +101,6 @@ public class SaveFileDialog extends DialogBox{
 			}
 		});
 
-		setText("Save File As");
+		setText(LocaleText.get("saveFileAs"));
 	}
 }

@@ -3,10 +3,11 @@ package org.purc.purcforms.client.view;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.IConditionController;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.ModelConstants;
+import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.widget.skiprule.ConditionWidget;
@@ -214,9 +215,9 @@ public class SkipRulesView extends Composite implements IConditionController{
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
 		if(questionDef != null)
-			lblAction.setText("For question:  " + questionDef.getText());
+			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getText());
 		else
-			lblAction.setText("For question: ");
+			lblAction.setText(LocaleText.get("forQuestion"));
 
 		this.questionDef = questionDef;
 
@@ -257,7 +258,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 			updateSkipRule();
 		
 		questionDef = null;
-		lblAction.setText("For question: ");
+		lblAction.setText(LocaleText.get("forQuestion"));
 		
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));

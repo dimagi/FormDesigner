@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
+import org.purc.purcforms.client.locale.LocaleText;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
@@ -52,7 +53,7 @@ public class OpenFileDialog extends DialogBox{
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button("Open", new ClickListener(){
+		horizontalPanel.add(new Button(LocaleText.get("open"), new ClickListener(){
 			public void onClick(Widget sender){
 				String action = actionUrl;
 				if(action.contains("?"))
@@ -67,7 +68,7 @@ public class OpenFileDialog extends DialogBox{
 			}
 		}));
 		
-		horizontalPanel.add(new Button("Cancel", new ClickListener(){
+		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickListener(){
 			public void onClick(Widget sender){
 				hide();
 			}
@@ -88,6 +89,6 @@ public class OpenFileDialog extends DialogBox{
 			}
 		});
 		
-		setText("Open File");
+		setText(LocaleText.get("openFile"));
 	}
 }

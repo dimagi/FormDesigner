@@ -2,6 +2,7 @@ package org.purc.purcforms.client.widget.skiprule;
 
 import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -60,7 +61,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			horizontalPanel.add(fieldWidget);
 		else{
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				lbLabel.setText("Count");
+				lbLabel.setText(LocaleText.get("count"));
 			horizontalPanel.add(lbLabel);
 		}
 

@@ -3,6 +3,7 @@ package org.purc.purcforms.client.view;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.IConditionController;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -91,7 +92,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			
 			String text = txtErrorMessage.getText();
 			if(text != null && text.trim().length() == 0){
-				txtErrorMessage.setText("Error Message");
+				txtErrorMessage.setText(LocaleText.get("errorMessage"));
 				txtErrorMessage.selectAll();
 			}
 		}
@@ -155,9 +156,9 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 		
 		if(questionDef != null)
-			lblAction.setText("Question:  " + questionDef.getText() + "  is valid when:");
+			lblAction.setText(LocaleText.get("question:")+"  " + questionDef.getText() + "  "+LocaleText.get("isValidWhen"));
 		else
-			lblAction.setText("Question: ");
+			lblAction.setText(LocaleText.get("Question:")+" ");
 		
 		this.questionDef = questionDef;
 		

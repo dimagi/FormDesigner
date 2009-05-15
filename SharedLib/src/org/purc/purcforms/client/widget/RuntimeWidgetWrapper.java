@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
@@ -62,7 +63,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		this.editListener = widget.getEditListener();
 		this.errorImage = widget.getErrorImage().createImage();
 		this.errorImageProto = widget.getErrorImage();
-		errorImage.setTitle("Please answer this required question.");
+		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
 
 		panel.add(this.widget);
 		initWidget(panel);
@@ -81,7 +82,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		panel.add(widget);
 		initWidget(panel);
 		setupEventListeners();
-		errorImage.setTitle("Please answer this required question.");
+		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
 	}
 
 	public AbstractImagePrototype getErrorImage(){
@@ -587,7 +588,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
 
-			errorImage.setTitle("Please answer this required question.");
+			errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
 			return false;
 		}
 		

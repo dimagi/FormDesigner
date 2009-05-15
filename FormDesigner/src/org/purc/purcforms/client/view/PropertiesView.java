@@ -4,6 +4,7 @@ import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -86,17 +87,17 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		//chkVisible.setStyleName("gwt-CheckBox");
 
-		table.setWidget(0, 0, new Label("Text"));
-		table.setWidget(1, 0, new Label("Help Text"));
-		table.setWidget(2, 0, new Label("Type"));
-		table.setWidget(3, 0, new Label("Binding"));
-		table.setWidget(4, 0, new Label("Visible"));
-		table.setWidget(5, 0, new Label("Enabled"));
-		table.setWidget(6, 0, new Label("Locked"));
-		table.setWidget(7, 0, new Label("Required"));
-		table.setWidget(8, 0, new Label("Default Value"));
+		table.setWidget(0, 0, new Label(LocaleText.get("text")));
+		table.setWidget(1, 0, new Label(LocaleText.get("helpText")));
+		table.setWidget(2, 0, new Label(LocaleText.get("type")));
+		table.setWidget(3, 0, new Label(LocaleText.get("binding")));
+		table.setWidget(4, 0, new Label(LocaleText.get("visible")));
+		table.setWidget(5, 0, new Label(LocaleText.get("enabled")));
+		table.setWidget(6, 0, new Label(LocaleText.get("locked")));
+		table.setWidget(7, 0, new Label(LocaleText.get("required")));
+		table.setWidget(8, 0, new Label(LocaleText.get("defaultValue")));
 		//table.setWidget(9, 0, new Label("Control Type"));
-		table.setWidget(9, 0, new Label("Description Template"));
+		table.setWidget(9, 0, new Label(LocaleText.get("descriptionTemplate")));
 
 		table.setWidget(0, 1, txtText);
 		table.setWidget(1, 1, txtHelpText);
@@ -119,20 +120,20 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		table.setStyleName("cw-FlexTable");
 
-		cbDataType.addItem("Text");
-		cbDataType.addItem("Number");
-		cbDataType.addItem("Decimal");
-		cbDataType.addItem("Date");
-		cbDataType.addItem("Time");
-		cbDataType.addItem("Date and Time");
-		cbDataType.addItem("Boolean");
-		cbDataType.addItem("Single Select");
-		cbDataType.addItem("Multiple Select");
-		cbDataType.addItem("Repeat");
-		cbDataType.addItem("Picture");
-		cbDataType.addItem("Video");
-		cbDataType.addItem("Audio");
-		cbDataType.addItem("Single Select Dynamic");
+		cbDataType.addItem(LocaleText.get("qtnTypeText"));
+		cbDataType.addItem(LocaleText.get("qtnTypeNumber"));
+		cbDataType.addItem(LocaleText.get("qtnTypeDecimal"));
+		cbDataType.addItem(LocaleText.get("qtnTypeDate"));
+		cbDataType.addItem(LocaleText.get("qtnTypeTime"));
+		cbDataType.addItem(LocaleText.get("qtnTypeDateTime"));
+		cbDataType.addItem(LocaleText.get("qtnTypeBoolean"));
+		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelect"));
+		cbDataType.addItem(LocaleText.get("qtnTypeMultSelect"));
+		cbDataType.addItem(LocaleText.get("qtnTypeRepeat"));
+		cbDataType.addItem(LocaleText.get("qtnTypePicture"));
+		cbDataType.addItem(LocaleText.get("qtnTypeVideo"));
+		cbDataType.addItem(LocaleText.get("qtnTypeAudio"));
+		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -152,9 +153,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		verticalPanel.add(table);
 
 		DecoratedTabPanel tabs = new DecoratedTabPanel();
-		tabs.add(skipRulesView, "Skip Logic");
-		tabs.add(validationRulesView, "Validation Logic");
-		tabs.add(dynamicListsView, "Dynamic Lists");
+		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
+		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
+		tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
 
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
@@ -172,11 +173,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDescTemplate.setEnabled(false);
 		btnDescTemplate.setEnabled(false);
 
-		txtText.setTitle("The question text.");
-		txtHelpText.setTitle("The question description.");
-		txtBinding.setTitle("The question internal identifier. For Questions, it should be a valid xml node name.");
-		txtDefaultValue.setTitle("The default value or answer");
-		cbDataType.setTitle("The type of question or type of expected answers.");
+		txtText.setTitle(LocaleText.get("questionTextDesc"));
+		txtHelpText.setTitle(LocaleText.get("questionDescDesc"));
+		txtBinding.setTitle(LocaleText.get("questionIdDesc"));
+		txtDefaultValue.setTitle(LocaleText.get("defaultValDesc"));
+		cbDataType.setTitle(LocaleText.get("questionTypeDesc"));
 		//cbControlType.setTitle("The question text.");
 
 		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));

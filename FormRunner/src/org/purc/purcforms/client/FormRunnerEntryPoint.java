@@ -1,5 +1,6 @@
 package org.purc.purcforms.client;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.widget.FormRunnerWidget;
@@ -39,7 +40,7 @@ public class FormRunnerEntryPoint implements EntryPoint{
 		if(formId != null && entityId != null)
 			formRunner.loadForm(Integer.parseInt(formId),Integer.parseInt(entityId));
 		else
-			Window.alert("No formId or " + FormUtil.getEntityIdName() + " div found");
+			Window.alert(LocaleText.get("noformId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
 		
 		RootPanel.get("purcformrunner").add(formRunner);
 		

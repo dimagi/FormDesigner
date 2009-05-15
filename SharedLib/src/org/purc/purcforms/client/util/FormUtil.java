@@ -2,6 +2,7 @@ package org.purc.purcforms.client.util;
 
 import java.util.List;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.view.ErrorDialog;
 import org.purc.purcforms.client.view.ProgressDialog;
@@ -228,7 +229,7 @@ public class FormUtil {
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			public void onUncaughtException(Throwable throwable) {
 				//throwable.printStackTrace();
-				String text = "Uncaught exception: ";
+				String text = LocaleText.get("uncaughtException");
 				String s = text;
 				while (throwable != null) {
 					s = throwable.getMessage();
@@ -239,11 +240,11 @@ public class FormUtil {
 					}
 					throwable = throwable.getCause();
 					if (throwable != null) {
-						text += "Caused by: ";
+						text += LocaleText.get("CausedBy");
 					}
 				}
 				ErrorDialog dialogBox = new ErrorDialog();
-				dialogBox.setText("Unxpected Failure");
+				dialogBox.setText(LocaleText.get("unxpectedFailure"));
 				//DOM.setStyleAttribute(dialogBox.getElement(), "backgroundColor", "#ABCDEF");
 				//System.err.print(text);
 				//text = text.replaceAll(" ", "&nbsp;");
@@ -397,7 +398,7 @@ public class FormUtil {
 	public static void displayException(Exception ex){
 		ex.printStackTrace();
 
-		String text = "Uncaught exception: ";
+		String text = LocaleText.get("uncaughtException");
 		String s = text;
 		while (ex != null) {
 			s = ex.getMessage();
@@ -408,12 +409,12 @@ public class FormUtil {
 			}
 			ex = (Exception)ex.getCause();
 			if (ex != null) {
-				text += "Caused by: ";
+				text += LocaleText.get("causedBy");
 			}
 		}
 
 		ErrorDialog dialogBox = new ErrorDialog();
-		dialogBox.setText("Unxpected Failure");
+		dialogBox.setText(LocaleText.get("unxpectedFailure"));
 		dialogBox.setBody(s);
 		dialogBox.setCallStack(text);
 		dialogBox.center();

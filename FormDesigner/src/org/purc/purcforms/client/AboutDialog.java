@@ -1,6 +1,7 @@
 
 package org.purc.purcforms.client;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.user.client.ui.Button;
@@ -19,20 +20,20 @@ public class AboutDialog extends DialogBox {
 
   public AboutDialog() {
     // Use this opportunity to set the dialog's caption.
-    setText("About " + FormDesignerUtil.getTitle());
+    setText(LocaleText.get("about")+" " + FormDesignerUtil.getTitle());
 
     // Create a VerticalPanel to contain the 'about' label and the 'OK' button.
     VerticalPanel outer = new VerticalPanel();
 
     // Create the 'about' text and set a style name so we can style it with CSS.
 
-    HTML text = new HTML("This is a form designer widget based on GWT");
+    HTML text = new HTML(LocaleText.get("aboutMessage"));
     text.setStyleName("formDesigner-AboutText");
     outer.add(text);
 
     // Create the 'OK' button, along with a listener that hides the dialog
     // when the button is clicked.
-    Button btn = new Button("Close", new ClickListener() {
+    Button btn = new Button(LocaleText.get("close"), new ClickListener() {
       public void onClick(Widget sender) {
         hide();
       }

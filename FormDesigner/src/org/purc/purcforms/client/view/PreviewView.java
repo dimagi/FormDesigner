@@ -3,6 +3,7 @@ package org.purc.purcforms.client.view;
 import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.SubmitListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
@@ -133,7 +134,7 @@ public class PreviewView extends FormRunnerView {
 	}
 
 	public void refresh(){
-		FormUtil.dlg.setText("Refreshing Preview");
+		FormUtil.dlg.setText(LocaleText.get("refreshingPreview"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){

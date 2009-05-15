@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
@@ -85,33 +86,33 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		initStyles();
 
 		int index = -1;
-		table.setWidget(++index, 0, new Label("Text"));
-		table.setWidget(++index, 0, new Label("Tooltip"));
-		table.setWidget(++index, 0, new Label("Binding"));
-		table.setWidget(++index, 0, new Label("Child Binding"));
-		table.setWidget(++index, 0, new Label("Width"));
-		table.setWidget(++index, 0, new Label("Height"));
-		table.setWidget(++index, 0, new Label("Enabled"));
-		table.setWidget(++index, 0, new Label("Visible"));
-		table.setWidget(++index, 0, new Label("Left"));
-		table.setWidget(++index, 0, new Label("Top"));
-		table.setWidget(++index, 0, new Label("Tab Index"));
-		table.setWidget(++index, 0, new Label("Repeat"));
+		table.setWidget(++index, 0, new Label(LocaleText.get("text")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("toolTip")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("binding")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("childBinding")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("width")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("height")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("enabled")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("visible")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("left")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("top")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("tabIndex")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("repeat")));
 
-		table.setWidget(++index, 0, new Label("External Source"));
-		table.setWidget(++index, 0, new Label("Display Field"));
-		table.setWidget(++index, 0, new Label("Value Field"));
+		table.setWidget(++index, 0, new Label(LocaleText.get("externalSource")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("displayField")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("valueField")));
 
-		table.setWidget(++index, 0, new Label("Font Family"));
-		table.setWidget(++index, 0, new Label("Fore Color"));
-		table.setWidget(++index, 0, new Label("Font Weight"));
-		table.setWidget(++index, 0, new Label("Font Style"));
-		table.setWidget(++index, 0, new Label("Font Size"));
-		table.setWidget(++index, 0, new Label("Text Decoration"));
-		table.setWidget(++index, 0, new Label("Background Color"));
-		table.setWidget(++index, 0, new Label("Border Style"));
-		table.setWidget(++index, 0, new Label("Border Width"));
-		table.setWidget(++index, 0, new Label("Border Color"));
+		table.setWidget(++index, 0, new Label(LocaleText.get("fontFamily")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("foreColor")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("fontWeight")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("fontStyle")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("fontSize")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("textDecoration")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("backgroundColor")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("borderStyle")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("borderWidth")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("borderColor")));
 
 		index = -1;
 		table.setWidget(++index, 1,txtText );

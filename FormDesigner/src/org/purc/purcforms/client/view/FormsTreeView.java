@@ -11,6 +11,7 @@ import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
@@ -306,11 +307,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void deleteSelectedItem(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null){
-			Window.alert("Please first select the item to delete");
+			Window.alert(LocaleText.get("selectDeleteItem"));
 			return;
 		}
 
-		if(!inCutMode && !Window.confirm("Do you really want to delete the selected item and all its children (if any) ?"))
+		if(!inCutMode && !Window.confirm(LocaleText.get("deleteTreeItemPrompt")))
 			return;
 
 		deleteItem(item);
@@ -807,7 +808,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			if(pageNos.containsKey(pageNo)){
 				tree.setSelectedItem(child);
 				tree.ensureSelectedItemVisible();
-				Window.alert("The selected page [" + pageDef.getName() +"] should not share the same page number/binding with page [" + pageNos.get(pageNo)+ "]");
+				Window.alert(LocaleText.get("selectedPage") + pageDef.getName() +LocaleText.get("shouldNotSharePageBinding") + pageNos.get(pageNo)+ "]");
 				return false;
 			}
 			else
@@ -829,7 +830,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			if(bindings.containsKey(variableName)){
 				tree.setSelectedItem(child);
 				tree.ensureSelectedItemVisible();
-				Window.alert("The selected question [" + questionDef.getText()+"] should not share the same binding with question [" + bindings.get(variableName)+ "]");
+				Window.alert(LocaleText.get("selectedQuestion") + questionDef.getText()+LocaleText.get("shouldNotShareQuestionBinding") + bindings.get(variableName)+ "]");
 				return false;
 			}
 			else
@@ -860,7 +861,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			if(bindings.containsKey(variableName)){
 				tree.setSelectedItem(child);
 				tree.ensureSelectedItemVisible();
-				Window.alert("The selected option [" + optionDef.getText()+"] should not share the same binding with option [" + bindings.get(variableName)+ "]");
+				Window.alert(LocaleText.get("selectedOption") + optionDef.getText()+LocaleText.get("shouldNotShareOptionBinding") + bindings.get(variableName)+ "]");
 				return false;
 			}
 			else

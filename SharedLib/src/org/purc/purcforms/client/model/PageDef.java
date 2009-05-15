@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 
@@ -435,7 +436,7 @@ public class PageDef implements Serializable{
 		for(int k = 0; k < newQuestions.size(); k++){
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
 			if(questionDef.getDataNode() == null){
-				Window.alert("Missing data node for :" + questionDef.getText());
+				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
 				continue; //TODO This is a bug which should be resolved
 			}
 

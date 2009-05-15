@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.locale.LocaleText;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -14,14 +16,14 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 
 	public ErrorDialog() {
 		//setStylePrimaryName("FormDesigner-ErrorDialog");
-		Button closeButton = new Button("Close", this);
+		Button closeButton = new Button(LocaleText.get("close"), this);
 		VerticalPanel panel = new VerticalPanel();
 		panel.setSpacing(4);
 		panel.add(body);
 		panel.add(closeButton);
 		panel.setCellHorizontalAlignment(closeButton, VerticalPanel.ALIGN_CENTER);
 
-		DisclosurePanel advanced = new DisclosurePanel("More");
+		DisclosurePanel advanced = new DisclosurePanel(LocaleText.get("more"));
 		advanced.setAnimationEnabled(true);
 		advanced.setContent(callStack);
 		panel.add(advanced);

@@ -400,12 +400,6 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			if(formDef.getDoc() == null)
 				XformConverter.fromFormDef2Xform(formDef);
 
-			/*Window.alert("len newww="+formDef.getDoc().toString().length());
-			ErrorDialog dlg = new ErrorDialog();
-			dlg.setText("Contents");
-			dlg.setBody(formDef.getDoc().toString());
-			dlg.center();*/
-
 			saveValues();
 
 			if(!isValid())

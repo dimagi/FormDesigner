@@ -6,6 +6,7 @@ import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -575,7 +576,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(!(widget instanceof Hyperlink)){
 				panel.remove(widget);
 				widget = new Hyperlink();
-				((Hyperlink)widget).setText("Click to play");
+				((Hyperlink)widget).setText(LocaleText.get("clickToPlay"));
 				panel.add(widget);
 				refreshSize();
 			}

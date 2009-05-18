@@ -10,6 +10,7 @@ import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
+import org.purc.purcforms.client.controller.LayoutChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
@@ -22,6 +23,7 @@ import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
+import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
@@ -55,6 +57,7 @@ import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -99,7 +102,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	private WidgetSelectionListener widgetSelectionListener;
 	private WidgetSelectionListener currentWidgetSelectionListener;
 	private DesignWidgetWrapper selectedWidget;
-
+	private LayoutChangeListener layoutChangeListener;
 
 	private int selectionXPos;
 	private int selectionYPos;
@@ -112,6 +115,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	//DropController dropController;
 	Vector<FormDesignerDragController> dragControllers = new Vector<FormDesignerDragController>();
 	FormDef formDef;
+	Document doc;
 
 	private int embeddedHeightOffset = 0;
 
@@ -620,7 +624,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		return widget;
 	}
-	
+
 	private DesignWidgetWrapper addNewVideoAudioSection(String parentBinding){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
@@ -716,6 +720,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			if(index > 0)
 				x += 210;
 			DesignWidgetWrapper label = addNewLabel(qtn.getText());
+			label.setBinding(qtn.getVariableName());
 			label.setTextDecoration("underline");
 		}
 
@@ -885,6 +890,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		Element rootNode = doc.createElement("Form");
 		doc.appendChild(rootNode);
 
+		this.doc = doc;
+
 		boolean hasWidgets = false;
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			Element node = doc.createElement("Page");
@@ -901,7 +908,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			return FormDesignerUtil.formatXml(doc.toString());
 		return null;
 	}
-	
+
 	public Element getLanguageNode(){
 		if(tabs.getWidgetCount() == 0)
 			return null;
@@ -910,20 +917,27 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		Element rootNode = doc.createElement("Form");
 		doc.appendChild(rootNode);
 
-		boolean hasWidgets = false;
+		String xpath = "Form/Page/Item[@Binding='";
 		for(int i=0; i<tabs.getWidgetCount(); i++){
-			/*Element node = doc.createElement("Page");
-			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
+			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Text='"+text+"'");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
 			rootNode.appendChild(node);
-			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
-			boolean b = buildLayoutXml(node,panel,doc);
-			if(b)
-				hasWidgets = true;*/
+
+			buildLanguageNode((AbsolutePanel)tabs.getWidget(i),doc, rootNode,xpath);
 		}
 
-		if(hasWidgets)
-			return rootNode;
-		return null;
+		return rootNode;
+	}
+
+	private void buildLanguageNode(AbsolutePanel panel,com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
+		for(int i=0; i<panel.getWidgetCount(); i++){
+			Widget widget = panel.getWidget(i);
+			if(!(widget instanceof DesignWidgetWrapper))
+				continue;
+			((DesignWidgetWrapper)widget).buildLanguageXml(doc,parentNode, xpath);
+		}
 	}
 
 	private boolean buildLayoutXml(Element parent, AbsolutePanel panel, com.google.gwt.xml.client.Document doc){
@@ -931,8 +945,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			Widget widget = panel.getWidget(i);
 			if(!(widget instanceof DesignWidgetWrapper))
 				continue;
-			DesignWidgetWrapper wrapper = (DesignWidgetWrapper)widget;
-			wrapper.buildLayoutXml(parent, doc);
+			((DesignWidgetWrapper)widget).buildLayoutXml(parent, doc);
 		}
 
 		return panel.getWidgetCount() > 0;
@@ -958,6 +971,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			addNewTab(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			loadPage(node.getChildNodes());
 		}
+
+		this.doc = doc;
 
 		if(tabs.getWidgetCount() > 0){
 			selectedTabIndex = 0;
@@ -1012,6 +1027,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			return null; 
 
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,widgetSelectionListener);
+		wrapper.setLayoutNode(node);
 
 		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
@@ -1145,8 +1161,19 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(!Window.confirm(LocaleText.get("deleteWidgetPrompt")))
 			return;
 
-		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++)
-			selectedPanel.remove(selectedDragController.getSelectedWidgetAt(i));
+		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
+			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
+			if(widget.getLayoutNode() != null)
+				widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
+			selectedPanel.remove(widget);
+		}
+
+		if(doc != null){
+			String layout = null;
+			if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
+				layout = FormUtil.formatXml(doc.toString());
+			layoutChangeListener.onLayoutChanged(layout);
+		}
 
 		selectedDragController.clearSelection();
 	}
@@ -1236,6 +1263,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				addNewTab(pageDef.getName());
 				loadPage(pageDef);
 			}
+
+			//TODO May need to support multiple listeners.
+			layoutChangeListener.onLayoutChanged(getLayoutXml());
 		}
 
 		if(tabs.getWidgetCount() > 0){
@@ -1261,6 +1291,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
 			widgetWrapper = addNewLabel(questionDef.getText());
+			widgetWrapper.setBinding(questionDef.getVariableName());
+
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 				widgetWrapper.setFontWeight("bold");
 				widgetWrapper.setFontStyle("italic");
@@ -1293,7 +1325,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 						questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO||
 						questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO))
 					widgetWrapper.setBinding(questionDef.getVariableName());
-				
+
 				widgetWrapper.setQuestionDef(questionDef);
 
 				String helpText = questionDef.getHelpText();
@@ -1599,7 +1631,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 						else
 							setLayout(formDef);
 					}
-					
+
 					if(!loading)
 						FormUtil.dlg.hide();
 				}
@@ -1698,5 +1730,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 	public void setEmbeddedHeightOffset(int offset){
 		embeddedHeightOffset = offset;
+	}
+
+	public void setLayoutChangeListener(LayoutChangeListener layoutChangeListener){
+		this.layoutChangeListener = layoutChangeListener;
 	}
 }

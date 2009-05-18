@@ -658,6 +658,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						leftPanel.refresh(formDef);
 					}
 					FormUtil.dlg.hide();
+					
+					String layoutXml = centerPanel.getLayoutXml();
+					if(layoutXml != null && layoutXml.trim().length() > 0)
+						openFormLayout();
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();

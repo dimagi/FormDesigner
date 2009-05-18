@@ -113,7 +113,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {widgetPopup.hide(); copyWidgets(false);}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("delete")),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true, new Command(){
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
 
 		widgetPopup.setWidget(menuBar);
@@ -386,7 +386,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		parentCopyMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
 			public void execute() {popup.hide(); widgetPopupMenuListener.onCopy(widget);}});
 
-		parentDeleteWidgetMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("delete")),true, new Command(){
+		parentDeleteWidgetMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true, new Command(){
 			public void execute() {popup.hide(); widgetPopupMenuListener.onDelete(widget);}});
 
 		menuBar.addSeparator();
@@ -803,7 +803,8 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
 			widgetWrapper = addNewLabel(questionDef.getText());
-
+			widgetWrapper.setBinding(questionDef.getVariableName());
+			
 			widgetWrapper = null;
 
 			x += (questionDef.getText().length() * 10);
@@ -979,6 +980,15 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	public void buildLayoutXml(Element parent, com.google.gwt.xml.client.Document doc){
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++)
 			((DesignWidgetWrapper)selectedPanel.getWidget(i)).buildLayoutXml(parent, doc);
+	}
+	
+	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
+		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
+			Widget widget = selectedPanel.getWidget(i);
+			if(!(widget instanceof DesignWidgetWrapper))
+				continue;
+			((DesignWidgetWrapper)widget).buildLanguageXml(doc,parentNode, xpath);
+		}
 	}
 
 	public int getWidgetCount(){

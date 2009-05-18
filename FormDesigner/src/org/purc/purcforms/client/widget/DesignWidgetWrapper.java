@@ -11,6 +11,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -45,6 +46,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	private MouseListenerCollection mouseListeners;
 	private WidgetSelectionListener widgetSelectionListener;
 	private PopupPanel popup;
+	private Element layoutNode;
 
 	public DesignWidgetWrapper(DesignWidgetWrapper designWidgetWrapper,Images images){
 		super(designWidgetWrapper);
@@ -349,6 +351,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		Element node = doc.createElement("Item");
 		parent.appendChild(node);			 
 		node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE, getWidgetName());
+		
+		layoutNode = node;
 
 		String value = getText();
 		if(value != null && value.trim().length() > 0)
@@ -419,6 +423,30 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+	}
+	
+	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
+		if(binding == null || binding.trim().length() == 0)
+			return;
+		
+		String text = getText();
+		if(text != null && text.trim().length() > 0){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@Text]");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			parentNode.appendChild(node);
+		}
+		
+		text = getTitle();
+		if(text != null && text.trim().length() > 0){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "'][@HelpText]");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			parentNode.appendChild(node);
+		}
+		
+		if(getWrappedWidget() instanceof DesignGroupWidget)
+			((DesignGroupWidget)getWrappedWidget()).buildLanguageXml(doc,parentNode, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@Binding='");
 	}
 
 	private void buildLabelProperties(Element node){
@@ -585,5 +613,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	
 	public void onOptionsChanged(List<OptionDef> optionList){
 		
+	}
+	
+	public Element getLayoutNode(){
+		return layoutNode;
+	}
+	
+	public void setLayoutNode(Element node){
+		layoutNode = node;
 	}
 }

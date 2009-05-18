@@ -4,6 +4,7 @@ import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.controller.LayoutChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -35,7 +36,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class CenterPanel extends Composite implements TabListener, IFormSelectionListener, SubmitListener{
+public class CenterPanel extends Composite implements TabListener, IFormSelectionListener, SubmitListener, LayoutChangeListener{
 
 	private static final int SELECTED_INDEX_PROPERTIES = 0;
 	private static final int SELECTED_INDEX_XFORMS_SOURCE = 1;
@@ -139,6 +140,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	private void initDesignSurface(){
 		tabs.add(designSurfaceView, "Design Surface");
 		FormDesignerUtil.maximizeWidget(designSurfaceView);
+		designSurfaceView.setLayoutChangeListener(this);
 	}
 
 	private void initXformsSource(){
@@ -290,11 +292,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		rootNode.setAttribute("lang", "en");
 		doc.appendChild(rootNode);
 
-		Element node = designSurfaceView.getLanguageNode();
+		Element node = formDef.getLanguageNode();
 		if(node != null)
 			rootNode.appendChild(node);
-
-		node = formDef.getLanguageNode();
+		
+		node = designSurfaceView.getLanguageNode();
 		if(node != null)
 			rootNode.appendChild(node);
 
@@ -335,7 +337,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			xml = txtLanguageXml.getText();
 
 		if(xml != null && xml.trim().length() > 0){
-			txtXformsSource.setText(FormUtil.formatXml(LanguageUtil.translate(formDef.getDoc(), xml).toString()));
+			txtXformsSource.setText(FormUtil.formatXml(LanguageUtil.translate(formDef.getDoc(), xml, true).toString()));
+			
+			String layoutXml = txtLayoutXml.getText();
+			if(layoutXml != null && layoutXml.trim().length() > 0)
+				txtLayoutXml.setText(FormUtil.formatXml(LanguageUtil.translate(layoutXml, xml, false).toString()));
+			
 			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 			if(formDef != null)
 				formDef.setLanguageXml(xml);
@@ -347,11 +354,17 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void saveFormLayout(){
 		txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 		tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
+		
+		if(formDef != null)
+			formDef.setLayoutXml(txtLayoutXml.getText());
 	}
 
 	public void saveLanguageText(){
 		buildLanguageXml();
 		tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+		
+		if(formDef != null)
+			formDef.setLanguageXml(txtLanguageXml.getText());
 	}
 
 	public void format(){
@@ -493,5 +506,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public boolean isInLayoutMode(){
 		return tabs.getTabBar().getSelectedTab() == SELECTED_INDEX_LAYOUT_XML;
+	}
+	
+	public void onLayoutChanged(String xml){
+		txtLayoutXml.setText(xml);
+		formDef.setLayoutXml(xml);
 	}
 }

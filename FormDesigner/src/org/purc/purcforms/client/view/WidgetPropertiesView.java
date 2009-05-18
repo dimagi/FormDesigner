@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListenerAdapter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -276,8 +277,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 		txtBinding.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				if(txtBinding.getText().trim().length() == 0)
-					updateBinding();
+				updateBinding(widget);
 			}
 		});
 		
@@ -297,6 +297,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtBinding.addFocusListener(new FocusListenerAdapter(){
 			public void onFocus(Widget sender){
 				txtBinding.selectAll();
+			}
+			public void onLostFocus(Widget sender){
+				updateBinding();
 			}
 		});
 
@@ -449,6 +452,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		});
 	}
 
+	private void updateBinding(DesignWidgetWrapper widget){
+		if(widget != null){
+			Widget wdgt = widget.getWrappedWidget();
+			if(wdgt instanceof Label || wdgt instanceof Hyperlink || wdgt instanceof TabBar)
+				widget.setBinding(sgstBinding.getText().trim());
+			else if(txtBinding.getText().trim().length() == 0)
+				updateBinding();
+		}	
+	}
+	
 	private void updateText(){
 		if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
 			widget.setText(txtText.getText());
@@ -587,7 +600,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 		if(widget != null){
 			txtText.setText(widget.getText());
-
+			txtBinding.setText(widget.getBinding());
+			
 			if(widget.getWrappedWidget() instanceof TabBar)
 				return;
 
@@ -666,7 +680,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 						txtBinding.setText(questionDef.getText());
 					else{
 						if("submit".equalsIgnoreCase(value)||"addnew".equalsIgnoreCase(value)||"remove".equalsIgnoreCase(value)
-								|| "browse".equalsIgnoreCase(value)||"clear".equalsIgnoreCase(value))
+								|| "browse".equalsIgnoreCase(value)||"clear".equalsIgnoreCase(value) ||
+								(widget.getWrappedWidget() instanceof Label || widget.getWrappedWidget() instanceof Hyperlink) ||
+								widget.getWrappedWidget() instanceof TabBar)
 							txtBinding.setText(value);
 						else
 							txtBinding.setText(null);

@@ -19,7 +19,11 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class LanguageUtil {
 
-	public static String translate(Document doc, String languageXml){
+	public static String translate(String srcXml, String languageXml, boolean xform){
+		return translate(XMLParser.parse(srcXml),languageXml,xform);
+	}
+	
+	public static String translate(Document doc, String languageXml, boolean xform){
 
 		Document lngDoc = XMLParser.parse(languageXml);
 		NodeList nodes = lngDoc.getDocumentElement().getChildNodes();
@@ -31,7 +35,9 @@ public class LanguageUtil {
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
 
-			return translate(doc,node);
+			if((xform && node.getNodeName().equalsIgnoreCase("xform")) ||
+					(!xform && node.getNodeName().equalsIgnoreCase("Form")))
+				return translate(doc,node);
 		}
 
 		return null;

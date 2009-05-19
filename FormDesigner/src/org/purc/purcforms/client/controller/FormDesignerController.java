@@ -647,14 +647,16 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 			public void execute() {
 				try{
 					centerPanel.openLanguageXml();
-					FormDef orgFormDef = centerPanel.getFormDef();
-					
+
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
 						formDef.setXformXml(xml);
-						formDef.setLayoutXml(orgFormDef.getLayoutXml());
-						formDef.setLanguageXml(orgFormDef.getLanguageXml());
+						//formDef.setLayoutXml(orgFormDef.getLayoutXml()); 
+						//formDef.setLanguageXml(orgFormDef.getLanguageXml());
+						formDef.setLayoutXml(centerPanel.getLayoutXml()); 
+						formDef.setLanguageXml(centerPanel.getLanguageXml());
+						
 						leftPanel.refresh(formDef);
 					}
 					FormUtil.dlg.hide();

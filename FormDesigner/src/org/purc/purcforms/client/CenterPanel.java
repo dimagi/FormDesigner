@@ -292,16 +292,21 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		rootNode.setAttribute("lang", "en");
 		doc.appendChild(rootNode);
 
-		Element node = formDef.getLanguageNode();
-		if(node != null)
-			rootNode.appendChild(node);
-		
+		Element node = null;
+		if(formDef != null){
+			node = formDef.getLanguageNode();
+			if(node != null)
+				rootNode.appendChild(node);
+		}
+
 		node = designSurfaceView.getLanguageNode();
 		if(node != null)
 			rootNode.appendChild(node);
 
-		formDef.setLanguageXml(FormDesignerUtil.formatXml(doc.toString()));
-		txtLanguageXml.setText(formDef.getLanguageXml());
+		txtLanguageXml.setText(FormDesignerUtil.formatXml(doc.toString()));
+
+		if(formDef != null)
+			formDef.setLanguageXml(txtLanguageXml.getText());
 	}
 
 	public void loadLayoutXml(String xml, boolean selectTabs){
@@ -337,12 +342,16 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			xml = txtLanguageXml.getText();
 
 		if(xml != null && xml.trim().length() > 0){
-			txtXformsSource.setText(FormUtil.formatXml(LanguageUtil.translate(formDef.getDoc(), xml, true).toString()));
-			
+			if(formDef != null)
+				txtXformsSource.setText(FormUtil.formatXml(LanguageUtil.translate(formDef.getDoc(), xml, true).toString()));
+
 			String layoutXml = txtLayoutXml.getText();
-			if(layoutXml != null && layoutXml.trim().length() > 0)
+			if(layoutXml != null && layoutXml.trim().length() > 0){
 				txtLayoutXml.setText(FormUtil.formatXml(LanguageUtil.translate(layoutXml, xml, false).toString()));
-			
+				String s = txtLayoutXml.getText();
+				s.trim();
+			}
+
 			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 			if(formDef != null)
 				formDef.setLanguageXml(xml);
@@ -354,7 +363,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void saveFormLayout(){
 		txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 		tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
-		
+
 		if(formDef != null)
 			formDef.setLayoutXml(txtLayoutXml.getText());
 	}
@@ -362,7 +371,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void saveLanguageText(){
 		buildLanguageXml();
 		tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
-		
+
 		if(formDef != null)
 			formDef.setLanguageXml(txtLanguageXml.getText());
 	}
@@ -507,7 +516,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public boolean isInLayoutMode(){
 		return tabs.getTabBar().getSelectedTab() == SELECTED_INDEX_LAYOUT_XML;
 	}
-	
+
 	public void onLayoutChanged(String xml){
 		txtLayoutXml.setText(xml);
 		formDef.setLayoutXml(xml);

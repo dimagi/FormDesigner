@@ -46,6 +46,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private FlexTable table = new FlexTable(); //Grid(7,2);
 	private ScrollPanel scrollPanel = new ScrollPanel();
 	private DesignWidgetWrapper widget;
+	private DesignWidgetWrapper prevWidget;
+	private String prevBinding;
 
 	private TextBox txtText = new TextBox();
 	private TextBox txtBinding = new TextBox();
@@ -277,7 +279,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 		txtBinding.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				updateBinding(widget);
+				updateBinding(widget,null);
 			}
 		});
 		
@@ -299,7 +301,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				txtBinding.selectAll();
 			}
 			public void onLostFocus(Widget sender){
-				updateBinding();
+				updateBinding(prevWidget,prevBinding);
 			}
 		});
 
@@ -452,11 +454,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		});
 	}
 
-	private void updateBinding(DesignWidgetWrapper widget){
+	private void updateBinding(DesignWidgetWrapper widget,String binding){
 		if(widget != null){
 			Widget wdgt = widget.getWrappedWidget();
 			if(wdgt instanceof Label || wdgt instanceof Hyperlink || wdgt instanceof TabBar)
-				widget.setBinding(sgstBinding.getText().trim());
+				widget.setBinding(binding == null ? sgstBinding.getText().trim() : binding);
 			else if(txtBinding.getText().trim().length() == 0)
 				updateBinding();
 		}	
@@ -584,6 +586,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget) {
+		prevWidget = this.widget;
+		prevBinding = sgstBinding.getText().trim();
 		this.widget = widget;
 
 		//Removed from here for smooth updateing where value has not changed
@@ -688,7 +692,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 							txtBinding.setText(null);
 					}
 				}
-				else
+				else if(!(widget.getWrappedWidget() instanceof TabBar || widget.getWrappedWidget() instanceof Label))
 					txtBinding.setText(null);
 			}
 

@@ -95,7 +95,20 @@ public class XPathExpression implements Serializable
 	
 	private void addAttributeSteps(String step,Vector list){
 		int posBeg = 0;
-		int posEnd = step.indexOf(']');
+		int posEnd = step.indexOf(" and ");
+		if(posEnd > 0){
+			list.addElement(step.substring(posBeg, posEnd+1).trim() + "]");
+			
+			posBeg = posEnd + 5;
+			posEnd = step.indexOf(']',posBeg);
+			list.addElement(step.substring(0, step.indexOf('@'))+step.substring(posBeg, posEnd+1));
+			
+			posBeg = posEnd + 1;
+			posEnd = step.indexOf(']',posBeg);
+		}
+		else
+			posEnd = step.indexOf(']',posBeg);
+		
 		while(posEnd > 0){
 			list.addElement(step.substring(posBeg, posEnd+1));
 			posBeg = posEnd + 1;

@@ -921,7 +921,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Text='"+text+"'");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Text='"+text+"']");
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
 			rootNode.appendChild(node);
 

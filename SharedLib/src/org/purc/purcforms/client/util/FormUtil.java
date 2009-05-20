@@ -31,6 +31,8 @@ public class FormUtil {
 	
 	private static DateTimeFormat dateTimeSubmitFormat;
 	private static DateTimeFormat dateTimeDisplayFormat;
+	private static DateTimeFormat timeSubmitFormat;
+	private static DateTimeFormat timeDisplayFormat;
 	
 	private static String formDefDownloadUrlSuffix;
 	private static String formDefUploadUrlSuffix;
@@ -283,6 +285,14 @@ public class FormUtil {
 		if(format != null && format.trim().length() > 0)
 			setDateTimeDisplayFormat(format);
 		
+		format = getDivValue("timeDisplayFormat");
+		if(format != null && format.trim().length() > 0)
+			setTimeDisplayFormat(format);
+		
+		format = getDivValue("timeSubmitFormat");
+		if(format != null && format.trim().length() > 0)
+			setTimeSubmitFormat(format);
+		
 		defaultFontFamily = getDivValue("defaultFontFamily");
 		if(defaultFontFamily == null || defaultFontFamily.trim().length() == 0)
 			defaultFontFamily = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
@@ -321,6 +331,22 @@ public class FormUtil {
 	
 	public static DateTimeFormat getDateTimeDisplayFormat(){
 		return dateTimeDisplayFormat;
+	}
+	
+	public static void setTimeDisplayFormat(String format){
+		timeDisplayFormat = DateTimeFormat.getFormat(format);
+	}
+	
+	public static DateTimeFormat getTimeDisplayFormat(){
+		return timeDisplayFormat;
+	}
+	
+	public static void setTimeSubmitFormat(String format){
+		timeSubmitFormat = DateTimeFormat.getFormat(format);
+	}
+	
+	public static DateTimeFormat getTimeSubmitFormat(){
+		return timeSubmitFormat;
 	}
 	
 	public static String getFormDefDownloadUrlSuffix(){

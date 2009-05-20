@@ -228,20 +228,28 @@ public class QuestionDef implements Serializable{
 
 	public boolean isDate(){
 		return (dataType == QuestionDef.QTN_TYPE_DATE_TIME || 
-				dataType == QuestionDef.QTN_TYPE_DATE /*||
-				dataType == QuestionDef.QTN_TYPE_TIME*/);
+				dataType == QuestionDef.QTN_TYPE_DATE ||
+				dataType == QuestionDef.QTN_TYPE_TIME);
 	}
 
 	public String getDefaultValueDisplay() {
-		if(isDate() && isDateFunction(defaultValue))
-			return FormUtil.getDateTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
+		if(isDate() && isDateFunction(defaultValue)){
+			if(dataType == QuestionDef.QTN_TYPE_TIME)
+				return FormUtil.getTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
+			else
+				return FormUtil.getDateTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
+		}
 
 		return defaultValue;
 	}
 
 	public String getDefaultValueSubmit() {
-		if(isDate() && isDateFunction(defaultValue))
-			return FormUtil.getDateTimeSubmitFormat().format(new Date());
+		if(isDate() && isDateFunction(defaultValue)){
+			if(dataType == QuestionDef.QTN_TYPE_TIME)
+				return FormUtil.getTimeSubmitFormat().format(new Date());
+			else
+				return FormUtil.getDateTimeSubmitFormat().format(new Date());
+		}
 
 		return defaultValue;
 	}

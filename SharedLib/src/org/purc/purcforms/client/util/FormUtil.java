@@ -246,7 +246,7 @@ public class FormUtil {
 					}
 				}
 				ErrorDialog dialogBox = new ErrorDialog();
-				dialogBox.setText(LocaleText.get("unxpectedFailure"));
+				dialogBox.setText(LocaleText.get("unexpectedFailure"));
 				//DOM.setStyleAttribute(dialogBox.getElement(), "backgroundColor", "#ABCDEF");
 				//System.err.print(text);
 				//text = text.replaceAll(" ", "&nbsp;");
@@ -440,7 +440,7 @@ public class FormUtil {
 		}
 
 		ErrorDialog dialogBox = new ErrorDialog();
-		dialogBox.setText(LocaleText.get("unxpectedFailure"));
+		dialogBox.setText(LocaleText.get("unexpectedFailure"));
 		dialogBox.setBody(s);
 		dialogBox.setCallStack(text);
 		dialogBox.center();

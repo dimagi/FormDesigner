@@ -128,7 +128,7 @@ public class FormRunnerController implements SubmitListener{
 					}
 
 					ErrorDialog dialogBox = new ErrorDialog();
-					dialogBox.setText(LocaleText.get("unxpectedFailure"));
+					dialogBox.setText(LocaleText.get("unexpectedFailure"));
 					dialogBox.setBody(s);//("<pre>" + text + "</pre>");
 					dialogBox.setCallStack(text);
 					dialogBox.center();

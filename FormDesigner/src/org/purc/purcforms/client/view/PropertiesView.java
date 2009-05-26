@@ -251,6 +251,27 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		});
 		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+				String s = txtBinding.getText();
+				
+				/*String s = String.valueOf(keyCode);
+				if(s.equalsIgnoreCase("%") || s.equalsIgnoreCase("\b") || s.equalsIgnoreCase("(") ||
+						s.equalsIgnoreCase("\r") || s.equalsIgnoreCase("!") || s.equalsIgnoreCase("&") ||
+						s.equalsIgnoreCase("\t") || s.equalsIgnoreCase("'") || s.equalsIgnoreCase(".") ||
+						s.equalsIgnoreCase("\"")){
+					return true;
+				}*/
+				
+				s = s.replace("%", "");
+				s = s.replace("(", "");
+				s = s.replace("!", "");
+				s = s.replace("&", "");
+				s = s.replace(".", "");
+				s = s.replace("'", "");
+				s = s.replace("\"", "");
+				s = s.replace("$", "");
+				
+				txtBinding.setText(s);
+				
 				updateBinding();
 			}
 
@@ -345,11 +366,31 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	private boolean isAllowedXmlNodeNameStartChar(char keyCode){
-		return ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z'));
+		return ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z') || isControlChar(keyCode));
 	}
 
 	private boolean isAllowedXmlNodeNameChar(char keyCode){
 		return isAllowedXmlNodeNameStartChar(keyCode) || Character.isDigit(keyCode) || keyCode == '-' || keyCode == '_' || keyCode == '.';
+	}
+
+	private boolean isControlChar(char keyCode){
+		/*String s = String.valueOf(keyCode);
+		if(s.equalsIgnoreCase("%") || s.equalsIgnoreCase("\b") || s.equalsIgnoreCase("(") ||
+				s.equalsIgnoreCase("\r") || s.equalsIgnoreCase("!") || s.equalsIgnoreCase("&") ||
+				s.equalsIgnoreCase("\t") || s.equalsIgnoreCase("'") || s.equalsIgnoreCase(".") ||
+				s.equalsIgnoreCase("\"")){
+			return true;
+		}*/
+
+		int code = keyCode;
+		return (code == KeyboardListener.KEY_ALT || code == KeyboardListener.KEY_BACKSPACE ||
+				code == KeyboardListener.KEY_CTRL || code == KeyboardListener.KEY_DELETE ||
+				code == KeyboardListener.KEY_DOWN || code == KeyboardListener.KEY_END ||
+				code == KeyboardListener.KEY_ENTER || code == KeyboardListener.KEY_ESCAPE ||
+				code == KeyboardListener.KEY_HOME || code == KeyboardListener.KEY_LEFT ||
+				code == KeyboardListener.KEY_PAGEDOWN || code == KeyboardListener.KEY_PAGEUP ||
+				code == KeyboardListener.KEY_RIGHT || code == KeyboardListener.KEY_SHIFT ||
+				code == KeyboardListener.KEY_TAB || code == KeyboardListener.KEY_UP);
 	}
 
 	private void updateText(){

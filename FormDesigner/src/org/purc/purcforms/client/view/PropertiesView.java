@@ -269,9 +269,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				s = s.replace("'", "");
 				s = s.replace("\"", "");
 				s = s.replace("$", "");
+				s = s.replace("#", "");
 				
 				txtBinding.setText(s);
-				
 				updateBinding();
 			}
 
@@ -423,6 +423,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj == null)
 			return;
 
+		if(txtBinding.getText().trim().length() == 0)
+			return;
+			
 		if(propertiesObj instanceof QuestionDef)
 			((QuestionDef)propertiesObj).setVariableName(txtBinding.getText());
 		else if(propertiesObj instanceof OptionDef)

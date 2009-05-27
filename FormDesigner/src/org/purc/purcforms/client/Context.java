@@ -9,7 +9,7 @@ package org.purc.purcforms.client;
 public class Context {
 	
 	private static String defaultLocale = "en";
-	private static String locale = "en";
+	private static String locale = defaultLocale;
 	
 	public static void setDefaultLocale(String locale){
 		Context.defaultLocale = locale;

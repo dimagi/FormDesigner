@@ -220,4 +220,12 @@ public class FormDesignerWidget extends Composite{
 	public FormDef getSelectedForm(){
 		return leftPanel.getSelectedForm();
 	}
+	
+	public void setDefaultLocale(String locale){
+		controller.setDefaultLocale(locale);
+	}
+	
+	public void changeLocale(String locale){
+		controller.changeLocale(locale);
+	}
 }

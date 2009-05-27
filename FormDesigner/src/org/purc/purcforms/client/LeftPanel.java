@@ -184,4 +184,8 @@ public class LeftPanel extends Composite {
 	public IFormActionListener getFormActionListener(){
 		return formsTreeView;
 	}
+	
+	public void setDefaultLocale(String locale){
+		Context.setDefaultLocale(locale);
+	}
 }

@@ -12,6 +12,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
@@ -26,6 +27,8 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -175,6 +178,14 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 		if(Context.inLocalizationMode()){
 			saveLanguageText(true);
+			if(formSaveListener != null){
+				FormDef formDef = obj;
+				String langXml = formDef.getLanguageXml();
+				if(langXml != null && langXml.trim().length() > 0){
+					Document doc = XMLParser.parse(langXml);
+					formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
+				}
+			}
 			return;
 		}
 
@@ -682,5 +693,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		
 		centerPanel.setLanguageXml(xml, false);
 		openLanguageText();
+	}
+	
+	public void setDefaultLocale(String locale){
+		Context.setDefaultLocale(locale);
 	}
 }

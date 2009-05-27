@@ -19,6 +19,9 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class LanguageUtil {
 
+	private static final String NODE_NAME_XFORM = "xform";
+	private static final String NODE_NAME_FORM = "Form";
+	
 	public static String translate(String srcXml, String languageXml, boolean xform){
 		return translate(XMLParser.parse(srcXml),languageXml,xform);
 	}
@@ -35,8 +38,8 @@ public class LanguageUtil {
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
 
-			if((xform && node.getNodeName().equalsIgnoreCase("xform")) ||
-					(!xform && node.getNodeName().equalsIgnoreCase("Form")))
+			if((xform && node.getNodeName().equalsIgnoreCase(NODE_NAME_XFORM)) ||
+					(!xform && node.getNodeName().equalsIgnoreCase(NODE_NAME_FORM)))
 				return translate(doc,node);
 		}
 
@@ -68,5 +71,27 @@ public class LanguageUtil {
 			}
 		}
 		return doc.toString();
+	}
+	
+	public static String getLocaleText(Document doc, String nodeName){
+		NodeList nodes = doc.getDocumentElement().getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+
+			if(node.getNodeName().equalsIgnoreCase(nodeName))
+				return node.toString();
+		}
+
+		return null;
+	}
+	
+	public static String getXformsLocaleText(Document doc){
+		return getLocaleText(doc, NODE_NAME_XFORM);
+	}
+	
+	public static String getLayoutLocaleText(Document doc){
+		return getLocaleText(doc, NODE_NAME_FORM);
 	}
 }

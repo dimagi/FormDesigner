@@ -26,8 +26,8 @@ import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -286,12 +286,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	public void buildLanguageXml(){
-
-		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
-		Element rootNode = doc.createElement("LanguageText");
-		rootNode.setAttribute("lang", "en");
-		doc.appendChild(rootNode);
-
+		Document doc = LanguageUtil.createNewLanguageDoc();
+		Element rootNode = doc.getDocumentElement();
+		
 		Element node = null;
 		if(formDef != null){
 			node = formDef.getLanguageNode();

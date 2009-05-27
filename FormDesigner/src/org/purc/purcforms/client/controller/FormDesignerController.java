@@ -178,14 +178,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 		if(Context.inLocalizationMode()){
 			saveLanguageText(true);
-			if(formSaveListener != null){
-				FormDef formDef = obj;
-				String langXml = formDef.getLanguageXml();
-				if(langXml != null && langXml.trim().length() > 0){
-					Document doc = XMLParser.parse(langXml);
-					formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
-				}
-			}
 			return;
 		}
 
@@ -674,6 +666,16 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				try{
 					centerPanel.saveLanguageText(selTab);
 					languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
+					
+					if(formSaveListener != null){
+						FormDef formDef = centerPanel.getFormDef();
+						String langXml = formDef.getLanguageXml();
+						if(langXml != null && langXml.trim().length() > 0){
+							Document doc = XMLParser.parse(langXml);
+							formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
+						}
+					}
+
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -693,6 +695,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		
 		centerPanel.setLanguageXml(xml, false);
 		openLanguageText();
+	}
+	
+	public void setLocaleText(String locale, String xform, String layout){
+		languageText.put(locale, LanguageUtil.getLocaleText(xform, layout));
 	}
 	
 	public void setDefaultLocale(String locale){

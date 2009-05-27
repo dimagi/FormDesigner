@@ -94,4 +94,24 @@ public class LanguageUtil {
 	public static String getLayoutLocaleText(Document doc){
 		return getLocaleText(doc, NODE_NAME_FORM);
 	}
+	
+	public static Document createNewLanguageDoc(){
+		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
+		Element rootNode = doc.createElement("LanguageText");
+		rootNode.setAttribute("lang", "en");
+		doc.appendChild(rootNode);
+		return doc;
+	}
+	
+	public static String getLocaleText(String xform, String layout){
+		Document doc = createNewLanguageDoc();
+		
+		if(xform != null && xform.trim().length() > 0)
+			doc.getDocumentElement().appendChild(XMLParser.parse(xform).getDocumentElement());
+		
+		if(layout != null && layout.trim().length() > 0)
+			doc.getDocumentElement().appendChild(XMLParser.parse(layout).getDocumentElement());
+		
+		return doc.toString();
+	}
 }

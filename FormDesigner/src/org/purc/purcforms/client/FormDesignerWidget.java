@@ -4,6 +4,7 @@ import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSaveListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
 import com.google.gwt.core.client.GWT;
@@ -227,5 +228,9 @@ public class FormDesignerWidget extends Composite{
 	
 	public void changeLocale(String locale){
 		controller.changeLocale(locale);
+	}
+	
+	public void setLocaleText(String locale, String xform, String layout){
+		controller.setLocaleText(locale, xform, layout);
 	}
 }

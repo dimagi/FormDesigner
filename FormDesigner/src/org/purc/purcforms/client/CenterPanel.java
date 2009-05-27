@@ -332,7 +332,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	public void openLanguageXml(){
-		loadLanguageXml(null,true);
+		loadLanguageXml(null,false);
 	}
 
 	public void loadLanguageXml(String xml, boolean selectTabs){
@@ -352,7 +352,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 				s.trim();
 			}
 
-			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			if(selectTabs)
+				tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			
 			if(formDef != null)
 				formDef.setLanguageXml(xml);
 		}
@@ -368,9 +370,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			formDef.setLayoutXml(txtLayoutXml.getText());
 	}
 
-	public void saveLanguageText(){
+	public void saveLanguageText(boolean selectTab){
 		buildLanguageXml();
-		tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+		
+		if(selectTab)
+			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 
 		if(formDef != null)
 			formDef.setLanguageXml(txtLanguageXml.getText());

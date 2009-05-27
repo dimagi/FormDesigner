@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
@@ -208,13 +209,13 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void loadForm(FormDef formDef,boolean select){
 		if(formDef.getId() == ModelConstants.NULL_ID)
 			formDef.setId(++nextFormId);
-		
+
 		int count = formDef.getQuestionCount();
 		if(nextQuestionId <= count)
 			nextQuestionId = count;
-	
+
 		this.formDef = formDef;
-		
+
 		if(formExists(formDef.getId()))
 			return;
 
@@ -305,6 +306,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Deletes the selected question.
 	 */
 	public void deleteSelectedItem(){
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 		if(item == null){
 			Window.alert(LocaleText.get("selectDeleteItem"));
@@ -317,7 +321,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		deleteItem(item);
 	}
 
-	private void deleteItem(TreeItem item){
+	private void deleteItem(TreeItem item){		
 		TreeItem parent = item.getParentItem();
 		int index;
 		if(parent != null){
@@ -387,6 +391,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Adds a new item.
 	 */
 	public void addNewItem(){
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -441,6 +448,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void addNewForm(String name, String varName, int formId){
+		if(Context.inLocalizationMode())
+			return;
+		
 		if(formExists(formId))
 			return;
 
@@ -459,6 +469,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Adds a new child item.
 	 */
 	public void addNewChildItem(boolean addNewIfNoKids){
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -503,6 +516,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void moveItemUp() {
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -576,6 +592,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void moveItemDown(){
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -664,6 +683,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void cutItem(){
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
@@ -676,6 +698,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void copyItem() {
+		if(Context.inLocalizationMode())
+			return;
+		
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
@@ -762,6 +787,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void refreshItem(){
+		if(Context.inLocalizationMode())
+			return;
+		
 		formDesignerListener.refresh(this);
 	}
 
@@ -784,6 +812,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	private TreeItem getSelectedItemRoot(TreeItem item){
+		if(item == null)
+			return null;
+		
 		if(item.getParentItem() == null)
 			return item;
 		return getSelectedItemRoot(item.getParentItem());
@@ -813,7 +844,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			}
 			else
 				pageNos.put(pageNo, pageDef.getName());
-			
+
 			if(!isValidQuestionList(child,bindings))
 				return false;
 		}
@@ -846,7 +877,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 					return false;
 			}
 		}
-		
+
 		return true;
 	}
 

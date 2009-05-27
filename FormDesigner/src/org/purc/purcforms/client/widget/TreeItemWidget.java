@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
@@ -45,7 +46,7 @@ public class TreeItemWidget extends Composite{
 	
 	public void onBrowserEvent(Event event) {
 	    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
-	    	  if( (event.getButton() & Event.BUTTON_RIGHT) != 0){	  
+	    	  if( (event.getButton() & Event.BUTTON_RIGHT) != 0 && !Context.inLocalizationMode()){	  
 	    		  popup.setPopupPosition(event.getClientX(), event.getClientY());
 	    		  FormDesignerUtil.disableContextMenu(popup.getElement());
 	    		  popup.show();

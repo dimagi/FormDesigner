@@ -5,6 +5,7 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -177,11 +178,17 @@ public class Toolbar extends Composite{
 		panel.add(label);
 		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_RIGHT);
 		
-		cbLanguanges.addItem("English");
-		cbLanguanges.addItem("Luganda");
-		cbLanguanges.addItem("Swahili");
-		cbLanguanges.addItem("Lusoga");
-		cbLanguanges.addItem("Runyankole");
+		cbLanguanges.addItem("English","en");
+		cbLanguanges.addItem("Luganda","lug");
+		cbLanguanges.addItem("Swahili","swa");
+		cbLanguanges.addItem("Lusoga","lus");
+		cbLanguanges.addItem("Runyankole","rny");
+		cbLanguanges.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				controller.changeLocale(((ListBox)sender).getValue(((ListBox)sender).getSelectedIndex()));
+			}
+		});
+		
 		panel.add(cbLanguanges);
 		panel.setCellHorizontalAlignment(cbLanguanges,HasHorizontalAlignment.ALIGN_RIGHT);
 		

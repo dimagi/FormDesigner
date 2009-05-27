@@ -1,7 +1,10 @@
 package org.purc.purcforms.client.controller;
 
+import java.util.HashMap;
+
 import org.purc.purcforms.client.AboutDialog;
 import org.purc.purcforms.client.CenterPanel;
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -36,6 +39,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	private LeftPanel leftPanel;
 	private Integer formId;	
 	private IFormSaveListener formSaveListener;
+	private HashMap<String,String> languageText = new HashMap<String,String>();
 
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
@@ -43,16 +47,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		this.centerPanel = centerPanel;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#addNewItem()
-	 */
 	public void addNewItem() {
 		leftPanel.addNewItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#addNewChildItem()
-	 */
 	public void addNewChildItem() {
 		leftPanel.addNewChildItem();
 	}
@@ -65,39 +63,24 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		back();
 	} 
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#deleteSelectedItem()
-	 */
 	public void deleteSelectedItem() {
 		leftPanel.deleteSelectedItem();	
 		centerPanel.deleteSelectedItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#moveItemDown()
-	 */
 	public void moveItemDown() {
 		leftPanel.moveItemDown();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#moveItemUp()
-	 */
 	public void moveItemUp() {
 		leftPanel.moveItemUp();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#newForm()
-	 */
 	public void newForm() {
 		if(isOfflineMode())
 			leftPanel.addNewForm();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#openForm()
-	 */
 	public void openForm() {
 		if(isOfflineMode()){
 			String xml = null;
@@ -180,9 +163,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#saveForm()
-	 */
 	public void saveForm() {
 		if(!leftPanel.isValidForm())
 			return;
@@ -190,6 +170,11 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj == null){
 			Window.alert(LocaleText.get("selectSaveItem"));
+			return;
+		}
+
+		if(Context.inLocalizationMode()){
+			saveLanguageText(true);
 			return;
 		}
 
@@ -230,9 +215,12 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				catch(Exception ex){
 					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
+					return;
 				}	
 			}
 		});
+
+		saveLanguageText(false); //Save text for the default language
 	}
 
 	public void saveFormAs() {
@@ -282,9 +270,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#showAboutInfo()
-	 */
 	public void showAboutInfo() {
 		AboutDialog dlg = new AboutDialog();
 		dlg.setAnimationEnabled(true);
@@ -292,33 +277,21 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		dlg.center();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#showHelpContents()
-	 */
 	public void showHelpContents() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#showLanguages()
-	 */
 	public void showLanguages() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#showOptions()
-	 */
 	public void showOptions() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#viewToolbar()
-	 */
 	public void viewToolbar() {
 		// TODO Auto-generated method stub
 
@@ -364,37 +337,32 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		centerPanel.makeSameWidth();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#copyItem()
-	 */
 	public void copyItem() {
-		leftPanel.copyItem();
-		centerPanel.copyItem();
+		if(!Context.inLocalizationMode()){
+			leftPanel.copyItem();
+			centerPanel.copyItem();
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#cutItem()
-	 */
 	public void cutItem() {
-		leftPanel.cutItem();
-		centerPanel.cutItem();
+		if(!Context.inLocalizationMode()){
+			leftPanel.cutItem();
+			centerPanel.cutItem();
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
-	 */
 	public void pasteItem() {
-		leftPanel.pasteItem();
-		centerPanel.pasteItem();
+		if(!Context.inLocalizationMode()){
+			leftPanel.pasteItem();
+			centerPanel.pasteItem();
+		}
 	}
 
 	public void refreshItem(){
-		leftPanel.refreshItem();
+		if(!Context.inLocalizationMode())
+			leftPanel.refreshItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerListener#format()
-	 */
 	public void format() {
 		centerPanel.format();
 	}
@@ -639,7 +607,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void openLanguageText(){
-		
+
 		FormUtil.dlg.setText(LocaleText.get("translatingFormLanguage"));
 		FormUtil.dlg.center();
 
@@ -656,11 +624,13 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						//formDef.setLanguageXml(orgFormDef.getLanguageXml());
 						formDef.setLayoutXml(centerPanel.getLayoutXml()); 
 						formDef.setLanguageXml(centerPanel.getLanguageXml());
-						
+
 						leftPanel.refresh(formDef);
+
+						languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
 					}
 					FormUtil.dlg.hide();
-					
+
 					String layoutXml = centerPanel.getLayoutXml();
 					if(layoutXml != null && layoutXml.trim().length() > 0)
 						openFormLayout();
@@ -671,17 +641,28 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}
 			}
 		});
-		
+
+	}
+
+	public void saveLanguageText(boolean selectTab){
+		saveLanguageTextDeffered(selectTab);
 	}
 
 	public void saveLanguageText(){
+		saveLanguageTextDeffered(true);
+	}
+
+	public void saveLanguageTextDeffered(boolean selectTab){
+		final boolean selTab = selectTab;
+
 		FormUtil.dlg.setText(LocaleText.get("savingLanguageText"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
-					centerPanel.saveLanguageText();
+					centerPanel.saveLanguageText(selTab);
+					languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -690,5 +671,16 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}	
 			}
 		});
+	}
+
+	public void changeLocale(String locale){
+		Context.setLocale(locale);
+
+		String xml = languageText.get(Context.getLocale());
+		if(xml == null)
+			xml = languageText.get(Context.getDefaultLocale());
+		
+		centerPanel.setLanguageXml(xml, false);
+		openLanguageText();
 	}
 }

@@ -1220,7 +1220,7 @@ public class XformConverter implements Serializable{
 					else if(questionDef != null){
 						if(child.getChildNodes().getLength() != 0){
 							questionDef.setHelpText(child.getChildNodes().item(0).getNodeValue().trim());
-							questionDef.setHintNode(element);
+							questionDef.setHintNode(child /*element*/);
 						}
 					}
 				}

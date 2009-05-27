@@ -36,4 +36,6 @@ public interface IFormDesignerListener extends IFormActionListener{
 	//public void saveFormLayoutAs();
 	public void openLanguageText();
 	public void saveLanguageText();
+	
+	public void changeLocale(String locale);
 }

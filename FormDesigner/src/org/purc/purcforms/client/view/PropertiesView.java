@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
@@ -549,8 +550,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableQuestionOnlyProperties(false);
 
 		txtText.setEnabled(true);
-		txtDescTemplate.setEnabled(true);
-		btnDescTemplate.setEnabled(true);
+		txtDescTemplate.setEnabled(Context.inLocalizationMode() ? false : true);
+		btnDescTemplate.setEnabled(Context.inLocalizationMode() ? false : true);
 
 		txtText.setText(formDef.getName());
 		txtBinding.setText(formDef.getVariableName());
@@ -611,7 +612,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//skipRulesView.updateSkipRule();
 	}
 
-	private void enableQuestionOnlyProperties(boolean enable){
+	private void enableQuestionOnlyProperties(boolean enabled){
+		boolean enable = (enabled && !Context.inLocalizationMode()) ? true : false;
+		
 		cbDataType.setEnabled(enable);
 		//cbControlType.setEnabled(enable);
 		chkVisible.setEnabled(enable);
@@ -619,7 +622,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkLocked.setEnabled(enable);
 		chkRequired.setEnabled(enable);
 		txtDefaultValue.setEnabled(enable);
-		txtHelpText.setEnabled(enable);
+		txtHelpText.setEnabled(enabled);
 		skipRulesView.setEnabled(enable);
 		validationRulesView.setEnabled(enable);
 		dynamicListsView.setEnabled(enable);
@@ -708,6 +711,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			btnDescTemplate.setEnabled(false);
 			return;
 		}
+		
+		txtBinding.setEnabled(!Context.inLocalizationMode());
 
 		if(formItem instanceof FormDef)
 			setFormProperties((FormDef)formItem);

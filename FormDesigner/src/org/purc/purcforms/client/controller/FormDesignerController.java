@@ -142,20 +142,25 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
-
 	public void openFormLayout() {
+		openFormLayout(true);
+	}
+	
+	public void openFormLayout(boolean selectTabs) {
 		if(isOfflineMode())
-			openFormLayoutDeffered();
+			openFormLayoutDeffered(selectTabs);
 	}
 
-	public void openFormLayoutDeffered() {
+	public void openFormLayoutDeffered(boolean selectTabs) {
+		final boolean selectTbs = selectTabs;
+		
 		FormUtil.dlg.setText(LocaleText.get("openingFormLayout"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
-					centerPanel.openFormLayout();
+					centerPanel.openFormLayout(selectTbs);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -636,7 +641,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 					String layoutXml = centerPanel.getLayoutXml();
 					if(layoutXml != null && layoutXml.trim().length() > 0)
-						openFormLayout();
+						openFormLayout(false);
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();

@@ -73,6 +73,39 @@ public class LanguageUtil {
 		return doc.toString();
 	}
 	
+	public static String translate(String srcXml, String langXml){
+		if(srcXml == null || srcXml.trim().length() == 0 || langXml == null || langXml.trim().length() == 0)
+			return srcXml;
+		
+		Document doc = XMLParser.parse(srcXml);
+		Element parentLangNode = XMLParser.parse(langXml).getDocumentElement();
+		
+		NodeList nodes = parentLangNode.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+
+			String xpath = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_XPATH);
+			String value = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_VALUE);
+			if(xpath == null || value == null)
+				continue;
+
+			Vector result = new XPathExpression(doc, xpath).getResult();
+			if(result != null && result.size() > 0){
+				Element targetNode = (Element)result.get(0);
+				int pos = xpath.lastIndexOf('@');
+				if(pos > 0 && xpath.indexOf('=',pos) < 0){
+					String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
+					targetNode.setAttribute(attributeName, value);
+				}
+				else
+					XformConverter.setTextNodeValue(targetNode, value);
+			}
+		}
+		return doc.toString();
+	}
+	
 	public static String getLocaleText(Document doc, String nodeName){
 		NodeList nodes = doc.getDocumentElement().getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){

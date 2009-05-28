@@ -324,8 +324,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			formDef.setLayoutXml(xml);
 	}
 
-	public void openFormLayout(){
-		loadLayoutXml(null,true);
+	public void openFormLayout(boolean selectTabs){
+		loadLayoutXml(null,selectTabs);
 	}
 
 	public void openLanguageXml(){

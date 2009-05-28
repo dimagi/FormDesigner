@@ -689,7 +689,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void changeLocale(String locale){
 		Context.setLocale(locale);
 
-		String xml = languageText.get(Context.getLocale());
+		String xml = languageText.get(locale);
 		if(xml == null)
 			xml = languageText.get(Context.getDefaultLocale());
 		

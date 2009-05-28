@@ -102,8 +102,8 @@ public class XPathLocationStep implements Serializable{
 	 * is needed here: to the result vector I only add Element-s or String. This
 	 * is not correct. I should only add Node-s
 	 */
-	public Vector getResult(Vector contextNodeSet) {
-		Vector outputNodeSet = new Vector();
+	public Vector getResult(Vector contextNodeSet, Vector resultNodeSet) {
+		Vector outputNodeSet = resultNodeSet;
 		int nodeCount = contextNodeSet.size();
 		int i = 0;
 
@@ -117,6 +117,11 @@ public class XPathLocationStep implements Serializable{
 						Element childNode = (Element) node.getChildNodes().item(j);
 						String childName = childNode.getNodeName();
 
+						//Small addition to cater for nodes with prefixes
+						int pos = childName.indexOf(':');
+						if(pos >= 0)
+							childName = childName.substring(pos+1);
+						
 						String prefix = null;
 						if (nodePrefix != null) {
 							Element element = (Element) childNode;

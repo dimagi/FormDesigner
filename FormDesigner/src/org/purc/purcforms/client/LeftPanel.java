@@ -1,5 +1,7 @@
 package org.purc.purcforms.client;
 
+import java.util.List;
+
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
@@ -12,7 +14,6 @@ import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.PaletteView;
 import org.purc.purcforms.client.view.WidgetPropertiesView;
 
-import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
@@ -106,11 +107,19 @@ public class LeftPanel extends Composite {
 	}
 
 	public void loadForm(FormDef formDef){
-		formsTreeView.loadForm(formDef,true);
+		formsTreeView.loadForm(formDef,true,false);
 	}
 
 	public void refresh(FormDef formDef){
 		formsTreeView.refreshForm(formDef);
+	}
+	
+	public List<FormDef> getForms(){
+		return formsTreeView.getForms();
+	}
+	
+	public void loadForms(List<FormDef> forms, int selFormId){
+		formsTreeView.loadForms(forms,selFormId);
 	}
 
 	public void deleteSelectedItem(){

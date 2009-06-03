@@ -429,24 +429,25 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if(binding == null || binding.trim().length() == 0)
 			return;
 		
-		String text = getText();
-		if(text != null && text.trim().length() > 0){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@Text]");
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
-			parentNode.appendChild(node);
-		}
+		String xpathRoot = xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@";
 		
-		text = getTitle();
-		if(text != null && text.trim().length() > 0){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "'][@HelpText]");
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
-			parentNode.appendChild(node);
-		}
+		buildLanguageText(doc,getText(),WidgetEx.WIDGET_PROPERTY_TEXT,parentNode,xpathRoot);
+		buildLanguageText(doc,getTitle(),WidgetEx.WIDGET_PROPERTY_HELPTEXT,parentNode,xpathRoot);
+		buildLanguageText(doc,getTop(),WidgetEx.WIDGET_PROPERTY_TOP,parentNode,xpathRoot);
+		buildLanguageText(doc,getLeft(),WidgetEx.WIDGET_PROPERTY_LEFT,parentNode,xpathRoot);
+		buildLanguageText(doc,getWidth(),WidgetEx.WIDGET_PROPERTY_WIDTH,parentNode,xpathRoot);
 		
 		if(getWrappedWidget() instanceof DesignGroupWidget)
 			((DesignGroupWidget)getWrappedWidget()).buildLanguageXml(doc,parentNode, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@Binding='");
+	}
+	
+	private void buildLanguageText(com.google.gwt.xml.client.Document doc, String text, String name, Element parentNode, String xpathRoot){
+		if(text != null && text.trim().length() > 0){
+			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpathRoot + name + "]");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			parentNode.appendChild(node);
+		}
 	}
 
 	private void buildLabelProperties(Element node){

@@ -230,7 +230,7 @@ public class FormDesignerWidget extends Composite{
 		controller.changeLocale(locale);
 	}
 	
-	public void setLocaleText(String locale, String xform, String layout){
-		controller.setLocaleText(locale, xform, layout);
+	public void setLocaleText(Integer formId, String locale, String xform, String layout){
+		controller.setLocaleText(formId, locale, xform, layout);
 	}
 }

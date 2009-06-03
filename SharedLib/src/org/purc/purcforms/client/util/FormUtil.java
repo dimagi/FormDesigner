@@ -126,6 +126,9 @@ public class FormUtil {
 	 */
 	
 	public static String formatXml(String xmlContent){
+		if(xmlContent == null)
+			return null;
+		
 		return formatXmlPrivate(formatXmlPrivate(xmlContent));
 	}
 	

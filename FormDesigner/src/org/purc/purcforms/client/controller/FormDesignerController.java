@@ -1,6 +1,8 @@
 package org.purc.purcforms.client.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.purc.purcforms.client.AboutDialog;
 import org.purc.purcforms.client.CenterPanel;
@@ -42,7 +44,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	private LeftPanel leftPanel;
 	private Integer formId;	
 	private IFormSaveListener formSaveListener;
-	private HashMap<String,String> languageText = new HashMap<String,String>();
+	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
@@ -145,7 +147,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void openFormLayout() {
 		openFormLayout(true);
 	}
-	
+
 	public void openFormLayout(boolean selectTabs) {
 		if(isOfflineMode())
 			openFormLayoutDeffered(selectTabs);
@@ -153,7 +155,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	public void openFormLayoutDeffered(boolean selectTabs) {
 		final boolean selectTbs = selectTabs;
-		
+
 		FormUtil.dlg.setText(LocaleText.get("openingFormLayout"));
 		FormUtil.dlg.center();
 
@@ -622,11 +624,45 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
-					centerPanel.openLanguageXml();
+					int selFormId = -1; String xml = null; 
+					FormDef formDef = leftPanel.getSelectedForm();
+					if(formDef != null)
+						selFormId = formDef.getId();
 
-					String xml = centerPanel.getXformsSource();
+					List<FormDef> forms = leftPanel.getForms();
+					if(forms != null && forms.size() > 0){
+						List<FormDef> newForms = new ArrayList<FormDef>();
+						for(FormDef form : forms){
+							xml = getFormLocaleText(form.getId(),Context.getLocale());
+							if(xml != null){
+								String xform = FormUtil.formatXml(LanguageUtil.translate(form.getDoc(), xml, true));
+								FormDef newFormDef = XformConverter.fromXform2FormDef(xform);
+								newFormDef.setXformXml(xform);
+								newFormDef.setLayoutXml(FormUtil.formatXml(LanguageUtil.translate(form.getLayoutXml(), xml, false)));
+								newFormDef.setLanguageXml(xml);
+								newForms.add(newFormDef);
+								
+								if(newFormDef.getId() == selFormId)
+									formDef = newFormDef;
+							}
+							else{
+								newForms.add(form);
+								if(form.getId() == selFormId)
+									formDef = form;
+							}
+						}
+
+						leftPanel.loadForms(newForms, formDef.getId());
+					}
+
+					//centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
+					//centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
+
+					/*centerPanel.openLanguageXml();
+
+					xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
-						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						formDef = XformConverter.fromXform2FormDef(xml);
 						formDef.setXformXml(xml);
 						//formDef.setLayoutXml(orgFormDef.getLayoutXml()); 
 						//formDef.setLanguageXml(orgFormDef.getLanguageXml());
@@ -635,8 +671,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 						leftPanel.refresh(formDef);
 
-						languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
-					}
+						//languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
+						setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
+					}*/
+
 					FormUtil.dlg.hide();
 
 					String layoutXml = centerPanel.getLayoutXml();
@@ -649,7 +687,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}
 			}
 		});
-
 	}
 
 	public void saveLanguageText(boolean selectTab){
@@ -670,8 +707,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 			public void execute() {
 				try{
 					centerPanel.saveLanguageText(selTab);
-					languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
-					
+					setLocaleText(centerPanel.getFormDef().getId(),Context.getLocale(), centerPanel.getLanguageXml());
+					//languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
+
 					if(formSaveListener != null){
 						FormDef formDef = centerPanel.getFormDef();
 						String langXml = formDef.getLanguageXml();
@@ -694,18 +732,43 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void changeLocale(String locale){
 		Context.setLocale(locale);
 
-		String xml = languageText.get(locale);
-		if(xml == null)
-			xml = languageText.get(Context.getDefaultLocale());
-		
+		String xml = null;
+		FormDef formDef = centerPanel.getFormDef();
+		if(formDef != null){
+			HashMap<String,String> map = languageText.get(formDef.getId());
+			if(map != null)
+				xml = map.get(locale);
+
+			if(xml == null && map != null)
+				xml = map.get(Context.getDefaultLocale());
+		}
+
 		centerPanel.setLanguageXml(xml, false);
 		openLanguageText();
 	}
-	
-	public void setLocaleText(String locale, String xform, String layout){
-		languageText.put(locale, LanguageUtil.getLocaleText(xform, layout));
+
+	private void setLocaleText(Integer formId, String locale, String text){
+		HashMap<String,String> map = languageText.get(formId);
+		if(map == null){
+			map = new HashMap<String,String>();
+			languageText.put(formId, map);
+		}
+
+		map.put(locale, text);
 	}
-	
+
+	private String getFormLocaleText(int formId, String locale){
+		HashMap<String,String> map = languageText.get(formId);
+		if(map != null)
+			return map.get(locale);
+		return null;
+	}
+
+	public void setLocaleText(Integer formId, String locale, String xform, String layout){
+		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
+		//languageText.put(locale, LanguageUtil.getLocaleText(xform, layout));
+	}
+
 	public void setDefaultLocale(String locale){
 		Context.setDefaultLocale(locale);
 	}

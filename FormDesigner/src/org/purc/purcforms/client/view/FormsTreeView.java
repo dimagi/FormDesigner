@@ -206,21 +206,23 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	}
 
-	public void loadForm(FormDef formDef,boolean select){
+	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){
 		if(formDef.getId() == ModelConstants.NULL_ID)
 			formDef.setId(++nextFormId);
 
-		int count = formDef.getQuestionCount();
-		if(nextQuestionId <= count)
-			nextQuestionId = count;
+		if(!langRefresh){
+			int count = formDef.getQuestionCount();
+			if(nextQuestionId <= count)
+				nextQuestionId = count;
+			
+			this.formDef = formDef;
 
-		this.formDef = formDef;
+			if(formExists(formDef.getId()))
+				return;
 
-		if(formExists(formDef.getId()))
-			return;
-
-		//A temporary hack to ensure top level object is accessed.
-		fireFormItemSelected(formDef);
+			//A temporary hack to ensure top level object is accessed.
+			fireFormItemSelected(formDef);
+		}
 
 		TreeItem formRoot = null;
 		if(showFormAsRoot){
@@ -265,7 +267,35 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(item != null)
 			tree.removeItem(getSelectedItemRoot(item));
 
-		loadForm(formDef,true);
+		loadForm(formDef,true,false);
+	}
+	
+	public List<FormDef> getForms(){
+		List<FormDef> forms = new ArrayList<FormDef>();
+		
+		int count = tree.getItemCount();
+		for(int index = 0; index < count; index++)
+			forms.add((FormDef)tree.getItem(index).getUserObject());
+		
+		return forms;
+	}
+
+	public void loadForms(List<FormDef> forms, int selFormId){
+		if(forms == null || forms.size() == 0)
+			return;
+		
+		tree.clear();
+		this.formDef = null;
+		
+		for(FormDef formDef : forms){
+			loadForm(formDef,formDef.getId() == selFormId,true);
+			
+			if(formDef.getId() == selFormId){
+				this.formDef = formDef;
+				//A temporary hack to ensure top level object is accessed.
+				fireFormItemSelected(this.formDef);
+			}
+		}
 	}
 
 	private TreeItem loadPage(PageDef pageDef,TreeItem formRoot){
@@ -308,7 +338,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void deleteSelectedItem(){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 		if(item == null){
 			Window.alert(LocaleText.get("selectDeleteItem"));
@@ -393,7 +423,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void addNewItem(){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -450,7 +480,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void addNewForm(String name, String varName, int formId){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		if(formExists(formId))
 			return;
 
@@ -471,7 +501,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void addNewChildItem(boolean addNewIfNoKids){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -518,7 +548,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void moveItemUp() {
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -594,7 +624,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void moveItemDown(){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 
 		//Check if there is any selection.
@@ -685,7 +715,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void cutItem(){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
@@ -700,7 +730,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void copyItem() {
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
@@ -789,7 +819,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void refreshItem(){
 		if(Context.inLocalizationMode())
 			return;
-		
+
 		formDesignerListener.refresh(this);
 	}
 
@@ -814,7 +844,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	private TreeItem getSelectedItemRoot(TreeItem item){
 		if(item == null)
 			return null;
-		
+
 		if(item.getParentItem() == null)
 			return item;
 		return getSelectedItemRoot(item.getParentItem());

@@ -2,6 +2,7 @@ package org.purc.purcforms.client.util;
 
 import java.util.Vector;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
@@ -23,11 +24,17 @@ public class LanguageUtil {
 	private static final String NODE_NAME_FORM = "Form";
 	
 	public static String translate(String srcXml, String languageXml, boolean xform){
+		if(srcXml == null || srcXml.trim().length() == 0 || languageXml == null || languageXml.trim().length() == 0)
+			return null;
+		
 		return translate(XMLParser.parse(srcXml),languageXml,xform);
 	}
 	
 	public static String translate(Document doc, String languageXml, boolean xform){
 
+		if(doc == null)
+			return null;
+		
 		Document lngDoc = XMLParser.parse(languageXml);
 		NodeList nodes = lngDoc.getDocumentElement().getChildNodes();
 		if(nodes == null)
@@ -131,7 +138,7 @@ public class LanguageUtil {
 	public static Document createNewLanguageDoc(){
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("LanguageText");
-		rootNode.setAttribute("lang", "en");
+		rootNode.setAttribute("lang", Context.getLocale());
 		doc.appendChild(rootNode);
 		return doc;
 	}

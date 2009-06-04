@@ -355,7 +355,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		  addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Attachment"),true,new Command(){
 		    	public void execute() {popup.hide(); ;}});*/
 
-		menuBar.addItem("   AddControl",addControlMenu);
+		menuBar.addItem("   "+LocaleText.get("addWidget"),addControlMenu);
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();
@@ -454,15 +454,6 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		return addNewWidget(image);
 	}
 
-	//TODO ?????????????//
-	/*private DesignWidgetWrapper addNewRepeatSection(){
-		 DesignSurfaceView repeat = new DesignSurfaceView(images);
-		 repeat.addStyleName("getting-started-label");
-		 DOM.setStyleAttribute(repeat.getElement(), "height","50px");
-		 DOM.setStyleAttribute(repeat.getElement(), "width","500px");
-		 return addNewWidget(repeat);
-	 }*/
-
 	private DesignWidgetWrapper addNewTextBox(){
 		TextBox tb = new TextBox();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
@@ -519,169 +510,6 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
 		this.widgetSelectionListener = widgetSelectionListener;
 	}
-
-	public String getLayoutXml(){
-
-		/*if(tabs.getWidgetCount() == 0)
-			 return null;
-
-		 com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
-		 Element rootNode = doc.createElement("Form");
-		 doc.appendChild(rootNode);
-
-		 boolean hasWidgets = false;
-		 for(int i=0; i<tabs.getWidgetCount(); i++){
-			 Element node = doc.createElement("Page");
-			 node.setAttribute("Text", tabs.getTabBar().getTabHTML(i));
-			 //node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
-			 rootNode.appendChild(node);
-			 AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
-			 boolean b = buildLayoutXml(node,panel,doc);
-			 if(b)
-				 hasWidgets = true;
-		 }
-
-		 if(hasWidgets)
-			 return FormsDesignerUtil.formatXml(doc.toString());*/
-		return null;
-	}
-
-	/*private boolean buildLayoutXml(Element parent, AbsolutePanel panel, com.google.gwt.xml.client.Document doc){
-		 for(int i=0; i<panel.getWidgetCount(); i++){
-			 DesignWidgetWrapper wrapper = (DesignWidgetWrapper)panel.getWidget(i);
-			 Element node = doc.createElement("Item");
-			 parent.appendChild(node);			 
-			 node.setAttribute("WidgetType", wrapper.getWidgetName());
-
-			 String value = wrapper.getText();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Text", value);
-			 else
-				 node.removeAttribute("Text");
-
-			 value = wrapper.getTitle();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("HelpText", value);
-			 else
-				 node.removeAttribute("HelpText");
-
-			 value = wrapper.getBinding();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Binding", value);
-			 else
-				 node.removeAttribute("Binding");
-
-			 value = wrapper.getParentBinding();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("ParentBinding", value);
-			 else
-				 node.removeAttribute("ParentBinding");
-
-			 node.setAttribute("Left", wrapper.getLeft());
-			 node.setAttribute("Top", wrapper.getTop());
-
-			 value = wrapper.getWidth();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Width", value);
-			 else
-				 node.removeAttribute("Width");
-
-			 value = wrapper.getHeight();
-			 if(value != null && value.trim().length() > 0)
-				 node.setAttribute("Height", value);
-			 else
-				 node.removeAttribute("Height");
-
-			 node.setAttribute("TabIndex", String.valueOf(wrapper.getTabIndex()));
-		 }
-
-		 return panel.getWidgetCount() > 0;
-	 }*/
-
-	public void setLayoutXml(String xml){
-		/*tabs.clear();
-
-		 com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
-		 Element root = doc.getDocumentElement();
-		 NodeList pages = root.getChildNodes();
-		 for(int i=0; i<pages.getLength(); i++){
-			 if(pages.item(i).getNodeType() != Node.ELEMENT_NODE)
-				 continue;
-			 Element node = (Element)pages.item(i);
-			 addNewTab(node.getAttribute("Text"));
-			 loadPage(node.getChildNodes());
-		 }*/
-	}
-
-	/*private void loadPage(NodeList nodes){
-		 for(int i=0; i<nodes.getLength(); i++){
-			 if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
-				 continue;
-
-			 Element node = (Element)nodes.item(i);
-			 String left = node.getAttribute("Left");
-			 String top = node.getAttribute("Top");
-			 String s = node.getAttribute("WidgetType");
-
-			 Widget widget = null;
-			 if(s.equalsIgnoreCase("RadioButton"))
-				 widget = new RadioButton(node.getAttribute("ParentBinding"),node.getAttribute("Text"));
-			 else if(s.equalsIgnoreCase("CheckBox"))
-				 widget = new CheckBox(node.getAttribute("Text"));
-			 else if(s.equalsIgnoreCase("Button"))
-			     widget = new Button(node.getAttribute("Text"));
-			 else if(s.equalsIgnoreCase("ListBox"))
-				 widget = new ListBox(false);
-			 else if(s.equalsIgnoreCase("TextArea"))
-				 widget = new TextArea();
-			 else if(s.equalsIgnoreCase("DatePicker"))
-				 widget = new DatePickerWidget();
-			 else if(s.equalsIgnoreCase("TextBox"))
-				 widget = new TextBox();
-			 else if(s.equalsIgnoreCase("Label"))
-				 widget = new Label(node.getAttribute("Text"));
-			 else
-				 continue; 
-
-			 DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,this);
-
-			 String value = node.getAttribute("HelpText");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setTitle(value);
-
-			 value = node.getAttribute("Width");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setWidth(value);
-
-			 value = node.getAttribute("Height");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setHeight(value);
-
-			 value = node.getAttribute("Binding");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setBinding(value);
-
-			 value = node.getAttribute("ParentBinding");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setParentBinding(value);
-
-			 value = node.getAttribute("TabIndex");
-			 if(value != null && value.trim().length() > 0)
-				 wrapper.setTabIndex(Integer.parseInt(value));
-
-			 selectedDragController.makeDraggable(wrapper);
-			 selectedPanel.add(wrapper);
-			 FormDesignerUtil.setWidgetPosition(wrapper, left, top);
-
-		 }
-	 }*/
-
-	/*private void setWidgetPosition(Widget w, String left, String top) {
-		 com.google.gwt.user.client.Element h = w.getElement();
-		 DOM.setStyleAttribute(h, "position", "absolute");
-		 DOM.setStyleAttribute(h, "left", left);
-		 DOM.setStyleAttribute(h, "top", top);
-	 }*/
 
 	private void cutWidgets(){
 		copyWidgets(true);
@@ -761,17 +589,11 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			copyWidgets(false);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#cutItem()
-	 */
 	public void cutItem() {
 		if(selectedDragController.isAnyWidgetSelected())
 			cutWidgets();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
-	 */
 	public void pasteItem() {
 		if(clipBoardWidgets.size() > 0){
 			x = selectedPanel.getAbsoluteLeft() + 10;

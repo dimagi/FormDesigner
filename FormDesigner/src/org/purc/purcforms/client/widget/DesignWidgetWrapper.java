@@ -99,11 +99,12 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(!event.getCtrlKey())
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
 		case Event.ONMOUSEUP:
-		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOVER:
+		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
 			if (mouseListeners != null) 
 				mouseListeners.fireMouseEvent(this, event);
+			
 			/*if(type == Event.ONMOUSEDOWN){
 		        	if(!(event.getShiftKey() || event.getCtrlKey()))
 		        		widgetSelectionListener.onWidgetSelected(this);

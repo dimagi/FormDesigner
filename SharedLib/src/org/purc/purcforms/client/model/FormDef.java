@@ -832,6 +832,7 @@ public class FormDef implements Serializable{
 	public Element getLanguageNode() {
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("xform");
+		rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, id+"");
 		doc.appendChild(rootNode);
 
 		if(dataNode != null){

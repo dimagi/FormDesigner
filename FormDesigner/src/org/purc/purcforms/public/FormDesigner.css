@@ -168,3 +168,10 @@ body, html {
    width: 0px; height: 0px;
    border: 1px dashed black;
  }
+ 
+ .dragdrop-handle-resize {
+  cursor: w-resize;
+  user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+}

@@ -118,6 +118,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	Document doc;
 
 	private int embeddedHeightOffset = 0;
+	
+	private HashMap<Integer,DesignWidgetWrapper> pageWidgets = new HashMap<Integer,DesignWidgetWrapper>();
+	
 
 	public DesignSurfaceView(Images images){
 		this.images = images;
@@ -241,7 +244,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 					selectedDragController.clearSelection();
 					if(event.getTarget() != this.selectedPanel.getElement()){
 						if(event.getTarget().getInnerText().equals(DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(tabs.getTabBar().getSelectedTab())))){
-							widgetSelectionListener.onWidgetSelected(new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this));
+							//DesignWidgetWrapper widget = new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this);
+							//widget.setBinding(pageBindings.get(selectedTabIndex));
+							widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
 							return;
 						}
 					}
@@ -309,6 +314,10 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		}
 	}
 
+	private DesignWidgetWrapper getSelPageDesignWidget(){
+		return pageWidgets.get(selectedTabIndex);
+	}
+	
 	private void moveWidgets(int dirrection){
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets == null)
@@ -432,7 +441,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),"Attachment"),true,new Command(){
 			public void execute() {popup.hide(); ;}});*/
 
-		menuBar.addItem("     Add Widget",addControlMenu);
+		menuBar.addItem("     "+LocaleText.get("addWidget"),addControlMenu);
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();
@@ -838,9 +847,15 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		tabs.add(selectedPanel, name);
 		selectedTabIndex = tabs.getWidgetCount() - 1;
 		tabs.selectTab(selectedTabIndex);
+		
+		DesignWidgetWrapper widget = new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this);
+		widget.setBinding(name);
+		pageWidgets.put(tabs.getTabBar().getTabCount()-1, widget);
+		
+		widgetSelectionListener.onWidgetSelected(widget);
 
-		widgetSelectionListener.onWidgetSelected(new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this));
-
+		
+		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
@@ -874,7 +889,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		selectedDragController = dragControllers.elementAt(selectedTabIndex);
 		selectedPanel = selectedDragController.getBoundaryPanel();
 
-		widgetSelectionListener.onWidgetSelected(new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this));
+		widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
 	}
 
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
@@ -888,6 +903,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("Form");
+		if(formDef != null)
+			rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, formDef.getId()+"");
 		doc.appendChild(rootNode);
 
 		this.doc = doc;
@@ -897,6 +914,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			Element node = doc.createElement("Page");
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
 			//node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, pageWidgets.get(i).getBinding());
+			
 			rootNode.appendChild(node);
 			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
 			boolean b = buildLayoutXml(node,panel,doc);
@@ -915,13 +934,15 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("Form");
+		if(formDef != null)
+			rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, formDef.getId()+"");
 		doc.appendChild(rootNode);
 
 		String xpath = "Form/Page/Item[@Binding='";
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Text='"+text+"']");
+			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
 			rootNode.appendChild(node);
 
@@ -1194,6 +1215,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		dragControllers.remove(selectedTabIndex);
 		tabs.remove(selectedTabIndex);
+		pageWidgets.remove(selectedTabIndex);
 		if(selectedTabIndex > 0)
 			selectedTabIndex -= 1;
 		tabs.selectTab(selectedTabIndex);

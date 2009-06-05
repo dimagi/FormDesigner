@@ -494,6 +494,8 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	private DesignWidgetWrapper addNewButton(){
 		DesignWidgetWrapper wrapper = addNewWidget(new Button(LocaleText.get("submit")));
 		wrapper.setBinding("submit");
+		wrapper.setWidthInt(70);
+		wrapper.setHeightInt(30);
 		return wrapper;
 	}
 

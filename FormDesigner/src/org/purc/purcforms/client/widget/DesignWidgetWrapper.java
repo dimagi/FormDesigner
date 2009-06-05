@@ -2,6 +2,7 @@ package org.purc.purcforms.client.widget;
 
 import java.util.List;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
@@ -102,6 +103,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
+			
+			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label) /*&& !Context.mouseDown*/)
+				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
+
 			if (mouseListeners != null) 
 				mouseListeners.fireMouseEvent(this, event);
 			
@@ -115,6 +120,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				((RadioButton)widget).setChecked(false);
 			if(widget instanceof CheckBox)
 				((CheckBox)widget).setChecked(false);
+			
+			//if(event.getButton() != Event.BUTTON_LEFT)
+			//String s = isMouseDown(event);
+			//if(s != null)
+			//	Window.alert(s);
+			
+			
 			//}
 			break;
 		case Event.ONKEYDOWN:
@@ -123,6 +135,61 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 		FormDesignerUtil.disableContextMenu(widget.getElement());
 		DOM.eventCancelBubble(event, true);
+	}
+	
+//	if (event.which == null)
+//    /* IE case */
+//    button= (event.button < 2) ? "LEFT" :
+//              ((event.button == 4) ? "MIDDLE" : "RIGHT");
+// else
+//    /* All others */
+//    button= (event.which < 2) ? "LEFT" :
+//              ((event.which == 2) ? "MIDDLE" : "RIGHT");
+
+	public static native String isMouseDown(Event event) /*-{
+		window.alert(event.which);
+		
+		var button = null;
+		if (event.which == null) 
+		       button = (event.button < 2) ? "LEFT" :
+		                 ((event.button == 4) ? "MIDDLE" : "RIGHT");
+		else
+		       button= (event.which < 2) ? "LEFT" :
+		                 ((event.which == 2) ? "MIDDLE" : "RIGHT");
+		                 
+		return button;
+
+	}-*/; 
+	
+	private String getDesignCursor(int x, int y){
+		x = x - getParent().getAbsoluteLeft();
+		y = y - getParent().getAbsoluteTop();
+		
+		int left = getLeftInt();
+		int top = getTopInt();
+		int right = left + getWidthInt(); //element.getScrollWidth();
+		int bottom = top + getHeightInt(); //element.getScrollHeight();
+		
+		int incr = 4;
+		
+		if(y >= top-incr && y <= top+incr && (x >= right-incr && x <= right+incr))
+			return "ne-resize";
+		else if(y >= bottom-incr && y <= bottom+incr && (x >= right-incr && x <= right+incr))
+			return "se-resize";
+		else if(y >= top-incr && y <= top+incr && (x >= left-incr && x <= left+incr))
+			return "nw-resize";
+		else if(y >= bottom-incr && y <= bottom+incr && (x >= left-incr && x <= left+incr))
+			return "sw-resize";
+		else if(x >= right-incr && x <= right+incr)
+			return "e-resize";
+		else if(x >= left-incr && x <= left+incr)
+			return "w-resize";
+		else if(y >= top-incr && y <= top+incr)
+			return "n-resize";
+		else if(y >= bottom-incr && y <= bottom+incr)
+			return "s-resize";
+		
+		return "move";
 	}
 
 	public void addMouseListener(MouseListener listener) {

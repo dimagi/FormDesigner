@@ -831,6 +831,8 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 	private DesignWidgetWrapper addNewButton(String label, String binding){
 		DesignWidgetWrapper wrapper = addNewWidget(new Button(label));
+		wrapper.setWidthInt(70);
+		wrapper.setHeightInt(30);
 		wrapper.setBinding(binding);
 		return wrapper;
 	}
@@ -914,7 +916,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			Element node = doc.createElement("Page");
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
 			//node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
-			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, pageWidgets.get(i).getBinding());
+			
+			if(pageWidgets.get(i) != null)
+				node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, pageWidgets.get(i).getBinding());
 			
 			rootNode.appendChild(node);
 			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);

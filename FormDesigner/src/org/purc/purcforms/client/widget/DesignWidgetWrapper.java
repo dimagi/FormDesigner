@@ -43,7 +43,7 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents, QuestionChangeListener{
-	
+
 	private MouseListenerCollection mouseListeners;
 	private WidgetSelectionListener widgetSelectionListener;
 	private PopupPanel popup;
@@ -51,16 +51,16 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public DesignWidgetWrapper(DesignWidgetWrapper designWidgetWrapper,Images images){
 		super(designWidgetWrapper);
-		
+
 		this.widgetSelectionListener = designWidgetWrapper.widgetSelectionListener;
 		this.popup = designWidgetWrapper.popup;
-		
+
 		if(widgetSelectionListener == null)
 			widget.getElement();
 
 		initWidget();
 	}
-	
+
 	protected void copyWidget(WidgetEx widget){
 		if(widget.getWrappedWidget() instanceof DesignGroupWidget)
 			this.widget = new DesignGroupWidget((DesignGroupWidget)widget.getWrappedWidget(),((DesignGroupWidget)widget.getWrappedWidget()).getImages(),((DesignGroupWidget)widget.getWrappedWidget()).getWidgetPopupMenuListener());
@@ -77,7 +77,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public DesignWidgetWrapper(Widget widget,PopupPanel popup,WidgetSelectionListener widgetSelectionListener) {
 		super();
-		
+
 		this.widget = widget;
 		this.popup = popup;
 		this.widgetSelectionListener = widgetSelectionListener;
@@ -99,17 +99,15 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		case Event.ONMOUSEDOWN:
 			if(!event.getCtrlKey())
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
+		
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
-			
-			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label) /*&& !Context.mouseDown*/)
-				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
 
 			if (mouseListeners != null) 
 				mouseListeners.fireMouseEvent(this, event);
-			
+
 			/*if(type == Event.ONMOUSEDOWN){
 		        	if(!(event.getShiftKey() || event.getCtrlKey()))
 		        		widgetSelectionListener.onWidgetSelected(this);
@@ -120,15 +118,11 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				((RadioButton)widget).setChecked(false);
 			if(widget instanceof CheckBox)
 				((CheckBox)widget).setChecked(false);
-			
-			//if(event.getButton() != Event.BUTTON_LEFT)
-			//String s = isMouseDown(event);
-			//if(s != null)
-			//	Window.alert(s);
-			
-			
-			//}
+
+			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label))
+				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
 			break;
+			
 		case Event.ONKEYDOWN:
 			break;
 		}
@@ -136,42 +130,18 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		FormDesignerUtil.disableContextMenu(widget.getElement());
 		DOM.eventCancelBubble(event, true);
 	}
-	
-//	if (event.which == null)
-//    /* IE case */
-//    button= (event.button < 2) ? "LEFT" :
-//              ((event.button == 4) ? "MIDDLE" : "RIGHT");
-// else
-//    /* All others */
-//    button= (event.which < 2) ? "LEFT" :
-//              ((event.which == 2) ? "MIDDLE" : "RIGHT");
 
-	public static native String isMouseDown(Event event) /*-{
-		window.alert(event.which);
-		
-		var button = null;
-		if (event.which == null) 
-		       button = (event.button < 2) ? "LEFT" :
-		                 ((event.button == 4) ? "MIDDLE" : "RIGHT");
-		else
-		       button= (event.which < 2) ? "LEFT" :
-		                 ((event.which == 2) ? "MIDDLE" : "RIGHT");
-		                 
-		return button;
-
-	}-*/; 
-	
 	private String getDesignCursor(int x, int y){
 		x = x - getParent().getAbsoluteLeft();
 		y = y - getParent().getAbsoluteTop();
-		
+
 		int left = getLeftInt();
 		int top = getTopInt();
 		int right = left + getWidthInt(); //element.getScrollWidth();
 		int bottom = top + getHeightInt(); //element.getScrollHeight();
-		
+
 		int incr = 4;
-		
+
 		if(y >= top-incr && y <= top+incr && (x >= right-incr && x <= right+incr))
 			return "ne-resize";
 		else if(y >= bottom-incr && y <= bottom+incr && (x >= right-incr && x <= right+incr))
@@ -188,7 +158,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return "n-resize";
 		else if(y >= bottom-incr && y <= bottom+incr)
 			return "s-resize";
-		
+
 		return "move";
 	}
 
@@ -265,7 +235,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return DesignWidgetWrapper.getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
 		return null;
 	}
-	
+
 	public static String getTabDisplayText(String html){
 		if(html.indexOf("&lt") > 0)
 			html = URL.decode(html);
@@ -329,7 +299,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void storePosition(){
 		super.storePosition();
-		
+
 		if(widget instanceof DesignGroupWidget)
 			((DesignGroupWidget)widget).storePosition();
 	}
@@ -419,7 +389,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		Element node = doc.createElement("Item");
 		parent.appendChild(node);			 
 		node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE, getWidgetName());
-		
+
 		layoutNode = node;
 
 		String value = getText();
@@ -464,51 +434,51 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		node.setAttribute(WidgetEx.WIDGET_PROPERTY_TABINDEX, String.valueOf(getTabIndex()));
 
 		//if(widget instanceof Label)
-			buildLabelProperties(node);
+		buildLabelProperties(node);
 
 		if(widget instanceof DesignGroupWidget)
 			((DesignGroupWidget)widget).buildLayoutXml(node, doc);
-		
+
 		if(isRepeated())
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED, WidgetEx.REPEATED_TRUE_VALUE);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
-		
+
 		value = getExternalSource();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE);
-		
+
 		value = getDisplayField();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
-		
+
 		value = getValueField();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 	}
-	
+
 	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
 		if(binding == null || binding.trim().length() == 0)
 			return;
-		
+
 		String xpathRoot = xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@";
-		
+
 		buildLanguageText(doc,getText(),WidgetEx.WIDGET_PROPERTY_TEXT,parentNode,xpathRoot);
 		buildLanguageText(doc,getTitle(),WidgetEx.WIDGET_PROPERTY_HELPTEXT,parentNode,xpathRoot);
 		buildLanguageText(doc,getTop(),WidgetEx.WIDGET_PROPERTY_TOP,parentNode,xpathRoot);
 		buildLanguageText(doc,getLeft(),WidgetEx.WIDGET_PROPERTY_LEFT,parentNode,xpathRoot);
 		buildLanguageText(doc,getWidth(),WidgetEx.WIDGET_PROPERTY_WIDTH,parentNode,xpathRoot);
-		
+
 		if(getWrappedWidget() instanceof DesignGroupWidget)
 			((DesignGroupWidget)getWrappedWidget()).buildLanguageXml(doc,parentNode, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@Binding='");
 	}
-	
+
 	private void buildLanguageText(com.google.gwt.xml.client.Document doc, String text, String name, Element parentNode, String xpathRoot){
 		if(text != null && text.trim().length() > 0){
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
@@ -542,7 +512,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			node.setAttribute("fontSize", value);
 		else
 			node.removeAttribute("fontSize");
-		
+
 		value = getFontFamily();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute("fontFamily", value);
@@ -591,13 +561,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return ((DesignGroupWidget)widget).getPanel();
 		return null;
 	}
-	
+
 	public PopupPanel getWidgetPopup(){
 		if(widget instanceof DesignGroupWidget)
 			return ((DesignGroupWidget)widget).getWidgetPopup();
 		return null;
 	}
-	
+
 	public void setQuestionDef(QuestionDef questionDef){
 		this.questionDef = questionDef;
 		questionDef.addChangeListener(this);
@@ -605,29 +575,29 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void onBindingChanged(String newValue) {
 		this.binding = newValue;
-		
+
 	}
 
 	public void onEnabledChanged(boolean enabled) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onLockedChanged(boolean locked) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onRequiredChanged(boolean required) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onVisibleChanged(boolean visible) {
 		// TODO Auto-generated method stub
-		
+
 	}	
-	
+
 	public void onDataTypeChanged(int dataType){
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
 			if(!(widget instanceof DatePicker)){
@@ -679,15 +649,15 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			}
 		}
 	}
-	
+
 	public void onOptionsChanged(List<OptionDef> optionList){
-		
+
 	}
-	
+
 	public Element getLayoutNode(){
 		return layoutNode;
 	}
-	
+
 	public void setLayoutNode(Element node){
 		layoutNode = node;
 	}

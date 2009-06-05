@@ -211,6 +211,8 @@ public class FormDesignerDragController extends AbstractDragController{
 			DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
 
 
+		//DOM.setStyleAttribute(movablePanel.getElement(), "cursor", cursor);
+		
 		//movablePanel.setWidth(context.mouseX);
 		//Widget w = context.draggable;
 		//int t = w.getOffsetWidth();
@@ -236,8 +238,12 @@ public class FormDesignerDragController extends AbstractDragController{
 	private void incrementWidth(boolean right){
 		if(right){
 			//context.draggable.setWidth((context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft())+"");
-			((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
-			DOM.setStyleAttribute(context.draggable.getElement(), "cursor", "w-resize");
+			int len = context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft();
+			//((DesignWidgetWrapper)context.draggable).setWidthInt(len);
+			
+			context.draggable.setWidth(len+3+"");
+			
+			//DOM.setStyleAttribute(movablePanel.getElement(), "width",len+5+"px");
 		}
 		else{
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)context.draggable;
@@ -247,15 +253,17 @@ public class FormDesignerDragController extends AbstractDragController{
 			
 			//((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
 			//DOM.setStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor", "e-resize");
-			widget.setLeftInt(newLeft);
-			widget.setWidthInt(Math.abs(widget.getWidthInt()+len));
+			widget.setLeftInt(newLeft-3);
+			widget.setWidthInt(Math.abs(widget.getWidthInt()+len+3));
 			//context.draggable.setWidth((context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft())+"");
 		}
 	}
 
 	private void incrementHeight(boolean bottom){
-		if(bottom)
-			context.draggable.setHeight((context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteTop())+"");
+		if(bottom){
+			int len = (context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteTop());
+			context.draggable.setHeight(len+3+"");
+		}
 		else{
 			//context.draggable.setHeight((context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteLeft())+"");
 			//((DesignWidgetWrapper)context.draggable).setTopInt(context.mouseY-context.draggable.getParent().getAbsoluteTop());
@@ -267,8 +275,8 @@ public class FormDesignerDragController extends AbstractDragController{
 
 			//((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
 			//DOM.setStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor", "e-resize");
-			widget.setTopInt(newLeft);
-			widget.setHeightInt(Math.abs(widget.getHeightInt()+len));
+			widget.setTopInt(newLeft-3);
+			widget.setHeightInt(Math.abs(widget.getHeightInt()+len+3));
 		}
 	}
 

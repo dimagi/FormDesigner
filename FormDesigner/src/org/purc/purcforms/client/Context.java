@@ -1,5 +1,10 @@
 package org.purc.purcforms.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.purc.purcforms.client.model.Locale;
+
 
 /**
  * 
@@ -10,6 +15,7 @@ public class Context {
 	
 	private static String defaultLocale = "en";
 	private static String locale = defaultLocale;
+	private static List<Locale> locales = new ArrayList<Locale>();
 	
 	public static void setDefaultLocale(String locale){
 		Context.defaultLocale = locale;
@@ -29,5 +35,13 @@ public class Context {
 	
 	public static boolean inLocalizationMode(){
 		return !defaultLocale.equalsIgnoreCase(locale);
+	}
+	
+	public static List<Locale> getLocales(){
+		return locales;
+	}
+	
+	public static void setLocales(List<Locale> locales){
+		Context.locales = locales;
 	}
 }

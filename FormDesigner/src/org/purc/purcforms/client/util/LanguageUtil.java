@@ -22,19 +22,19 @@ public class LanguageUtil {
 
 	private static final String NODE_NAME_XFORM = "xform";
 	private static final String NODE_NAME_FORM = "Form";
-	
+
 	public static String translate(String srcXml, String languageXml, boolean xform){
 		if(srcXml == null || srcXml.trim().length() == 0 || languageXml == null || languageXml.trim().length() == 0)
 			return null;
-		
+
 		return translate(XMLParser.parse(srcXml),languageXml,xform);
 	}
-	
+
 	public static String translate(Document doc, String languageXml, boolean xform){
 
 		if(doc == null)
 			return null;
-		
+
 		Document lngDoc = XMLParser.parse(languageXml);
 		NodeList nodes = lngDoc.getDocumentElement().getChildNodes();
 		if(nodes == null)
@@ -66,27 +66,29 @@ public class LanguageUtil {
 				continue;
 
 			Vector result = new XPathExpression(doc, xpath).getResult();
-			if(result != null && result.size() > 0){
-				Element targetNode = (Element)result.get(0);
-				int pos = xpath.lastIndexOf('@');
-				if(pos > 0 && xpath.indexOf('=',pos) < 0){
-					String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
-					targetNode.setAttribute(attributeName, value);
+			if(result != null){
+				for(int item = 0; item < result.size(); item++){
+					Element targetNode = (Element)result.get(item);
+					int pos = xpath.lastIndexOf('@');
+					if(pos > 0 && xpath.indexOf('=',pos) < 0){
+						String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
+						targetNode.setAttribute(attributeName, value);
+					}
+					else
+						XformConverter.setTextNodeValue(targetNode, value);
 				}
-				else
-					XformConverter.setTextNodeValue(targetNode, value);
 			}
 		}
 		return doc.toString();
 	}
-	
+
 	public static String translate(String srcXml, String langXml){
 		if(srcXml == null || srcXml.trim().length() == 0 || langXml == null || langXml.trim().length() == 0)
 			return srcXml;
-		
+
 		Document doc = XMLParser.parse(srcXml);
 		Element parentLangNode = XMLParser.parse(langXml).getDocumentElement();
-		
+
 		NodeList nodes = parentLangNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node node = nodes.item(index);
@@ -112,7 +114,7 @@ public class LanguageUtil {
 		}
 		return doc.toString();
 	}
-	
+
 	public static String getLocaleText(Document doc, String nodeName){
 		NodeList nodes = doc.getDocumentElement().getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
@@ -126,15 +128,15 @@ public class LanguageUtil {
 
 		return null;
 	}
-	
+
 	public static String getXformsLocaleText(Document doc){
 		return getLocaleText(doc, NODE_NAME_XFORM);
 	}
-	
+
 	public static String getLayoutLocaleText(Document doc){
 		return getLocaleText(doc, NODE_NAME_FORM);
 	}
-	
+
 	public static Document createNewLanguageDoc(){
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("LanguageText");
@@ -142,16 +144,16 @@ public class LanguageUtil {
 		doc.appendChild(rootNode);
 		return doc;
 	}
-	
+
 	public static String getLocaleText(String xform, String layout){
 		Document doc = createNewLanguageDoc();
-		
+
 		if(xform != null && xform.trim().length() > 0)
 			doc.getDocumentElement().appendChild(XMLParser.parse(xform).getDocumentElement());
-		
+
 		if(layout != null && layout.trim().length() > 0)
 			doc.getDocumentElement().appendChild(XMLParser.parse(layout).getDocumentElement());
-		
+
 		return doc.toString();
 	}
 }

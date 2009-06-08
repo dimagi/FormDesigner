@@ -2,6 +2,7 @@ package org.purc.purcforms.client.widget;
 
 import java.util.Date;
 
+import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 import org.zenika.widget.client.datePicker.PopupCalendar;
@@ -29,9 +30,9 @@ public class DatePickerWidget extends DatePicker{
 	// the youngest date that can be selected
 	private Date youngestDate;
 	private DateTimeFormat dateFormatter;
-	
+
 	private ChangeListenerCollection changeListeners;
-	
+
 	{
 		DateTimeFormat dateTimeFormat = FormUtil.getDateTimeDisplayFormat();
 		if(dateTimeFormat == null)
@@ -63,7 +64,7 @@ public class DatePickerWidget extends DatePicker{
 		this.selectedDate = selectedDate;
 		synchronizeFromDate();
 	}
-	
+
 	/**
 	 * Create a DatePicker which uses a specific theme.
 	 * @param theme Theme name
@@ -72,7 +73,7 @@ public class DatePickerWidget extends DatePicker{
 		this();
 		setTheme(theme);
 	}
-	
+
 	/**
 	 * Create a DatePicker which specifics date and theme.
 	 * @param selectedDate Date to show
@@ -133,7 +134,7 @@ public class DatePickerWidget extends DatePicker{
 		}
 		super.onBrowserEvent(event);
 	}
-	
+
 	/**
 	 * @see com.google.gwt.user.client.ui.ClickListener#onClick(com.google.gwt.user.client.ui.Widget)
 	 */
@@ -196,12 +197,16 @@ public class DatePickerWidget extends DatePicker{
 	 * Display the PopupCalendar.
 	 */
 	private void showPopup() {
-		if (this.selectedDate != null) {
-			popup.setDisplayedMonth(this.selectedDate);
+		if(getParent().getParent() instanceof RuntimeWidgetWrapper){
+			QuestionDef questionDef = ((RuntimeWidgetWrapper)getParent().getParent()).getQuestionDef();
+			if(questionDef != null && !questionDef.isLocked()){
+				if (this.selectedDate != null)
+					popup.setDisplayedMonth(this.selectedDate);
+				popup.setPopupPosition(this.getAbsoluteLeft()+150, this.getAbsoluteTop());
+				popup.displayMonth();
+				doAfterShowPopup(popup);
+			}
 		}
-		popup.setPopupPosition(this.getAbsoluteLeft()+150, this.getAbsoluteTop());
-		popup.displayMonth();
-		doAfterShowPopup(popup);
 	}
 
 	/**
@@ -221,7 +226,7 @@ public class DatePickerWidget extends DatePicker{
 		}
 		synchronizeFromDate();
 	}
-	
+
 	/**
 	 * Return true if the selectedDay is between datepicker's interval dates.
 	 * 
@@ -255,7 +260,7 @@ public class DatePickerWidget extends DatePicker{
 	public void setYoungestDate(Date youngestDate) {
 		this.youngestDate = youngestDate;
 	}
-	
+
 	/**
 	 * @see com.google.gwt.user.client.ui.TextBoxBase#addChangeListener(com.google.gwt.user.client.ui.ChangeListener)
 	 */

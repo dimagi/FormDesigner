@@ -119,8 +119,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(widget instanceof CheckBox)
 				((CheckBox)widget).setChecked(false);
 
-			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label))
+			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
+			
 			break;
 			
 		case Event.ONKEYDOWN:
@@ -601,6 +602,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	public void onDataTypeChanged(int dataType){
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
 			if(!(widget instanceof DatePicker)){
+				storePosition();
 				panel.remove(widget);
 				widget = new DatePickerWidget();
 				panel.add(widget);
@@ -609,6 +611,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_TEXT || dataType == QuestionDef.QTN_TYPE_NUMERIC || dataType == QuestionDef.QTN_TYPE_DECIMAL){
 			if(( !(widget instanceof TextBox || widget instanceof TextArea) || (widget instanceof DatePicker)) ){
+				storePosition();
 				panel.remove(widget);
 				widget = new TextBox();
 				panel.add(widget);
@@ -617,6 +620,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_BOOLEAN){
 			if(!(widget instanceof ListBox || widget instanceof CheckBox)){
+				storePosition();
 				panel.remove(widget);
 				widget = new ListBox(false);
 				panel.add(widget);
@@ -625,6 +629,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			if(!(widget instanceof ListBox || widget instanceof RadioButton)){
+				storePosition();
 				panel.remove(widget);
 				widget = new ListBox(false);
 				panel.add(widget);
@@ -633,6 +638,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_IMAGE){
 			if(!(widget instanceof Image)){
+				storePosition();
 				panel.remove(widget);
 				widget = new Image();
 				panel.add(widget);
@@ -641,6 +647,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_VIDEO){
 			if(!(widget instanceof Hyperlink)){
+				storePosition();
 				panel.remove(widget);
 				widget = new Hyperlink();
 				((Hyperlink)widget).setText(LocaleText.get("clickToPlay"));

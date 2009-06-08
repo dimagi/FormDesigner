@@ -180,6 +180,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						isValid();
 						editListener.onValueChanged(questionDef);
 					}
+					
+					if(widget instanceof DatePickerWidget)
+						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 				}
 			});
 		}
@@ -632,6 +635,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	}
 
 	public boolean setFocus(){
+		if(questionDef != null && (!questionDef.isEnabled() || questionDef.isLocked()))
+			return false;
+		
 		if(widget instanceof RadioButton)
 			((RadioButton)widget).setFocus(true);
 		else if(widget instanceof CheckBox)

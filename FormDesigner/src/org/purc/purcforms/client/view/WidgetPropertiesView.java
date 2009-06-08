@@ -603,6 +603,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtLeft.setText(null);*/
 
 		if(widget != null){
+			if(widget.getWrappedWidget() instanceof TabBar)
+				clearProperties();
+				
 			txtText.setText(widget.getText());
 			txtBinding.setText(widget.getBinding());
 			
@@ -717,26 +720,28 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 			enableLabelProperties(widget.getWrappedWidget() instanceof Label);
 		}
-		else{
-
-			txtText.setText(null);
-			txtHelpText.setText(null);
-			txtBinding.setText(null);
-			txtHeight.setText(null);
-			txtWidth.setText(null);
-			chkVisible.setChecked(false);
-			chkEnabled.setChecked(false);
-			sgstBinding.setText(null);
-			sgstChildBinding.setText(null);
-			txtTop.setText(null);
-			txtLeft.setText(null);
-			txtTabIndex.setText(null);
-			txtExternalSource.setText(null);
-			txtDisplayField.setText(null);
-			txtValueField.setText(null);
-			cbRepeat.setSelectedIndex(-1);
-			enableLabelProperties(false);
-		}
+		else
+			clearProperties();
+	}
+	
+	private void clearProperties(){
+		txtText.setText(null);
+		txtHelpText.setText(null);
+		txtBinding.setText(null);
+		txtHeight.setText(null);
+		txtWidth.setText(null);
+		chkVisible.setChecked(false);
+		chkEnabled.setChecked(false);
+		sgstBinding.setText(null);
+		sgstChildBinding.setText(null);
+		txtTop.setText(null);
+		txtLeft.setText(null);
+		txtTabIndex.setText(null);
+		txtExternalSource.setText(null);
+		txtDisplayField.setText(null);
+		txtValueField.setText(null);
+		cbRepeat.setSelectedIndex(-1);
+		enableLabelProperties(false);
 	}
 
 	private boolean hasParentBinding(){

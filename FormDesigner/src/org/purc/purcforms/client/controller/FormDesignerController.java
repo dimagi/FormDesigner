@@ -16,6 +16,7 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
+import org.purc.purcforms.client.view.LocalesDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XformConverter;
@@ -283,7 +284,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void showAboutInfo() {
 		AboutDialog dlg = new AboutDialog();
 		dlg.setAnimationEnabled(true);
-		dlg.show();
 		dlg.center();
 	}
 
@@ -293,8 +293,8 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void showLanguages() {
-		// TODO Auto-generated method stub
-
+		LocalesDialog dlg = new LocalesDialog();
+		dlg.center();
 	}
 
 	public void showOptions() {

@@ -18,8 +18,8 @@ public class LanguageUtil {
 
 	public static final String ATTRIBUTE_NAME_XPATH = "xpath";
 	public static final String ATTRIBUTE_NAME_VALUE = "value";
-	
-	
+
+
 	/*public static String translate(String srcXml, String languageXml){
 		return translate(XMLParser.parse(srcXml),XMLParser.parse(languageXml).getDocumentElement());
 	}*/
@@ -37,15 +37,17 @@ public class LanguageUtil {
 				continue;
 
 			Vector result = new XPathExpression(doc, xpath).getResult();
-			if(result != null && result.size() > 0){
-				Element targetNode = (Element)result.get(0);
-				int pos = xpath.lastIndexOf('@');
-				if(pos > 0 && xpath.indexOf('=',pos) < 0){
-					String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
-					targetNode.setAttribute(attributeName, value);
+			if(result != null){
+				for(int item = 0; item < result.size(); item++){
+					Element targetNode = (Element)result.get(item);
+					int pos = xpath.lastIndexOf('@');
+					if(pos > 0 && xpath.indexOf('=',pos) < 0){
+						String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
+						targetNode.setAttribute(attributeName, value);
+					}
+					else
+						targetNode.setTextContent(value);
 				}
-				else
-					targetNode.setTextContent(value);
 			}
 		}
 		return doc.toString();

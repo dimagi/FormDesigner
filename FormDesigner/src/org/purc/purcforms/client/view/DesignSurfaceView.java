@@ -386,40 +386,40 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		MenuBar addControlMenu = new MenuBar(true);
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("label")),true,new Command(){
-			public void execute() {popup.hide(); addNewLabel(LocaleText.get("label"));}});
+			public void execute() {popup.hide(); addNewLabel(LocaleText.get("label"),true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textBox")),true,new Command(){
-			public void execute() {popup.hide(); addNewTextBox();}});
+			public void execute() {popup.hide(); addNewTextBox(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("checkBox")),true,new Command(){
-			public void execute() {popup.hide(); addNewCheckBox();}});
+			public void execute() {popup.hide(); addNewCheckBox(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("radioButton")),true,new Command(){
-			public void execute() {popup.hide(); addNewRadioButton();}});
+			public void execute() {popup.hide(); addNewRadioButton(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("listBox")),true,new Command(){
-			public void execute() {popup.hide(); addNewDropdownList();}});
+			public void execute() {popup.hide(); addNewDropdownList(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textArea")),true,new Command(){
-			public void execute() {popup.hide(); addTextArea();}});
+			public void execute() {popup.hide(); addTextArea(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
-			public void execute() {popup.hide(); addNewButton();}});
+			public void execute() {popup.hide(); addNewButton(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
-			public void execute() {popup.hide(); addNewDatePicker();}});
+			public void execute() {popup.hide(); addNewDatePicker(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupBox")),true,new Command(){
-			public void execute() {popup.hide(); addNewGroupBox();}});
+			public void execute() {popup.hide(); addNewGroupBox(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("repeatSection")),true,new Command(){
-			public void execute() {popup.hide(); addNewRepeatSection();}});
+			public void execute() {popup.hide(); addNewRepeatSection(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("picture")),true,new Command(){
-			public void execute() {popup.hide(); addNewPictureSection(null);}});
+			public void execute() {popup.hide(); addNewPictureSection(null,true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("videoAudio")),true,new Command(){
-			public void execute() {popup.hide(); addNewVideoAudioSection(null);}});
+			public void execute() {popup.hide(); addNewVideoAudioSection(null,true);}});
 
 		/*addControlMenu.addSeparator();
 
@@ -502,45 +502,47 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		pasteMenu.setVisible(visible); 
 	}
 
-	private DesignWidgetWrapper addNewWidget(Widget widget){
+	private DesignWidgetWrapper addNewWidget(Widget widget, boolean select){
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
 		selectedDragController.makeDraggable(wrapper);
 		selectedPanel.add(wrapper);
 		selectedPanel.setWidgetPosition(wrapper, x-wrapper.getAbsoluteLeft(), y-wrapper.getAbsoluteTop());
-		selectedDragController.clearSelection();
-		selectedDragController.toggleSelection(wrapper);
-		widgetSelectionListener.onWidgetSelected(wrapper);
+		if(select){
+			selectedDragController.clearSelection();
+			selectedDragController.toggleSelection(wrapper);
+			widgetSelectionListener.onWidgetSelected(wrapper);
+		}
 		return wrapper;
 	}
 
-	private DesignWidgetWrapper addNewLabel(String text){
+	private DesignWidgetWrapper addNewLabel(String text, boolean select){
 		if(text == null)
 			text = "Label";
 		Label label = new Label(text);
 
-		DesignWidgetWrapper wrapper = addNewWidget(label);
+		DesignWidgetWrapper wrapper = addNewWidget(label,select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
 
-	private DesignWidgetWrapper addNewVideoAudio(String text){
+	private DesignWidgetWrapper addNewVideoAudio(String text, boolean select){
 		if(text == null)
 			text = "Click to play";
 		Hyperlink link = new Hyperlink(text,null);
 
-		DesignWidgetWrapper wrapper = addNewWidget(link);
+		DesignWidgetWrapper wrapper = addNewWidget(link,select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
 
-	private DesignWidgetWrapper addNewRepeatSection(){
+	private DesignWidgetWrapper addNewRepeatSection(boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","500px");
 		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
-		DesignWidgetWrapper widget = addNewWidget(repeat);
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
 		widget.setRepeated(true);
 
 		FormDesignerDragController selDragController = selectedDragController;
@@ -561,11 +563,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton(LocaleText.get("addNew"),"addnew");
+		addNewButton(LocaleText.get("addNew"),"addnew",false);
 		x = 150;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("remove"),"remove");
+		addNewButton(LocaleText.get("remove"),"remove",false);
 
 		selectedDragController.clearSelection();
 
@@ -579,14 +581,14 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return widget;
 	}
 
-	private DesignWidgetWrapper addNewPictureSection(String parentBinding){
+	private DesignWidgetWrapper addNewPictureSection(String parentBinding, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(repeat.getElement(), "height","220px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
 		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
-		DesignWidgetWrapper widget = addNewWidget(repeat);
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
 		widget.setRepeated(false);
 
 		FormDesignerDragController selDragController = selectedDragController;
@@ -607,7 +609,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			x += selectedPanel.getAbsoluteLeft();
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
-		addNewPicture().setBinding(parentBinding);
+		addNewPicture(false).setBinding(parentBinding);
 
 		y = 55 + 120;
 		x = 10;
@@ -616,11 +618,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton(LocaleText.get("browse"),"browse").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
 		x = 120;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
 
 		selectedDragController.clearSelection();
 
@@ -634,14 +636,14 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return widget;
 	}
 
-	private DesignWidgetWrapper addNewVideoAudioSection(String parentBinding){
+	private DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
 		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
-		DesignWidgetWrapper widget = addNewWidget(repeat);
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
 		widget.setRepeated(false);
 
 		FormDesignerDragController selDragController = selectedDragController;
@@ -662,7 +664,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			x += selectedPanel.getAbsoluteLeft();
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
-		addNewVideoAudio(null).setBinding(parentBinding);
+		addNewVideoAudio(null,false).setBinding(parentBinding);
 
 		y = 60;
 		x = 10;
@@ -671,11 +673,11 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(selectedPanel.getAbsoluteTop() > 0)
 			y += selectedPanel.getAbsoluteTop();
 
-		addNewButton(LocaleText.get("browse"),"browse").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
 		x = 120;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear").setParentBinding(parentBinding);
+		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
 
 		selectedDragController.clearSelection();
 
@@ -691,51 +693,51 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 
 
-	private DesignWidgetWrapper addNewGroupBox(){
+	private DesignWidgetWrapper addNewGroupBox(boolean select){
 		DesignGroupWidget group = new DesignGroupWidget(images,this);
 		group.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(group.getElement(), "height","200px");
 		DOM.setStyleAttribute(group.getElement(), "width","500px");
 		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
 
-		DesignWidgetWrapper widget = addNewWidget(group);
+		DesignWidgetWrapper widget = addNewWidget(group,select);
 
 		return widget;
 	}
 
-	private DesignWidgetWrapper addNewPicture(){
+	private DesignWidgetWrapper addNewPicture(boolean select){
 		Image image = images.picture().createImage();
 		DOM.setStyleAttribute(image.getElement(), "height","155px");
 		DOM.setStyleAttribute(image.getElement(), "width","185px");
-		return addNewWidget(image);
+		return addNewWidget(image,select);
 	}
 
-	private DesignWidgetWrapper addNewTextBox(){
+	private DesignWidgetWrapper addNewTextBox(boolean select){
 		TextBox tb = new TextBox();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
-		return addNewWidget(tb);
+		return addNewWidget(tb,select);
 	}
 
-	private DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, int max, String pageName){
+	private DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, int max, String pageName, boolean select){
 		x = 35 + selectedPanel.getAbsoluteLeft();
 		y += 25;
 
 		Vector questions = questionDef.getRepeatQtnsDef().getQuestions();
 		if(questions == null)
-			return addNewTextBox(); //TODO Bug here
+			return addNewTextBox(select); //TODO Bug here
 		for(int index = 0; index < questions.size(); index++){
 			QuestionDef qtn = (QuestionDef)questions.get(index);
 			if(index > 0)
 				x += 210;
-			DesignWidgetWrapper label = addNewLabel(qtn.getText());
+			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
 			label.setBinding(qtn.getVariableName());
 			label.setTextDecoration("underline");
 		}
 
 		x = 20 + selectedPanel.getAbsoluteLeft();
 		y += 25;
-		DesignWidgetWrapper widget = addNewRepeatSection();
+		DesignWidgetWrapper widget = addNewRepeatSection(select);
 
 		FormDesignerDragController selDragController = selectedDragController;
 		AbsolutePanel absPanel = selectedPanel;
@@ -761,20 +763,20 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 					qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-				widgetWrapper = addNewDropdownList();
+				widgetWrapper = addNewDropdownList(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
-				widgetWrapper = addNewDatePicker();
+				widgetWrapper = addNewDatePicker(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
-				widgetWrapper = addNewDropdownList();
+				widgetWrapper = addNewDropdownList(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
-				widgetWrapper = addNewPicture();
+				widgetWrapper = addNewPicture(select);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
 					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(null);
+				widgetWrapper = addNewVideoAudioSection(null,select);
 			else
-				widgetWrapper = addNewTextBox();
+				widgetWrapper = addNewTextBox(select);
 
 			widgetWrapper.setBinding(qtn.getVariableName());
 			widgetWrapper.setQuestionDef(qtn);
@@ -799,46 +801,46 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return widget;
 	}
 
-	private DesignWidgetWrapper addNewDatePicker(){
+	private DesignWidgetWrapper addNewDatePicker(boolean select){
 		DatePicker tb = new DatePickerWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
-		return addNewWidget(tb);
+		return addNewWidget(tb,select);
 	}
 
-	private DesignWidgetWrapper addNewCheckBox(){
-		return addNewWidget(new CheckBox(LocaleText.get("checkBox")));
+	private DesignWidgetWrapper addNewCheckBox(boolean select){
+		return addNewWidget(new CheckBox(LocaleText.get("checkBox")),select);
 	}
 
-	private DesignWidgetWrapper addNewRadioButton(){
-		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")));
+	private DesignWidgetWrapper addNewRadioButton(boolean select){
+		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
 	}
 
-	private DesignWidgetWrapper addNewDropdownList(){
+	private DesignWidgetWrapper addNewDropdownList(boolean select){
 		ListBox lb = new ListBox(false);
 		DOM.setStyleAttribute(lb.getElement(), "height","25px");
 		DOM.setStyleAttribute(lb.getElement(), "width","200px");
-		DesignWidgetWrapper wrapper = addNewWidget(lb);
+		DesignWidgetWrapper wrapper = addNewWidget(lb,select);
 		return wrapper;
 	}
 
-	private DesignWidgetWrapper addTextArea(){
+	private DesignWidgetWrapper addTextArea(boolean select){
 		TextArea ta = new TextArea();
 		DOM.setStyleAttribute(ta.getElement(), "height","60px");
 		DOM.setStyleAttribute(ta.getElement(), "width","200px");
-		return addNewWidget(ta);
+		return addNewWidget(ta,select);
 	}
 
-	private DesignWidgetWrapper addNewButton(String label, String binding){
-		DesignWidgetWrapper wrapper = addNewWidget(new Button(label));
+	private DesignWidgetWrapper addNewButton(String label, String binding, boolean select){
+		DesignWidgetWrapper wrapper = addNewWidget(new Button(label),select);
 		wrapper.setWidthInt(70);
 		wrapper.setHeightInt(30);
 		wrapper.setBinding(binding);
 		return wrapper;
 	}
 
-	private DesignWidgetWrapper addNewButton(){
-		return addNewButton(LocaleText.get("submit"),"submit");
+	private DesignWidgetWrapper addNewButton(boolean select){
+		return addNewButton(LocaleText.get("submit"),"submit",select);
 	}
 
 	private void addNewTab(String name){
@@ -854,9 +856,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		widget.setBinding(name);
 		pageWidgets.put(tabs.getTabBar().getTabCount()-1, widget);
 		
-		widgetSelectionListener.onWidgetSelected(widget);
-
-		
+		//widgetSelectionListener.onWidgetSelected(widget);
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -1316,7 +1316,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		DesignWidgetWrapper widgetWrapper = null;
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
-			widgetWrapper = addNewLabel(questionDef.getText());
+			widgetWrapper = addNewLabel(questionDef.getText(),false);
 			widgetWrapper.setBinding(questionDef.getVariableName());
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -1329,22 +1329,22 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			x += (questionDef.getText().length() * 10);
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-				widgetWrapper = addNewDropdownList();
+				widgetWrapper = addNewDropdownList(false);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE)
-				widgetWrapper = addNewDatePicker();
+				widgetWrapper = addNewDatePicker(false);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
-				widgetWrapper = addNewDropdownList();
+				widgetWrapper = addNewDropdownList(false);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				widgetWrapper = addNewRepeatSet(questionDef,max,pageName);
+				widgetWrapper = addNewRepeatSet(questionDef,max,pageName,false);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
-				widgetWrapper = addNewPictureSection(questionDef.getVariableName());
+				widgetWrapper = addNewPictureSection(questionDef.getVariableName(),false);
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
 					questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName());
+				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName(),false);
 			else
-				widgetWrapper = addNewTextBox();
+				widgetWrapper = addNewTextBox(false);
 
 			if(widgetWrapper != null){
 				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE||
@@ -1385,14 +1385,14 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 			if((y+40+rptIncr) > max){
 				y += 10;
-				addNewButton();
+				addNewButton(false);
 				addNewTab(pageName);
 				y = 20 + selectedPanel.getAbsoluteTop();
 			}
 		}
 
 		y += 10;
-		addNewButton();
+		addNewButton(false);
 	}
 
 	private void rightAlignLabels(AbsolutePanel panel){
@@ -1447,13 +1447,13 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 				if((y+40) > max){
 					y += 10;
-					addNewButton();
+					addNewButton(false);
 					addNewTab(pageName);
 					y = 20;
 				}
 			}
 			OptionDef optionDef = (OptionDef)options.get(i);
-			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()));
+			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
 		}

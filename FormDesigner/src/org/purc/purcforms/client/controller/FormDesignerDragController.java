@@ -19,7 +19,6 @@ import com.allen_sauer.gwt.dnd.client.util.WidgetArea;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -130,7 +129,7 @@ public class FormDesignerDragController extends AbstractDragController{
 		}
 	}
 
-	private boolean isResizing(){
+	/*private boolean isResizing(){
 		String s = DOM.getStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor");
 
 		if(s.equalsIgnoreCase("w-resize") || s.equalsIgnoreCase("se-resize") ||
@@ -141,19 +140,16 @@ public class FormDesignerDragController extends AbstractDragController{
 		}
 
 		return false;
-	}
+	}*/
 
 	@Override
 	public void dragEnd() {
 		assert context.finalDropController == null == (context.vetoException != null);
 		if (context.vetoException != null) {
-			if (!getBehaviorDragProxy()) {
+			if (!getBehaviorDragProxy())
 				restoreSelectedWidgetsLocation();
-			}
-		} else {
-			if(!isResizing())
-				context.dropController.onDrop(context);
-		}
+		} else
+			context.dropController.onDrop(context);
 
 		context.dropController.onLeave(context);
 		context.dropController = null;
@@ -162,9 +158,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			restoreSelectedWidgetsStyle();
 		}
 
-		if(!isResizing())
-			movablePanel.removeFromParent();
-
+		movablePanel.removeFromParent();
 		movablePanel = null;
 		super.dragEnd();
 
@@ -210,15 +204,6 @@ public class FormDesignerDragController extends AbstractDragController{
 		else
 			DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
 
-
-		//DOM.setStyleAttribute(movablePanel.getElement(), "cursor", cursor);
-		
-		//movablePanel.setWidth(context.mouseX);
-		//Widget w = context.draggable;
-		//int t = w.getOffsetWidth();
-		//int k = (context.mouseX-context.desiredDraggableX);
-		//movablePanel.setWidth(String.valueOf(w.getOffsetWidth()+(context.mouseX-context.desiredDraggableX))+"px");
-
 		DropController newDropController = getIntersectDropController(context.mouseX, context.mouseY);
 		if (context.dropController != newDropController) {
 			if (context.dropController != null) {
@@ -240,9 +225,10 @@ public class FormDesignerDragController extends AbstractDragController{
 			//context.draggable.setWidth((context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft())+"");
 			int len = context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft();
 			//((DesignWidgetWrapper)context.draggable).setWidthInt(len);
-			
-			context.draggable.setWidth(len+3+"");
-			
+
+			//context.draggable.setWidth(len+3+"");
+			((DesignWidgetWrapper)context.draggable).setWidthInt(len+3);
+
 			//DOM.setStyleAttribute(movablePanel.getElement(), "width",len+5+"px");
 		}
 		else{
@@ -250,7 +236,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			int oldLeft = widget.getLeftInt();
 			int newLeft = context.mouseX-context.draggable.getParent().getAbsoluteLeft();
 			int len = oldLeft - newLeft;
-			
+
 			//((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
 			//DOM.setStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor", "e-resize");
 			widget.setLeftInt(newLeft-3);
@@ -262,7 +248,8 @@ public class FormDesignerDragController extends AbstractDragController{
 	private void incrementHeight(boolean bottom){
 		if(bottom){
 			int len = (context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteTop());
-			context.draggable.setHeight(len+3+"");
+			//context.draggable.setHeight(len+3+"");
+			((DesignWidgetWrapper)context.draggable).setHeightInt(len+3);
 		}
 		else{
 			//context.draggable.setHeight((context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteLeft())+"");

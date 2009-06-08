@@ -274,10 +274,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setEnabled(boolean enabled) {
+		boolean changed = this.enabled != enabled;
+
 		this.enabled = enabled;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onEnabledChanged(enabled);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onEnabledChanged(enabled);
+		}
 	}
 
 	public String getHelpText() {
@@ -293,10 +297,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setLocked(boolean locked) {
+		boolean changed = this.locked != locked;
+
 		this.locked = locked;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onLockedChanged(locked);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onLockedChanged(locked);
+		}
 	}
 
 	public boolean isRequired() {
@@ -304,10 +312,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setRequired(boolean required) {
+		boolean changed = this.required != required;
+
 		this.required = required;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onRequiredChanged(required);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onRequiredChanged(required);
+		}
 	}
 
 	public List getOptions() {
@@ -333,10 +345,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setDataType(int dataType) {
+		boolean changed = this.dataType != dataType;
+
 		this.dataType = dataType;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onDataTypeChanged(dataType);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onDataTypeChanged(dataType);
+		}
 	}
 
 	public String getVariableName() {
@@ -344,10 +360,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setVariableName(String variableName) {
+		boolean changed = this.variableName != variableName;
+
 		this.variableName = variableName;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onBindingChanged(variableName);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onBindingChanged(variableName);
+		}
 	}
 
 	public Object getParent() {
@@ -447,10 +467,14 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void setVisible(boolean visible) {
+		boolean changed = this.visible != visible;
+
 		this.visible = visible;
 
-		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onVisibleChanged(visible);
+		if(changed){
+			for(int index = 0; index < changeListeners.size(); index++)
+				changeListeners.get(index).onVisibleChanged(visible);
+		}
 	}
 
 	public void removeChangeListener(QuestionChangeListener changeListener) {

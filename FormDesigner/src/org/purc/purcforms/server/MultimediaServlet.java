@@ -74,8 +74,13 @@ public class MultimediaServlet extends HttpServlet {
 			        response.setDateHeader("Expires", -1);
 			        response.setHeader("Cache-Control", "no-store");
 			        
-					if(contentType != null && contentType.trim().length() > 0)
+					if(contentType != null && contentType.trim().length() > 0){
 						response.setContentType(contentType);
+						
+						//Send it as an attachement such that atleast firefox can also detect it
+						if(contentType.contains("video") || contentType.contains("audio"))
+							response.setHeader(OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION, OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "multimedia.3gp" + "\"");
+					}
 					
 					response.getOutputStream().write(bytes);
 				}

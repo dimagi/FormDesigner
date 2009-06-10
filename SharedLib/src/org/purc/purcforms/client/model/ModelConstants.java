@@ -77,6 +77,10 @@ public class ModelConstants implements Serializable{
 	
 	public static final int OPERATOR_IS_NOT_NULL = 16;
 	
+	public static final int OPERATOR_ENDS_WITH = 17;
+	
+	public static final int OPERATOR_NOT_END_WITH = 18;
+	
 	/** No rule action specified */
 	public static final int ACTION_NONE = 0;
 	

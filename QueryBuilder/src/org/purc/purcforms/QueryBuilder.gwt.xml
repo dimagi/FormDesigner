@@ -9,19 +9,16 @@
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
       <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
       <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
-                                    -->
-	  <!-- Other module inherits                                      -->
-      <inherits name='org.purc.purcforms.SharedLib'/>
       <inherits name='com.google.gwt.xml.XML'/>
-	  <inherits name='org.zenika.widget.DatePickerModule'/>  
+      <inherits name='org.zenika.widget.DatePickerModule'/>  
+
+      <!-- Other module inherits   
+      <inherits name='org.purc.purcforms.SharedLib'/>                                   -->
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.purc.purcforms.client.FormRunnerEntryPoint'/>
+      <entry-point class='org.purc.purcforms.client.QueryBuilder'/>
     
-         <!-- Servlets -->
-      <servlet path='/multimedia' class='org.omevac.server.servlet.MultimediaServlet'/>
-      
       <!-- Specify the application specific style sheet.              -->
-      <stylesheet src='FormRunner.css' />
+      <stylesheet src='QueryBuilder.css' />
 	
 </module>

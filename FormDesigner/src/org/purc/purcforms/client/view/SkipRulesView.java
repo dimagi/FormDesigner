@@ -35,7 +35,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 	private static final int VERTICAL_SPACING = 0;
 
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private Hyperlink addConditionLink = new Hyperlink("< Click here to add new condition >",null);
+	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
 
 	private FormDef formDef;
@@ -47,7 +47,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 	private RadioButton rdShow = new RadioButton("action","Show");
 	private RadioButton rdHide = new RadioButton("action","Hide");
 	private CheckBox chkMakeRequired = new CheckBox("Make Required");
-	private Label lblAction = new Label("For question: ");
+	private Label lblAction = new Label(LocaleText.get("forQuestion"));
 
 	public SkipRulesView(){
 		setupWidgets();
@@ -73,9 +73,9 @@ public class SkipRulesView extends Composite implements IConditionController{
 		//verticalPanel.setCellHeight(lblAction, "30px");
 		//verticalPanel.setCellHeight(actionPanel, "30px");
 
-		horizontalPanel.add(new Label("When"));
+		horizontalPanel.add(new Label(LocaleText.get("when")));
 		horizontalPanel.add(groupHyperlink);
-		horizontalPanel.add(new Label("of the following apply"));
+		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
 		verticalPanel.add(horizontalPanel);
 
 		//verticalPanel.add(new ConditionWidget(FormDefTest.getPatientFormDef(),this));

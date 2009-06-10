@@ -220,8 +220,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
 
-			String extension = "";//".mpeg";
-			String contentType = "&contentType=video/mpeg";
+			String extension = "";//.3gp ".mpeg";
+			String contentType = "&contentType=video/3gpp";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO){
 				contentType = "&contentType=audio/x-wav";
 				//extension = ".wav";
@@ -633,8 +633,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				if(!xpath.startsWith(formDef.getVariableName()))
 					xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
 
-				String extension = "";//".mpeg";
-				String contentType = "&contentType=video/mpeg";
+				String extension = "";//.3gp ".mpeg";
+				String contentType = "&contentType=video/3gpp";
 				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO){
 					contentType = "&contentType=audio/x-wav";
 					//extension = ".wav";

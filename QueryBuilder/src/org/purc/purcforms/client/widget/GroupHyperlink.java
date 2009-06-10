@@ -1,4 +1,4 @@
-package org.purc.purcforms.client.widget.skiprule;
+package org.purc.purcforms.client.widget;
 
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -24,7 +24,7 @@ public class GroupHyperlink extends Hyperlink{
 	public static final String CONDITIONS_OPERATOR_TEXT_NOT_ALL= LocaleText.get("notAll");
 
 	private PopupPanel popup;
-	private boolean enabled;
+	private boolean enabled = true;
 
 	public GroupHyperlink(String text, String targetHistoryToken){
 		super(text,targetHistoryToken);

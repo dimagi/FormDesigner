@@ -11,20 +11,12 @@
       <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
       <!-- Other module inherits                                      -->
-	  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
-	  <inherits name='com.google.gwt.xml.XML'/>
-	  <inherits name='org.zenika.widget.DatePickerModule'/>                                    -->
-      <inherits name='org.purc.purcforms.SharedLib'/>
-      
+
+
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.purc.purcforms.client.FormDesignerEntryPoint'/>
-        
-               <!-- Servlets -->
-      <servlet path='/multimedia' class='org.omevac.server.servlet.MultimediaServlet'/>
-      <servlet path='/formsave' class='org.omevac.server.servlet.FormSaveServlet'/>
-      <servlet path='/formopen' class='org.omevac.server.servlet.FormOpenServlet'/>
-      
+      <entry-point class='org.purc.purcforms.client.ReportDesigner'/>
+    
       <!-- Specify the application specific style sheet.              -->
-      <stylesheet src='FormDesigner.css' />
+      <stylesheet src='ReportDesigner.css' />
 	
 </module>

@@ -294,11 +294,12 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 					if(!xpath.startsWith(formDef.getVariableName()))
 						xpath = "/" + formDef.getVariableName() + "/" + binding;
 
-					String contentType = "&contentType=video/mpeg";
+					String extension = "";//.3gp ".mpeg";
+					String contentType = "&contentType=video/3gpp";
 					if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
 						contentType = "&contentType=audio/x-wav";
 
-					((HTML)widget).setHTML("<a href=" + URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+					((HTML)widget).setHTML("<a href=" + URL.encode("multimedia"+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 				}
 			}
 		}

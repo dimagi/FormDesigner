@@ -40,7 +40,7 @@ public class FormRunnerEntryPoint implements EntryPoint{
 		if(formId != null && entityId != null)
 			formRunner.loadForm(Integer.parseInt(formId),Integer.parseInt(entityId));
 		else
-			Window.alert(LocaleText.get("noformId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
+			Window.alert(LocaleText.get("noFormId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
 		
 		RootPanel.get("purcformrunner").add(formRunner);
 		

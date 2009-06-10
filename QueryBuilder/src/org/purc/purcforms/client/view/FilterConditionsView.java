@@ -11,6 +11,7 @@ import org.purc.purcforms.client.widget.ActionHyperlink;
 import org.purc.purcforms.client.widget.ConditionWidget;
 import org.purc.purcforms.client.widget.GroupHyperlink;
 
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -34,7 +35,6 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
-	private ActionHyperlink actionHyperlink;
 	
 	private FormDef formDef;
 	private QuestionDef questionDef;
@@ -49,8 +49,10 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 
-		actionHyperlink = new ActionHyperlink("<>",null,this);
+		ActionHyperlink actionHyperlink = new ActionHyperlink("<>",null,this);
+		actionHyperlink.setAllowDelete(false);
 		
+		horizontalPanel.add(actionHyperlink);
 		horizontalPanel.add(new Label("Choose records where")); //LocaleText.get("when")
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
@@ -81,7 +83,29 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 	}
 
 	public void addBracket(){
-
+		ActionHyperlink actionHyperlink = new ActionHyperlink("<>",null,this);
+		actionHyperlink.setAllowDelete(false);
+		
+		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
+		horizontalPanel.add(new CheckBox());
+		horizontalPanel.add(new Label("          "));
+		horizontalPanel.add(actionHyperlink);
+		horizontalPanel.add(new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null));
+		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
+		
+		verticalPanel.remove(addConditionLink);
+		verticalPanel.add(horizontalPanel);
+		
+		horizontalPanel = new HorizontalPanel();
+		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
+		horizontalPanel.add(new Label("----"));
+		horizontalPanel.add(new Label("----"));
+		Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
+		horizontalPanel.add(addConditionLink);
+		verticalPanel.add(horizontalPanel);
+		
+		verticalPanel.add(addConditionLink);
 	}
 	
 	public void deleteCurrentRow(){

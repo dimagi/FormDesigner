@@ -124,7 +124,8 @@ public class QuestionDef implements Serializable{
 
 	public static final int QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC = 14;
 
-
+	public static final int QTN_TYPE_GPS = 15;
+	
 	private Element dataNode;
 	private Element labelNode;
 	private Element hintNode;

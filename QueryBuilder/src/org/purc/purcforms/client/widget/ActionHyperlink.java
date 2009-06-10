@@ -21,6 +21,7 @@ public class ActionHyperlink extends Hyperlink {
 
 	private PopupPanel popup;
 	private FilterRowActionListener actionListener;
+	private boolean allowDelete = true;
 
 	public ActionHyperlink(String text, String targetHistoryToken,FilterRowActionListener actionListener){
 		super(text,targetHistoryToken);
@@ -40,10 +41,12 @@ public class ActionHyperlink extends Hyperlink {
 		popup = new PopupPanel(true,true);
 
 		MenuBar menuBar = new MenuBar(true);
-		
-		menuBar.addItem(LocaleText.get("deleteCondition"),true, new Command(){
-			public void execute() {popup.hide(); actionListener.deleteCurrentRow();}});
-		
+
+		if(allowDelete){
+			menuBar.addItem(LocaleText.get("deleteCondition"),true, new Command(){
+				public void execute() {popup.hide(); actionListener.deleteCurrentRow();}});
+		}
+
 		menuBar.addItem(LocaleText.get("addCondition"),true, new Command(){
 			public void execute() {popup.hide(); actionListener.addCondition();}});
 
@@ -53,4 +56,7 @@ public class ActionHyperlink extends Hyperlink {
 		popup.setWidget(menuBar);
 	}
 
+	public void setAllowDelete(boolean allowDelete){
+		this.allowDelete = allowDelete;
+	}
 }

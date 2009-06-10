@@ -60,6 +60,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private static final byte DT_VIDEO = 11;
 	private static final byte DT_AUDIO = 12;
 	private static final byte DT_SINGLE_SELECT_DYNAMIC = 13;
+	private static final byte DT_GPS = 14;
 
 	private FlexTable table = new FlexTable();
 	private ListBox cbDataType = new ListBox(false);
@@ -135,6 +136,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeVideo"));
 		cbDataType.addItem(LocaleText.get("qtnTypeAudio"));
 		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
+		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -528,6 +530,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_SINGLE_SELECT_DYNAMIC:
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
 			break;
+		case DT_GPS:
+			dataType = QuestionDef.QTN_TYPE_GPS;
+			break;
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
@@ -675,6 +680,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			index = DT_SINGLE_SELECT_DYNAMIC;
+			break;
+		case QuestionDef.QTN_TYPE_GPS:
+			index = DT_GPS;
 			break;
 		}
 

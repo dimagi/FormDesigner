@@ -117,11 +117,16 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE = "description-template"; //eg ${/patient/family_name}$
 	public static final String ATTRIBUTE_NAME_ACTION = "action";
 	public static final String ATTRIBUTE_NAME_PARENT = "parent";
+	public static final String ATTRIBUTE_NAME_FORMAT = "format";
 
 	public static final String ATTRIBUTE_VALUE_ENABLE = "enable";
 	public static final String ATTRIBUTE_VALUE_DISABLE = "disable";
 	public static final String ATTRIBUTE_VALUE_SHOW = "show";
 	public static final String ATTRIBUTE_VALUE_HIDE = "hide";
+	public static final String ATTRIBUTE_VALUE_IMAGE = "image";
+	public static final String ATTRIBUTE_VALUE_VIDEO = "video";
+	public static final String ATTRIBUTE_VALUE_AUDIO = "audio";
+	public static final String ATTRIBUTE_VALUE_GPS = "gps";
 
 	private static final String DATA_TYPE_DATE = "xsd:date";
 	private static final String DATA_TYPE_INT = "xsd:int";
@@ -152,11 +157,13 @@ public class XformConverter implements Serializable{
 	
 	public static String getXmlType(int type, Element node){
 		if(type == QuestionDef.QTN_TYPE_VIDEO)
-			node.setAttribute("format", "video");
+			node.setAttribute(ATTRIBUTE_NAME_FORMAT,ATTRIBUTE_VALUE_VIDEO);
 		else if(type == QuestionDef.QTN_TYPE_AUDIO)
-			node.setAttribute("format", "audio");
+			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_AUDIO);
 		else if(type == QuestionDef.QTN_TYPE_IMAGE)
-			node.setAttribute("format", "image");
+			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_IMAGE);
+		else if(type == QuestionDef.QTN_TYPE_GPS)
+			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_GPS);
 
 		switch(type){
 		case QuestionDef.QTN_TYPE_BOOLEAN:
@@ -175,6 +182,7 @@ public class XformConverter implements Serializable{
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
+		case QuestionDef.QTN_TYPE_GPS:
 			return DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_IMAGE:
 		case QuestionDef.QTN_TYPE_VIDEO:
@@ -1477,8 +1485,13 @@ public class XformConverter implements Serializable{
 	</range>*/
 	private static void setQuestionType(QuestionDef def, String type, Element node){
 		if(type != null){
-			if(type.equals(DATA_TYPE_TEXT) || type.indexOf("string") != -1 )
-				def.setDataType(QuestionDef.QTN_TYPE_TEXT);
+			if(type.equals(DATA_TYPE_TEXT) || type.indexOf("string") != -1 ){
+				String format = node.getAttribute(ATTRIBUTE_NAME_FORMAT);
+				if(ATTRIBUTE_VALUE_GPS.equals(format))
+					def.setDataType(QuestionDef.QTN_TYPE_GPS);
+				else
+					def.setDataType(QuestionDef.QTN_TYPE_TEXT);
+			}
 			else if((type.equals("xsd:integer") || type.equals(DATA_TYPE_INT)) || (type.indexOf("integer") != -1 || type.indexOf("int") != -1))
 				def.setDataType(QuestionDef.QTN_TYPE_NUMERIC);
 			else if(type.equals("xsd:decimal") || type.indexOf("decimal") != -1 )
@@ -1492,10 +1505,10 @@ public class XformConverter implements Serializable{
 			else if(type.equals(DATA_TYPE_BOOLEAN) || type.indexOf("boolean") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_BOOLEAN);
 			else if(type.equals(DATA_TYPE_BINARY) || type.indexOf("base64Binary") != -1 ){
-				String format = node.getAttribute("format");
-				if("video".equals(format))
+				String format = node.getAttribute(ATTRIBUTE_NAME_FORMAT);
+				if(ATTRIBUTE_VALUE_VIDEO.equals(format))
 					def.setDataType(QuestionDef.QTN_TYPE_VIDEO);
-				else if("audio".equals(format))
+				else if(ATTRIBUTE_VALUE_AUDIO.equals(format))
 					def.setDataType(QuestionDef.QTN_TYPE_AUDIO);
 				else
 					def.setDataType(QuestionDef.QTN_TYPE_IMAGE);

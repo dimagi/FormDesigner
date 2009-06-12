@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -116,16 +117,16 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 		}*/
 	}
 
-	public void addCondition(){
-		view.addCondition();
+	public void addCondition(Widget sender){
+		view.addCondition(sender);
 	}
 
-	public void addBracket(){
-		view.addBracket();
+	public void addBracket(Widget sender){
+		view.addBracket(sender);
 	}
 
-	public void deleteCurrentRow(){
-		view.deleteCondition(this);
+	public void deleteCurrentRow(Widget sender){
+		view.deleteCondition(sender,this);
 	}
 
 	public Condition getCondition(){

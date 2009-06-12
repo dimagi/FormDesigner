@@ -2,8 +2,10 @@ package org.purc.purcforms.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
 
 /**
@@ -16,6 +18,10 @@ public class Context {
 	private static String defaultLocale = "en";
 	private static String locale = defaultLocale;
 	private static List<Locale> locales = new ArrayList<Locale>();
+	
+	
+	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
+	
 	
 	public static void setDefaultLocale(String locale){
 		Context.defaultLocale = locale;

@@ -54,6 +54,7 @@ public class WidgetEx extends Composite{
 	public static final String WIDGET_PROPERTY_VALUEFIELD = "ValueField";
 	public static final String WIDGET_PROPERTY_TABINDEX = "TabIndex";
 	public static final String WIDGET_PROPERTY_REPEATED = "Repeated";
+	public static final String WIDGET_PROPERTY_TEXT_ALIGN = "TextAlign";
 	
 	public static final String REPEATED_TRUE_VALUE = "1";
 	
@@ -65,6 +66,7 @@ public class WidgetEx extends Composite{
 	protected String fontStyle;
 	protected String fontSize;
 	protected String textDecoration;
+	protected String textAlign;
 	protected String backgroundColor;
 	protected String borderStyle;
 	protected String borderWidth;
@@ -119,6 +121,7 @@ public class WidgetEx extends Composite{
 		setFontSize(widget.getFontSize());
 		setFontFamily(widget.getFontFamily());
 		setTextDecoration(widget.getTextDecoration());
+		setTextAlign(widget.getTextAlign());
 		setBackgroundColor(widget.getBackgroundColor());
 		setBorderStyle(widget.getBorderStyle());
 		setBorderWidth(widget.getBorderWidth());
@@ -248,6 +251,19 @@ public class WidgetEx extends Composite{
 		}
 	}
 	
+	public void setTextAlign(String textAlign){
+		try{
+			DOM.setStyleAttribute(widget.getElement(), "textAlign", textAlign);
+			this.textAlign = textAlign;
+		}
+		catch(Exception ex){
+			//ex.printStackTrace();
+		}
+	}
+	
+	//DOM.setStyleAttribute(wrapper.getWrappedWidget().getElement(),"textAlign", "center");
+
+	
 	public void setBackgroundColor(String backgroundColor){
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "backgroundColor", backgroundColor);
@@ -334,6 +350,13 @@ public class WidgetEx extends Composite{
 		return s;
 	}
 	
+	public String getTextAlign(){
+		String s = DOM.getStyleAttribute(widget.getElement(), "textAlign");
+		if(s == null || s.trim().length() == 0)
+			s = textAlign;
+		return s;
+	}
+	
 	public String getBackgroundColor(){
 		String s = DOM.getStyleAttribute(widget.getElement(), "backgroundColor");
 		if(s == null || s.trim().length() == 0)
@@ -387,6 +410,10 @@ public class WidgetEx extends Composite{
 		 if(value != null && value.trim().length() > 0)
 			 widget.setTextDecoration(value);
 		 
+		 value = node.getAttribute("textAlign");
+		 if(value != null && value.trim().length() > 0)
+			 widget.setTextAlign(value);
+		 
 		 value = node.getAttribute("backgroundColor");
 		 if(value != null && value.trim().length() > 0)
 			 widget.setBackgroundColor(value);
@@ -402,6 +429,10 @@ public class WidgetEx extends Composite{
 		 value = node.getAttribute("borderColor");
 		 if(value != null && value.trim().length() > 0)
 			 widget.setBorderColor(value);
+		 
+		 value = node.getAttribute("textAlign");
+		 if(value != null && value.trim().length() > 0)
+			 widget.setTextAlign(value);
 	 }
 	
 	public String getLeft(){

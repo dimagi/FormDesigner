@@ -1,6 +1,9 @@
 package org.purc.purcforms.client.sql;
 
+import java.util.List;
+
 import org.purc.purcforms.client.model.Condition;
+import org.purc.purcforms.client.model.FilterConditionRow;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
@@ -19,15 +22,21 @@ public class SqlBuilder {
 	private static  String LIKE_SEPARATOR = "%";
 
 	private static FormDef formDef;
-	private static SkipRule skipRule;
 
-
-	public static String buildSql(FormDef formDef, SkipRule skipRule){
-		if(formDef == null || skipRule == null)
+	
+	public static String buildSql(FormDef formDef, List<FilterConditionRow> rows){
+		if(formDef == null || rows == null)
 			return null;
+		
+		String sql = "SELECT * FROM " + formDef.getVariableName();
+		
+		return sql;
+	}
+
+	public static String buildSql2(FormDef formDef, List<FilterConditionRow> rows){
+		
 
 		SqlBuilder.formDef = formDef;
-		SqlBuilder.skipRule = skipRule;
 
 		String sql = "SELECT * FROM " + formDef.getVariableName();
 		String filter = null,fieldName;

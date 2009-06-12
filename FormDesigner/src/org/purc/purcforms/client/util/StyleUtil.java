@@ -37,6 +37,17 @@ public class StyleUtil {
 			listBox.setSelectedIndex(0);
 	}
 	
+	public static void setTextAlignIndex(String textAlign, ListBox listBox){
+		if("right".equalsIgnoreCase(textAlign))
+			listBox.setSelectedIndex(1);
+		else if("center".equalsIgnoreCase(textAlign))
+			listBox.setSelectedIndex(2);
+		else if("justify".equalsIgnoreCase(textAlign))
+			listBox.setSelectedIndex(3);
+		else
+			listBox.setSelectedIndex(0); //left
+	}
+	
 	public static void setBorderStyleIndex(String borderStyle, ListBox listBox){
 		if("hidden".equalsIgnoreCase(borderStyle))
 			listBox.setSelectedIndex(1);
@@ -106,6 +117,14 @@ public class StyleUtil {
 		listBox.addItem("overline");
 		listBox.addItem("line-through");
 		listBox.addItem("blink");
+		listBox.addItem("");
+	}
+	
+	public static void loadTextAlign(ListBox listBox){
+		listBox.addItem("left");
+		listBox.addItem("right");
+		listBox.addItem("center");
+		listBox.addItem("justify");
 		listBox.addItem("");
 	}
 	

@@ -64,6 +64,9 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 				parseXform();
 			}
 		});
+		
+		txtXform.setText(getTestXform());
+		parseXform();
 	}
 	
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -97,5 +100,29 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		String xml = txtXform.getText().trim();
 		if(xml.length() > 0)
 			filterConditionsView.setFormDef(XformConverter.fromXform2FormDef(xml));
+	}
+	
+	private String getTestXform(){
+		return "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> " +
+			" <xf:model> " +
+			"   <xf:instance id=\"newform1\"> " +
+			"     <newform1 name=\"New Form1\" id=\"1\"> " +
+			"       <question1/> " +
+			"       <question2/> " +
+			"     </newform1> " +
+			"   </xf:instance> " +
+			"   <xf:bind id=\"question1\" nodeset=\"/newform1/question1\" type=\"xsd:string\"/> " +
+			"   <xf:bind id=\"question2\" nodeset=\"/newform1/question2\" type=\"xsd:string\"/> " +
+			" </xf:model> " +
+			" <xf:group id=\"1\"> " +
+			"   <xf:label>Page1</xf:label> " +
+			"  <xf:input bind=\"question1\"> " +
+			"    <xf:label>Question1</xf:label> " +
+			"  </xf:input> " +
+			"  <xf:input bind=\"question2\"> " +
+			"    <xf:label>Question2</xf:label> " +
+			"  </xf:input> " +
+			" </xf:group> " +
+			" </xf:xforms>";
 	}
 }

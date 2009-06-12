@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -67,7 +68,6 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	private String sHeight = "100%";
 	private int x;
 	private int y;
-	private List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	private int clipboardLeftMostPos;
 	private int clipboardTopMostPos;
 	private MenuItem copyMenu;
@@ -240,7 +240,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 						cutWidgets();
 				}
 				else if(event.getCtrlKey() && (keyCode == 'V' || keyCode == 'v')){
-					if(clipBoardWidgets.size() > 0 && x >= 0){
+					if(Context.clipBoardWidgets.size() > 0 && x >= 0){
 						x += selectedPanel.getAbsoluteLeft();
 						y += selectedPanel.getAbsoluteTop();
 						pasteWidgets();
@@ -414,7 +414,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 		parentMenuSeparator.setVisible(!visible);
 
 		visible = false;
-		if(clipBoardWidgets.size() > 0)
+		if(Context.clipBoardWidgets.size() > 0)
 			visible = true;
 		pasteSeparator.setVisible(visible);
 		pasteMenu.setVisible(visible); 
@@ -518,7 +518,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	private void copyWidgets(boolean remove){
-		clipBoardWidgets.clear();
+		Context.clipBoardWidgets.clear();
 
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
@@ -540,7 +540,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 				selectedPanel.remove(widget);
 			else //copy
 				widget = new DesignWidgetWrapper(widget,images);
-			clipBoardWidgets.add(widget);
+			Context.clipBoardWidgets.add(widget);
 		}
 	}
 
@@ -550,8 +550,16 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 
 		selectedDragController.clearSelection();
 
-		for(int i=0; i<clipBoardWidgets.size(); i++){
-			DesignWidgetWrapper widget = new DesignWidgetWrapper(clipBoardWidgets.get(i),images);
+		for(int i=0; i<Context.clipBoardWidgets.size(); i++){
+			DesignWidgetWrapper widget = new DesignWidgetWrapper(Context.clipBoardWidgets.get(i),images);
+			
+			if(i == 0){
+				if(widget.getPopupPanel() != widgetPopup){
+					xOffset = x - widget.getLeftInt();
+					yOffset = y - widget.getTopInt();
+				}
+			}
+			
 			String s = widget.getLeft();
 			int xPos = Integer.parseInt(s.substring(0,s.length()-2)) + xOffset;
 			s = widget.getTop();
@@ -559,6 +567,9 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 			this.selectedDragController.makeDraggable(widget);
 			selectedPanel.add(widget);
 			selectedPanel.setWidgetPosition(widget,xPos-widget.getAbsoluteLeft(),yPos-widget.getAbsoluteTop());
+			widget.setWidth(widget.getWidth());
+			widget.setHeight(widget.getHeight());
+			widget.setPopupPanel(widgetPopup);
 			selectedDragController.toggleSelection(widget);
 		}
 	}
@@ -597,7 +608,7 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	}
 
 	public void pasteItem() {
-		if(clipBoardWidgets.size() > 0){
+		if(Context.clipBoardWidgets.size() > 0){
 			x = selectedPanel.getAbsoluteLeft() + 10;
 			y = selectedPanel.getAbsoluteTop() + 10;
 			pasteWidgets();
@@ -852,8 +863,19 @@ public class DesignGroupWidget extends Composite implements WidgetSelectionListe
 	public PopupPanel getWidgetPopup(){
 		return widgetPopup;
 	}
+	
+	public void setWidgetPopup(PopupPanel widgetPopup){
+		this.widgetPopup = widgetPopup;
+		
+		for(int i=0; i<selectedPanel.getWidgetCount(); i++)
+			((DesignWidgetWrapper)selectedPanel.getWidget(i)).setPopupPanel(popup);
+	}
 
 	public IWidgetPopupMenuListener getWidgetPopupMenuListener(){
 		return widgetPopupMenuListener;
 	}
+	
+	/*public void setWidgetPopupMenuListener(IWidgetPopupMenuListener listener){
+		widgetPopupMenuListener = listener;
+	}*/
 }

@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -42,16 +43,17 @@ public class ActionHyperlink extends Hyperlink {
 
 		MenuBar menuBar = new MenuBar(true);
 
+		final Widget w = this;
 		if(allowDelete){
 			menuBar.addItem(LocaleText.get("deleteCondition"),true, new Command(){
-				public void execute() {popup.hide(); actionListener.deleteCurrentRow();}});
+				public void execute() {popup.hide(); actionListener.deleteCurrentRow(w);}});
 		}
 
 		menuBar.addItem(LocaleText.get("addCondition"),true, new Command(){
-			public void execute() {popup.hide(); actionListener.addCondition();}});
+			public void execute() {popup.hide(); actionListener.addCondition(w);}});
 
 		menuBar.addItem("Add Bracket",true, new Command(){ //LocaleText.get("???")
-			public void execute() {popup.hide(); actionListener.addBracket();}});
+			public void execute() {popup.hide(); actionListener.addBracket(w);}});
 
 		popup.setWidget(menuBar);
 	}

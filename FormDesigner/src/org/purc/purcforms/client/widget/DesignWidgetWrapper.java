@@ -2,7 +2,6 @@ package org.purc.purcforms.client.widget;
 
 import java.util.List;
 
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
@@ -119,7 +118,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(widget instanceof CheckBox)
 				((CheckBox)widget).setChecked(false);
 
-			if(!(widget instanceof CheckBox || widget instanceof RadioButton || widget instanceof Label /*|| widget instanceof Hyperlink*/))
+			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
 			
 			break;
@@ -548,7 +547,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute("borderColor", value);
 		else
-			node.removeAttribute("borderColor");	
+			node.removeAttribute("borderColor");
+		
+		value = getTextAlign();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute("textAlign", value);
+		else
+			node.removeAttribute("textAlign");	
 	}
 
 	public FormDesignerDragController getDragController(){
@@ -667,5 +672,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void setLayoutNode(Element node){
 		layoutNode = node;
+	}
+	
+	public void setPopupPanel(PopupPanel popup){
+		this.popup = popup;
+	}
+	
+	public PopupPanel getPopupPanel(){
+		return popup;
 	}
 }

@@ -74,6 +74,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private TextBox txtFontSize= new TextBox();
 	private TextBox txtFontFamily= new TextBox();
 	private ListBox lbTextDecoration = new ListBox(false);
+	private ListBox lbTextAlign = new ListBox(false);
 	private ListBox lbBorderStyle = new ListBox(false);
 	private TextBox txtBorderWidth = new TextBox();
 	private ListBox cbRepeat = new ListBox(false);
@@ -112,6 +113,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 0, new Label(LocaleText.get("fontStyle")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("fontSize")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("textDecoration")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("textAlign")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("backgroundColor")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("borderStyle")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("borderWidth")));
@@ -141,6 +143,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 1, lbFontStyle);
 		table.setWidget(++index, 1, txtFontSize);
 		table.setWidget(++index, 1, lbTextDecoration);
+		table.setWidget(++index, 1, lbTextAlign);
 		table.setWidget(++index, 1, sgstBackgroundColor);
 		table.setWidget(++index, 1, lbBorderStyle);
 		table.setWidget(++index, 1, txtBorderWidth);
@@ -168,6 +171,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtFontSize.setWidth("100%");
 		txtFontFamily.setWidth("100%");
 		lbTextDecoration.setWidth("100%");
+		lbTextAlign.setWidth("100%");
 		sgstBackgroundColor.setWidth("100%");
 		lbBorderStyle.setWidth("100%");
 		txtBorderWidth.setWidth("100%");
@@ -206,6 +210,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		StyleUtil.loadFontWeights(lbFontWeight);
 		StyleUtil.loadFontStyles(lbFontStyle);
 		StyleUtil.loadTextDecoration(lbTextDecoration);
+		StyleUtil.loadTextAlign(lbTextAlign);
 		StyleUtil.loadBorderStyles(lbBorderStyle);
 	}
 
@@ -437,6 +442,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				widget.setTextDecoration(lbTextDecoration.getItemText(lbTextDecoration.getSelectedIndex()));
 			}
 		});
+		lbTextAlign.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				widget.setTextAlign(lbTextAlign.getItemText(lbTextAlign.getSelectedIndex()));
+			}
+		});
 		lbFontStyle.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				widget.setFontStyle(lbFontStyle.getItemText(lbFontStyle.getSelectedIndex()));
@@ -465,7 +475,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	}
 	
 	private void updateText(){
-		if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
+		//if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
+		if(widget != null && txtText.getText().length() > 0) //No setting of empty strings as text.
 			widget.setText(txtText.getText());
 	}
 
@@ -826,6 +837,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtFontSize.setEnabled(enable);
 		txtFontFamily.setEnabled(enable);
 		lbTextDecoration.setEnabled(enable);
+		lbTextAlign.setEnabled(enable);
 		txtBackgroundColor.setEnabled(enable);
 		lbBorderStyle.setEnabled(enable);
 		txtBorderWidth.setEnabled(enable);
@@ -838,6 +850,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtFontSize.setText(null);
 			txtFontFamily.setText(null);
 			lbTextDecoration.setSelectedIndex(-1);
+			lbTextAlign.setSelectedIndex(-1);
 			txtBackgroundColor.setText(null);
 			lbBorderStyle.setSelectedIndex(-1);
 			txtBorderWidth.setText(null);
@@ -850,6 +863,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtFontSize.setText(widget.getFontSize());
 			txtFontFamily.setText(widget.getFontFamily());
 			StyleUtil.setTextDecorationIndex(widget.getTextDecoration(), lbTextDecoration);
+			StyleUtil.setTextAlignIndex(widget.getTextAlign(), lbTextAlign);
 			txtBackgroundColor.setText(widget.getBackgroundColor());
 			StyleUtil.setBorderStyleIndex(widget.getBorderStyle(), lbBorderStyle);
 			txtBorderWidth.setText(widget.getBorderWidth());
@@ -862,6 +876,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtFontSize.setText(null);
 			txtFontFamily.setText(null);
 			lbTextDecoration.setSelectedIndex(-1);
+			lbTextAlign.setSelectedIndex(-1);
 			txtBackgroundColor.setText(null);
 			lbBorderStyle.setSelectedIndex(-1);
 			txtBorderWidth.setText(null);

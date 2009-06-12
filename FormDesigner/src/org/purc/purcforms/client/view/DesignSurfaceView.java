@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -86,7 +87,6 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	private String sHeight = "100%";
 	private int x;
 	private int y;
-	private List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	private int clipboardLeftMostPos;
 	private int clipboardTopMostPos;
 	private MenuItem copyMenu;
@@ -294,7 +294,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 						cutWidgets();
 				}
 				else if(event.getCtrlKey() && (keyCode == 'V' || keyCode == 'v')){
-					if(clipBoardWidgets.size() > 0 && x >= 0){
+					if(Context.clipBoardWidgets.size() > 0 && x >= 0){
 						x += selectedPanel.getAbsoluteLeft();
 						y += selectedPanel.getAbsoluteTop();
 						pasteWidgets();
@@ -496,7 +496,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		copyMenu.setVisible(visible); 
 
 		visible = false;
-		if(clipBoardWidgets.size() > 0)
+		if(Context.clipBoardWidgets.size() > 0)
 			visible = true;
 		pasteSeparator.setVisible(visible);
 		pasteMenu.setVisible(visible); 
@@ -522,6 +522,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		DesignWidgetWrapper wrapper = addNewWidget(label,select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		//DOM.setStyleAttribute(wrapper.getWrappedWidget().getElement(),"textAlign", "center");
 		return wrapper;
 	}
 
@@ -1133,7 +1134,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	}
 
 	private void copyWidgets(boolean remove){
-		clipBoardWidgets.clear();
+		Context.clipBoardWidgets.clear();
 
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
@@ -1155,7 +1156,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				selectedPanel.remove(widget);
 			else //copy
 				widget = new DesignWidgetWrapper(widget,images);
-			clipBoardWidgets.add(widget);
+			Context.clipBoardWidgets.add(widget);
 		}
 	}
 
@@ -1165,8 +1166,16 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		selectedDragController.clearSelection();
 
-		for(int i=0; i<clipBoardWidgets.size(); i++){
-			DesignWidgetWrapper widget = new DesignWidgetWrapper(clipBoardWidgets.get(i),images);
+		for(int i=0; i<Context.clipBoardWidgets.size(); i++){
+			DesignWidgetWrapper widget = new DesignWidgetWrapper(Context.clipBoardWidgets.get(i),images);
+			
+			if(i == 0){
+				if(widget.getPopupPanel() != widgetPopup){
+					xOffset = widget.getLeftInt();
+					yOffset = widget.getTopInt();
+				}
+			}
+			
 			String s = widget.getLeft();
 			int xPos = Integer.parseInt(s.substring(0,s.length()-2)) + xOffset;
 			s = widget.getTop();
@@ -1176,9 +1185,12 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			selectedPanel.setWidgetPosition(widget,xPos-widget.getAbsoluteLeft(),yPos-widget.getAbsoluteTop());
 			widget.setWidth(widget.getWidth());
 			widget.setHeight(widget.getHeight());
+			widget.setPopupPanel(widgetPopup);
 			selectedDragController.toggleSelection(widget);
-			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
+			if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetPopup(widgetPopup);
 				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetPosition();
+			}
 		}
 	}
 
@@ -1258,7 +1270,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
-		if(clipBoardWidgets.size() > 0){
+		if(Context.clipBoardWidgets.size() > 0){
 			x = selectedPanel.getAbsoluteLeft() + 10;
 			y = selectedPanel.getAbsoluteTop() + 10;
 			pasteWidgets();

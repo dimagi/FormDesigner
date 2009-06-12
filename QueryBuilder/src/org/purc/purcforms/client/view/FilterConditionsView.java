@@ -63,7 +63,7 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 
 		addConditionLink.addClickListener(new ClickListener(){
 			public void onClick(Widget sender){
-				addCondition();
+				addCondition(sender);
 			}
 		});
 		
@@ -71,25 +71,26 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 		initWidget(verticalPanel);
 	}
 	
-	public void addCondition(){
+	public void addCondition(Widget sender){
 		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
 			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
 			//conditionWidget.setQuestionDef(questionDef);
+			//int index = 
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 
 		}
 	}
 
-	public void addBracket(){
+	public void addBracket(Widget sender){
 		ActionHyperlink actionHyperlink = new ActionHyperlink("<>",null,this);
 		actionHyperlink.setAllowDelete(false);
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 		horizontalPanel.add(new CheckBox());
-		horizontalPanel.add(new Label("          "));
+		//horizontalPanel.add(new Label("          "));
 		horizontalPanel.add(actionHyperlink);
 		horizontalPanel.add(new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null));
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
@@ -99,20 +100,20 @@ public class FilterConditionsView  extends Composite implements IConditionContro
 		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
-		horizontalPanel.add(new Label("----"));
-		horizontalPanel.add(new Label("----"));
+		horizontalPanel.add(new Label("      "));
+		horizontalPanel.add(new Label("      "));
 		Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
 		horizontalPanel.add(addConditionLink);
 		verticalPanel.add(horizontalPanel);
 		
-		verticalPanel.add(addConditionLink);
+		verticalPanel.add(this.addConditionLink);
 	}
 	
-	public void deleteCurrentRow(){
+	public void deleteCurrentRow(Widget sender){
 		
 	}
 
-	public void deleteCondition(ConditionWidget conditionWidget){
+	public void deleteCondition(Widget sender,ConditionWidget conditionWidget){
 		if(skipRule != null)
 			skipRule.removeCondition(conditionWidget.getCondition());
 		verticalPanel.remove(conditionWidget);

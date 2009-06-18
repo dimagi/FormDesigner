@@ -233,4 +233,8 @@ public class FormDesignerWidget extends Composite{
 	public void setLocaleText(Integer formId, String locale, String xform, String layout){
 		controller.setLocaleText(formId, locale, xform, layout);
 	}
+	
+	public void removeLanguageTab(){
+		centerPanel.removeLanguageTab();
+	}
 }

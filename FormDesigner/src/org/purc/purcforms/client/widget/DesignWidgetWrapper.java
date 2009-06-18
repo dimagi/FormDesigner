@@ -133,18 +133,27 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}
 
 	public void startEditMode(TextBox txtEdit){
-		if(widget instanceof Label){
+		if(widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button){
 			storePosition();
 			panel.remove(0);
 			panel.add(txtEdit);
-			txtEdit.setText(((Label)widget).getText());
+			
+			String text = null;
+			if(widget instanceof Label)
+				text = ((Label)widget).getText();
+			else if(widget instanceof Hyperlink)
+				text = ((Hyperlink)widget).getText();
+			else
+				text = ((Button)widget).getText();
+			
+			txtEdit.setText(text);
 			txtEdit.selectAll();
 			txtEdit.setFocus(true);
 		}
 	}
 
 	public void stopEditMode(){
-		if(widget instanceof Label){
+		if(widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button){
 			panel.remove(0);
 			panel.add(widget);
 			restorePosition();

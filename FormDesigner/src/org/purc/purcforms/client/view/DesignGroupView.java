@@ -504,7 +504,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 						editWidget = null;
 						return;
 					}
-					else if(editWidget.getWrappedWidget() instanceof Label){
+					else if(hasLabelEdidting(editWidget)){
 						selectedDragController.makeNotDraggable(editWidget);
 						selectedDragController.clearSelection();
 						editWidget.startEditMode(txtEdit);
@@ -522,11 +522,17 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				editWidget = null;
 				return;
 			}
-			else if(editWidget.getWrappedWidget() instanceof Label)
+			else if(hasLabelEdidting(editWidget))
 				stopLabelEdit();
 		}
 		else
 			stopLabelEdit();
+	}
+	
+	protected boolean hasLabelEdidting(DesignWidgetWrapper widget){
+		return (widget.getWrappedWidget() instanceof Label ||
+				widget.getWrappedWidget() instanceof Hyperlink ||
+				widget.getWrappedWidget() instanceof Button);
 	}
 
 	protected boolean isTextBoxFocus(Event event){
@@ -976,7 +982,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				ret = false; //For now this is reserved for only designsurfaceview
 			}
 
-			if(!isTextBoxFocus(event)){
+			boolean textBoxFocus = isTextBoxFocus(event);
+			if(!textBoxFocus || (editWidget != null && event.getCurrentTarget() == editWidget.getElement())){
 				if(keyCode != KeyboardListener.KEY_DELETE)
 					handleStartLabelEditing(event);
 

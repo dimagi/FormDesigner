@@ -9,9 +9,6 @@ import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.OptionDef;
-import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.LanguageUtil;
@@ -42,9 +39,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	private static final int SELECTED_INDEX_XFORMS_SOURCE = 1;
 	private static final int SELECTED_INDEX_DESIGN_SURFACE = 2;
 	private static final int SELECTED_INDEX_LAYOUT_XML = 3;
-	private static final int SELECTED_INDEX_LANGUAGE_XML = 4;
-	private static final int SELECTED_INDEX_PREVIEW = 5;
-	private static final int SELECTED_INDEX_MODEL_XML = 6;
+	private static int SELECTED_INDEX_LANGUAGE_XML = 4;
+	private static int SELECTED_INDEX_PREVIEW = 5;
+	private static int SELECTED_INDEX_MODEL_XML = 6;
 
 	/**
 	 * Tab widget housing the contents.
@@ -256,7 +253,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void setLanguageXml(String xml, boolean selectTab){
 		txtLanguageXml.setText(xml);
 		if(selectTab)
-			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			selectLanguageTab();
 	}
 
 	public void buildLayoutXml(){
@@ -335,13 +332,13 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			}
 
 			if(selectTabs)
-				tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+				selectLanguageTab();
 			
 			if(formDef != null)
 				formDef.setLanguageXml(xml);
 		}
 		else if(selectTabs)
-			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			selectLanguageTab();
 	}
 
 	public void saveFormLayout(){
@@ -356,7 +353,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		buildLanguageXml();
 		
 		if(selectTab)
-			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+			selectLanguageTab();
 
 		if(formDef != null)
 			formDef.setLanguageXml(txtLanguageXml.getText());
@@ -507,5 +504,18 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		txtLayoutXml.setText(xml);
 		if(formDef != null)
 			formDef.setLayoutXml(xml);
+	}
+	
+	private void selectLanguageTab(){
+		if(tabs.getTabBar().getTabCount() == 7)
+			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
+	}
+	
+	public void removeLanguageTab(){
+		if(tabs.getTabBar().getTabCount() == 7){
+			tabs.remove(SELECTED_INDEX_LANGUAGE_XML);
+			--SELECTED_INDEX_PREVIEW;
+			--SELECTED_INDEX_MODEL_XML;
+		}
 	}
 }

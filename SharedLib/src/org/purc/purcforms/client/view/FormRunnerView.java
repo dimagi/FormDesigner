@@ -112,17 +112,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	}
 
 	protected void moveToNextWidget(int index){
-		//boolean moved = false;
-
 		while(++index < selectedPanel.getWidgetCount()){
-			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus()){
-				//moved = true;
+			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus())
 				break;
-			}
 		}
-
-		//if(!moved && this.selectedTabIndex < tabs.getWidgetCount()-1)
-		//	tabs.selectTab(++selectedTabIndex);
 	}
 
 	public void loadLayout(String xml, List<RuntimeWidgetWrapper> externalSourceWidgets){

@@ -42,7 +42,7 @@ public class SqlBuilder {
 		String filter = null,fieldName;
 
 		String operator = getConditionsOperator();
-		for(int index = 0; index < skipRule.getConditionCount(); index++){
+		/*for(int index = 0; index < skipRule.getConditionCount(); index++){
 			Condition condition = skipRule.getConditionAt(index);
 
 			QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
@@ -56,7 +56,7 @@ public class SqlBuilder {
 
 			fieldName  = getFieldName(questionDef);
 			//operator  = GetRowOperator(row);
-		}
+		}*/
 
 		if(filter != null)
 			sql = sql + filter;
@@ -65,9 +65,9 @@ public class SqlBuilder {
 	}
 
 	private static String getConditionsOperator(){
-		if(skipRule.getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_AND)
+		/*if(skipRule.getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_AND)
 			return "AND";
-		else
+		else*/
 			return "OR";
 	}
 

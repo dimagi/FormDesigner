@@ -46,7 +46,7 @@ public class TreeItemWidget extends Composite{
 	
 	public void onBrowserEvent(Event event) {
 	    if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
-	    	  if( (event.getButton() & Event.BUTTON_RIGHT) != 0 && !Context.inLocalizationMode()){	  
+	    	  if( (event.getButton() & Event.BUTTON_RIGHT) != 0 && !Context.isStructureReadOnly()){	  
 	    		  popup.setPopupPosition(event.getClientX(), event.getClientY());
 	    		  FormDesignerUtil.disableContextMenu(popup.getElement());
 	    		  popup.show();

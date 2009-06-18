@@ -5,6 +5,7 @@ import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
@@ -66,7 +67,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 			}
 		});
-
+		
 		//Element elem = DOM.getElementById("loading");
 		//DOM.removeChild(elem.getParentElement(), elem);
 		//DOM.removeChild(elem.getParentElement(), elem);

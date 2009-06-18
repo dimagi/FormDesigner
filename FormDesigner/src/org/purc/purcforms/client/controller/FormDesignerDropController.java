@@ -2,6 +2,8 @@ package org.purc.purcforms.client.controller;
 
 import java.util.ArrayList;
 
+import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.drop.AbstractPositioningDropController;
 import com.allen_sauer.gwt.dnd.client.util.DOMUtil;
@@ -52,10 +54,14 @@ public class FormDesignerDropController extends AbstractPositioningDropControlle
 	int dropTargetOffsetX;
 
 	int dropTargetOffsetY;
+	
+	private DragDropListener dragDropListener;
+	
 
-	public FormDesignerDropController(AbsolutePanel dropTarget) {
+	public FormDesignerDropController(AbsolutePanel dropTarget,DragDropListener dragDropListener) {
 		super(dropTarget);
 		this.dropTarget = dropTarget;
+		this.dragDropListener = dragDropListener;
 	}
 
 	/**
@@ -77,10 +83,15 @@ public class FormDesignerDropController extends AbstractPositioningDropControlle
 	@Override
 	public void onDrop(DragContext context) {
 		for (Draggable draggable : draggableList) {
-			draggable.positioner.removeFromParent();
-			dropTarget.add(draggable.widget, draggable.desiredX, draggable.desiredY);
-			//dropTarget.add(draggable.widget, draggable.widget.getAbsoluteLeft(), draggable.widget.getAbsoluteTop());
-			//dropTarget.add(draggable.widget, context.desiredDraggableX, context.desiredDraggableY);
+			if(draggable.widget instanceof DesignWidgetWrapper){
+				draggable.positioner.removeFromParent();
+				dropTarget.add(draggable.widget, draggable.desiredX, draggable.desiredY);
+				//dropTarget.add(draggable.widget, draggable.widget.getAbsoluteLeft(), draggable.widget.getAbsoluteTop());
+				//dropTarget.add(draggable.widget, context.desiredDraggableX, context.desiredDraggableY);
+			}
+			else if(dragDropListener != null)
+				dragDropListener.onDrop(draggable.widget,context.mouseX,context.mouseY);
+				//dragDropListener.onDrop(draggable.widget,context.desiredDraggableX,context.desiredDraggableY);
 		}
 		super.onDrop(context);
 	}

@@ -1,12 +1,16 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.controller.FormDesignerDragController;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
+import org.purc.purcforms.client.widget.PaletteWidget;
 
+import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -19,94 +23,64 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PaletteView extends Composite {
 
-	  
-	  private VerticalPanel verticalPanel = new VerticalPanel();
-	  private ScrollPanel scrollPanel = new ScrollPanel();
-	  private final Images images;
-	  
-	  public PaletteView(Images images) {
-		  
-		  this.images = images;
-		    //PushButton b = new PushButton("input");
-		    //verticalPanel.add(b);
-		    
-		    /*verticalPanel.add(new PushButton("secret"));
-		    verticalPanel.add(new PushButton("select1"));
-		    verticalPanel.add(new PushButton("select"));
-		    verticalPanel.add(new PushButton("range"));
-		    verticalPanel.add(new PushButton("group"));*/
-		    
-		  	HorizontalPanel hPanel = new HorizontalPanel();
-			hPanel.setSpacing(0);
-			hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			hPanel.add(images.add().createImage());
-			hPanel.add(new PushButton("Label"));
-			FormDesignerUtil.maximizeWidget(hPanel);
-		  	verticalPanel.add(hPanel);
-		  	
-		  	
-		  	verticalPanel.add(new PushButton("TextBox"));
-		  	verticalPanel.add(new PushButton("CheckBox"));
-		  	verticalPanel.add(new PushButton("RadioButton"));
-		  	verticalPanel.add(new PushButton("Dropdown List"));
-		  	verticalPanel.add(new PushButton("TextArea"));
-		  	verticalPanel.add(new PushButton("Time Picker"));
-		  	verticalPanel.add(new PushButton("Date Picker"));
-		  	verticalPanel.add(new PushButton("Date Time Picker"));
-		  	verticalPanel.add(new PushButton("Button"));
-		  	verticalPanel.add(new PushButton("Picture"));
-		  	verticalPanel.add(new PushButton("Repeat"));
-		  	verticalPanel.add(new PushButton("Group Box"));
-		  
-		    verticalPanel.addStyleName("getting-started-blue");
+	private VerticalPanel verticalPanel = new VerticalPanel();
+	private ScrollPanel scrollPanel = new ScrollPanel();
+	private final Images images;
+	
+	private static FormDesignerDragController dragController;
 
-		    scrollPanel.setWidget(verticalPanel);
-		    
-		    
-		    
-		    /*CheckBox checkbox = new CheckBox("Checkbox");
-		    checkbox.addStyleName("getting-started-label");
-		    dragController.makeDraggable(checkbox);
-		    verticalPanel.add(checkbox);
-		    
-		    RadioButton radiobutton = new RadioButton("Radio Button");
-		    radiobutton.addStyleName("getting-started-label");
-		    dragController.makeDraggable(radiobutton);
-		    verticalPanel.add(radiobutton);
-		    
-		    ListBox listbox = new ListBox(false);
-		    listbox.addStyleName("getting-started-label");
-		    dragController.makeDraggable(listbox);
-		    verticalPanel.add(listbox);
-		    
-		    TextBox textbox = new TextBox();
-		    textbox.addStyleName("getting-started-label");
-		    dragController.makeDraggable(textbox);
-		    verticalPanel.add(textbox);
-		    
-		    PushButton pushbutton = new PushButton("Button");
-		    pushbutton.addStyleName("getting-started-label");
-		    dragController.makeDraggable(pushbutton);
-		    verticalPanel.add(pushbutton);*/
-		      
-		   // boundaryPanel.add(scrollPanel);
-		   // FormsDesignerUtil.maximizeWidget(boundaryPanel);
-		    
-//		  Create a drop target on which we can drop labels
-		    //AbsolutePanel targetPanel = new AbsolutePanel();
-		    //targetPanel.setPixelSize(300, 200);
-		    //targetPanel.addStyleName("getting-started-blue");
-		    //targetPanel.setPixelSize(100, 100);
-		    //verticalPanel.add(targetPanel);
+	public PaletteView(Images images) {
 
-		    //dropController = new AbsolutePositionDropController(targetPanel);
-		    
-		    //dragController.registerDropController(dropController);
-		    
-		    initWidget(scrollPanel);
-		    
-		    FormDesignerUtil.maximizeWidget(scrollPanel);
-		    
-		    setTitle("Form controls");
+		this.images = images;
+
+		if(dragController == null)
+			initDnd();
+		
+		verticalPanel.setSpacing(10);
+		verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("label"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("textBox"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("checkBox"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("radioButton"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("listBox"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("textArea"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("button"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("datePicker"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("groupBox"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("repeatSection"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("picture"))));
+		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("videoAudio"))));
+
+		scrollPanel.setWidget(verticalPanel);
+
+		initWidget(scrollPanel);
+		FormDesignerUtil.maximizeWidget(scrollPanel);
+	}
+	
+	private static void initDnd(){
+		dragController = new FormDesignerDragController(RootPanel.get(), false,null);
+		dragController.setBehaviorMultipleSelection(false);
+		//dragController.setBehaviorCancelDocumentSelections(true);
+	}
+
+	private PaletteWidget createPaletteWidget(HTML html){
+		PaletteWidget widget = new PaletteWidget(images,html);
+		dragController.makeDraggable(widget);
+		return widget;
+	}
+	
+	public static void registerDropController(DropController dropController) {
+		if(dragController == null)
+			initDnd();
+		dragController.registerDropController(dropController);
+	}
+	
+	public static void unRegisterDropController(DropController dropController){
+		dragController.unregisterDropController(dropController);
+	}
+	
+	public static void unRegisterAllDropControllers(){
+		dragController.unregisterAllDropControllers();
 	}
 }

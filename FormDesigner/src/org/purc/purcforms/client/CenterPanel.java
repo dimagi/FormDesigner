@@ -193,7 +193,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
 			propertiesView.setFocus();
 
-		FormDef form = getFormDef(formItem);
+		FormDef form = FormDef.getFormDef(formItem);
 
 		if(this.formDef != form){
 			setFormDef(form);
@@ -206,23 +206,6 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 			//}
 		}
-	}
-
-	private FormDef getFormDef(Object formItem){
-		if(formItem instanceof FormDef)
-			return (FormDef)formItem;
-		else if(formItem instanceof PageDef)
-			return ((PageDef)formItem).getParent();
-		else if(formItem instanceof QuestionDef){
-			Object item = ((QuestionDef)formItem).getParent();
-			return getFormDef(item);
-		}
-		else if(formItem instanceof OptionDef){
-			Object item = ((OptionDef)formItem).getParent();
-			return getFormDef(item);
-		}
-
-		return null;
 	}
 
 	public void onWindowResized(int width, int height){
@@ -522,6 +505,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void onLayoutChanged(String xml){
 		txtLayoutXml.setText(xml);
-		formDef.setLayoutXml(xml);
+		if(formDef != null)
+			formDef.setLayoutXml(xml);
 	}
 }

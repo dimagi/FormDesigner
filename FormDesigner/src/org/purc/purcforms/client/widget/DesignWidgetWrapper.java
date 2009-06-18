@@ -48,6 +48,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	private PopupPanel popup;
 	private Element layoutNode;
 
+
 	public DesignWidgetWrapper(DesignWidgetWrapper designWidgetWrapper,Images images){
 		super(designWidgetWrapper);
 
@@ -96,9 +97,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			popup.show();
 			break;
 		case Event.ONMOUSEDOWN:
-			if(!event.getCtrlKey())
+			if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
-		
+
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
@@ -120,15 +121,34 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
-			
+
 			break;
-			
+
 		case Event.ONKEYDOWN:
 			break;
 		}
 
 		FormDesignerUtil.disableContextMenu(widget.getElement());
 		DOM.eventCancelBubble(event, true);
+	}
+
+	public void startEditMode(TextBox txtEdit){
+		if(widget instanceof Label){
+			storePosition();
+			panel.remove(0);
+			panel.add(txtEdit);
+			txtEdit.setText(((Label)widget).getText());
+			txtEdit.selectAll();
+			txtEdit.setFocus(true);
+		}
+	}
+
+	public void stopEditMode(){
+		if(widget instanceof Label){
+			panel.remove(0);
+			panel.add(widget);
+			restorePosition();
+		}
 	}
 
 	private String getDesignCursor(int x, int y){
@@ -548,7 +568,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			node.setAttribute("borderColor", value);
 		else
 			node.removeAttribute("borderColor");
-		
+
 		value = getTextAlign();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute("textAlign", value);
@@ -673,12 +693,20 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	public void setLayoutNode(Element node){
 		layoutNode = node;
 	}
-	
+
 	public void setPopupPanel(PopupPanel popup){
 		this.popup = popup;
 	}
-	
+
 	public PopupPanel getPopupPanel(){
 		return popup;
+	}
+
+	public void setWidgetSelectionListener(WidgetSelectionListener widgetSelectionListener){
+		this.widgetSelectionListener = widgetSelectionListener;
+	}
+	
+	public WidgetSelectionListener getWidgetSelectionListener(){
+		return widgetSelectionListener;
 	}
 }

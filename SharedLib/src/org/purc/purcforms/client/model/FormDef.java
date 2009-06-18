@@ -67,7 +67,9 @@ public class FormDef implements Serializable{
 	private String layoutXml;
 	private String xformXml;
 	private String languageXml;
-
+	
+	private boolean readOnly = false;
+	
 
 	/** Constructs a form definition object. */
 	public FormDef() {
@@ -245,6 +247,14 @@ public class FormDef implements Serializable{
 
 	public void setXformXml(String xform) {
 		this.xformXml = xform;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 	public SkipRule getSkipRule(QuestionDef questionDef){
@@ -864,5 +874,22 @@ public class FormDef implements Serializable{
 		}
 
 		return rootNode;
+	}
+	
+	public static FormDef getFormDef(Object formItem){
+		if(formItem instanceof FormDef)
+			return (FormDef)formItem;
+		else if(formItem instanceof PageDef)
+			return ((PageDef)formItem).getParent();
+		else if(formItem instanceof QuestionDef){
+			Object item = ((QuestionDef)formItem).getParent();
+			return getFormDef(item);
+		}
+		else if(formItem instanceof OptionDef){
+			Object item = ((OptionDef)formItem).getParent();
+			return getFormDef(item);
+		}
+
+		return null;
 	}
 }

@@ -476,7 +476,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	
 	private void updateText(){
 		//if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
-		if(widget != null && txtText.getText().length() > 0) //No setting of empty strings as text.
+		if(widget != null /*&& txtText.getText().length() > 0*/) //We now allow setting of empty strings as text.
 			widget.setText(txtText.getText());
 	}
 
@@ -645,19 +645,19 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			if(value != null && value.trim().length() > 0)
 				txtExternalSource.setText(value);
 			else
-				txtExternalSource.setText(txtText.getText());
+				txtExternalSource.setText(null);
 
 			value = widget.getDisplayField();
 			if(value != null && value.trim().length() > 0)
 				txtDisplayField.setText(value);
 			else
-				txtDisplayField.setText(txtText.getText());
+				txtDisplayField.setText(null);
 
 			value = widget.getValueField();
 			if(value != null && value.trim().length() > 0)
 				txtValueField.setText(value);
 			else
-				txtValueField.setText(txtText.getText());
+				txtValueField.setText(null);
 
 			cbRepeat.setSelectedIndex(widget.isRepeated() ? 0 : 1);
 

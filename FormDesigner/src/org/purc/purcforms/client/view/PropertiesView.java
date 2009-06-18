@@ -555,8 +555,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableQuestionOnlyProperties(false);
 
 		txtText.setEnabled(true);
-		txtDescTemplate.setEnabled(Context.inLocalizationMode() ? false : true);
-		btnDescTemplate.setEnabled(Context.inLocalizationMode() ? false : true);
+		txtDescTemplate.setEnabled(Context.isStructureReadOnly() ? false : true);
+		btnDescTemplate.setEnabled(Context.isStructureReadOnly() ? false : true);
 
 		txtText.setText(formDef.getName());
 		txtBinding.setText(formDef.getVariableName());
@@ -618,7 +618,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	private void enableQuestionOnlyProperties(boolean enabled){
-		boolean enable = (enabled && !Context.inLocalizationMode()) ? true : false;
+		boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
 		
 		cbDataType.setEnabled(enable);
 		//cbControlType.setEnabled(enable);
@@ -720,7 +720,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return;
 		}
 		
-		txtBinding.setEnabled(!Context.inLocalizationMode());
+		txtBinding.setEnabled(!Context.isStructureReadOnly());
 
 		if(formItem instanceof FormDef)
 			setFormProperties((FormDef)formItem);

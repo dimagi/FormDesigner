@@ -176,4 +176,11 @@ public class FormDesignerUtil {
 		DateTimeFormat formatter = DateTimeFormat.getFormat("yyyy-MM-dd");
 		return formatter.format(date);
 	}*/
+	
+	public static boolean getCtrlKey(){
+		Event event = DOM.eventGetCurrentEvent();
+		if(event == null)
+			return false;
+		return event.getCtrlKey();
+	}
 }

@@ -11,4 +11,5 @@ import com.google.gwt.user.client.ui.Widget;
 public interface DragDropListener {
 	public void onDragStart(Widget widget);
 	public void onDragEnd(Widget widget);
+	public void onDrop(Widget widget,int x, int y);
 }

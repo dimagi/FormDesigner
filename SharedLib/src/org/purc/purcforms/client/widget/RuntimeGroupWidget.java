@@ -11,6 +11,7 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XformConverter;
@@ -134,12 +135,21 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 		}
 
-		HorizontalPanel panel = new HorizontalPanel();
-		panel.setSpacing(5);
-		for(int index = 0; index < buttons.size(); index++)
-			panel.add(buttons.get(index));
-		verticalPanel.add(panel);
-		FormUtil.maximizeWidget(panel);
+		if(isRepeated){
+			HorizontalPanel panel = new HorizontalPanel();
+			panel.setSpacing(5);
+			for(int index = 0; index < buttons.size(); index++)
+				panel.add(buttons.get(index));
+			verticalPanel.add(panel);
+			FormUtil.maximizeWidget(panel);
+		}
+		else{
+			for(int index = 0; index < buttons.size(); index++){
+				RuntimeWidgetWrapper widget = buttons.get(index);
+				selectedPanel.add(widget);
+				FormUtil.setWidgetPosition(widget,widget.getLeft(),widget.getTop());
+			}
+		}
 	}
 
 	private int loadWidget(FormDef formDef, Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets){
@@ -323,7 +333,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		if(widget instanceof Button && binding != null){
 			wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 
-			if(binding.equals("addnew")||binding.equals("remove") ||
+			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
 					binding.equals("browse")||binding.equals("clear")){
 				((Button)widget).addClickListener(new ClickListener(){
 					public void onClick(Widget sender){
@@ -367,7 +377,9 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private void execute(Widget sender){
 		String binding = ((RuntimeWidgetWrapper)sender.getParent().getParent()).getBinding();
 
-		if(repeatQtnsDef != null){
+		if(binding.equalsIgnoreCase("submit"))
+			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onSubmit();
+		else if(repeatQtnsDef != null){
 			if(binding.equalsIgnoreCase("addnew"))
 				addNewRow(sender);
 			else if(binding.equalsIgnoreCase("remove")){
@@ -611,7 +623,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).saveValue(formDef);
 			}
 		}
-		
+
 		if(repeatQtnsDef != null)
 			repeatQtnsDef.getQtnDef().setAnswer(table.getRowCount()+"");
 	}
@@ -661,7 +673,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).clearValue();
 		}
 	}
-	
+
 	public boolean isValid(){
 		for(int row = 0; row < table.getRowCount(); row++){
 			for(int col = 0; col < table.getCellCount(row); col++){
@@ -674,13 +686,13 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		}
 		return true;
 	}
-	
+
 	public RuntimeWidgetWrapper getInvalidWidget(){
 		if(firstInvalidWidget == null)
 			return (RuntimeWidgetWrapper)getParent().getParent();
 		return firstInvalidWidget;
 	}
-	
+
 	public boolean setFocus(){
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
@@ -696,11 +708,37 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else{
 			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 				RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
-				widget.setFocus();
-				return true;
+				if(widget.isFocusable()){
+					widget.setFocus();
+					return true;
+				}
 			}
 		}
-		
+
+		return false;
+	}
+	
+	public boolean onMoveToNextWidget(Widget widget) {
+		int index = selectedPanel.getWidgetIndex(widget);
+		return moveToNextWidget(index);
+	}
+
+	public boolean onMoveToPrevWidget(Widget widget){
+		int index = selectedPanel.getWidgetIndex(widget);
+		while(--index > 0){
+			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus())
+				return true;
+		}
+
+		return false;
+	}
+	
+	protected boolean moveToNextWidget(int index){
+		while(++index < selectedPanel.getWidgetCount())
+			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus()){
+				return true;
+		}
+
 		return false;
 	}
 }

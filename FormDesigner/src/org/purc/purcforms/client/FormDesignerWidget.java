@@ -108,13 +108,13 @@ public class FormDesignerWidget extends Composite{
 		centerPanel.setEmbeddedHeightOffset(offset);
 	}
 	
-	public void loadForm(int formId,String xform, String layout){
+	public void loadForm(int formId,String xform, String layout, boolean readOnly){
 		if(leftPanel.formExists(formId))
 			return;
 		
 		centerPanel.setXformsSource(xform, false);
 		centerPanel.setLayoutXml(layout, false);
-		controller.openFormDeffered(formId);
+		controller.openFormDeffered(formId,readOnly);
 	}
 	
 	public void saveSelectedForm(){

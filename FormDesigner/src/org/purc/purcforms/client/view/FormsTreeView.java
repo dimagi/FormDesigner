@@ -193,6 +193,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		if(item != this.item){
 			fireFormItemSelected(item.getUserObject());
 			this.item = item;
+			Context.setFormDef(FormDef.getFormDef(item));
 		}
 	}
 
@@ -336,7 +337,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Deletes the selected question.
 	 */
 	public void deleteSelectedItem(){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -421,7 +422,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Adds a new item.
 	 */
 	public void addNewItem(){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -478,7 +479,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void addNewForm(String name, String varName, int formId){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		if(formExists(formId))
@@ -499,7 +500,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Adds a new child item.
 	 */
 	public void addNewChildItem(boolean addNewIfNoKids){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -546,7 +547,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void moveItemUp() {
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -622,7 +623,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void moveItemDown(){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -713,7 +714,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void cutItem(){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -728,7 +729,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void copyItem() {
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		TreeItem item = tree.getSelectedItem();
@@ -817,7 +818,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void refreshItem(){
-		if(Context.inLocalizationMode())
+		if(inReadOnlyMode())
 			return;
 
 		formDesignerListener.refresh(this);
@@ -999,5 +1000,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		TreeItem child = item.getChild(0);
 		tree.setSelectedItem(child);
 		tree.ensureSelectedItemVisible();
+	}
+	
+	private boolean inReadOnlyMode(){
+		return Context.isStructureReadOnly();
 	}
 }

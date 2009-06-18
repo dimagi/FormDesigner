@@ -49,7 +49,7 @@ public class PreviewView extends FormRunnerView {
 
 		popup.setWidget(menuBar);
 
-		addNewTab("Page1");
+		addNewTab(LocaleText.get("page")+"1");
 		
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN);
 

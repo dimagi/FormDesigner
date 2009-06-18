@@ -104,7 +104,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					if(formDef != null)
 						refreshFormDeffered();
 					else
-						openFormDeffered(ModelConstants.NULL_ID);
+						openFormDeffered(ModelConstants.NULL_ID,false);
 				}
 				else{
 					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
@@ -114,8 +114,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
-	public void openFormDeffered(int id) {
+	public void openFormDeffered(int id, boolean readonly) {
 		final int tempFormId = id;
+		final boolean tempReadonly = readonly;
 
 		FormUtil.dlg.setText(LocaleText.get("openingForm"));
 		FormUtil.dlg.center();
@@ -126,6 +127,8 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						formDef.setReadOnly(tempReadonly);
+						
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
 
@@ -175,10 +178,14 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void saveForm() {
+		final FormDef obj = leftPanel.getSelectedForm();
+		if(obj.isReadOnly())
+			return;
+		
 		if(!leftPanel.isValidForm())
 			return;
 
-		final FormDef obj = leftPanel.getSelectedForm();
+		
 		if(obj == null){
 			Window.alert(LocaleText.get("selectSaveItem"));
 			return;
@@ -348,28 +355,28 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void copyItem() {
-		if(!Context.inLocalizationMode()){
+		if(!Context.isStructureReadOnly()){
 			leftPanel.copyItem();
 			centerPanel.copyItem();
 		}
 	}
 
 	public void cutItem() {
-		if(!Context.inLocalizationMode()){
+		if(!Context.isStructureReadOnly()){
 			leftPanel.cutItem();
 			centerPanel.cutItem();
 		}
 	}
 
 	public void pasteItem() {
-		if(!Context.inLocalizationMode()){
+		if(!Context.isStructureReadOnly()){
 			leftPanel.pasteItem();
 			centerPanel.pasteItem();
 		}
 	}
 
 	public void refreshItem(){
-		if(!Context.inLocalizationMode())
+		if(!Context.isStructureReadOnly())
 			leftPanel.refreshItem();
 	}
 
@@ -431,7 +438,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 					centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 					centerPanel.setLayoutXml(layoutXml,false);
-					openFormDeffered(formId);
+					openFormDeffered(formId,false);
 				}
 
 				public void onError(Request request, Throwable exception){

@@ -460,6 +460,13 @@ public class WidgetEx extends Composite{
 		height = getHeight();
 	}
 	
+	public void restorePosition(){
+		setLeft(left);
+		setTop(top);
+		setWidth(width);
+		setHeight(height);
+	}
+	
 	public void refreshSize(){
 		setHeight(getHeight());
 		setWidth(getWidth());

@@ -112,11 +112,11 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	}
 
 	protected void moveToNextWidget(int index){
-		boolean moved = false;
+		//boolean moved = false;
 
 		while(++index < selectedPanel.getWidgetCount()){
 			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus()){
-				moved = true;
+				//moved = true;
 				break;
 			}
 		}
@@ -412,6 +412,10 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		}
 	}
 
+	public void onSubmit(){
+		submit();
+	}
+
 	protected boolean isValid(){
 		boolean valid = true;
 		int pageNo = -1;
@@ -480,14 +484,29 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	}
 
 	public void onMoveToNextWidget(Widget widget) {
+		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
+			if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToNextWidget(widget))
+				return;
+			else
+				widget = widget.getParent().getParent().getParent().getParent();
+		}
+
 		int index = selectedPanel.getWidgetIndex(widget);
 		moveToNextWidget(index);
 	}
 
 	public void onMoveToPrevWidget(Widget widget){
-		int index = selectedPanel.getWidgetIndex(widget);
 		boolean moved = false;
 
+		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
+			if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToPrevWidget(widget))
+				return;
+			else
+				widget = widget.getParent().getParent().getParent().getParent();
+		}
+
+
+		int index = selectedPanel.getWidgetIndex(widget);
 		while(--index > 0){
 			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus()){
 				moved = true;

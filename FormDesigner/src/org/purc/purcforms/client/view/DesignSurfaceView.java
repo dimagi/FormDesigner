@@ -9,7 +9,6 @@ import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
-import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.LayoutChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
@@ -23,11 +22,10 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+import org.purc.purcforms.client.widget.PaletteWidget;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConverter;
-import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -37,18 +35,11 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
-import com.google.gwt.user.client.ui.MenuItemSeparator;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
@@ -71,44 +62,10 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class DesignSurfaceView extends Composite implements /*WindowResizeListener,*/ TabListener,WidgetSelectionListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
+public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ TabListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
 
-	private MouseListenerCollection mouseListeners;
-	private static final int MOVE_LEFT = 1;
-	private static final int MOVE_RIGHT = 2;
-	private static final int MOVE_UP = 3;
-	private static final int MOVE_DOWN = 4;
-
-	private DecoratedTabPanel tabs = new DecoratedTabPanel();
-	private PopupPanel popup;
-	private PopupPanel widgetPopup;
-	private final Images images;
-	private int selectedTabIndex = 0;
 	private String sHeight = "100%";
-	private int x;
-	private int y;
-	private int clipboardLeftMostPos;
-	private int clipboardTopMostPos;
-	private MenuItem copyMenu;
-	private MenuItem cutMenu;
-	private MenuItem pasteMenu;
-	private MenuItem deleteWidgetsMenu;
-	private MenuItemSeparator cutCopySeparator;
-	private MenuItemSeparator pasteSeparator;
-	private MenuItemSeparator deleteWidgetsSeparator;
-
-	private AbsolutePanel selectedPanel = new AbsolutePanel();
-	private FormDesignerDragController selectedDragController;
-	private WidgetSelectionListener widgetSelectionListener;
-	private WidgetSelectionListener currentWidgetSelectionListener;
-	private DesignWidgetWrapper selectedWidget;
 	private LayoutChangeListener layoutChangeListener;
-
-	private int selectionXPos;
-	private int selectionYPos;
-	private boolean mouseMoved = false;
-
-	private Label rubberBand = new Label(""); //HTML("<DIV ID='rubberBand'></DIV>");
 
 	//create a DropController for each drop target on which draggable widgets
 	// can be dropped
@@ -118,12 +75,12 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	Document doc;
 
 	private int embeddedHeightOffset = 0;
-	
-	private HashMap<Integer,DesignWidgetWrapper> pageWidgets = new HashMap<Integer,DesignWidgetWrapper>();
-	
+
+
+
 
 	public DesignSurfaceView(Images images){
-		this.images = images;
+		super(images);
 
 		FormDesignerUtil.maximizeWidget(tabs);
 		initPanel();
@@ -155,54 +112,59 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 		//DOM.sinkEvents(RootPanel.getBodyElement(), Event.ONKEYDOWN | DOM.getEventsSunk(RootPanel.getBodyElement()));
 
-		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
+		//DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 
+		previewEvents();
+
+		currentWidgetSelectionListener = this;
+	}
+
+	private void previewEvents(){
+		
 		DOM.addEventPreview(new EventPreview() { 
 			public boolean onEventPreview(Event event) 
 			{ 
+				if(!isVisible())
+					return true;
+				
 				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
 					//DOM.eventPreventDefault(pEvent);
-					onBrowserEvent(event);
+					if(!childHandleKeyDownEvent(event))
+						handleKeyDownEvent(event);
+					//onBrowserEvent(event);
 					return true;
 				}
 				return true;
 			}
 		});
-
-		currentWidgetSelectionListener = this;
 	}
 
-	private void initPanel(){
+	private boolean childHandleKeyDownEvent(Event event){
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			Widget widget = selectedPanel.getWidget(index);
+			if(!(widget instanceof DesignWidgetWrapper))
+				continue;
+			if(!(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget))
+				continue;
+
+			if(((DesignGroupWidget)((DesignWidgetWrapper)widget).getWrappedWidget()).handleKeyDownEvent(event))
+				return true;
+		}
+
+		return false;
+	}
+
+	protected void initPanel(){
 		AbsolutePanel panel = new AbsolutePanel();
 		FormDesignerUtil.maximizeWidget(panel);
 		tabs.add(panel,"Page1");
 
-		//Create a DragController for each logical area where a set of draggable
-		// widgets and drop targets will be allowed to interact with one another.
-		FormDesignerDragController dragController = new FormDesignerDragController(panel, false,this);
-
-		// Positioner is always constrained to the boundary panel
-		// Use 'true' to also constrain the draggable or drag proxy to the boundary panel
-		//dragController.setBehaviorConstrainedToBoundaryPanel(false);
-
-		// Allow multiple widgets to be selected at once using CTRL-click
-		dragController.setBehaviorMultipleSelection(true);
-
-		dragController.setBehaviorCancelDocumentSelections(true);
-
-		// create a DropController for each drop target on which draggable widgets
-		// can be dropped
-		DropController dropController =  new FormDesignerDropController(panel);
-
-		// Don't forget to register each DropController with a DragController
-		dragController.registerDropController(dropController);
-
-		dragControllers.add(tabs.getWidgetCount()-1,dragController);
-		panel.setHeight(sHeight);
-		selectedDragController = dragController;
 		selectedPanel = panel;
 
-		//selectedPanel.add(rubberBand);
+		super.initPanel();
+
+		dragControllers.add(tabs.getWidgetCount()-1,selectedDragController);
+		panel.setHeight(sHeight);
 
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
@@ -210,172 +172,6 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 			}
 		});
-	}
-
-	public void onBrowserEvent(Event event) {
-		switch (DOM.eventGetType(event)) {
-		case Event.ONMOUSEDOWN:  
-			mouseMoved = false;
-			x = event.getClientX();
-			y = event.getClientY();
-
-			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
-
-				updatePopup();
-
-				//Account for the difference between absolute position and the
-				// body's positioning context.
-				//x = event.getClientX() ;//- Document.get().getBodyOffsetLeft();
-				//y = event.getClientY() ;//- Document.get().getBodyOffsetTop();
-
-				popup.setPopupPosition(event.getClientX(), event.getClientY());
-
-				FormDesignerUtil.disableContextMenu(popup.getElement());
-				popup.show();
-			}
-			else{
-				selectionXPos = selectionYPos = -1;
-				//if(!selectedDragController.isAnyWidgetSelected()){
-				selectionXPos = event.getClientX() - selectedPanel.getAbsoluteLeft();
-				selectionYPos = event.getClientY() - selectedPanel.getAbsoluteTop();
-				//}
-
-				if(!(event.getShiftKey() || event.getCtrlKey())){
-					selectedDragController.clearSelection();
-					if(event.getTarget() != this.selectedPanel.getElement()){
-						if(event.getTarget().getInnerText().equals(DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(tabs.getTabBar().getSelectedTab())))){
-							//DesignWidgetWrapper widget = new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this);
-							//widget.setBinding(pageBindings.get(selectedTabIndex));
-							widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
-							return;
-						}
-					}
-				}
-				widgetSelectionListener.onWidgetSelected(null);
-
-				startRubberBand(event);
-			}
-			break;
-		case Event.ONMOUSEMOVE:
-			mouseMoved = true;
-			//FormsDesignerUtil.disableContextMenu(getElement());
-			if(event.getButton() == Event.BUTTON_LEFT)
-				moveRubberBand(event);
-			break;
-		case Event.ONMOUSEUP:
-
-			if(selectedPanel.getWidgetCount() > 0)
-				stopRubberBand(event);
-			if(selectionXPos != -1 && mouseMoved)
-				selectWidgets(event);
-			mouseMoved = false;
-			break;
-		case Event.ONKEYDOWN:
-			if(this.isVisible()){
-				int keyCode = event.getKeyCode();
-				if(keyCode == KeyboardListener.KEY_LEFT)
-					moveWidgets(MOVE_LEFT);
-				else if(keyCode == KeyboardListener.KEY_RIGHT)
-					moveWidgets(MOVE_RIGHT);
-				else if(keyCode == KeyboardListener.KEY_UP)
-					moveWidgets(MOVE_UP);
-				else if(keyCode == KeyboardListener.KEY_DOWN)
-					moveWidgets(MOVE_DOWN);  
-				else if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
-					selectAll();
-					DOM.eventPreventDefault(event);
-				}
-				else if(event.getCtrlKey() && (keyCode == 'C' || keyCode == 'c')){
-					if(selectedDragController.isAnyWidgetSelected())
-						copyWidgets(false);
-				}
-				else if(event.getCtrlKey() && (keyCode == 'X' || keyCode == 'x')){
-					if(selectedDragController.isAnyWidgetSelected())
-						cutWidgets();
-				}
-				else if(event.getCtrlKey() && (keyCode == 'V' || keyCode == 'v')){
-					if(Context.clipBoardWidgets.size() > 0 && x >= 0){
-						x += selectedPanel.getAbsoluteLeft();
-						y += selectedPanel.getAbsoluteTop();
-						pasteWidgets();
-						x = -1; //TODO prevent pasting twice as this is fired twice. Needs smarter solution
-					}
-				}
-				else if(keyCode == KeyboardListener.KEY_DELETE){
-					if(selectedDragController.isAnyWidgetSelected())
-						deleteWidgets();
-				}
-				else if(event.getCtrlKey() && (keyCode == 'F' || keyCode == 'f')){
-					format();
-					DOM.eventPreventDefault(event);
-				}
-			}
-			break;
-		}
-	}
-
-	private DesignWidgetWrapper getSelPageDesignWidget(){
-		return pageWidgets.get(selectedTabIndex);
-	}
-	
-	private void moveWidgets(int dirrection){
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null)
-			return;
-
-		int pos;
-		for(int index = 0; index < widgets.size(); index++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
-
-			if(dirrection == MOVE_LEFT){
-				pos = FormUtil.convertDimensionToInt(widget.getLeft());
-				widget.setLeft(pos-1+"px");
-			}
-			else if(dirrection == MOVE_RIGHT){
-				pos = FormUtil.convertDimensionToInt(widget.getLeft());
-				widget.setLeft(pos+1+"px");
-			}
-			else if(dirrection == MOVE_UP){
-				pos = FormUtil.convertDimensionToInt(widget.getTop());
-				widget.setTop(pos-1+"px");		
-			}
-			else if(dirrection == MOVE_DOWN){
-				pos = FormUtil.convertDimensionToInt(widget.getTop());
-				widget.setTop(pos+1+"px");
-			}
-		}
-	}
-
-	private void selectWidgets(Event event){
-		int endX = event.getClientX() - selectedPanel.getAbsoluteLeft();
-		int endY = event.getClientY() - selectedPanel.getAbsoluteTop();
-		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
-			if(selectedPanel.getWidget(i) instanceof  DesignWidgetWrapper){
-				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
-				if(widget.isWidgetInRect(this.selectionXPos, this.selectionYPos, endX, endY))
-					this.selectedDragController.selectWidget(widget);
-			}
-		}
-
-		if((event.getCtrlKey() || event.getShiftKey() || event.getAltKey()) && selectedDragController.getSelectedWidgetCount() == 1){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
-			widget.setWidthInt(endX - widget.getLeftInt());
-			widget.setHeightInt(endY - widget.getTopInt());
-		}
-
-		if(event.getKeyCode() == KeyboardListener.KEY_UP || event.getKeyCode() == KeyboardListener.KEY_DOWN){
-			for(int index = 0; index < selectedDragController.getSelectedWidgetCount(); index++){
-				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
-				widget.setHeightInt(endY - widget.getTopInt());
-			}
-		}
-
-		if(event.getKeyCode() == KeyboardListener.KEY_RIGHT || event.getKeyCode() == KeyboardListener.KEY_LEFT){
-			for(int index = 0; index < selectedDragController.getSelectedWidgetCount(); index++){
-				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
-				widget.setWidthInt(endX - widget.getLeftInt());
-			}
-		}
 	}
 
 	private void setupPopup(){
@@ -401,7 +197,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			public void execute() {popup.hide(); addNewDropdownList(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("textArea")),true,new Command(){
-			public void execute() {popup.hide(); addTextArea(true);}});
+			public void execute() {popup.hide(); addNewTextArea(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
 			public void execute() {popup.hide(); addNewButton(true);}});
@@ -467,7 +263,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		//else if(clipBoardWidgets.size() > 0){
 		pasteSeparator = menuBar.addSeparator();
 		pasteMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
-			public void execute() {popup.hide(); pasteWidgets();}});
+			public void execute() {popup.hide(); pasteWidgets(true);}});
 		//}
 
 		menuBar.addSeparator();	
@@ -485,365 +281,6 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		popup.setWidget(menuBar);
 	}
 
-	private void updatePopup(){
-		boolean visible = false;
-		if(selectedDragController.isAnyWidgetSelected())
-			visible = true;
-		deleteWidgetsSeparator.setVisible(visible);
-		deleteWidgetsMenu.setVisible(visible);
-		cutCopySeparator.setVisible(visible);
-		cutMenu.setVisible(visible);
-		copyMenu.setVisible(visible); 
-
-		visible = false;
-		if(Context.clipBoardWidgets.size() > 0)
-			visible = true;
-		pasteSeparator.setVisible(visible);
-		pasteMenu.setVisible(visible); 
-	}
-
-	private DesignWidgetWrapper addNewWidget(Widget widget, boolean select){
-		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
-		selectedDragController.makeDraggable(wrapper);
-		selectedPanel.add(wrapper);
-		selectedPanel.setWidgetPosition(wrapper, x-wrapper.getAbsoluteLeft(), y-wrapper.getAbsoluteTop());
-		if(select){
-			selectedDragController.clearSelection();
-			selectedDragController.toggleSelection(wrapper);
-			widgetSelectionListener.onWidgetSelected(wrapper);
-		}
-		return wrapper;
-	}
-
-	private DesignWidgetWrapper addNewLabel(String text, boolean select){
-		if(text == null)
-			text = "Label";
-		Label label = new Label(text);
-
-		DesignWidgetWrapper wrapper = addNewWidget(label,select);
-		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
-		//DOM.setStyleAttribute(wrapper.getWrappedWidget().getElement(),"textAlign", "center");
-		return wrapper;
-	}
-
-	private DesignWidgetWrapper addNewVideoAudio(String text, boolean select){
-		if(text == null)
-			text = "Click to play";
-		Hyperlink link = new Hyperlink(text,null);
-
-		DesignWidgetWrapper wrapper = addNewWidget(link,select);
-		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
-		return wrapper;
-	}
-
-	private DesignWidgetWrapper addNewRepeatSection(boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","500px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(true);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-		y = 55;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("addNew"),"addnew",false);
-		x = 150;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("remove"),"remove",false);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-		return widget;
-	}
-
-	private DesignWidgetWrapper addNewPictureSection(String parentBinding, boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","220px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(false);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-
-		y = 10;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-		addNewPicture(false).setBinding(parentBinding);
-
-		y = 55 + 120;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
-		x = 120;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-		return widget;
-	}
-
-	private DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(false);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-
-		y = 20;
-		x = 45;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-		addNewVideoAudio(null,false).setBinding(parentBinding);
-
-		y = 60;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
-		x = 120;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-		return widget;
-	}
-
-
-
-	private DesignWidgetWrapper addNewGroupBox(boolean select){
-		DesignGroupWidget group = new DesignGroupWidget(images,this);
-		group.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(group.getElement(), "height","200px");
-		DOM.setStyleAttribute(group.getElement(), "width","500px");
-		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
-
-		DesignWidgetWrapper widget = addNewWidget(group,select);
-
-		return widget;
-	}
-
-	private DesignWidgetWrapper addNewPicture(boolean select){
-		Image image = images.picture().createImage();
-		DOM.setStyleAttribute(image.getElement(), "height","155px");
-		DOM.setStyleAttribute(image.getElement(), "width","185px");
-		return addNewWidget(image,select);
-	}
-
-	private DesignWidgetWrapper addNewTextBox(boolean select){
-		TextBox tb = new TextBox();
-		DOM.setStyleAttribute(tb.getElement(), "height","25px");
-		DOM.setStyleAttribute(tb.getElement(), "width","200px");
-		return addNewWidget(tb,select);
-	}
-
-	private DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, int max, String pageName, boolean select){
-		x = 35 + selectedPanel.getAbsoluteLeft();
-		y += 25;
-
-		Vector questions = questionDef.getRepeatQtnsDef().getQuestions();
-		if(questions == null)
-			return addNewTextBox(select); //TODO Bug here
-		for(int index = 0; index < questions.size(); index++){
-			QuestionDef qtn = (QuestionDef)questions.get(index);
-			if(index > 0)
-				x += 210;
-			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
-			label.setBinding(qtn.getVariableName());
-			label.setTextDecoration("underline");
-		}
-
-		x = 20 + selectedPanel.getAbsoluteLeft();
-		y += 25;
-		DesignWidgetWrapper widget = addNewRepeatSection(select);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wgpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-		currentWidgetSelectionListener = (DesignGroupWidget)widget.getWrappedWidget();
-
-		int oldY = y;
-		y = x = 10;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = widget.getWidgetPopup();
-
-		x += selectedPanel.getAbsoluteLeft();
-		y += selectedPanel.getAbsoluteTop();
-
-		DesignWidgetWrapper widgetWrapper = null;
-		for(int index = 0; index < questions.size(); index++){
-			QuestionDef qtn = (QuestionDef)questions.get(index);
-			if(index > 0)
-				x += 205;
-
-			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
-					qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-				widgetWrapper = addNewDropdownList(false);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
-				widgetWrapper = addNewDatePicker(false);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
-				widgetWrapper = addNewDropdownList(false);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
-				widgetWrapper = addNewPicture(select);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
-					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(null,select);
-			else
-				widgetWrapper = addNewTextBox(select);
-
-			widgetWrapper.setBinding(qtn.getVariableName());
-			widgetWrapper.setQuestionDef(qtn);
-			widgetWrapper.setTitle(qtn.getText());
-			widgetWrapper.setTabIndex(index + 1);
-		}
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wgpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-		y += 130; //25;
-
-		if(questions.size() == 1)
-			widget.setWidthInt(265);
-		else
-			widget.setWidthInt((questions.size() * 205)+15);
-		return widget;
-	}
-
-	private DesignWidgetWrapper addNewDatePicker(boolean select){
-		DatePicker tb = new DatePickerWidget();
-		DOM.setStyleAttribute(tb.getElement(), "height","25px");
-		DOM.setStyleAttribute(tb.getElement(), "width","200px");
-		return addNewWidget(tb,select);
-	}
-
-	private DesignWidgetWrapper addNewCheckBox(boolean select){
-		return addNewWidget(new CheckBox(LocaleText.get("checkBox")),select);
-	}
-
-	private DesignWidgetWrapper addNewRadioButton(boolean select){
-		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
-	}
-
-	private DesignWidgetWrapper addNewDropdownList(boolean select){
-		ListBox lb = new ListBox(false);
-		DOM.setStyleAttribute(lb.getElement(), "height","25px");
-		DOM.setStyleAttribute(lb.getElement(), "width","200px");
-		DesignWidgetWrapper wrapper = addNewWidget(lb,select);
-		return wrapper;
-	}
-
-	private DesignWidgetWrapper addTextArea(boolean select){
-		TextArea ta = new TextArea();
-		DOM.setStyleAttribute(ta.getElement(), "height","60px");
-		DOM.setStyleAttribute(ta.getElement(), "width","200px");
-		return addNewWidget(ta,select);
-	}
-
-	private DesignWidgetWrapper addNewButton(String label, String binding, boolean select){
-		DesignWidgetWrapper wrapper = addNewWidget(new Button(label),select);
-		wrapper.setWidthInt(70);
-		wrapper.setHeightInt(30);
-		wrapper.setBinding(binding);
-		return wrapper;
-	}
-
-	private DesignWidgetWrapper addNewButton(boolean select){
-		return addNewButton(LocaleText.get("submit"),"submit",select);
-	}
-
 	private void addNewTab(String name){
 		initPanel();
 		if(name == null)
@@ -852,13 +289,13 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		tabs.add(selectedPanel, name);
 		selectedTabIndex = tabs.getWidgetCount() - 1;
 		tabs.selectTab(selectedTabIndex);
-		
+
 		DesignWidgetWrapper widget = new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this);
 		widget.setBinding(name);
 		pageWidgets.put(tabs.getTabBar().getTabCount()-1, widget);
-		
+
 		//widgetSelectionListener.onWidgetSelected(widget);
-		
+
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
@@ -866,11 +303,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		});
 	}
 
-	private void selectAll(){
-		selectedDragController.clearSelection();
-		for(int i=0; i<selectedPanel.getWidgetCount(); i++)
-			selectedDragController.selectWidget(selectedPanel.getWidget(i));
-	}
+
 
 	public void onWindowResized(int width, int height){
 		height -= (160+embeddedHeightOffset); //(160 + 30);
@@ -917,10 +350,10 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 			Element node = doc.createElement("Page");
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
 			//node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
-			
+
 			if(pageWidgets.get(i) != null)
 				node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, pageWidgets.get(i).getBinding());
-			
+
 			rootNode.appendChild(node);
 			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
 			boolean b = buildLayoutXml(node,panel,doc);
@@ -980,6 +413,7 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 	public boolean setLayoutXml(String xml, FormDef formDef){
 		this.formDef = formDef;
 
+		PaletteView.unRegisterAllDropControllers();
 		tabs.clear();
 
 		if(xml == null || xml.trim().length() == 0){
@@ -1122,97 +556,17 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return wrapper;
 	}
 
-	/*private void setWidgetPosition(Widget w, String left, String top) {
-		 com.google.gwt.user.client.Element h = w.getElement();
-		 DOM.setStyleAttribute(h, "position", "absolute");
-		 DOM.setStyleAttribute(h, "left", left);
-		 DOM.setStyleAttribute(h, "top", top);
-	 }*/
-
-	private void cutWidgets(){
-		copyWidgets(true);
-	}
-
-	private void copyWidgets(boolean remove){
-		Context.clipBoardWidgets.clear();
-
-		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
-			widget.storePosition();
-			if(i == 0){
-				clipboardLeftMostPos = FormUtil.convertDimensionToInt(widget.getLeft());;
-				clipboardTopMostPos = FormUtil.convertDimensionToInt(widget.getTop());;
-			}
-			else{
-				int dimension = FormUtil.convertDimensionToInt(widget.getLeft());
-				if(clipboardLeftMostPos > dimension)
-					clipboardLeftMostPos = dimension;
-				dimension = FormUtil.convertDimensionToInt(widget.getTop());
-				if(clipboardTopMostPos > dimension)
-					clipboardTopMostPos = dimension;
-			}
-
-			if(remove) //cut
-				selectedPanel.remove(widget);
-			else //copy
-				widget = new DesignWidgetWrapper(widget,images);
-			Context.clipBoardWidgets.add(widget);
-		}
-	}
-
-	private void pasteWidgets(){
-		int xOffset = x - clipboardLeftMostPos;
-		int yOffset = y - clipboardTopMostPos;
-
-		selectedDragController.clearSelection();
-
-		for(int i=0; i<Context.clipBoardWidgets.size(); i++){
-			DesignWidgetWrapper widget = new DesignWidgetWrapper(Context.clipBoardWidgets.get(i),images);
-			
-			if(i == 0){
-				if(widget.getPopupPanel() != widgetPopup){
-					xOffset = widget.getLeftInt();
-					yOffset = widget.getTopInt();
-				}
-			}
-			
-			String s = widget.getLeft();
-			int xPos = Integer.parseInt(s.substring(0,s.length()-2)) + xOffset;
-			s = widget.getTop();
-			int yPos = Integer.parseInt(s.substring(0,s.length()-2)) + yOffset;
-			this.selectedDragController.makeDraggable(widget);
-			selectedPanel.add(widget);
-			selectedPanel.setWidgetPosition(widget,xPos-widget.getAbsoluteLeft(),yPos-widget.getAbsoluteTop());
-			widget.setWidth(widget.getWidth());
-			widget.setHeight(widget.getHeight());
-			widget.setPopupPanel(widgetPopup);
-			selectedDragController.toggleSelection(widget);
-			if(widget.getWrappedWidget() instanceof DesignGroupWidget){
-				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetPopup(widgetPopup);
-				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetPosition();
-			}
-		}
-	}
-
-	private void deleteWidgets(){
-		if(!Window.confirm(LocaleText.get("deleteWidgetPrompt")))
-			return;
-
-		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i);
-			if(widget.getLayoutNode() != null)
-				widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
-			selectedPanel.remove(widget);
-		}
-
-		if(doc != null){
+	public boolean deleteWidgets(){
+		if(super.deleteWidgets() && doc != null){
 			String layout = null;
 			if(!(tabs.getTabBar().getTabCount() == 1 && (selectedPanel == null || (selectedPanel != null && selectedPanel.getWidgetCount() == 0))))
 				layout = FormUtil.formatXml(doc.toString());
 			layoutChangeListener.onLayoutChanged(layout);
+
+			return true;
 		}
 
-		selectedDragController.clearSelection();
+		return true;
 	}
 
 	private void deleteTab(){
@@ -1229,7 +583,9 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		if(!Window.confirm(LocaleText.get("deleteTabPrompt")))
 			return;
 
-		dragControllers.remove(selectedTabIndex);
+		FormDesignerDragController dragController = dragControllers.remove(selectedTabIndex);
+		PaletteView.unRegisterDropController(dragController.getFormDesignerDropController());
+
 		tabs.remove(selectedTabIndex);
 		pageWidgets.remove(selectedTabIndex);
 		if(selectedTabIndex > 0)
@@ -1237,61 +593,10 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		tabs.selectTab(selectedTabIndex);
 	}
 
-	public void onWidgetSelected(DesignWidgetWrapper widget) {
-		if(widget == null)
-			return;
-
-		if(!(widget.getWrappedWidget() instanceof TabBar)){
-			//Event event = DOM.eventGetCurrentEvent(); //TODO verify that this does not introduce a bug
-			//if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
-			if(selectedDragController.getSelectedWidgetCount() == 1)
-				selectedDragController.clearSelection();
-			selectedDragController.selectWidget(widget);
-			//}
-		}
-
-		this.widgetSelectionListener.onWidgetSelected(widget);
-	}
-
-	public void copyItem() {
-		if(selectedDragController.isAnyWidgetSelected())
-			copyWidgets(false);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#cutItem()
-	 */
-	public void cutItem() {
-		if(selectedDragController.isAnyWidgetSelected())
-			cutWidgets();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
-	 */
-	public void pasteItem() {
-		if(Context.clipBoardWidgets.size() > 0){
-			x = selectedPanel.getAbsoluteLeft() + 10;
-			y = selectedPanel.getAbsoluteTop() + 10;
-			pasteWidgets();
-		}
-	}
-
-	public void deleteSelectedItem() {
-		if(selectedDragController.isAnyWidgetSelected())
-			this.deleteWidgets();
-	}
-
-	public void onDragEnd(Widget widget) {
-		onWidgetSelected((DesignWidgetWrapper)widget);
-	}
-
-	public void onDragStart(Widget widget) {
-		onWidgetSelected((DesignWidgetWrapper)widget);
-	}
-
 	public void setLayout(FormDef formDef){			
 		this.formDef = formDef;
+
+		PaletteView.unRegisterAllDropControllers();
 		tabs.clear();
 
 		Vector pages = formDef.getPages();
@@ -1407,51 +712,175 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		addNewButton(false);
 	}
 
-	private void rightAlignLabels(AbsolutePanel panel){
-		List<DesignWidgetWrapper> labels = new ArrayList<DesignWidgetWrapper>();
-		List<DesignWidgetWrapper> inputs = new ArrayList<DesignWidgetWrapper>();
-		int longestLabelWidth = 0, longestLabelLeft = 20;
+	protected DesignWidgetWrapper addNewRepeatSection(boolean select){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","500px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
-		boolean usingSelection = false;
-		int count = selectedDragController.getSelectedWidgetCount();
-		if(count < 2)
-			count = panel.getWidgetCount();
-		else
-			usingSelection = true;
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
+		widget.setRepeated(true);
 
-		DesignWidgetWrapper widget = null;
-		for(int index =0; index < count; index++){
-			if(usingSelection)
-				widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
-			else
-				widget = (DesignWidgetWrapper)panel.getWidget(index);
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
 
-			if(widget.getWrappedWidget() instanceof Button)
-				continue;
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
 
-			if(widget.getWrappedWidget() instanceof Label){
-				if(widget.getElement().getScrollWidth() > longestLabelWidth){
-					longestLabelWidth = widget.getElement().getScrollWidth();
-					longestLabelLeft = FormUtil.convertDimensionToInt(widget.getLeft());
-				}
-				labels.add(widget);
-			}
-			else
-				inputs.add(widget);
-		}
+		int oldY = y;
+		y = 55;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
 
-		int relativeWidth = longestLabelWidth+longestLabelLeft;
-		String left = (relativeWidth+5)+"px";
-		for(int index = 0; index < inputs.size(); index++)
-			inputs.get(index).setLeft(left);
+		addNewButton(LocaleText.get("addNew"),"addnew",false);
+		x = 150;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton(LocaleText.get("remove"),"remove",false);
 
-		for(int index = 0; index < labels.size(); index++){
-			widget = labels.get(index);
-			widget.setLeft((relativeWidth - widget.getElement().getScrollWidth()+"px"));
-		}
+		selectedDragController.clearSelection();
+
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		return widget;
 	}
 
-	private DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
+	protected DesignWidgetWrapper addNewPictureSection(String parentBinding, boolean select){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","220px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
+
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
+		widget.setRepeated(false);
+
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
+
+		int oldY = y;
+
+		y = 10;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+		addNewPicture(false).setBinding(parentBinding);
+
+		y = 55 + 120;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+
+		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
+		x = 120;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
+
+		selectedDragController.clearSelection();
+
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		return widget;
+	}
+
+	protected DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, boolean select){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
+
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
+		widget.setRepeated(false);
+
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
+
+		int oldY = y;
+
+		y = 20;
+		x = 45;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+		addNewVideoAudio(null,false).setBinding(parentBinding);
+
+		y = 60;
+		x = 10;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+
+		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
+		x = 120;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
+
+		selectedDragController.clearSelection();
+
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		return widget;
+	}
+
+	protected DesignWidgetWrapper addNewGroupBox(boolean select){
+		DesignGroupWidget group = new DesignGroupWidget(images,this);
+		group.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(group.getElement(), "height","200px");
+		DOM.setStyleAttribute(group.getElement(), "width","500px");
+		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
+
+		DesignWidgetWrapper widget = addNewWidget(group,select);
+
+		return widget;
+	}
+
+	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
 		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
 			if(i != 0){
@@ -1472,175 +901,91 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		return null;
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
-	 */
-	public void alignLeft() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+	protected DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, int max, String pageName, boolean select){
+		x = 35 + selectedPanel.getAbsoluteLeft();
+		y += 25;
 
-		//align according to the last selected item.
-		String left = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getLeft();
-		for(int index = 0; index < widgets.size(); index++)
-			((DesignWidgetWrapper)widgets.get(index)).setLeft(left);
-	}
-
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
-	 */
-	public void alignRight() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
-
-		//align according to the last selected item.
-		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollWidth() + FormUtil.convertDimensionToInt(widget.getLeft());
-		for(int index = 0; index < widgets.size(); index++){
-			widget = (DesignWidgetWrapper)widgets.get(index);
-			widget.setLeft((total - widget.getElement().getScrollWidth()+"px"));
+		Vector questions = questionDef.getRepeatQtnsDef().getQuestions();
+		if(questions == null)
+			return addNewTextBox(select); //TODO Bug here
+		for(int index = 0; index < questions.size(); index++){
+			QuestionDef qtn = (QuestionDef)questions.get(index);
+			if(index > 0)
+				x += 210;
+			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
+			label.setBinding(qtn.getVariableName());
+			label.setTextDecoration("underline");
 		}
-	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
-	 */
-	public void alignTop() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		x = 20 + selectedPanel.getAbsoluteLeft();
+		y += 25;
+		DesignWidgetWrapper widget = addNewRepeatSection(select);
 
-		//align according to the last selected item.
-		String top = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getTop();
-		for(int index = 0; index < widgets.size(); index++)
-			((DesignWidgetWrapper)widgets.get(index)).setTop(top);
-	}
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wgpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+		currentWidgetSelectionListener = (DesignGroupWidget)widget.getWrappedWidget();
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
-	 */
-	public void alignBottom() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		int oldY = y;
+		y = x = 10;
 
-		//align according to the last selected item.
-		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
-		int total = widget.getElement().getScrollHeight() + FormUtil.convertDimensionToInt(widget.getTop());
-		for(int index = 0; index < widgets.size(); index++){
-			widget = (DesignWidgetWrapper)widgets.get(index);
-			widget.setTop((total - widget.getElement().getScrollHeight()+"px"));
-		}
-	}
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = widget.getWidgetPopup();
 
-	public void makeSameHeight() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		x += selectedPanel.getAbsoluteLeft();
+		y += selectedPanel.getAbsoluteTop();
 
-		//align according to the last selected item.
-		String height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeight();
-		for(int index = 0; index < widgets.size(); index++)
-			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
-	}
+		DesignWidgetWrapper widgetWrapper = null;
+		for(int index = 0; index < questions.size(); index++){
+			QuestionDef qtn = (QuestionDef)questions.get(index);
+			if(index > 0)
+				x += 205;
 
-	public void makeSameWidth() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
-
-		//align according to the last selected item.
-		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
-		for(int index = 0; index < widgets.size(); index++)
-			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
-	}
-
-	public void makeSameSize() {
-		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
-
-		//align according to the last selected item.
-		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
-		String height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeight();
-		for(int index = 0; index < widgets.size(); index++){
-			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
-			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
-		}
-	}
-
-	public void format(){
-		if(selectedDragController.getSelectedWidgetCount() > 2)
-			rightAlignLabels(selectedPanel);
-	}
-
-	public int getRubberLeft(){
-		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "left"));
-	}
-
-	public int getRubberTop(){
-		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "top"));
-	}
-
-	public void startRubberBand(Event event){
-		selectedPanel.add(rubberBand);
-
-		x = event.getClientX()-selectedPanel.getAbsoluteLeft();
-		y = event.getClientY()-selectedPanel.getAbsoluteTop();
-
-		DOM.setStyleAttribute(rubberBand.getElement(), "width", 0+"px");
-		DOM.setStyleAttribute(rubberBand.getElement(), "height", 0+"px");
-		DOM.setStyleAttribute(rubberBand.getElement(), "left", x+"px");
-		DOM.setStyleAttribute(rubberBand.getElement(), "top", y+"px");
-		DOM.setStyleAttribute(rubberBand.getElement(), "visibility", "visible");
-	}
-
-
-	public void stopRubberBand(Event event){
-		selectedPanel.remove(rubberBand);
-	}
-
-	public void moveRubberBand(Event event){
-		try
-		{
-			int width = (event.getClientX()-selectedPanel.getAbsoluteLeft())-x;
-			int height = (event.getClientY()-selectedPanel.getAbsoluteTop())-y;
-
-			if(width < 0){
-				DOM.setStyleAttribute(rubberBand.getElement(), "left", event.getClientX()-selectedPanel.getAbsoluteLeft()+"px");
-				DOM.setStyleAttribute(rubberBand.getElement(), "width", width * -1 + "px");
-			}
+			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
+					qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+				widgetWrapper = addNewDropdownList(false);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
+				widgetWrapper = addNewDatePicker(false);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
+				widgetWrapper = addNewDropdownList(false);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
+				widgetWrapper = addNewPicture(select);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
+					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				widgetWrapper = addNewVideoAudioSection(null,select);
 			else
-				DOM.setStyleAttribute(rubberBand.getElement(), "width", (event.getClientX()-selectedPanel.getAbsoluteLeft())-getRubberLeft()+"px");
+				widgetWrapper = addNewTextBox(select);
 
-			if(height < 0){
-				DOM.setStyleAttribute(rubberBand.getElement(), "top", event.getClientY()-selectedPanel.getAbsoluteTop()+"px");
-				DOM.setStyleAttribute(rubberBand.getElement(), "height", height * -1 + "px");
-			}
-			else
-				DOM.setStyleAttribute(rubberBand.getElement(), "height", (event.getClientY()-selectedPanel.getAbsoluteTop())-getRubberTop()+"px");
+			widgetWrapper.setBinding(qtn.getVariableName());
+			widgetWrapper.setQuestionDef(qtn);
+			widgetWrapper.setTitle(qtn.getText());
+			widgetWrapper.setTabIndex(index + 1);
 		}
-		catch(Exception ex){
 
-		}
-	}
+		selectedDragController.clearSelection();
 
-	public void addMouseListener(MouseListener listener) {
-		if (mouseListeners == null) {
-			mouseListeners = new MouseListenerCollection();
-		}
-		mouseListeners.add(listener);
-	}
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wgpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
 
-	public void removeMouseListener(MouseListener listener) {
-		if (mouseListeners != null) {
-			mouseListeners.remove(listener);
-		}
+		y = oldY;
+		y += 130; //25;
+
+		if(questions.size() == 1)
+			widget.setWidthInt(265);
+		else
+			widget.setWidthInt((questions.size() * 205)+15);
+		return widget;
 	}
 
 	public void setFormDef(FormDef formDef){	
 		if(this.formDef != formDef){
+			PaletteView.unRegisterAllDropControllers();
 			tabs.clear();
 			addNewTab(null);
 		}
@@ -1710,24 +1055,6 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 		});
 	}
 
-	public void onCopy(Widget sender) {
-		selectedDragController.clearSelection();
-		selectedDragController.selectWidget(sender.getParent().getParent());
-		copyWidgets(false);
-	}
-
-	public void onCut(Widget sender) {
-		selectedDragController.clearSelection();
-		selectedDragController.selectWidget(sender.getParent().getParent());
-		cutWidgets();
-	}
-
-	public void onDelete(Widget sender) {
-		selectedDragController.clearSelection();
-		selectedDragController.selectWidget(sender.getParent().getParent());
-		deleteWidgets();
-	}
-
 	private void loadNewWidgets(){
 		HashMap<String,String> bindings = new HashMap<String, String>();
 		for(int i=0; i<dragControllers.size(); i++){
@@ -1772,5 +1099,74 @@ public class DesignSurfaceView extends Composite implements /*WindowResizeListen
 
 	public void setLayoutChangeListener(LayoutChangeListener layoutChangeListener){
 		this.layoutChangeListener = layoutChangeListener;
+	}
+
+	public void onDrop(Widget widget,int x, int y){
+		if(!(widget instanceof PaletteWidget))
+			return;
+
+		super.onDrop(widget, x, y);
+
+		String text = ((PaletteWidget)widget).getText();
+
+		if(text.equals(LocaleText.get("groupBox")))
+			addNewGroupBox(true);
+		else if(text.equals(LocaleText.get("repeatSection")))
+			addNewRepeatSection(true);
+		else if(text.equals(LocaleText.get("picture")))
+			addNewPictureSection(null,true);
+		else if(text.equals(LocaleText.get("videoAudio")))
+			addNewVideoAudioSection(null,true);
+	}
+
+	public void onWidgetSelected(DesignWidgetWrapper widget){
+
+		boolean ctrlKey = FormDesignerUtil.getCtrlKey();
+		if(!ctrlKey)
+			stopLabelEdit();
+
+		if(widget == null){
+			//selectedDragController.clearSelection(); //New and may cause bugs
+			//widgetSelectionListener.onWidgetSelected(widget); //New and may cause bugs
+			return;
+		}
+
+		if(!(widget.getWrappedWidget() instanceof TabBar)){
+			//Event event = DOM.eventGetCurrentEvent(); //TODO verify that this does not introduce a bug
+			//if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
+			if(selectedPanel.getWidgetIndex(widget) > -1){
+				if(!ctrlKey){
+					if(selectedDragController.getSelectedWidgetCount() == 1)
+						selectedDragController.clearSelection();
+					selectedDragController.selectWidget(widget);
+				}
+
+				for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+					Widget wid = selectedPanel.getWidget(index);
+					if(!(wid instanceof DesignWidgetWrapper))
+						continue;
+					if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
+						continue;
+					((DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget()).clearSelection();
+				}
+			}
+			else{
+				selectedDragController.clearSelection();
+				
+				for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+					Widget wid = selectedPanel.getWidget(index);
+					if(!(wid instanceof DesignWidgetWrapper))
+						continue;
+					if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
+						continue;
+					
+					DesignGroupWidget designGroupWidget = (DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget();
+					if(!designGroupWidget.containsWidget(widget))
+						designGroupWidget.clearSelection();
+				}
+			}
+		}
+
+		widgetSelectionListener.onWidgetSelected(widget);
 	}
 }

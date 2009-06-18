@@ -983,7 +983,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 
 			boolean textBoxFocus = isTextBoxFocus(event);
-			if(!textBoxFocus || (editWidget != null && event.getCurrentTarget() == editWidget.getElement())){
+			if(!textBoxFocus || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
 				if(keyCode != KeyboardListener.KEY_DELETE)
 					handleStartLabelEditing(event);
 

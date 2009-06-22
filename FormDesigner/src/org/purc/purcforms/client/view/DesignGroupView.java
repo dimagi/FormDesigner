@@ -22,7 +22,6 @@ import org.purc.purcforms.client.widget.PaletteWidget;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -504,11 +503,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 						editWidget = null;
 						return;
 					}
-					else if(hasLabelEdidting(editWidget)){
+					else if(editWidget.hasLabelEdidting()){
 						selectedDragController.makeNotDraggable(editWidget);
 						selectedDragController.clearSelection();
 						editWidget.startEditMode(txtEdit);
 					}
+					else
+						editWidget = null;
 				}
 			}
 		}
@@ -522,19 +523,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				editWidget = null;
 				return;
 			}
-			else if(hasLabelEdidting(editWidget))
+			else if(editWidget.hasLabelEdidting())
 				stopLabelEdit();
 		}
 		else
 			stopLabelEdit();
 	}
 	
-	protected boolean hasLabelEdidting(DesignWidgetWrapper widget){
-		return (widget.getWrappedWidget() instanceof Label ||
-				widget.getWrappedWidget() instanceof Hyperlink ||
-				widget.getWrappedWidget() instanceof Button);
-	}
-
 	protected boolean isTextBoxFocus(Event event){
 		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextBox") || event.getTarget().getClassName().equalsIgnoreCase("gwt-SuggestBox");
 	}
@@ -698,7 +693,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			text = LocaleText.get("label");
 		Label label = new Label(text);
 
-		DesignWidgetWrapper wrapper = addNewWidget(label,select);
+		DesignWidgetWrapper wrapper = addNewWidget(label,select);		
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
@@ -857,6 +852,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 
 			editWidget.stopEditMode();
+			
 			String text = txtEdit.getText();
 			if(text.trim().length() > 0)
 				editWidget.setText(text);

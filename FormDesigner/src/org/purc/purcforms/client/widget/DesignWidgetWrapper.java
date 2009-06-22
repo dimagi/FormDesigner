@@ -133,7 +133,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}
 
 	public void startEditMode(TextBox txtEdit){
-		if(widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button){
+		if(hasLabelEdidting()){
 			storePosition();
 			panel.remove(0);
 			panel.add(txtEdit);
@@ -143,6 +143,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				text = ((Label)widget).getText();
 			else if(widget instanceof Hyperlink)
 				text = ((Hyperlink)widget).getText();
+			else if(widget instanceof RadioButton)
+				text = ((RadioButton)widget).getText();
+			else if(widget instanceof CheckBox)
+				text = ((CheckBox)widget).getText();
 			else
 				text = ((Button)widget).getText();
 			
@@ -151,13 +155,19 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			txtEdit.setFocus(true);
 		}
 	}
+	
+	public boolean hasLabelEdidting(){
+		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button || widget instanceof CheckBox || widget instanceof RadioButton);
+	}
 
-	public void stopEditMode(){
-		if(widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button){
+	public boolean stopEditMode(){
+		if(hasLabelEdidting()){
 			panel.remove(0);
 			panel.add(widget);
 			restorePosition();
+			return true;
 		}
+		return false;
 	}
 
 	private String getDesignCursor(int x, int y){

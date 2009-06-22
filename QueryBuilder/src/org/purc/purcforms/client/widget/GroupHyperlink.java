@@ -62,13 +62,8 @@ public class GroupHyperlink extends Hyperlink{
 		popup.setWidget(menuBar);
 	}
 
-	public byte getConditionsOperator(){
-		if(getText().equals(CONDITIONS_OPERATOR_TEXT_ALL))
-			return ModelConstants.CONDITIONS_OPERATOR_AND;
-		else if(getText().equals(CONDITIONS_OPERATOR_TEXT_ANY))
-			return ModelConstants.CONDITIONS_OPERATOR_OR;
-
-		return ModelConstants.CONDITIONS_OPERATOR_NULL;
+	public String getConditionsOperator(){
+		return getText();
 	}
 
 	public void setCondionsOperator(int operator){
@@ -80,11 +75,5 @@ public class GroupHyperlink extends Hyperlink{
 
 	public void setEnabled(boolean enable){
 		this.enabled = enable;
-
-		/*DeferredCommand.addCommand(new Command(){
-	        public void execute() {
-	        	setEnabled(enabled);
-	        }
-	      });*/
 	}
 }

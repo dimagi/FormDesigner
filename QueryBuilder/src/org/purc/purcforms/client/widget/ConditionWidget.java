@@ -40,17 +40,19 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 	private Label lbLabel = new Label(LocaleText.get("value"));
 
 	private boolean allowFieldSelection = false;
-
-	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef){
+	private int depth = 1;
+	
+	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef, int depth,AddConditionHyperlink addConditionHyperlink){
 		this.formDef = formDef;
 		this.view = view;
 		this.allowFieldSelection = allowFieldSelection;
 		this.questionDef = questionDef;
-		setupWidgets();
+		this.depth = depth;
+		setupWidgets(addConditionHyperlink);
 	}
 
-	private void setupWidgets(){
-		actionHyperlink = new ActionHyperlink("<>",null,this);
+	private void setupWidgets(AddConditionHyperlink addConditionHyperlink){
+		actionHyperlink = new ActionHyperlink("<>",null,true,depth,addConditionHyperlink,this);
 		chkSelect.setChecked(true);
 		
 		if(allowFieldSelection)

@@ -76,10 +76,8 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
 		selectedTabIndex = tabIndex;
 		
-		if(selectedTabIndex == 4){
-			filterConditionsView.updateSkipRule();
-			//txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),filterConditionsView.getSkipRule()));
-		}
+		if(selectedTabIndex == 4)
+			txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),filterConditionsView.getFilterConditionRows()));
 	}
 	
 	public void onWindowResized(int width, int height) {

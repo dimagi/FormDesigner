@@ -3,11 +3,12 @@ package org.purc.purcforms.client.sql;
 import java.util.List;
 
 import org.purc.purcforms.client.model.Condition;
+import org.purc.purcforms.client.model.FilterCondition;
+import org.purc.purcforms.client.model.FilterConditionGroup;
 import org.purc.purcforms.client.model.FilterConditionRow;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.widget.GroupHyperlink;
 
 
@@ -21,62 +22,59 @@ public class SqlBuilder {
 	private static String DATE_SEPARATOR = "'";
 	private static  String LIKE_SEPARATOR = "%";
 
-	private static FormDef formDef;
-
-	
-	public static String buildSql(FormDef formDef, List<FilterConditionRow> rows){
-		if(formDef == null || rows == null)
+	public static String buildSql(FormDef formDef, FilterConditionGroup filterConditionGroup){
+		if(formDef == null || filterConditionGroup == null)
 			return null;
 		
 		String sql = "SELECT * FROM " + formDef.getVariableName();
 		
-		return sql;
-	}
-
-	public static String buildSql2(FormDef formDef, List<FilterConditionRow> rows){
+		String filter = null;
+		if(filterConditionGroup.getConditionCount() > 0)
+			filter = getFilter(filterConditionGroup);
 		
-
-		SqlBuilder.formDef = formDef;
-
-		String sql = "SELECT * FROM " + formDef.getVariableName();
-		String filter = null,fieldName;
-
-		String operator = getConditionsOperator();
-		/*for(int index = 0; index < skipRule.getConditionCount(); index++){
-			Condition condition = skipRule.getConditionAt(index);
-
-			QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
-			if(questionDef == null)
-				continue;
-
-			if(filter == null)
-				filter = " WHERE ";
-			else
-				filter += " " + operator + " ";
-
-			fieldName  = getFieldName(questionDef);
-			//operator  = GetRowOperator(row);
-		}*/
-
 		if(filter != null)
-			sql = sql + filter;
-
+			sql = sql + " WHERE " + filter;
+		
 		return sql;
 	}
+	
+	private static String getFilter(FilterConditionGroup filterGroup){
+		String filter = "";
+		
+		FilterConditionRow prevRow = null;
+		List<FilterConditionRow> rows = filterGroup.getConditions();
+		for(FilterConditionRow row : rows){
 
-	private static String getConditionsOperator(){
-		/*if(skipRule.getConditionsOperator() == ModelConstants.CONDITIONS_OPERATOR_AND)
-			return "AND";
-		else*/
-			return "OR";
+			if(row instanceof FilterConditionGroup){	
+				if(filter.length() > 0 && prevRow instanceof FilterCondition)
+					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
+				
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				
+				String curFilter = getFilter((FilterConditionGroup)row);
+				filter += curFilter;
+			}
+			else if(row instanceof FilterCondition){
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				
+				FilterCondition condition = (FilterCondition)row;
+				filter += condition.getFieldName();
+				filter += getDBOperator(condition.getOperator());
+				filter += getQuotedValue(condition.getFirstValue(),condition.getDataType(),condition.getOperator());
+			}
+			
+			prevRow = row;
+		}
+		
+		if(filter.length() > 0 && prevRow instanceof FilterCondition)
+			filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
+			
+		return filter;
 	}
 
-	private static String getFilter(Condition condition){
-		condition.getOperator();
-		return null;
-	}
-
-	private static String GetDBOperator(int operator)
+	private static String getDBOperator(int operator)
 	{
 		switch(operator)
 		{
@@ -121,14 +119,7 @@ public class SqlBuilder {
 		return null;
 	}
 
-	private static String getFieldName(QuestionDef questionDef){
-		int index = questionDef.getVariableName().lastIndexOf('/');
-		if(index > -1)
-			return questionDef.getVariableName().substring(index+1);
-		return questionDef.getVariableName();
-	}
-
-	private static String GetQuotedValue(String fieldVal,int dataType, int operator)
+	private static String getQuotedValue(String fieldVal,int dataType, int operator)
 	{
 		switch(dataType)
 		{
@@ -150,7 +141,7 @@ public class SqlBuilder {
 		}
 	}
 
-	private static String GetSQLInnerCombiner(String val)
+	private static String getSQLInnerCombiner(String val)
 	{
 		if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL))
 			return " AND ";
@@ -164,7 +155,7 @@ public class SqlBuilder {
 		return null;
 	}
 
-	private static String GetSQLOuterCombiner(String val)
+	private static String getSQLOuterCombiner(String val)
 	{
 		if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL))
 			return " ";

@@ -217,20 +217,35 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
 		}
 
+		RuntimeWidgetWrapper wrapper = null;
+		boolean wrapperSet = false;
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
 			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			
+			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+				wrapperSet = true;
+			
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);
+			
+			if(wrapperSet)
+				wrapper = parentWrapper;
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+				wrapperSet = true;
+			
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
 
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
 			if(defaultValue != null && defaultValue.contains(binding))
 				((CheckBox)widget).setChecked(true);
+			
+			if(wrapperSet)
+				wrapper = parentWrapper;
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -299,7 +314,9 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		else
 			return tabIndex;
 
-		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
+		if(!wrapperSet)
+			wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
+		
 		boolean loadWidget = true;
 
 		if(questionDef != null){

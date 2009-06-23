@@ -237,6 +237,8 @@ public class XformConverter implements Serializable{
 					fromValidationRule2Xform((ValidationRule)rules.elementAt(i),formDef);
 			}
 
+			List<QuestionDef> questions = new ArrayList<QuestionDef>();
+			
 			HashMap<Integer,DynamicOptionDef> dynamicOptions = formDef.getDynamicOptions();
 			if(dynamicOptions != null){
 				Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
@@ -246,12 +248,40 @@ public class XformConverter implements Serializable{
 					QuestionDef questionDef = formDef.getQuestion(entry.getKey());
 					if(questionDef == null)
 						continue;
-					fromDynamicOptionDef2Xform(doc,dynamicOptionDef,questionDef,formDef);
+					if(!fromDynamicOptionDef2Xform(doc,dynamicOptionDef,questionDef,formDef))
+						questions.add(questionDef);
 				}
 			}
+			
+			if(questions.size() > 0)
+				updateDynamicOptions(dynamicOptions,questions,formDef,doc);
 		}
 
 		return fromDoc2String(doc);
+	}
+	
+	/**
+	 * For creating dynamic options instance node for those that were not created in the
+	 * first pass because of dependant dynamic options not have also been created yet.
+	 * To see this, hust create a new dynamic options question which depends on another
+	 * dynamic options questions and then try saving. The second question's instance
+	 * values will only be created during second save, if this method is not called.
+	 * 
+	 * @param dynamicOptions
+	 * @param questions
+	 * @param formDef
+	 * @param doc
+	 */
+	private static void updateDynamicOptions(HashMap<Integer,DynamicOptionDef> dynamicOptions, List<QuestionDef> questions, FormDef formDef,Document doc){
+		List<QuestionDef> newDynQtns = new ArrayList<QuestionDef>();
+		
+		for(QuestionDef qtn : questions){
+			if(!fromDynamicOptionDef2Xform(doc,dynamicOptions.get(qtn.getId()),qtn,formDef))
+				newDynQtns.add(qtn);
+		}
+		
+		if(newDynQtns.size() > 0)
+			updateDynamicOptions(dynamicOptions,newDynQtns,formDef,doc);
 	}
 
 	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
@@ -284,10 +314,10 @@ public class XformConverter implements Serializable{
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}
 
-	public static void fromDynamicOptionDef2Xform(Document doc, DynamicOptionDef dynamicOptionDef, QuestionDef parentQuestionDef, FormDef formDef){
+	public static boolean fromDynamicOptionDef2Xform(Document doc, DynamicOptionDef dynamicOptionDef, QuestionDef parentQuestionDef, FormDef formDef){
 		QuestionDef questionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
 		if(questionDef == null)
-			return;
+			return true;
 
 		Element modelNode = formDef.getModelNode();
 		Element instanceNode =  doc.createElement(NODE_NAME_INSTANCE);
@@ -309,14 +339,19 @@ public class XformConverter implements Serializable{
 
 			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
 			if(parentOptionDef == null)
-				continue;
+				return false;//continue;
 
-			for(int index = 0; index < list.size(); index++)
-				addNewDynamicOption(doc, list.get(index), parentOptionDef, dataNode);
+			for(int index = 0; index < list.size(); index++){
+				OptionDef optionDef = list.get(index);
+				addNewDynamicOption(doc, optionDef, parentOptionDef, dataNode);
+				questionDef.addOption(optionDef,false);
+			}
 		}
 
 		Element itemSetNode = questionDef.getFirstOptionNode();
 		itemSetNode.setAttribute(ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+		
+		return true;
 	}
 	
 	private static void addNewDynamicOption(Document doc, OptionDef optionDef, OptionDef parentOptionDef, Element dataNode){

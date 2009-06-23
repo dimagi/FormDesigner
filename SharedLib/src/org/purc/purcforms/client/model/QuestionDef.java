@@ -493,12 +493,18 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void addOption(OptionDef optionDef){
+		addOption(optionDef,true);
+	}
+
+	public void addOption(OptionDef optionDef, boolean setAsParent){
 		if(options == null)
 			options = new ArrayList();
 		((List)options).add(optionDef);
-		optionDef.setParent(this);
+		
+		if(setAsParent)
+			optionDef.setParent(this);
 	}
-
+	
 	public RepeatQtnsDef getRepeatQtnsDef(){
 		return (RepeatQtnsDef)options;
 	}

@@ -58,7 +58,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	private KeyboardListenerAdapter keyboardListener1;
 	private KeyboardListenerAdapter keyboardListener2;
 	private QuestionDef prevQuestionDef;
-	private CheckBox chkQuestionValue = new CheckBox(LocaleText.get("questionValue"));
 	private FormDef formDef;
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;
@@ -112,12 +111,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 		setupTextListeners();
 
-		this.chkQuestionValue.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
-				setupFieldSelection();
-			}
-		});
-
 		initWidget(horizontalPanel);
 	}
 
@@ -162,40 +155,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				}
 			});
 			//}
-		}
-	}
-
-	private void setupFieldSelection(){
-		if(chkQuestionValue.isChecked()){
-			if(horizontalPanel.getWidgetIndex(txtValue1) > -1){
-				horizontalPanel.remove(txtValue1);
-				horizontalPanel.remove(chkQuestionValue);
-				setupPopup();
-				horizontalPanel.add(sgstField);
-				horizontalPanel.add(chkQuestionValue);
-				sgstField.setFocus(true);
-				sgstField.setFocus(true);
-				txtValue1.selectAll();
-			}
-		}
-		else{
-			if(horizontalPanel.getWidgetIndex(sgstField) > -1){
-				horizontalPanel.remove(sgstField);
-				horizontalPanel.remove(chkQuestionValue);
-				if(txtValue1.getParent() != null && txtValue1.getParent() instanceof SuggestBox){
-					txtValue1.removeKeyboardListener(keyboardListener1);
-					txtValue2.removeKeyboardListener(keyboardListener2);
-					txtValue1 = new TextBox();
-					txtValue2 = new TextBox();
-					setupTextListeners();
-				}
-
-				horizontalPanel.add(txtValue1);
-				horizontalPanel.add(chkQuestionValue);
-				txtValue1.setFocus(true);
-				txtValue1.setFocus(true);
-				txtValue1.selectAll();
-			}
 		}
 	}
 
@@ -328,34 +287,20 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				txtValue2 = new TextBox();
 			}
 
-			if(chkQuestionValue.isChecked())
-				setupPopup();
-
 			setupTextListeners();
 
 			horizontalPanel.remove(valueHyperlink);
 
-			if(chkQuestionValue.isChecked())
-				horizontalPanel.add(sgstField);
-			else
-				horizontalPanel.add(txtValue1);
-
-			horizontalPanel.add(chkQuestionValue);
+			horizontalPanel.add(txtValue1);
 
 			if(!valueHyperlink.getText().equals(EMPTY_VALUE) && (prevQuestionDef == questionDef || prevQuestionDef == null))
 				txtValue1.setText(valueHyperlink.getText());
 
-			if(!chkQuestionValue.isChecked())
-				addNumericKeyboardListener();
+			addNumericKeyboardListener();
 
-			if(chkQuestionValue.isChecked()){
-				sgstField.setFocus(true);
-				sgstField.setFocus(true);
-			}
-			else{
 				txtValue1.setFocus(true);
 				txtValue1.setFocus(true);
-			}
+			
 			txtValue1.selectAll();
 
 			if(operator ==  ModelConstants.OPERATOR_BETWEEN ||
@@ -434,7 +379,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		horizontalPanel.remove(txtValue1);
 		horizontalPanel.remove(txtValue2);
 		horizontalPanel.remove(lblAnd);
-		horizontalPanel.remove(chkQuestionValue);
 		horizontalPanel.remove(sgstField);
 		horizontalPanel.add(valueHyperlink);
 	}
@@ -479,14 +423,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		if(val.equals(EMPTY_VALUE))
 			return null;
 
-		if(chkQuestionValue.isChecked()){
-			valueQtnDef = formDef.getQuestionWithText(val);
-			if(valueQtnDef != null)
-				val = valueQtnDef.getVariableName();
-			else
-				val = EMPTY_VALUE;
-		}
-
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			OptionDef optionDef = questionDef.getOptionWithText(val);
 			if(optionDef != null)
@@ -525,9 +461,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				val = QuestionDef.FALSE_VALUE;
 		}
 
-		if(val != null && this.chkQuestionValue.isChecked())
-			val = formDef.getVariableName() + "/" + val;
-
 		return val;
 	}
 
@@ -551,7 +484,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 					else
 						sValue = EMPTY_VALUE;
 				}
-				chkQuestionValue.setChecked(true);
 			}
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){

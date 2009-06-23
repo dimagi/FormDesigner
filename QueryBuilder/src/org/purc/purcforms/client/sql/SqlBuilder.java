@@ -25,54 +25,92 @@ public class SqlBuilder {
 	public static String buildSql(FormDef formDef, FilterConditionGroup filterConditionGroup){
 		if(formDef == null || filterConditionGroup == null)
 			return null;
-		
+
 		String sql = "SELECT * FROM " + formDef.getVariableName();
-		
-		String filter = null;
-		if(filterConditionGroup.getConditionCount() > 0)
+
+		String filter = "";
+		if(filterConditionGroup.getConditionCount() > 0){
 			filter = getFilter(filterConditionGroup);
-		
-		if(filter != null)
+			//if(filter.length() > 0)
+			//	filter = getSQLOuterCombiner(filterConditionGroup.getConditionsOperator()) + "(" + filter + ")";
+		}
+
+		if(filter.length() > 0)
 			sql = sql + " WHERE " + filter;
-		
+
 		return sql;
 	}
-	
+
 	private static String getFilter(FilterConditionGroup filterGroup){
+
 		String filter = "";
-		
-		FilterConditionRow prevRow = null;
+
 		List<FilterConditionRow> rows = filterGroup.getConditions();
 		for(FilterConditionRow row : rows){
-
-			if(row instanceof FilterConditionGroup){	
-				if(filter.length() > 0 && prevRow instanceof FilterCondition)
+			
+			if(row instanceof FilterConditionGroup){
+				if(filter.length() > 0)
 					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
 				
 				if(filter.length() > 0)
 					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
 				
-				String curFilter = getFilter((FilterConditionGroup)row);
-				filter += curFilter;
+				String flt = getFilter((FilterConditionGroup)row);
+				if(flt.length() > 0)
+					flt = getSQLOuterCombiner(((FilterConditionGroup)row).getConditionsOperator()) + "(" + flt + ")";
+				
+				filter += flt;
+			}
+			else{
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				
+				filter += getFilter((FilterCondition)row);
+			}
+		}
+
+		return filter;
+	}
+
+	private static String getFilter(FilterCondition condition){		
+		String filter = condition.getFieldName();
+		filter += getDBOperator(condition.getOperator());
+		filter += getQuotedValue(condition.getFirstValue(),condition.getDataType(),condition.getOperator());
+		return filter;
+	}
+
+	/*private static String getFilter(FilterConditionGroup filterGroup){
+
+		String filter = "";
+
+		List<FilterConditionRow> rows = filterGroup.getConditions();
+		for(FilterConditionRow row : rows){
+			if(row instanceof FilterConditionGroup){
+				if(filter.length() > 0)
+					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
+
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				filter += getFilter((FilterConditionGroup)row);
+
+				return filter;
 			}
 			else if(row instanceof FilterCondition){
 				if(filter.length() > 0)
 					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				
+
 				FilterCondition condition = (FilterCondition)row;
 				filter += condition.getFieldName();
 				filter += getDBOperator(condition.getOperator());
 				filter += getQuotedValue(condition.getFirstValue(),condition.getDataType(),condition.getOperator());
 			}
-			
-			prevRow = row;
 		}
-		
-		if(filter.length() > 0 && prevRow instanceof FilterCondition)
+
+		if(filter.length() > 0)
 			filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
-			
+
 		return filter;
-	}
+	}*/
 
 	private static String getDBOperator(int operator)
 	{

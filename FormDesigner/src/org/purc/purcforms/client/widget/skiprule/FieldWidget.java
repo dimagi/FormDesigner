@@ -153,8 +153,16 @@ public class FieldWidget extends Composite{
 	public void setQuestion(QuestionDef questionDef){
 		if(questionDef != null)
 			fieldHyperlink.setText(questionDef.getText());
-		else
+		else{
+			horizontalPanel.remove(fieldHyperlink);
+			horizontalPanel.remove(sgstField);
+			
+			//Removing and adding of fieldHyperlink is to prevent a wiered bug from
+			//happening where focus is taken off, brought back and the hyperlink
+			//displays no more text.
+			horizontalPanel.add(fieldHyperlink);
 			fieldHyperlink.setText("");
+		}
 	}
 	
 	public void setForDynamicOptions(boolean forDynamicOptions){

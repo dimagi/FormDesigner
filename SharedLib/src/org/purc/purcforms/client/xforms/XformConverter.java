@@ -208,6 +208,12 @@ public class XformConverter implements Serializable{
 		Element modelNode =  doc.createElement(NODE_NAME_MODEL);
 		xformsNode.appendChild(modelNode);
 
+		buildXform(formDef,doc,xformsNode,modelNode);
+
+		return fromDoc2String(doc);
+	}
+	
+	private static void buildXform(FormDef formDef, Document doc, Element parentNode, Element modelNode){
 		Element instanceNode =  doc.createElement(NODE_NAME_INSTANCE);
 		instanceNode.setAttribute(ATTRIBUTE_NAME_ID, formDef.getVariableName());
 		modelNode.appendChild(instanceNode);
@@ -222,7 +228,7 @@ public class XformConverter implements Serializable{
 		if(formDef.getPages() != null){
 			for(int pageNo=0; pageNo<formDef.getPages().size(); pageNo++){
 				PageDef pageDef = (PageDef)formDef.getPages().elementAt(pageNo);
-				fromPageDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode);
+				fromPageDef2Xform(pageDef,doc,parentNode,formDef,formNode,modelNode);
 			}
 
 			Vector rules = formDef.getSkipRules();
@@ -256,8 +262,6 @@ public class XformConverter implements Serializable{
 			if(questions.size() > 0)
 				updateDynamicOptions(dynamicOptions,questions,formDef,doc);
 		}
-
-		return fromDoc2String(doc);
 	}
 	
 	/**
@@ -2069,5 +2073,40 @@ public class XformConverter implements Serializable{
 			return null;
 
 		return nodeset.substring(pos1+token.length(), pos2);
+	}
+	
+	public static String fromFormDef2Xhtml(FormDef formDef){
+		Document doc = XMLParser.createDocument();
+		formDef.setDoc(doc);
+
+		Element htmlNode = doc.createElement("html");
+		formDef.setXformsNode(htmlNode);
+
+		htmlNode.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+		htmlNode.setAttribute(XML_NAMESPACE_PREFIX+PREFIX_XFORMS, NAMESPACE_XFORMS);
+		htmlNode.setAttribute(XML_NAMESPACE_PREFIX+PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
+		
+		doc.appendChild(htmlNode);
+
+		//add head
+		Element headNode =  doc.createElement("head");
+		htmlNode.appendChild(headNode);
+		
+		//add title
+		Element titleNode =  doc.createElement("title");
+		titleNode.appendChild(doc.createTextNode(formDef.getName()));
+		headNode.appendChild(titleNode);
+		
+		//add body
+		Element bodyNode =  doc.createElement("body");
+		htmlNode.appendChild(bodyNode);
+		
+		//add model
+		Element modelNode =  doc.createElement(NODE_NAME_MODEL);
+		headNode.appendChild(modelNode);
+		
+		buildXform(formDef,doc,bodyNode,modelNode);
+
+		return fromDoc2String(doc);
 	}
 }

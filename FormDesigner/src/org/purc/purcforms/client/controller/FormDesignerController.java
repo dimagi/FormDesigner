@@ -251,7 +251,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				return;
 			}
 
-			FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
+			FormUtil.dlg.setText(LocaleText.get("savingForm"));
 			FormUtil.dlg.center();
 
 			DeferredCommand.addCommand(new Command(){
@@ -780,5 +780,34 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	public void setDefaultLocale(String locale){
 		Context.setDefaultLocale(locale);
+	}
+	
+	public void saveAsXhtml(){
+		if(isOfflineMode()){
+			final Object obj = leftPanel.getSelectedForm();
+			if(obj == null){
+				Window.alert(LocaleText.get("selectSaveItem"));
+				return;
+			}
+
+			FormUtil.dlg.setText(LocaleText.get("savingForm"));
+			FormUtil.dlg.center();
+
+			DeferredCommand.addCommand(new Command(){
+				public void execute() {
+					try{
+						String xml = null;
+						xml = XformConverter.fromFormDef2Xhtml(new FormDef((FormDef)obj));
+						xml = FormDesignerUtil.formatXml(xml);
+						centerPanel.setXformsSource(xml,formId == null);
+						FormUtil.dlg.hide();
+					}
+					catch(Exception ex){
+						FormUtil.dlg.hide();
+						FormUtil.displayException(ex);
+					}	
+				}
+			});
+		}
 	}
 }

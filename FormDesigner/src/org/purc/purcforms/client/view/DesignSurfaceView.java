@@ -378,6 +378,8 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		String xpath = "Form/Page/Item[@Binding='";
 		for(int i=0; i<tabs.getWidgetCount(); i++){
+			if(pageWidgets.get(i) == null)
+				continue; //TODO Need to deal with this case where all widgets are deleted but layout and locale text remains
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");

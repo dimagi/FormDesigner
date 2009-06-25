@@ -289,12 +289,18 @@ public class FormDef implements Serializable{
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
 
-		String val = dataNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		//TODO Check that this comment out does not introduce bugs
+		//We do not want a refreshed xform to overwrite existing formDef id
+		//If ones want to change the id, he should load the xform as a new form with that id
+		/*String val = dataNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
 		if(val == null || val.trim().length() == 0)
 			dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, String.valueOf(id));
 		else
-			setId(Integer.parseInt(val));
-
+			setId(Integer.parseInt(val));*/
+		
+		//TODO Check this with the above
+		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID,String.valueOf(id));
+		
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){
 			dataNode = XformConverter.renameNode(dataNode,variableName);
@@ -891,5 +897,13 @@ public class FormDef implements Serializable{
 		}
 
 		return null;
+	}
+	
+	public void clearChangeListeners(){
+		if(pages == null)
+			return;
+
+		for(int i=0; i<pages.size(); i++)
+			((PageDef)pages.elementAt(i)).clearChangeListeners();
 	}
 }

@@ -215,7 +215,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			int count = formDef.getQuestionCount();
 			if(nextQuestionId <= count)
 				nextQuestionId = count;
-			
+
 			this.formDef = formDef;
 
 			if(formExists(formDef.getId()))
@@ -265,32 +265,36 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void refreshForm(FormDef formDef){
 		//tree.clear();
 		TreeItem item = tree.getSelectedItem();
-		if(item != null)
-			tree.removeItem(getSelectedItemRoot(item));
+		if(item != null){
+			TreeItem root = getSelectedItemRoot(item);
+			formDef.setId(((FormDef)root.getUserObject()).getId());
+
+			tree.removeItem(root);
+		}
 
 		loadForm(formDef,true,false);
 	}
-	
+
 	public List<FormDef> getForms(){
 		List<FormDef> forms = new ArrayList<FormDef>();
-		
+
 		int count = tree.getItemCount();
 		for(int index = 0; index < count; index++)
 			forms.add((FormDef)tree.getItem(index).getUserObject());
-		
+
 		return forms;
 	}
 
 	public void loadForms(List<FormDef> forms, int selFormId){
 		if(forms == null || forms.size() == 0)
 			return;
-		
+
 		tree.clear();
 		this.formDef = null;
-		
+
 		for(FormDef formDef : forms){
 			loadForm(formDef,formDef.getId() == selFormId,true);
-			
+
 			if(formDef.getId() == selFormId){
 				this.formDef = formDef;
 				//A temporary hack to ensure top level object is accessed.
@@ -313,7 +317,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	private TreeItem loadQuestion(QuestionDef questionDef,TreeItem root){
-		TreeItem questionRoot = addImageItem(root, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
+		TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
 
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
@@ -683,9 +687,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		if(formItem instanceof QuestionDef){
 			QuestionDef questionDef = (QuestionDef)formItem;
-			//item.setHTML(FormsDesignerUtil.createHeaderHTML(images.lookup(), questionDef.getText()));
-			//new TreeItemWidget(imageProto, title,popup)
-			item.setWidget(new TreeItemWidget(images.lookup(), questionDef.getText(),popup,this));
+			item.setWidget(new TreeItemWidget(images.lookup(), questionDef.getDisplayText(),popup,this));
 			item.setTitle(questionDef.getHelpText());
 		}
 		else if(formItem instanceof OptionDef){
@@ -861,7 +863,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			return true;
 
 		Map<String,String> pageNos = new HashMap<String,String>();
-		Map<String,String> bindings = new HashMap<String,String>();
+		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
 			TreeItem child = parent.getChild(index);
@@ -883,20 +885,20 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return true;
 	}
 
-	public boolean isValidQuestionList(TreeItem  parent,Map<String,String> bindings){
+	public boolean isValidQuestionList(TreeItem  parent,Map<String,QuestionDef> bindings){
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
 			TreeItem child = parent.getChild(index);
 			QuestionDef questionDef = (QuestionDef)child.getUserObject();
 			String variableName = questionDef.getVariableName();
-			if(bindings.containsKey(variableName)){
+			if(bindings.containsKey(variableName) /*&& questionDef.getParent() == bindings.get(variableName).getParent()*/){
 				tree.setSelectedItem(child);
 				tree.ensureSelectedItemVisible();
-				Window.alert(LocaleText.get("selectedQuestion") + questionDef.getText()+LocaleText.get("shouldNotShareQuestionBinding") + bindings.get(variableName)+ "]");
+				Window.alert(LocaleText.get("selectedQuestion") + questionDef.getText()+LocaleText.get("shouldNotShareQuestionBinding") + bindings.get(variableName).getDisplayText()+ "]");
 				return false;
 			}
 			else
-				bindings.put(variableName, questionDef.getText());
+				bindings.put(variableName, questionDef);
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 				if(!isValidQuestionList(child,bindings))
@@ -1001,7 +1003,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.setSelectedItem(child);
 		tree.ensureSelectedItemVisible();
 	}
-	
+
 	private boolean inReadOnlyMode(){
 		return Context.isStructureReadOnly();
 	}

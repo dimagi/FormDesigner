@@ -52,6 +52,9 @@ public class FormUtil {
 	
 	private static boolean appendEntityIdAfterSubmit;
 	
+	private static boolean showLanguageTab = false;
+	
+	
 	public static ProgressDialog dlg = new ProgressDialog();
 
 	/**
@@ -74,6 +77,11 @@ public class FormUtil {
 
 					if(keyCode == '.' && allowDecimalPoints && !((TextBox)sender).getText().contains("."))
 						return;
+					
+					String text = ((TextBox) sender).getText().trim();
+					if(text.length() == 0 && keyCode == '-')
+						return;
+					
 					((TextBox) sender).cancelKey(); 
 				}
 			}
@@ -91,6 +99,11 @@ public class FormUtil {
 
 					if(keyCode == '.' && allowDecimalPoints && !((TextBox)sender).getText().contains("."))
 						return;
+					
+					String text = ((TextBox) sender).getText().trim();
+					if(text.length() == 0 && keyCode == '-')
+						return;
+					
 					((TextBox) sender).cancelKey(); 
 				}
 			}
@@ -233,8 +246,9 @@ public class FormUtil {
 
 		GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
 			public void onUncaughtException(Throwable throwable) {
+				displayException(throwable);
 				//throwable.printStackTrace();
-				String text = LocaleText.get("uncaughtException");
+				/*String text = LocaleText.get("uncaughtException");
 				String s = text;
 				while (throwable != null) {
 					s = throwable.getMessage();
@@ -255,7 +269,7 @@ public class FormUtil {
 				//text = text.replaceAll(" ", "&nbsp;");
 				dialogBox.setBody(s);//("<pre>" + text + "</pre>");
 				dialogBox.setCallStack(text);
-				dialogBox.center();
+				dialogBox.center();*/
 			}
 		});
 	}
@@ -305,6 +319,10 @@ public class FormUtil {
 			appendEntityIdAfterSubmit = false;
 		else
 			appendEntityIdAfterSubmit = !s.equals("0");
+		
+		s = getDivValue("showLanguageTab");
+		if(s != null && s.equals("1"))
+			showLanguageTab = true;
 	}
 	
 	public static String getDivValue(String id){
@@ -396,6 +414,10 @@ public class FormUtil {
 		return entityId;
 	}
 	
+	public static boolean getShowLanguageTab(){
+		return showLanguageTab;
+	}
+	
 	public static String getHostPageBaseURL(){
 		//return "http://127.0.0.1:8080/openmrs/";
 		
@@ -424,7 +446,7 @@ public class FormUtil {
 		return appendEntityIdAfterSubmit;
 	}
 	
-	public static void displayException(Exception ex){
+	public static void displayException(Throwable ex){
 		ex.printStackTrace();
 
 		String text = LocaleText.get("uncaughtException");

@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -75,6 +76,9 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 	protected int embeddedHeightOffset = 0;
 
+	protected HashMap<QuestionDef,List<Widget>> labelMap;
+	protected HashMap<Widget,String> labelText;
+	protected HashMap<Widget,String> labelReplaceText;
 
 	public FormRunnerView(Images images){
 		this.images = images;
@@ -121,7 +125,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	public void loadLayout(String xml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		tabs.clear();
 
+		if(formDef != null)
+			formDef.clearChangeListeners();
+		
 		widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
+		labelMap = new HashMap<QuestionDef,List<Widget>>();
+		labelText = new HashMap<Widget,String>();
+		labelReplaceText = new HashMap<Widget,String>();
 
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
 		Element root = doc.getDocumentElement();
@@ -270,8 +280,30 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				FormUtil.allowNumericOnly((TextBox)widget,questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL);
 			((TextBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
-			widget = new Label(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL)){
+			String text = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
+			widget = new Label(text);
+			
+			int pos1 = text.indexOf("${");
+			int pos2 = text.indexOf("}$");
+			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
+				String varname = text.substring(pos1+2,pos2);
+				labelText.put(widget, text);
+				labelReplaceText.put(widget, "${"+varname+"}$");
+				
+				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
+				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
+					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
+				
+				QuestionDef qtnDef = formDef.getQuestion(varname);
+				List<Widget> labels = labelMap.get(qtnDef);
+				if(labels == null){
+					labels = new ArrayList<Widget>();
+					labelMap.put(qtnDef, labels);
+				}
+				labels.add(widget);
+			}
+		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_GROUPBOX)||s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			RepeatQtnsDef repeatQtnsDef = null;
 			if(questionDef != null)
@@ -326,7 +358,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			ValidationRule validationRule = formDef.getValidationRule(questionDef);
 			wrapper.setValidationRule(validationRule);
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && validationRule != null)
-				questionDef.setAnswer("1");
+				questionDef.setAnswer("0");
 		}
 
 		if(binding != null)
@@ -473,6 +505,12 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	public void onValueChanged(QuestionDef questionDef) {
 		fireRules();
 		updateDynamicOptions(questionDef);
+		
+		List<Widget> labels = labelMap.get(questionDef);
+		if(labels != null){
+			for(Widget widget : labels)
+				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), questionDef.getAnswer()));
+		}
 	}
 
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {

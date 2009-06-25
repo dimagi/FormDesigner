@@ -91,6 +91,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		tabs.selectTab(0);
 		initWidget(tabs);
 		tabs.addTabListener(this);
+		
+		if(!FormUtil.getShowLanguageTab())
+			this.removeLanguageTab();
 	}
 
 	public void setFormChangeListener(IFormChangeListener formChangeListener){

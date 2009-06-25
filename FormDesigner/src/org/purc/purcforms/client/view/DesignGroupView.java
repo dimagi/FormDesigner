@@ -842,6 +842,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	private void initEditWidget(){
 		DOM.setStyleAttribute(txtEdit.getElement(), "borderStyle", "none");
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontFamily", FormUtil.getDefaultFontFamily());
+		DOM.setStyleAttribute(txtEdit.getElement(), "opacity", "1");
+		txtEdit.setWidth("400px");
 	}
 
 	protected void stopLabelEdit(){

@@ -262,7 +262,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef == null)
 			return;
 
-		questionDef.clearChangeListeners();
+		//questionDef.clearChangeListeners(); Removed from here because we want to allow more that one widget listen on the same question.
 		questionDef.addChangeListener(this);
 		questionDef.setAnswer(questionDef.getDefaultValueSubmit());
 
@@ -338,7 +338,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-			questionDef.setAnswer("1");
+			questionDef.setAnswer("0");
 		
 		isValid();
 
@@ -626,23 +626,28 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return true;
 	}
 
-	private boolean isAnswered(){
+	public boolean isAnswered(){
 		return getAnswer() != null && getAnswer().toString().trim().length() > 0;
 	}
 
 	private Object getAnswer() {
+		if(questionDef == null)
+			return null;
+		
 		return questionDef.getAnswer();
 	}
 
 	public boolean setFocus(){
-		if(questionDef != null && (!questionDef.isEnabled() || questionDef.isLocked()))
+		if(questionDef != null && (!questionDef.isVisible() || !questionDef.isEnabled() || questionDef.isLocked()))
 			return false;
 		
-		if(widget instanceof RadioButton)
+		//Browser does not seem to set focus to check boxes and radio buttons
+		
+		/*if(widget instanceof RadioButton)
 			((RadioButton)widget).setFocus(true);
 		else if(widget instanceof CheckBox)
 			((CheckBox)widget).setFocus(true);
-		else if(widget instanceof ListBox)
+		else*/ if(widget instanceof ListBox)
 			((ListBox)widget).setFocus(true);
 		else if(widget instanceof TextArea){
 			((TextArea)widget).setFocus(true);

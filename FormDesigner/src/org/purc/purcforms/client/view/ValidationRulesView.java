@@ -156,7 +156,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 		
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("question")+"  " + questionDef.getText() + "  "+LocaleText.get("isValidWhen"));
+			lblAction.setText(LocaleText.get("question")+"  " + questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
 		else
 			lblAction.setText(LocaleText.get("question")+" ");
 		

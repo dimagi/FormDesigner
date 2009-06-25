@@ -352,8 +352,12 @@ public class PageDef implements Serializable{
 					if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null)
 						parentDataNode.removeChild(questionDef.getDataNode());
 
-					if(qtnDef.getDataNode() != null)
-						parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+					if(qtnDef.getDataNode() != null){
+						if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getVariableName().contains("/"))
+							parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode().getParentNode());
+						else
+							parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+					}
 					else
 						parentDataNode.appendChild(questionDef.getDataNode());
 
@@ -606,5 +610,13 @@ public class PageDef implements Serializable{
 
 		for(int i=0; i<questions.size(); i++)
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
+	}
+	
+	public void clearChangeListeners(){
+		if(questions == null)
+			return;
+
+		for(int i=0; i<questions.size(); i++)
+			((QuestionDef)questions.elementAt(i)).clearChangeListeners();
 	}
 }

@@ -625,7 +625,26 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		}
 
 		if(repeatQtnsDef != null)
-			repeatQtnsDef.getQtnDef().setAnswer(table.getRowCount()+"");
+			repeatQtnsDef.getQtnDef().setAnswer(getRowCount()+"");
+	}
+	
+	public int getRowCount(){
+		int rows = 0;
+		
+		for(int row = 0; row < table.getRowCount(); row++){
+			boolean answerFound = false;
+			for(int col = 0; col < table.getCellCount(row); col++){
+				if(((RuntimeWidgetWrapper)table.getWidget(row, col)).isAnswered()){
+					answerFound = true;
+					break;
+				}
+			}
+			
+			if(answerFound)
+				rows++;
+		}
+		
+		return rows;
 	}
 
 	public void onSetFileContents(String contents) {

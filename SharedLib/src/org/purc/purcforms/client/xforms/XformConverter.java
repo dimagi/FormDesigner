@@ -280,7 +280,8 @@ public class XformConverter implements Serializable{
 				newDynQtns.add(qtn);
 		}
 		
-		if(newDynQtns.size() > 0)
+		//The size must have decrease, else we shall get infinite recursion.
+		if(newDynQtns.size() > 0 && newDynQtns.size() < questions.size())
 			updateDynamicOptions(dynamicOptions,newDynQtns,formDef,doc);
 	}
 
@@ -1078,10 +1079,16 @@ public class XformConverter implements Serializable{
 		Element hintNode = null;
 		Element valueNode = null;
 
-		int numOfEntries = element.getChildNodes().getLength();
+		//TODO wiered bug here for some forms, nodes.getLength() returns a value less
+		//than numOfEntries during the loop. So something could be changing the node list
+		NodeList nodes = element.getChildNodes();
+		int numOfEntries = nodes.getLength();
 		for (int i = 0; i < numOfEntries; i++) {
-			if (element.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
-				Element child = (Element)element.getChildNodes().item(i);
+			if(nodes.item(i) == null)
+				continue;
+			
+			if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element child = (Element)nodes.item(i);
 				String tagname = child.getNodeName(); //getNodeName(child);
 
 				if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))

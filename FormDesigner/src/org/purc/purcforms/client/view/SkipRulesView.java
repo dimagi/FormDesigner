@@ -215,7 +215,7 @@ public class SkipRulesView extends Composite implements IConditionController{
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getText());
+			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());
 		else
 			lblAction.setText(LocaleText.get("forQuestion"));
 

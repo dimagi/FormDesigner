@@ -71,6 +71,37 @@ public class SqlBuilder {
 
 		return filter;
 	}
+	
+	/*private static String getFilter2(FilterConditionGroup filterGroup){
+
+		String filter = "";
+
+		List<FilterConditionRow> rows = filterGroup.getConditions();
+		for(FilterConditionRow row : rows){
+			
+			if(row instanceof FilterConditionGroup){
+				if(filter.length() > 0)
+					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
+				
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				
+				String flt = getFilter((FilterConditionGroup)row);
+				if(flt.length() > 0)
+					flt = getSQLOuterCombiner(((FilterConditionGroup)row).getConditionsOperator()) + "(" + flt + ")";
+				
+				filter += flt;
+			}
+			else{
+				if(filter.length() > 0)
+					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+				
+				filter += getFilter((FilterCondition)row);
+			}
+		}
+
+		return filter;
+	}*/
 
 	private static String getFilter(FilterCondition condition){		
 		String filter = condition.getFieldName();

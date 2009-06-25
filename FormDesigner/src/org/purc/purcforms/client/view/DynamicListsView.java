@@ -107,7 +107,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("valuesFor") + questionDef.getText() + "  "+LocaleText.get("whenAnswerFor"));
+			lblAction.setText(LocaleText.get("valuesFor") + questionDef.getDisplayText() + "  "+LocaleText.get("whenAnswerFor"));
 		else
 			lblAction.setText(LocaleText.get("valuesFor"));
 

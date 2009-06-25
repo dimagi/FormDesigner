@@ -1218,5 +1218,14 @@ public class QuestionDef implements Serializable{
 			}
 		}
 	}
+	
+	public String getDisplayText(){
+		String displayText = getText();
+		int pos1 = displayText.indexOf("${");
+		int pos2 = displayText.indexOf("}$");
+		if(pos1 > -1 && pos2 > -1 && (pos2 > pos1))
+			displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
+		return displayText;
+	}
 }
 

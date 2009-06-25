@@ -225,10 +225,14 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					if(!isOfflineMode())
 						saveForm(xml,centerPanel.getLayoutXml());
 
+					boolean saveLocaleText = true;
 					if(formSaveListener != null)
-						formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());
+						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());
 
 					FormUtil.dlg.hide();
+					
+					if(saveLocaleText)
+						saveLanguageText(false); //Save text for the default language
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -237,8 +241,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}	
 			}
 		});
-
-		saveLanguageText(false); //Save text for the default language
 	}
 
 	public void saveFormAs() {

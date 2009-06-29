@@ -2,7 +2,6 @@ package org.purc.purcforms.client.sql;
 
 import java.util.List;
 
-import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FilterCondition;
 import org.purc.purcforms.client.model.FilterConditionGroup;
 import org.purc.purcforms.client.model.FilterConditionRow;
@@ -29,14 +28,11 @@ public class SqlBuilder {
 		String sql = "SELECT * FROM " + formDef.getVariableName();
 
 		String filter = "";
-		if(filterConditionGroup.getConditionCount() > 0){
+		if(filterConditionGroup.getConditionCount() > 0)
 			filter = getFilter(filterConditionGroup);
-			//if(filter.length() > 0)
-			//	filter = getSQLOuterCombiner(filterConditionGroup.getConditionsOperator()) + "(" + filter + ")";
-		}
 
 		if(filter.length() > 0)
-			sql = sql + " WHERE " + filter;
+			sql = sql + "\r\nWHERE " + filter;
 
 		return sql;
 	}
@@ -48,60 +44,20 @@ public class SqlBuilder {
 		List<FilterConditionRow> rows = filterGroup.getConditions();
 		for(FilterConditionRow row : rows){
 			
-			if(row instanceof FilterConditionGroup){
-				if(filter.length() > 0)
-					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
-				
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				
-				String flt = getFilter((FilterConditionGroup)row);
-				if(flt.length() > 0)
-					flt = getSQLOuterCombiner(((FilterConditionGroup)row).getConditionsOperator()) + "(" + flt + ")";
-				
-				filter += flt;
-			}
-			else{
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				
+			if(filter.length() > 0)
+				filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
+			
+			if(row instanceof FilterConditionGroup)
+				filter += getFilter((FilterConditionGroup)row);
+			else
 				filter += getFilter((FilterCondition)row);
-			}
 		}
+		
+		if(filter.length() > 0)
+			filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
 
 		return filter;
 	}
-	
-	/*private static String getFilter2(FilterConditionGroup filterGroup){
-
-		String filter = "";
-
-		List<FilterConditionRow> rows = filterGroup.getConditions();
-		for(FilterConditionRow row : rows){
-			
-			if(row instanceof FilterConditionGroup){
-				if(filter.length() > 0)
-					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
-				
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				
-				String flt = getFilter((FilterConditionGroup)row);
-				if(flt.length() > 0)
-					flt = getSQLOuterCombiner(((FilterConditionGroup)row).getConditionsOperator()) + "(" + flt + ")";
-				
-				filter += flt;
-			}
-			else{
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				
-				filter += getFilter((FilterCondition)row);
-			}
-		}
-
-		return filter;
-	}*/
 
 	private static String getFilter(FilterCondition condition){		
 		String filter = condition.getFieldName();
@@ -109,39 +65,6 @@ public class SqlBuilder {
 		filter += getQuotedValue(condition.getFirstValue(),condition.getDataType(),condition.getOperator());
 		return filter;
 	}
-
-	/*private static String getFilter(FilterConditionGroup filterGroup){
-
-		String filter = "";
-
-		List<FilterConditionRow> rows = filterGroup.getConditions();
-		for(FilterConditionRow row : rows){
-			if(row instanceof FilterConditionGroup){
-				if(filter.length() > 0)
-					filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
-
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-				filter += getFilter((FilterConditionGroup)row);
-
-				return filter;
-			}
-			else if(row instanceof FilterCondition){
-				if(filter.length() > 0)
-					filter += getSQLInnerCombiner(filterGroup.getConditionsOperator());
-
-				FilterCondition condition = (FilterCondition)row;
-				filter += condition.getFieldName();
-				filter += getDBOperator(condition.getOperator());
-				filter += getQuotedValue(condition.getFirstValue(),condition.getDataType(),condition.getOperator());
-			}
-		}
-
-		if(filter.length() > 0)
-			filter = getSQLOuterCombiner(filterGroup.getConditionsOperator()) + "(" + filter + ")";
-
-		return filter;
-	}*/
 
 	private static String getDBOperator(int operator)
 	{
@@ -160,9 +83,9 @@ public class SqlBuilder {
 		case ModelConstants.OPERATOR_GREATER_EQUAL:
 			return " >= ";
 		case ModelConstants.OPERATOR_IS_NULL:
-			return " IS NULL ";
+			return " IS NULL";
 		case ModelConstants.OPERATOR_IS_NOT_NULL:
-			return " IS NOT NULL ";
+			return " IS NOT NULL";
 		case ModelConstants.OPERATOR_IN_LIST:
 			return " IN (";
 		case ModelConstants.OPERATOR_NOT_IN_LIST:
@@ -190,6 +113,9 @@ public class SqlBuilder {
 
 	private static String getQuotedValue(String fieldVal,int dataType, int operator)
 	{
+		if(operator == ModelConstants.OPERATOR_IS_NULL || operator == ModelConstants.OPERATOR_IS_NOT_NULL)
+			return "";
+		
 		switch(dataType)
 		{
 		case QuestionDef.QTN_TYPE_TEXT:
@@ -227,9 +153,9 @@ public class SqlBuilder {
 	private static String getSQLOuterCombiner(String val)
 	{
 		if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL))
-			return " ";
+			return "";
 		else if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ANY))
-			return " ";
+			return "";
 		else if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_NONE))
 			return " NOT ";
 		else if(val.equalsIgnoreCase(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_NOT_ALL))

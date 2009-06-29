@@ -1,7 +1,7 @@
 package org.purc.purcforms.client.widget;
 
 import org.purc.purcforms.client.controller.FilterRowActionListener;
-import org.purc.purcforms.client.controller.IConditionController;
+import org.purc.purcforms.client.controller.ConditionController;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
@@ -30,19 +30,19 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 	private OperatorHyperlink operatorHyperlink;
 	private ValueWidget valueWidget = new ValueWidget();
 	private HorizontalPanel horizontalPanel;
-	private ActionHyperlink actionHyperlink;
+	private ConditionActionHyperlink actionHyperlink;
 	private CheckBox chkSelect = new CheckBox();
 
 	private QuestionDef questionDef;
 	private int operator;
-	private IConditionController view;
+	private ConditionController view;
 	private Condition condition;
 	private Label lbLabel = new Label(LocaleText.get("value"));
 
 	private boolean allowFieldSelection = false;
 	private int depth = 1;
 	
-	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef, int depth,AddConditionHyperlink addConditionHyperlink){
+	public ConditionWidget(FormDef formDef, ConditionController view, boolean allowFieldSelection, QuestionDef questionDef, int depth,AddConditionHyperlink addConditionHyperlink){
 		this.formDef = formDef;
 		this.view = view;
 		this.allowFieldSelection = allowFieldSelection;
@@ -52,7 +52,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 	}
 
 	private void setupWidgets(AddConditionHyperlink addConditionHyperlink){
-		actionHyperlink = new ActionHyperlink("<>",null,true,depth,addConditionHyperlink,this);
+		actionHyperlink = new ConditionActionHyperlink("<>",null,true,depth,addConditionHyperlink,this);
 		chkSelect.setChecked(true);
 		
 		if(allowFieldSelection)
@@ -119,12 +119,12 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 		}*/
 	}
 
-	public void addCondition(Widget sender){
-		view.addCondition(sender);
+	public ConditionWidget addCondition(Widget sender){
+		return view.addCondition(sender);
 	}
 
-	public void addBracket(Widget sender){
-		view.addBracket(sender);
+	public ConditionActionHyperlink addBracket(Widget sender, String operator, boolean addCondition){
+		return view.addBracket(sender,operator,addCondition);
 	}
 
 	public void deleteCurrentRow(Widget sender){
@@ -146,7 +146,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 		return condition;
 	}
 
-	public boolean setCondition(Condition condition){
+	/*public boolean setCondition(Condition condition){
 		this.condition = condition;
 		questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef == null)
@@ -155,29 +155,27 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 		setQuestionDef(questionDef);
 
 		return true;
-	}
+	}*/
 
 	public void setQuestionDef(QuestionDef questionDef){
 		this.questionDef = questionDef;
 		
+		valueWidget.setQuestionDef(questionDef);
 		operatorHyperlink.setDataType(questionDef.getDataType());
-		
-		//if(allowFieldSelection)
-			valueWidget.setQuestionDef(questionDef);
-		
-		operatorHyperlink.setDataType(questionDef.getDataType());
-
-		if(condition != null){
-			operator = condition.getOperator();
-
-			if(allowFieldSelection)
-				fieldWidget.setQuestion(questionDef);
-
-
-			operatorHyperlink.setOperator(operator);
-			valueWidget.setOperator(operator);
-			valueWidget.setValueQtnDef(condition.getValueQtnDef()); //Should be set before value such that value processing finds it.
-			valueWidget.setValue(condition.getValue());
-		}
+		fieldWidget.setQuestion(questionDef);
+	}
+	
+	public void setOparator(int operator){
+		this.operator = operator;
+		this.operatorHyperlink.setOperator(operator);
+		this.valueWidget.setOperator(operator);
+	}
+	
+	public void setValue(String value){
+		valueWidget.setValue(value);
+	}
+	
+	public int getDepth(){
+		return depth;
 	}
 }

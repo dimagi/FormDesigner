@@ -245,7 +245,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			scrollPanel.setHeight("200px");
 			scrollPanel.setWidth((maxSize*11)+"px");*/
 
-			int height = options.size()*40;
+			int height = options.size()*38;
 			if(height > 200)
 				height = 200;
 
@@ -296,7 +296,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				panel.add(checkbox);
 			}
 
-			int height = options.size()*40;
+			int height = options.size()*38;
 			if(height > 200)
 				height = 200;
 

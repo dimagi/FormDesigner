@@ -25,9 +25,11 @@ public class GroupHyperlink extends Hyperlink{
 
 	private PopupPanel popup;
 	private boolean enabled = true;
+	private int depth = 1;
 
-	public GroupHyperlink(String text, String targetHistoryToken){
+	public GroupHyperlink(String text, String targetHistoryToken,int depth){
 		super(text,targetHistoryToken);
+		this.depth = depth;
 
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
@@ -75,5 +77,9 @@ public class GroupHyperlink extends Hyperlink{
 
 	public void setEnabled(boolean enable){
 		this.enabled = enable;
+	}
+	
+	public int getDepth(){
+		return depth;
 	}
 }

@@ -1,5 +1,7 @@
 package org.purc.purcforms.client;
 
+import org.purc.purcforms.client.util.FormUtil;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -14,7 +16,7 @@ public class QueryBuilder implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		//FormUtil.setupUncaughtExceptionHandler();	
+		FormUtil.setupUncaughtExceptionHandler();	
 		
 		queryBuilder = new QueryBuilderWidget();
 

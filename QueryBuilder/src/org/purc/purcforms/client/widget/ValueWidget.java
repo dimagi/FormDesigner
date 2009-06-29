@@ -10,6 +10,7 @@ import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -57,7 +58,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	private PopupPanel popup;
 	private KeyboardListenerAdapter keyboardListener1;
 	private KeyboardListenerAdapter keyboardListener2;
-	private QuestionDef prevQuestionDef;
 	private FormDef formDef;
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;
@@ -68,13 +68,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	}
 
 	public void setQuestionDef(QuestionDef questionDef){
-		prevQuestionDef = this.questionDef;
 		this.questionDef = questionDef;
 	}
 
 	public void setOperator(int operator){
 		if(this.operator != operator){ 
-			if(this.operator == ModelConstants.OPERATOR_IS_NULL)
+			if(this.operator == ModelConstants.OPERATOR_IS_NULL || this.operator == ModelConstants.OPERATOR_IS_NOT_NULL)
 				valueHyperlink.setText(EMPTY_VALUE);
 
 			/*if((this.operator == PurcConstants.OPERATOR_IN_LIST || this.operator == PurcConstants.OPERATOR_NOT_IN_LIST) &&
@@ -84,7 +83,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 		this.operator = operator;
 
-		if(operator == ModelConstants.OPERATOR_IS_NULL)
+		if(operator == ModelConstants.OPERATOR_IS_NULL || operator == ModelConstants.OPERATOR_IS_NOT_NULL)
 			valueHyperlink.setText("");
 		else if(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			valueHyperlink.setText(EMPTY_VALUE + BETWEEN_VALUE_SEPARATOR + EMPTY_VALUE);
@@ -202,7 +201,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			scrollPanel.setHeight("200px");
 			scrollPanel.setWidth((maxSize*11)+"px");*/
 
-			int height = options.size()*40;
+			int height = options.size()*38;
 			if(height > 200)
 				height = 200;
 
@@ -253,7 +252,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				panel.add(checkbox);
 			}
 
-			int height = options.size()*40;
+			int height = options.size()*38;
 			if(height > 200)
 				height = 200;
 
@@ -278,11 +277,11 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			txtValue1.removeKeyboardListener(keyboardListener1);
 			txtValue2.removeKeyboardListener(keyboardListener2);
 
-			/*if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
-				txtValue1 = new DatePickerWidget();
-				txtValue2 = new DatePickerWidget();
+			if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
+				txtValue1 = new DatePicker();
+				txtValue2 = new DatePicker();
 			}
-			else*/{
+			else{
 				txtValue1 = new TextBox();
 				txtValue2 = new TextBox();
 			}
@@ -293,7 +292,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 			horizontalPanel.add(txtValue1);
 
-			if(!valueHyperlink.getText().equals(EMPTY_VALUE) && (prevQuestionDef == questionDef || prevQuestionDef == null))
+			if(!valueHyperlink.getText().equals(EMPTY_VALUE) /*&& (prevQuestionDef == questionDef || prevQuestionDef == null)*/)
 				txtValue1.setText(valueHyperlink.getText());
 
 			addNumericKeyboardListener();
@@ -467,7 +466,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	public void setValue(String value){
 		String sValue = value;
 
-		if(sValue != null){
+		if(sValue != null && formDef != null){
 			if(sValue.startsWith(formDef.getVariableName() + "/")){
 				sValue = sValue.substring(sValue.indexOf('/')+1);
 				QuestionDef qtn = formDef.getQuestion(sValue);
@@ -522,7 +521,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 					sValue = QuestionDef.FALSE_DISPLAY_VALUE;
 			}
 		}
-		else
+		else if(formDef != null)
 			sValue = EMPTY_VALUE;
 
 		valueHyperlink.setText(sValue);

@@ -73,9 +73,16 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	private void setupPopup(){
 		popup = new PopupPanel(true,true);
 		
+		int count = 0;
+		
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(OP_TEXT_EQUAL,true, new SelectItemCommand(OP_TEXT_EQUAL,this));
-		menuBar.addItem(OP_TEXT_NOT_EQUAL,true, new SelectItemCommand(OP_TEXT_NOT_EQUAL,this));
+		
+		if(!(dataType == QuestionDef.QTN_TYPE_GPS || dataType == QuestionDef.QTN_TYPE_VIDEO ||
+				dataType == QuestionDef.QTN_TYPE_AUDIO || dataType == QuestionDef.QTN_TYPE_IMAGE)){
+			menuBar.addItem(OP_TEXT_EQUAL,true, new SelectItemCommand(OP_TEXT_EQUAL,this));
+			menuBar.addItem(OP_TEXT_NOT_EQUAL,true, new SelectItemCommand(OP_TEXT_NOT_EQUAL,this));
+			count += 2;
+		}
 		  
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME ||
 			dataType == QuestionDef.QTN_TYPE_DECIMAL || dataType == QuestionDef.QTN_TYPE_NUMERIC ||
@@ -87,11 +94,13 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			menuBar.addItem(OP_TEXT_GREATER_THAN_EQUAL,true, new SelectItemCommand(OP_TEXT_GREATER_THAN_EQUAL,this));	  
 			menuBar.addItem(OP_TEXT_BETWEEN,true,new SelectItemCommand(OP_TEXT_BETWEEN,this));	  
 			menuBar.addItem(OP_TEXT_NOT_BETWEEN,true, new SelectItemCommand(OP_TEXT_NOT_BETWEEN,this));
+			count += 6;
 		}
 		
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){		  
 			menuBar.addItem(OP_TEXT_IN_LIST,true,new SelectItemCommand(OP_TEXT_IN_LIST,this));	  
 			menuBar.addItem(OP_TEXT_NOT_IN_LIST,true, new SelectItemCommand(OP_TEXT_NOT_IN_LIST,this));
+			count += 2;
 		}
 			  
 		menuBar.addItem(OP_TEXT_NULL,true, new SelectItemCommand(OP_TEXT_NULL,this));
@@ -101,12 +110,18 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			menuBar.addItem(OP_TEXT_NOT_START_WITH,true, new SelectItemCommand(OP_TEXT_NOT_START_WITH,this));	  
 			menuBar.addItem(OP_TEXT_CONTAINS,true,new SelectItemCommand(OP_TEXT_CONTAINS,this));	  
 			menuBar.addItem(OP_TEXT_NOT_CONTAIN,true, new SelectItemCommand(OP_TEXT_NOT_CONTAIN,this));
+			count += 4;
 		}
 		 
+		int height = count*38;
+		if(height > 200)
+			height = 200;
+		
 		ScrollPanel scrollPanel = new ScrollPanel();
 		scrollPanel.setWidget(menuBar);
 		scrollPanel.setWidth("300px");
-		scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+"px");
+		scrollPanel.setHeight(height+"px");
+		//scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+"px");
 		
 		popup.setWidget(scrollPanel);
 	}

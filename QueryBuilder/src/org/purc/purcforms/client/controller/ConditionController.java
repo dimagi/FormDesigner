@@ -11,9 +11,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public interface FilterRowActionListener {
-	
+public interface ConditionController {
+
 	public ConditionWidget addCondition(Widget sender);
 	public ConditionActionHyperlink addBracket(Widget sender, String operator, boolean addCondition);
-	public void deleteCurrentRow(Widget sender);
+	public void deleteCondition(Widget sender,ConditionWidget conditionWidget);
 }

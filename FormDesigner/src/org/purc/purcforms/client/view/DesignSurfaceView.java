@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -19,6 +18,7 @@ import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.StyleUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -120,13 +119,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	}
 
 	private void previewEvents(){
-		
+
 		DOM.addEventPreview(new EventPreview() { 
 			public boolean onEventPreview(Event event) 
 			{ 
 				if(!isVisible())
 					return true;
-				
+
 				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
 					//DOM.eventPreventDefault(pEvent);
 					if(!childHandleKeyDownEvent(event))
@@ -212,10 +211,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			public void execute() {popup.hide(); addNewRepeatSection(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("picture")),true,new Command(){
-			public void execute() {popup.hide(); addNewPictureSection(null,true);}});
+			public void execute() {popup.hide(); addNewPictureSection(null,null,true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("videoAudio")),true,new Command(){
-			public void execute() {popup.hide(); addNewVideoAudioSection(null,true);}});
+			public void execute() {popup.hide(); addNewVideoAudioSection(null,null,true);}});
 
 		/*addControlMenu.addSeparator();
 
@@ -635,8 +634,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		DesignWidgetWrapper widgetWrapper = null;
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
-			widgetWrapper = addNewLabel(questionDef.getText(),false);
-			widgetWrapper.setBinding(questionDef.getVariableName());
+			int type = questionDef.getDataType();
+
+			if(!(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_IMAGE)){
+				widgetWrapper = addNewLabel(questionDef.getText(),false);
+				widgetWrapper.setBinding(questionDef.getVariableName());
+			}
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 				widgetWrapper.setFontWeight("bold");
@@ -645,30 +648,29 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			widgetWrapper = null;
 
-			x += (questionDef.getText().length() * 10);
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-					questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+			if(!(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_IMAGE))
+				x += (questionDef.getText().length() * 10);
+
+			if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+					type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				widgetWrapper = addNewDropdownList(false);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE)
+			else if(type == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+			else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
+			else if(type == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList(false);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			else if(type == QuestionDef.QTN_TYPE_REPEAT)
 				widgetWrapper = addNewRepeatSet(questionDef,max,pageName,false);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
-				widgetWrapper = addNewPictureSection(questionDef.getVariableName(),false);
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
-					questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName(),false);
+			else if(type == QuestionDef.QTN_TYPE_IMAGE)
+				widgetWrapper = addNewPictureSection(questionDef.getVariableName(),questionDef.getText(),false);
+			else if(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO)
+				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName(),questionDef.getText(),false);
 			else
 				widgetWrapper = addNewTextBox(false);
 
 			if(widgetWrapper != null){
-				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE||
-						questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO||
-						questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO))
+				if(!(type == QuestionDef.QTN_TYPE_IMAGE|| type == QuestionDef.QTN_TYPE_VIDEO|| type == QuestionDef.QTN_TYPE_AUDIO))
 					widgetWrapper.setBinding(questionDef.getVariableName());
 
 				widgetWrapper.setQuestionDef(questionDef);
@@ -687,19 +689,19 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			y += 40;
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
-				y += 195;
+				y += 195 + 30;
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_VIDEO || questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				y += 75;
+				y += 75 + 30;
 
 			int rptIncr = 0;
 			if(i < questions.size()-1){
 				int dataType = ((QuestionDef)questions.get(i+1)).getDataType();
 				if(dataType == QuestionDef.QTN_TYPE_REPEAT)
-					rptIncr = 90;
+					rptIncr = 90 + 50;
 				else if(dataType == QuestionDef.QTN_TYPE_IMAGE)
-					rptIncr = 195;
+					rptIncr = 195 + 30;
 				else if(dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_AUDIO)
-					rptIncr = 75;
+					rptIncr = 75 + 30;
 			}
 
 			if((y+40+rptIncr) > max){
@@ -735,7 +737,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		currentWidgetSelectionListener = repeat;
 
 		int oldY = y;
-		y = 55;
+		y = 55 + 0; //50;
 		x = 10;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
@@ -757,13 +759,41 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y = oldY;
 
+
+		//Group label headers are turned off from repeats because we use tables
+		//instead of absolute panels.
+		//Header label stuff
+		/*widget.setBorderStyle("dashed");
+		AbsolutePanel panel = selectedPanel;
+		FormDesignerDragController dragController = selectedDragController;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+
+		oldY = y;
+		x = selectedPanel.getAbsoluteLeft();
+		y = selectedPanel.getAbsoluteTop();
+		DesignWidgetWrapper w = addNewLabel("Header Label", false);
+		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(w.getElement(), "width","100%");
+		w.setTextAlign("center");
+		//selectedDragController.makeNotDraggable(w);
+		w.setWidth("100%");
+		w.setForeColor("white");
+		w.setFontWeight("bold");
+
+		selectedPanel = panel;
+		selectedDragController = dragController;
+		y = oldY;*/
+		//End header label stuff
+
 		return widget;
 	}
 
-	protected DesignWidgetWrapper addNewPictureSection(String parentBinding, boolean select){
+	protected DesignWidgetWrapper addNewPictureSection(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","220px");
+		DOM.setStyleAttribute(repeat.getElement(), "height","245px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
 		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
@@ -782,7 +812,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		int oldY = y;
 
-		y = 10;
+		y = 35;
 		x = 10;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
@@ -790,7 +820,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			y += selectedPanel.getAbsoluteTop();
 		addNewPicture(false).setBinding(parentBinding);
 
-		y = 55 + 120;
+		y = 55 + 120 + 25;
 		x = 10;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
@@ -812,13 +842,38 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y = oldY;
 
+		//Header label stuff
+		widget.setBorderStyle("dashed");
+		AbsolutePanel panel = selectedPanel;
+		FormDesignerDragController dragController = selectedDragController;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+
+		y = selectedPanel.getAbsoluteTop();
+		x = selectedPanel.getAbsoluteLeft();
+		DesignWidgetWrapper w = addNewLabel(text != null ? text : "Picture", false);
+		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(w.getElement(), "width","100%");
+		w.setTextAlign("center");
+		//selectedDragController.makeNotDraggable(w);
+		w.setWidth("100%");
+		w.setForeColor("white");
+		w.setFontWeight("bold");
+
+		selectedPanel = panel;
+		selectedDragController = dragController;
+		//End header label stuff
+
+		y = oldY;
+
 		return widget;
 	}
 
-	protected DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, boolean select){
+	protected DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
+		DOM.setStyleAttribute(repeat.getElement(), "height","125px");
 		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
 		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
 
@@ -837,7 +892,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		int oldY = y;
 
-		y = 20;
+		y = 20 + 25;
 		x = 45;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
@@ -845,7 +900,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			y += selectedPanel.getAbsoluteTop();
 		addNewVideoAudio(null,false).setBinding(parentBinding);
 
-		y = 60;
+		y = 60 + 25;
 		x = 10;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
@@ -864,6 +919,31 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		selectedPanel = absPanel;
 		widgetPopup = wdpopup;
 		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		//Header label stuff
+		widget.setBorderStyle("dashed");
+		AbsolutePanel panel = selectedPanel;
+		FormDesignerDragController dragController = selectedDragController;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+
+		y = selectedPanel.getAbsoluteTop();
+		x = selectedPanel.getAbsoluteLeft();
+		DesignWidgetWrapper w = addNewLabel(text != null ? text : "Recording", false);
+		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(w.getElement(), "width","100%");
+		w.setTextAlign("center");
+		//selectedDragController.makeNotDraggable(w);
+		w.setWidth("100%");
+		w.setForeColor("white");
+		w.setFontWeight("bold");
+
+		selectedPanel = panel;
+		selectedDragController = dragController;
+		//End header label stuff
 
 		y = oldY;
 
@@ -878,6 +958,31 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
 
 		DesignWidgetWrapper widget = addNewWidget(group,select);
+		//selectedDragController.makeNotDraggable(widget);
+
+
+		//Header label stuff
+		widget.setBorderStyle("dashed");
+		AbsolutePanel panel = selectedPanel;
+		FormDesignerDragController dragController = selectedDragController;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+
+		DesignWidgetWrapper w = addNewLabel("Header Label", false);
+		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(w.getElement(), "width","100%");
+		w.setTextAlign("center");
+		//selectedDragController.makeNotDraggable(w);
+		w.setWidth("100%");
+		w.setForeColor("white");
+		w.setFontWeight("bold");
+
+		selectedPanel = panel;
+		selectedDragController = dragController;
+		//End header label stuff
+
+
 
 		return widget;
 	}
@@ -936,8 +1041,22 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		selectedPanel = widget.getPanel();
 		widgetPopup = widget.getWidgetPopup();
 
+		/*y = 30;
+		Vector questions = questionDef.getRepeatQtnsDef().getQuestions();
+		if(questions == null)
+			return addNewTextBox(select); //TODO Bug here
+		for(int index = 0; index < questions.size(); index++){
+			QuestionDef qtn = (QuestionDef)questions.get(index);
+			if(index > 0)
+				x += 210;
+			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
+			label.setBinding(qtn.getVariableName());
+			label.setTextDecoration("underline");
+		}*/
+
+		//y = x = 10;
 		x += selectedPanel.getAbsoluteLeft();
-		y += selectedPanel.getAbsoluteTop();
+		y += selectedPanel.getAbsoluteTop() + 0; //50;
 
 		DesignWidgetWrapper widgetWrapper = null;
 		for(int index = 0; index < questions.size(); index++){
@@ -958,7 +1077,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				widgetWrapper = addNewPicture(select);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_VIDEO ||
 					qtn.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(null,select);
+				widgetWrapper = addNewVideoAudioSection(null,qtn.getText(),select);
 			else
 				widgetWrapper = addNewTextBox(select);
 
@@ -1076,6 +1195,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	}
 
 	private void fillBindings(AbsolutePanel panel,HashMap<String,String> bindings){
+		if(panel.getWidgetIndex(rubberBand) > -1)
+			panel.remove(rubberBand);
+
 		for(int index = 0; index < panel.getWidgetCount(); index++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)panel.getWidget(index);
 			String binding = widget.getParentBinding();
@@ -1116,9 +1238,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		else if(text.equals(LocaleText.get("repeatSection")))
 			addNewRepeatSection(true);
 		else if(text.equals(LocaleText.get("picture")))
-			addNewPictureSection(null,true);
+			addNewPictureSection(null,null,true);
 		else if(text.equals(LocaleText.get("videoAudio")))
-			addNewVideoAudioSection(null,true);
+			addNewVideoAudioSection(null,null,true);
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget){
@@ -1154,14 +1276,14 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 			else{
 				selectedDragController.clearSelection();
-				
+
 				for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 					Widget wid = selectedPanel.getWidget(index);
 					if(!(wid instanceof DesignWidgetWrapper))
 						continue;
 					if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
 						continue;
-					
+
 					DesignGroupWidget designGroupWidget = (DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget();
 					if(!designGroupWidget.containsWidget(widget))
 						designGroupWidget.clearSelection();

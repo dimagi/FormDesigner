@@ -11,6 +11,8 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
  */
 public class StyleUtil {
 
+	public static final String COLOR_GROUP_HEADER = "#8FABC7";
+	
 	public static void setFontStyleIndex(String fontSyle, ListBox listBox){
 		if("italic".equalsIgnoreCase(fontSyle))
 			listBox.setSelectedIndex(1);

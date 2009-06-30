@@ -480,6 +480,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	public void addNewForm(){
 		int id = ++nextFormId;
 		addNewForm("New Form"+id,"newform"+id,id);
+		
+		//Automatically add a new page
+		addNewChildItem(false);
+		
+		//Automatically add a new question
+		addNewChildItem(false);
 	}
 
 	public void addNewForm(String name, String varName, int formId){
@@ -545,6 +551,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			addFormDefItem(pageDef,item.getParentItem());
 			tree.setSelectedItem(item);
 			item.getParentItem().setState(true);
+			
+			//Automatically add a new question
+			addNewChildItem(false);
 		}
 		else if(addNewIfNoKids)
 			addNewItem();

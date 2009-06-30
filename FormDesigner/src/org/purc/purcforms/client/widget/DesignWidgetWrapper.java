@@ -89,6 +89,11 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void onBrowserEvent(Event event) {
 		int type = DOM.eventGetType(event);
+		
+		/*if(widget instanceof Label){
+			getParent().getParent().getParent().getParent().onBrowserEvent(event);
+			return;
+		}*/
 
 		switch (type) {
 		case Event.ONCONTEXTMENU:

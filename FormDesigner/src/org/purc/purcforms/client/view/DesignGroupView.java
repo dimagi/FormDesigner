@@ -369,24 +369,42 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
 	 */
-	public void alignLeft() {
+	public boolean alignLeft() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).alignLeft())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		String left = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getLeft();
 		for(int index = 0; index < widgets.size(); index++)
 			((DesignWidgetWrapper)widgets.get(index)).setLeft(left);
+
+		return true;
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
 	 */
-	public void alignRight() {
+	public boolean alignRight() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).alignRight())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
@@ -395,29 +413,49 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setLeft((total - widget.getElement().getScrollWidth()+"px"));
 		}
+
+		return true;
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
 	 */
-	public void alignTop() {
+	public boolean alignTop() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).alignTop())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		String top = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getTop();
 		for(int index = 0; index < widgets.size(); index++)
 			((DesignWidgetWrapper)widgets.get(index)).setTop(top);
+
+		return true;
 	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
 	 */
-	public void alignBottom() {
+	public boolean alignBottom() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).alignBottom())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(widgets.size() - 1);
@@ -426,34 +464,64 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			widget = (DesignWidgetWrapper)widgets.get(index);
 			widget.setTop((total - widget.getElement().getScrollHeight()+"px"));
 		}
+
+		return true;
 	}
 
-	public void makeSameHeight() {
+	public boolean makeSameHeight() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).makeSameHeight())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		String height = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getHeight();
 		for(int index = 0; index < widgets.size(); index++)
 			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
+
+		return true;
 	}
 
-	public void makeSameWidth() {
+	public boolean makeSameWidth() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).makeSameWidth())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
 		for(int index = 0; index < widgets.size(); index++)
 			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
+
+		return true;
 	}
 
-	public void makeSameSize() {
+	public boolean makeSameSize() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
-		if(widgets == null || widgets.size() < 2)
-			return;
+		if(widgets == null || widgets.size() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).makeSameSize())
+						return true;
+				}
+			}
+			return false;
+		}
 
 		//align according to the last selected item.
 		String width = ((DesignWidgetWrapper)widgets.get(widgets.size() - 1)).getWidth();
@@ -462,11 +530,24 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			((DesignWidgetWrapper)widgets.get(index)).setWidth(width);
 			((DesignWidgetWrapper)widgets.get(index)).setHeight(height);
 		}
+
+		return true;
 	}
 
-	public void format(){
-		if(selectedDragController.getSelectedWidgetCount() > 2)
-			rightAlignLabels(selectedPanel);
+	public boolean format(){
+		if(selectedDragController.getSelectedWidgetCount() < 2){
+			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					if(((DesignGroupWidget)widget.getWrappedWidget()).format())
+						return true;
+				}
+			}
+			return false;
+		}
+
+		rightAlignLabels(selectedPanel);
+		return true;
 	}
 
 	protected void selectAll(){
@@ -529,7 +610,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		else
 			stopLabelEdit();
 	}
-	
+
 	protected boolean isTextBoxFocus(Event event){
 		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextBox") || event.getTarget().getClassName().equalsIgnoreCase("gwt-SuggestBox");
 	}
@@ -543,6 +624,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void startRubberBand(Event event){
+		if(this instanceof DesignGroupWidget)
+			return;
+		
 		selectedPanel.add(rubberBand);
 
 		x = event.getClientX()-selectedPanel.getAbsoluteLeft();
@@ -854,7 +938,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 
 			editWidget.stopEditMode();
-			
+
 			String text = txtEdit.getText();
 			if(text.trim().length() > 0)
 				editWidget.setText(text);

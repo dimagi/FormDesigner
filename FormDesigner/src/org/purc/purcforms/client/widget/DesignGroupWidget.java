@@ -275,6 +275,9 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	}
 
 	public DesignWidgetWrapper getWidgetAt(int index){
+		if(selectedPanel.getWidgetIndex(rubberBand) > -1)
+			selectedPanel.remove(rubberBand);
+		
 		return (DesignWidgetWrapper)selectedPanel.getWidget(index); //TODO Could contain rubber band
 	}
 

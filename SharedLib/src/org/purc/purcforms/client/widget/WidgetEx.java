@@ -168,7 +168,11 @@ public class WidgetEx extends Composite{
 	}
 	
 	public void setWidth(String width){
+		if("100%".equalsIgnoreCase(this.width)) //Temporary hack for group header label which should always have a width of 100%
+			return;
+		
 		DOM.setStyleAttribute(widget.getElement(), "width",width);
+		DOM.setStyleAttribute(getElement(), "width", width); //For setting width of group labels which is 100% and hence their wrapper also need to be at 100%
 		this.width = width;
 	}
 

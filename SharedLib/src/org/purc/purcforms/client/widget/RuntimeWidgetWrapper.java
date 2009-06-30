@@ -205,14 +205,6 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
-	public void setWidth(String width){
-		DOM.setStyleAttribute(widget.getElement(), "width",width);
-	}
-
-	public void setHeight(String height){
-		DOM.setStyleAttribute(widget.getElement(), "height",height);
-	}
-
 	public void setText(String text){
 		if(widget instanceof RadioButton)
 			((RadioButton)widget).setText(text);

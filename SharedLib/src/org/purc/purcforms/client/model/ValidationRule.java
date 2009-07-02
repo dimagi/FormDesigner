@@ -51,7 +51,7 @@ public class ValidationRule implements Serializable{
 		setErrorMessage(validationRule.getErrorMessage());
 		setConditionsOperator(validationRule.getConditionsOperator());
 		copyConditions(validationRule.getConditions());
-		setFormDef(new FormDef(validationRule.getFormDef()));
+		setFormDef(new FormDef(validationRule.getFormDef(),false));
 	}
 	
 	/** Construct a Rule object from parameters. 

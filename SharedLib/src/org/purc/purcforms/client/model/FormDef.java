@@ -77,6 +77,10 @@ public class FormDef implements Serializable{
 	}
 
 	public FormDef(FormDef formDef) {
+		this(formDef,true);
+	}
+	
+	public FormDef(FormDef formDef, boolean copyValidationRules) {
 		setId(formDef.getId());
 		setName(formDef.getName());
 
@@ -86,7 +90,12 @@ public class FormDef implements Serializable{
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
 		copyPages(formDef.getPages());
 		copySkipRules(formDef.getSkipRules());
-		copyValidationRules(formDef.getValidationRules());
+		
+		//This is a temporary fix for an infinite recursion that happens when validation
+		//rule copy constructor tries to set a formdef using the FormDef copy constructor.
+		if(copyValidationRules)
+			copyValidationRules(formDef.getValidationRules());
+		
 		copyDynamicOptions(formDef.getDynamicOptions());
 	}
 

@@ -92,6 +92,10 @@ public class FormDesignerUtil {
 	public static native void disableContextMenu(Element elem) /*-{
 	    elem.oncontextmenu=function() {  return false};
 	}-*/; 
+	
+	public static native void disableClick(Element elem) /*-{
+    	elem.onclick=function() {  return false};
+	}-*/; 
 
 	public static void setWidgetPosition(Widget w, String left, String top) {
 		FormUtil.setWidgetPosition(w, left, top);

@@ -200,14 +200,18 @@ public class PageDef implements Serializable{
 			else
 				qtnDef.getControlNode().getParentNode().removeChild(qtnDef.getControlNode());
 		}
-		if(qtnDef.getDataNode() != null)
-			qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
-		if(qtnDef.getBindNode() != null && qtnDef.getBindNode() != null)
-			qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
+
+		//Either no / or just one occurrence. More than one nestings are avoided to make things simple
+		if(qtnDef.getVariableName().indexOf('/') == qtnDef.getVariableName().lastIndexOf('/')){
+			if(qtnDef.getDataNode() != null)
+				qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
+			if(qtnDef.getBindNode() != null && qtnDef.getBindNode() != null)
+				qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
+		}
 
 		if(formDef != null)
 			formDef.removeQtnFromRules(qtnDef);
-		
+
 		return questions.removeElement(qtnDef);
 	}
 
@@ -258,8 +262,11 @@ public class PageDef implements Serializable{
 		if(controlNode != null && parentNode != null && currentQuestionDef.getControlNode() != null)
 			parentNode.removeChild(controlNode);
 
-		if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentQuestionDef.getDataNode() != null)
-			questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
+		if(!(questionDef.getVariableName().indexOf('/') > -1)){
+			if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentQuestionDef.getDataNode() != null)
+				questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
+		}
+
 		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null && currentQuestionDef.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
@@ -281,8 +288,13 @@ public class PageDef implements Serializable{
 					parentNode.insertBefore(controlNode, sibNode);
 				}
 
-				if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
-					qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+				//move data node (We are not moving nested data nodes just to avoid complications
+				if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1)){
+					if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
+						qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+				}
+
+				//move binding node
 				if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null && questionDef.getBindNode() != null)
 					qtnDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
 			}
@@ -349,18 +361,23 @@ public class PageDef implements Serializable{
 						parentNode.appendChild(controlNode);
 
 
-					if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null)
-						parentDataNode.removeChild(questionDef.getDataNode());
+					//move data node (We are not moving nested data nodes just to avoid complications
+					if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1))
+						if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null){
+							parentDataNode.removeChild(questionDef.getDataNode());
 
-					if(qtnDef.getDataNode() != null){
-						if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getVariableName().contains("/"))
-							parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode().getParentNode());
-						else
-							parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
-					}
-					else
-						parentDataNode.appendChild(questionDef.getDataNode());
+							if(qtnDef.getDataNode() != null){
+								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getVariableName().contains("/"))
+									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode().getParentNode());
+								else
+									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+							}
+							else
+								parentDataNode.appendChild(questionDef.getDataNode());
+						}
 
+
+					//move binding node
 					if(parentBindNode != null){
 						if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
 							parentBindNode.removeChild(questionDef.getBindNode());
@@ -384,10 +401,13 @@ public class PageDef implements Serializable{
 					parentNode.appendChild(controlNode);
 				}
 
-				if(questionDef.getDataNode() != null && parentDataNode != null){
-					parentDataNode.removeChild(questionDef.getDataNode());
-					parentDataNode.appendChild(questionDef.getDataNode());
+				if(!(questionDef.getVariableName().indexOf('/') > -1)){
+					if(questionDef.getDataNode() != null && parentDataNode != null){
+						parentDataNode.removeChild(questionDef.getDataNode());
+						parentDataNode.appendChild(questionDef.getDataNode());
+					}
 				}
+
 				//parentDataNode.insertBefore(questionDef.getDataNode(), questionDef.getDataNode());
 				if(questionDef.getBindNode() != null && parentBindNode != null){
 					parentBindNode.removeChild(questionDef.getBindNode());
@@ -419,7 +439,7 @@ public class PageDef implements Serializable{
 
 		if(labelNode != null)
 			XformConverter.setTextNodeValue(labelNode,name);
-		
+
 		if(groupNode != null)
 			groupNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, pageNo+"");
 
@@ -566,6 +586,7 @@ public class PageDef implements Serializable{
 
 		if(questionDef.getDataNode() != null)
 			questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
+
 		if(questionDef.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
@@ -578,6 +599,7 @@ public class PageDef implements Serializable{
 
 		if(refQuestionDef.getDataNode() != null)
 			refQuestionDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), refQuestionDef.getDataNode());
+
 		if(refQuestionDef.getBindNode() != null)
 			refQuestionDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), refQuestionDef.getBindNode());
 
@@ -590,28 +612,28 @@ public class PageDef implements Serializable{
 		for(int i=0; i<questions.size(); i++)
 			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
 	}
-	
+
 	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
 		if(labelNode == null || groupNode == null)
 			return;
-		
+
 		String xpath = FormUtil.getNodePath(groupNode);
 		String id = groupNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
 			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
-		
+
 		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
 		parentNode.appendChild(node);
-		
+
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++)
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
 	}
-	
+
 	public void clearChangeListeners(){
 		if(questions == null)
 			return;

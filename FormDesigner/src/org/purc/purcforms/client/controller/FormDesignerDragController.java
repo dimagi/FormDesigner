@@ -205,8 +205,10 @@ public class FormDesignerDragController extends AbstractDragController{
 				incrementHeight(false);
 				incrementWidth(false);
 			}
-			else
-				DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
+			else{
+				//if(!"100%".equals(((DesignWidgetWrapper)context.draggable).getWidth()))
+					DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
+			}
 		}
 		else{
 			//DOM.setStyleAttribute(movablePanel.getElement(),"cursor","crosshair");
@@ -280,15 +282,20 @@ public class FormDesignerDragController extends AbstractDragController{
 	@Override
 	public void dragStart() {
 
-		if(dragDropListener != null)
-			dragDropListener.onDragStart(context.draggable);
+		if(context.draggable instanceof DesignWidgetWrapper && "100%".equals(((DesignWidgetWrapper)context.draggable).getWidth())){
+			context.draggable = context.draggable;//.getParent().getParent().getParent().getParent();
+		}
 
 		super.dragStart();
 
+		if(dragDropListener != null)
+			dragDropListener.onDragStart(context.draggable);
+		
 		WidgetLocation currentDraggableLocation = new WidgetLocation(context.draggable,context.boundaryPanel);
 		//currentDraggableLocation.
 		if (getBehaviorDragProxy()) {
 			movablePanel = newDragProxy(context);
+			
 			context.boundaryPanel.add(movablePanel, currentDraggableLocation.getLeft(),
 					currentDraggableLocation.getTop());
 			checkGWTIssue1813(movablePanel, context.boundaryPanel);
@@ -310,12 +317,12 @@ public class FormDesignerDragController extends AbstractDragController{
 				widgetLocation.put(widget, new CoordinateLocation(widget.getAbsoluteLeft(),
 						widget.getAbsoluteTop()));
 			}
-
+			
 			context.dropController = getIntersectDropController(context.mouseX, context.mouseY);
 			if (context.dropController != null) {
 				context.dropController.onEnter(context);
 			}
-
+			
 			for (Widget widget : context.selectedWidgets) {
 				Location location = widgetLocation.get(widget);
 
@@ -330,7 +337,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			movablePanel = container;
 		}
 		movablePanel.addStyleName(PRIVATE_CSS_MOVABLE_PANEL);
-
+		
 		// one time calculation of boundary panel location for efficiency during
 		// dragging
 		Location widgetLocation = new WidgetLocation(context.boundaryPanel, null);

@@ -852,17 +852,21 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y = selectedPanel.getAbsoluteTop();
 		x = selectedPanel.getAbsoluteLeft();
-		DesignWidgetWrapper w = addNewLabel(text != null ? text : "Picture", false);
-		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(w.getElement(), "width","100%");
-		w.setTextAlign("center");
-		//selectedDragController.makeNotDraggable(w);
-		w.setWidth("100%");
-		w.setForeColor("white");
-		w.setFontWeight("bold");
+		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : "Picture", false);
+		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
+		headerLabel.setTextAlign("center");
+		selectedDragController.makeNotDraggable(headerLabel);
+		headerLabel.setWidth("100%");
+		headerLabel.setHeightInt(20);
+		headerLabel.setForeColor("white");
+		headerLabel.setFontWeight("bold");
 
 		selectedPanel = panel;
 		selectedDragController = dragController;
+		
+		selectedDragController.makeDraggable(widget,headerLabel);
+		repeat.setHeaderLabel(headerLabel);
 		//End header label stuff
 
 		y = oldY;
@@ -932,17 +936,21 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y = selectedPanel.getAbsoluteTop();
 		x = selectedPanel.getAbsoluteLeft();
-		DesignWidgetWrapper w = addNewLabel(text != null ? text : "Recording", false);
-		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(w.getElement(), "width","100%");
-		w.setTextAlign("center");
-		//selectedDragController.makeNotDraggable(w);
-		w.setWidth("100%");
-		w.setForeColor("white");
-		w.setFontWeight("bold");
+		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : "Recording", false);
+		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
+		headerLabel.setTextAlign("center");
+		selectedDragController.makeNotDraggable(headerLabel);
+		headerLabel.setWidth("100%");
+		headerLabel.setHeightInt(20);
+		headerLabel.setForeColor("white");
+		headerLabel.setFontWeight("bold");
 
 		selectedPanel = panel;
 		selectedDragController = dragController;
+		
+		selectedDragController.makeDraggable(widget,headerLabel);
+		repeat.setHeaderLabel(headerLabel);
 		//End header label stuff
 
 		y = oldY;
@@ -969,19 +977,22 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		selectedDragController = widget.getDragController();
 		selectedPanel = widget.getPanel();
 
-		DesignWidgetWrapper w = addNewLabel("Header Label", false);
-		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(w.getElement(), "width","100%");
-		w.setTextAlign("center");
-		//selectedDragController.makeNotDraggable(w);
-		w.setWidth("100%");
-		w.setForeColor("white");
-		w.setFontWeight("bold");
+		DesignWidgetWrapper headerLabel = addNewLabel("Header Label", false);
+		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
+		headerLabel.setTextAlign("center");
+		selectedDragController.makeNotDraggable(headerLabel);
+		headerLabel.setWidth("100%");
+		headerLabel.setHeightInt(20);
+		headerLabel.setForeColor("white");
+		headerLabel.setFontWeight("bold");
 
 		selectedPanel = panel;
 		selectedDragController = dragController;
-		//End header label stuff
 
+		selectedDragController.makeDraggable(widget,headerLabel);
+		group.setHeaderLabel(headerLabel);
+		//End header label stuff
 
 
 		return widget;
@@ -1250,10 +1261,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			stopLabelEdit();
 
 		if(widget == null){
-			//selectedDragController.clearSelection(); //New and may cause bugs
-			//widgetSelectionListener.onWidgetSelected(widget); //New and may cause bugs
+			selectedDragController.clearSelection(); //New and may cause bugs
+			//widgetSelectionListener.onWidgetSelected(widget); //New and may cause bugs	
 			return;
 		}
+		//if(selectedPanel.getWidgetIndex(widget) > -1)
+		//	selectedDragController.toggleSelection(widget);
 
 		if(!(widget.getWrappedWidget() instanceof TabBar)){
 			//Event event = DOM.eventGetCurrentEvent(); //TODO verify that this does not introduce a bug
@@ -1265,17 +1278,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 					selectedDragController.selectWidget(widget);
 				}
 
-				for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
-					Widget wid = selectedPanel.getWidget(index);
-					if(!(wid instanceof DesignWidgetWrapper))
-						continue;
-					if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
-						continue;
-					((DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget()).clearSelection();
-				}
+				clearGroupBoxSelection();
 			}
 			else{
-				selectedDragController.clearSelection();
+
+				if(!(widget.getWrappedWidget() instanceof Label && "100%".equals(widget.getWidth())))
+					selectedDragController.clearSelection();
 
 				for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 					Widget wid = selectedPanel.getWidget(index);
@@ -1286,11 +1294,27 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 					DesignGroupWidget designGroupWidget = (DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget();
 					if(!designGroupWidget.containsWidget(widget))
-						designGroupWidget.clearSelection();
+						designGroupWidget.clearGroupBoxSelection();
 				}
 			}
 		}
 
 		widgetSelectionListener.onWidgetSelected(widget);
+	}
+
+	protected void selectAll(){
+		List<Widget> widgets = selectedDragController.getSelectedWidgets();
+		if(widgets != null){
+			for(int index = 0; index < widgets.size(); index++){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
+				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+					selectedDragController.clearSelection();
+					((DesignGroupWidget)widget.getWrappedWidget()).selectAll();
+					return;
+				}
+			}
+		}
+
+		super.selectAll();
 	}
 }

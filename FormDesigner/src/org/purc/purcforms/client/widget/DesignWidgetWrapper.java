@@ -17,6 +17,7 @@ import org.zenika.widget.client.datePicker.DatePicker;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -71,7 +72,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if(!(widget instanceof TabBar)){
 			panel.add(widget);
 			initWidget(panel);
-			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
+			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU /*| Event.KEYEVENTS*/);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void onBrowserEvent(Event event) {
 		int type = DOM.eventGetType(event);
-		
+
 		/*if(widget instanceof Label){
 			getParent().getParent().getParent().getParent().onBrowserEvent(event);
 			return;
@@ -104,14 +105,22 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		case Event.ONMOUSEDOWN:
 			if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
-
+			
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
 
-			if (mouseListeners != null) 
-				mouseListeners.fireMouseEvent(this, event);
+			if (mouseListeners != null) {
+				if(widget instanceof DesignGroupWidget){
+					if(isRepeated() || !"default".equals(DOM.getStyleAttribute(widget.getElement(), "cursor")))
+						mouseListeners.fireMouseEvent(this, event);
+				}
+				//else if(widget instanceof Label && "100%".equals(getWidth()))
+				//	mouseListeners.fireMouseEvent(getParent().getParent().getParent().getParent(), event);
+				else
+					mouseListeners.fireMouseEvent(this, event);
+			}
 
 			/*if(type == Event.ONMOUSEDOWN){
 		        	if(!(event.getShiftKey() || event.getCtrlKey()))
@@ -123,6 +132,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				((RadioButton)widget).setChecked(false);
 			if(widget instanceof CheckBox)
 				((CheckBox)widget).setChecked(false);
+			//if(widget instanceof ListBox)
+			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
 
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
@@ -133,8 +144,22 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			break;
 		}
 
+		if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
+			final com.google.gwt.user.client.Element senderElem = this.getElement();
+		    int x = DOM.eventGetClientX(event)
+		        - DOM.getAbsoluteLeft(senderElem)
+		        + DOM.getElementPropertyInt(senderElem, "scrollLeft")
+		        + Window.getScrollLeft();
+		    int y = DOM.eventGetClientY(event)
+		        - DOM.getAbsoluteTop(senderElem)
+		        + DOM.getElementPropertyInt(senderElem, "scrollTop")
+		        + Window.getScrollTop();
+
+			mouseListeners.fireMouseMove(this, x, y);
+		}
+		
 		FormDesignerUtil.disableContextMenu(widget.getElement());
-		DOM.eventCancelBubble(event, true);
+		DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
 	}
 
 	public void startEditMode(TextBox txtEdit){
@@ -142,7 +167,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			storePosition();
 			panel.remove(0);
 			panel.add(txtEdit);
-			
+
 			String text = null;
 			if(widget instanceof Label)
 				text = ((Label)widget).getText();
@@ -154,13 +179,13 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				text = ((CheckBox)widget).getText();
 			else
 				text = ((Button)widget).getText();
-			
+
 			txtEdit.setText(text);
 			txtEdit.selectAll();
 			txtEdit.setFocus(true);
 		}
 	}
-	
+
 	public boolean hasLabelEdidting(){
 		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button || widget instanceof CheckBox || widget instanceof RadioButton);
 	}
@@ -184,7 +209,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		int right = left + getWidthInt(); //element.getScrollWidth();
 		int bottom = top + getHeightInt(); //element.getScrollHeight();
 
-		int incr = 4;
+		int incr = 3; //A smaller value than this does not resize, it instead moves.
 
 		if(y >= top-incr && y <= top+incr && (x >= right-incr && x <= right+incr))
 			return "ne-resize";
@@ -203,20 +228,22 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		else if(y >= bottom-incr && y <= bottom+incr)
 			return "s-resize";
 
+		if(widget instanceof DesignGroupWidget && !isRepeated())
+			return "default";
+
 		return "move";
 	}
 
 	public void addMouseListener(MouseListener listener) {
-		if (mouseListeners == null) {
+		if (mouseListeners == null) 
 			mouseListeners = new MouseListenerCollection();
-		}
+
 		mouseListeners.add(listener);
 	}
 
 	public void removeMouseListener(MouseListener listener) {
-		if (mouseListeners != null) {
+		if (mouseListeners != null)
 			mouseListeners.remove(listener);
-		}
 	}
 
 	public void setText(String text){
@@ -729,7 +756,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	public void setWidgetSelectionListener(WidgetSelectionListener widgetSelectionListener){
 		this.widgetSelectionListener = widgetSelectionListener;
 	}
-	
+
 	public WidgetSelectionListener getWidgetSelectionListener(){
 		return widgetSelectionListener;
 	}

@@ -116,11 +116,25 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void onDragEnd(Widget widget) {
-		onWidgetSelected((DesignWidgetWrapper)widget);
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget,false));
 	}
 
 	public void onDragStart(Widget widget) {
-		onWidgetSelected((DesignWidgetWrapper)widget);
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget,true));
+	}
+
+	private DesignWidgetWrapper getSelectedWidget(DesignWidgetWrapper widget, boolean clearSel){
+		if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+			String cursor = DOM.getStyleAttribute(widget.getWrappedWidget().getElement(), "cursor");
+			if("move".equals(cursor) || "default".equals(cursor)){
+				if(clearSel){
+					//selectedDragController.clearSelection();
+					//selectedDragController.selectWidget(widget);
+				}
+				return ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel();
+			}
+		}
+		return widget;
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget){
@@ -204,6 +218,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			selectedDragController.makeDraggable(widget);
 			selectedPanel.add(widget);
+
+			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
+				selectedDragController.makeDraggable(widget,((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
 
 			if(widget.getPopupPanel() != widgetPopup){
 				if(afterContextMenu)
@@ -553,8 +570,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected void selectAll(){
 		selectedDragController.clearSelection();
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
-			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper)
-				selectedDragController.selectWidget(selectedPanel.getWidget(i));
+			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
+				if("100%".equalsIgnoreCase(widget.getWidth()))
+					continue; //This could be a group header label and hence we are not selecting it via all
+				selectedDragController.selectWidget(widget);
+			}
 		}
 	}
 
@@ -624,9 +645,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void startRubberBand(Event event){
-		if(this instanceof DesignGroupWidget)
-			return;
-		
+		//if(this instanceof DesignGroupWidget)
+		//	return;
+
 		selectedPanel.add(rubberBand);
 
 		x = event.getClientX()-selectedPanel.getAbsoluteLeft();
@@ -760,14 +781,20 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		stopLabelEdit();
 
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
-		selectedDragController.makeDraggable(wrapper);
+		
+		/*if(widget instanceof ListBox)
+			selectedDragController.makeDraggable(wrapper,wrapper);
+		else*/
+			selectedDragController.makeDraggable(wrapper);
+		
 		selectedPanel.add(wrapper);
 		//selectedPanel.setWidgetPosition(wrapper, x-wrapper.getAbsoluteLeft(), y-wrapper.getAbsoluteTop());
 		selectedPanel.setWidgetPosition(wrapper, x-wrapper.getParent().getAbsoluteLeft(), y-wrapper.getParent().getAbsoluteTop());
 		if(select){
 			selectedDragController.clearSelection();
 			selectedDragController.toggleSelection(wrapper);
-			widgetSelectionListener.onWidgetSelected(wrapper);
+			//widgetSelectionListener.onWidgetSelected(wrapper);
+			onWidgetSelected(wrapper);
 		}
 		return wrapper;
 	}
@@ -910,7 +937,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		// Allow multiple widgets to be selected at once using CTRL-click
 		selectedDragController.setBehaviorMultipleSelection(true);
 
-		selectedDragController.setBehaviorCancelDocumentSelections(true);
+		//selectedDragController.setBehaviorCancelDocumentSelections(true);
 
 		// create a DropController for each drop target on which draggable widgets
 		// can be dropped
@@ -979,15 +1006,24 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				if(!(event.getShiftKey() || event.getCtrlKey())){
 					selectedDragController.clearSelection();
 					if(event.getTarget() != this.selectedPanel.getElement()){
-						if(event.getTarget().getInnerText().equals(DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(tabs.getTabBar().getSelectedTab())))){
-							widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
-							return;
-						}
+						try{
+							if(event.getTarget().getInnerText().equals(DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(tabs.getTabBar().getSelectedTab())))){
+								widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
+								return;
+							}
+						}catch(Exception ex){}
 					}
 				}
+
+				if(this instanceof DesignGroupWidget)
+					widgetSelectionListener.onWidgetSelected((DesignWidgetWrapper)this.getParent().getParent());
+				//else
 				widgetSelectionListener.onWidgetSelected(null);
 
-				startRubberBand(event);
+				clearGroupBoxSelection();
+
+				if(!(this instanceof DesignGroupWidget && !"default".equals(DOM.getStyleAttribute(getElement(), "cursor"))))
+					startRubberBand(event);
 			}
 
 			break;
@@ -998,8 +1034,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			break;
 		case Event.ONMOUSEUP:
 
-			if(selectedPanel.getWidgetCount() > 0)
-				stopRubberBand(event);
+			//if(selectedPanel.getWidgetCount() > 0)
+			stopRubberBand(event);
 			if(selectionXPos != -1 && mouseMoved)
 				selectWidgets(event);
 			mouseMoved = false;
@@ -1007,6 +1043,17 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		case Event.ONKEYDOWN:
 			handleKeyDownEvent(event);
 			break;
+		}
+	}
+
+	protected void clearGroupBoxSelection(){
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			Widget wid = selectedPanel.getWidget(index);
+			if(!(wid instanceof DesignWidgetWrapper))
+				continue;
+			if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
+				continue;
+			((DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget()).clearGroupBoxSelection();
 		}
 	}
 

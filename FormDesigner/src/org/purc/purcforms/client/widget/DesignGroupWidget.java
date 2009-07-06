@@ -37,6 +37,9 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	private MenuItemSeparator parentMenuSeparator;
 
 	private int tabIndex = 0;
+	
+	private DesignWidgetWrapper headerLabel;
+	
 
 	public DesignGroupWidget(Images images,IWidgetPopupMenuListener widgetPopupMenuListener){
 		super(images);
@@ -65,6 +68,8 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 		widgetPopup.setWidget(menuBar);
 
+		rubberBand.addStyleName("rubberBand");
+		
 		setupPopup();
 	}
 
@@ -73,6 +78,8 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 		this.currentWidgetSelectionListener = this;
 
+		
+		int labelIndex = designGroupWidget.getWidgetIndex(designGroupWidget.getHeaderLabel());
 		int count = designGroupWidget.getWidgetCount();
 		for(int index = 0; index < count; index++){
 			DesignWidgetWrapper widget = new DesignWidgetWrapper(designGroupWidget.getWidgetAt(index),images);
@@ -83,10 +90,16 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			widget.setWidgetSelectionListener(this);
 			widget.setPopupPanel(widgetPopup);
 
-			selectedDragController.makeDraggable(widget);
 			selectedPanel.add(widget);
+			
+			if(index != labelIndex)
+				selectedDragController.makeDraggable(widget);
+			else{
+				DOM.setStyleAttribute(widget.getElement(), "width", "100%");
+				headerLabel = widget;
+			}
 		}
-
+		
 		widgetSelectionListener = designGroupWidget.widgetSelectionListener;
 	}
 
@@ -280,6 +293,10 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		
 		return (DesignWidgetWrapper)selectedPanel.getWidget(index); //TODO Could contain rubber band
 	}
+	
+	protected int getWidgetIndex(Widget child){
+		return selectedPanel.getWidgetIndex(child);
+	}
 
 	public void setWidgetPosition(){
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
@@ -337,7 +354,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		this.widgetSelectionListener.onWidgetSelected(widget);
 	}
 
-	public void clearSelection(){
+	public void clearGroupBoxSelection(){
 		stopLabelEdit();
 		selectedDragController.clearSelection();
 	}
@@ -348,6 +365,14 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	
 	public boolean isAnyWidgetSelected(){
 		return selectedDragController.isAnyWidgetSelected();
+	}
+	
+	public DesignWidgetWrapper getHeaderLabel(){
+		return headerLabel;
+	}
+	
+	public void setHeaderLabel(DesignWidgetWrapper headerLabel){
+		this.headerLabel = headerLabel;
 	}
 }
 

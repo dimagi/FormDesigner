@@ -33,26 +33,7 @@ public class LeftPanel extends Composite {
 	 */
 	public interface Images extends FormsTreeView.Images,FormDesignerImages{
 
-		/**
-		 * ImageBundle.@resource view.images.contactsgroup.gif
-		 */
-		AbstractImagePrototype contactsgroup();
-
-		AbstractImagePrototype leftCorner();
-
-		AbstractImagePrototype mailgroup();
-
-		AbstractImagePrototype rightCorner();
-
 		AbstractImagePrototype tasksgroup();
-
-		AbstractImagePrototype home();
-
-		AbstractImagePrototype inbox();
-
-		AbstractImagePrototype sent();
-
-		AbstractImagePrototype trash();
 
 		AbstractImagePrototype filtersgroup();
 	}

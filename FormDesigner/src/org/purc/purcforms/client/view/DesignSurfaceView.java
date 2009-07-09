@@ -362,6 +362,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		if(hasWidgets)
 			return FormDesignerUtil.formatXml(doc.toString());
+		else if(formDef != null)
+			formDef.setLayoutXml(null);
+		
 		return null;
 	}
 
@@ -452,6 +455,8 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			if(widget != null && (widget.getWrappedWidget() instanceof DesignGroupWidget)){
 				((DesignGroupWidget)widget.getWrappedWidget()).loadWidgets(node,formDef);
 				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK
+				if(!widget.isRepeated())
+					selectedDragController.makeDraggable(widget, ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
 			}
 		}
 	}
@@ -550,7 +555,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		}*/
 
-		dragController.makeDraggable(wrapper);
+		if(!"true".equals(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL)))
+			dragController.makeDraggable(wrapper);
+		
 		panel.add(wrapper);
 		FormDesignerUtil.setWidgetPosition(wrapper, left, top);
 
@@ -997,6 +1004,16 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		return widget;
 	}
+	
+	/*public void stopHeaderLabelEdit(DesignWidgetWrapper headerLabel){
+		if(selectedDragController.getSelectedWidgetCount() == 0)
+			return;
+		
+		DesignWidgetWrapper group = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
+		assert(group.getWrappedWidget() instanceof DesignGroupWidget);
+		selectedDragController.makeDraggable(group,headerLabel);
+		editWidget = null;
+	}*/
 
 	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
 		List options = questionDef.getOptions();

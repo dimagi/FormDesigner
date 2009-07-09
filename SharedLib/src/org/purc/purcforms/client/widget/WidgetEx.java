@@ -55,6 +55,7 @@ public class WidgetEx extends Composite{
 	public static final String WIDGET_PROPERTY_TABINDEX = "TabIndex";
 	public static final String WIDGET_PROPERTY_REPEATED = "Repeated";
 	public static final String WIDGET_PROPERTY_TEXT_ALIGN = "TextAlign";
+	public static final String WIDGET_PROPERTY_HEADER_LABEL = "HeaderLabel";
 	
 	public static final String REPEATED_TRUE_VALUE = "1";
 	

@@ -17,7 +17,6 @@ import org.zenika.widget.client.datePicker.DatePicker;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -98,14 +97,16 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 		switch (type) {
 		case Event.ONCONTEXTMENU:
-			widgetSelectionListener.onWidgetSelected(this);
-			popup.setPopupPosition(event.getClientX(), event.getClientY());
-			popup.show();
+			if(popup != null){
+				widgetSelectionListener.onWidgetSelected(this);
+				popup.setPopupPosition(event.getClientX(), event.getClientY());
+				popup.show();
+			}
 			break;
 		case Event.ONMOUSEDOWN:
 			if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
-			
+
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
@@ -144,7 +145,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			break;
 		}
 
-		if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
+		FormDesignerUtil.disableContextMenu(widget.getElement());
+		DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
+
+		/*if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
 			final com.google.gwt.user.client.Element senderElem = this.getElement();
 		    int x = DOM.eventGetClientX(event)
 		        - DOM.getAbsoluteLeft(senderElem)
@@ -156,10 +160,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		        + Window.getScrollTop();
 
 			mouseListeners.fireMouseMove(this, x, y);
-		}
-		
-		FormDesignerUtil.disableContextMenu(widget.getElement());
-		DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
+		}*/
 	}
 
 	public void startEditMode(TextBox txtEdit){
@@ -456,7 +457,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			((DesignGroupWidget)widget).setTabIndex(index);
 	}
 
-	public void buildLayoutXml(Element parent, com.google.gwt.xml.client.Document doc){
+	public Element buildLayoutXml(Element parent, com.google.gwt.xml.client.Document doc){
 		Element node = doc.createElement("Item");
 		parent.appendChild(node);			 
 		node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE, getWidgetName());
@@ -532,6 +533,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+
+		return node;
 	}
 
 	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){

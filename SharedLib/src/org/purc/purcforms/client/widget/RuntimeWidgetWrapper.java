@@ -582,9 +582,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	//These taken from question data.
 	public boolean isValid(){
-		if(widget instanceof Label || widget instanceof Button || questionDef == null ||
-				(widget instanceof CheckBox && childWidgets == null))
+		if(widget instanceof Label || widget instanceof Button || questionDef == null || 
+				(widget instanceof CheckBox && childWidgets == null)){
+			
+			if(widget instanceof RuntimeGroupWidget)
+				return ((RuntimeGroupWidget)widget).isValid();
+			
 			return true;
+		}
 
 		if(questionDef.isRequired() && !this.isAnswered()){
 			if(panel.getWidgetCount() < 2)

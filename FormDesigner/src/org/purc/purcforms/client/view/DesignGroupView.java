@@ -116,23 +116,22 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void onDragEnd(Widget widget) {
-		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget,false));
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget));
+		((DesignWidgetWrapper)widget).refreshSize();
+
+		//if(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)
+		//	((DesignGroupWidget)((DesignWidgetWrapper)widget).getWrappedWidget()).getHeaderLabel().refreshSize();
 	}
 
 	public void onDragStart(Widget widget) {
-		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget,true));
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget));
 	}
 
-	private DesignWidgetWrapper getSelectedWidget(DesignWidgetWrapper widget, boolean clearSel){
-		if(widget.getWrappedWidget() instanceof DesignGroupWidget){
+	private DesignWidgetWrapper getSelectedWidget(DesignWidgetWrapper widget){
+		if(widget.getWrappedWidget() instanceof DesignGroupWidget && !widget.isRepeated()){
 			String cursor = DOM.getStyleAttribute(widget.getWrappedWidget().getElement(), "cursor");
-			if("move".equals(cursor) || "default".equals(cursor)){
-				if(clearSel){
-					//selectedDragController.clearSelection();
-					//selectedDragController.selectWidget(widget);
-				}
+			if("move".equals(cursor) || "default".equals(cursor))
 				return ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel();
-			}
 		}
 		return widget;
 	}
@@ -595,10 +594,15 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		String s = event.getTarget().getClassName();
 		s.toString();
 		if(!event.getCtrlKey() && !isTextBoxFocus(event)){
-			if(selectedDragController.getSelectedWidgetCount() == 1){
+			if(selectedDragController.getSelectedWidgetCount() == 1 /*||
+					(selectedDragController.getSelectedWidgetCount() == 0 && this instanceof DesignGroupWidget)*/){
 				stopLabelEdit();
 
-				editWidget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
+				if(selectedDragController.getSelectedWidgetCount() == 0 && this instanceof DesignGroupWidget)
+					editWidget = ((DesignGroupWidget)this).getHeaderLabel();
+				else
+					editWidget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
+
 				if(editWidget != null){
 					if(editWidget.getWidgetSelectionListener() instanceof DesignGroupWidget & !(this instanceof DesignGroupWidget)){
 						((DesignGroupWidget)editWidget.getWidgetSelectionListener()).handleStartLabelEditing(event);
@@ -781,12 +785,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		stopLabelEdit();
 
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
-		
+
 		/*if(widget instanceof ListBox)
 			selectedDragController.makeDraggable(wrapper,wrapper);
 		else*/
-			selectedDragController.makeDraggable(wrapper);
-		
+		selectedDragController.makeDraggable(wrapper);
+
 		selectedPanel.add(wrapper);
 		//selectedPanel.setWidgetPosition(wrapper, x-wrapper.getAbsoluteLeft(), y-wrapper.getAbsoluteTop());
 		selectedPanel.setWidgetPosition(wrapper, x-wrapper.getParent().getAbsoluteLeft(), y-wrapper.getParent().getAbsoluteTop());
@@ -953,8 +957,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	private void initEditWidget(){
 		DOM.setStyleAttribute(txtEdit.getElement(), "borderStyle", "none");
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontFamily", FormUtil.getDefaultFontFamily());
-		DOM.setStyleAttribute(txtEdit.getElement(), "opacity", "1");
+		//DOM.setStyleAttribute(txtEdit.getElement(), "opacity", "1");
 		txtEdit.setWidth("400px");
+		//txtEdit.addStyleName("purcforms-label-editor");
 	}
 
 	protected void stopLabelEdit(){
@@ -974,10 +979,16 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			//selectedPanel.add(editWidget);
 			//selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
 
-			selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
-			selectedDragController.makeDraggable(editWidget);
-			selectedDragController.selectWidget(editWidget);
-			widgetSelectionListener.onWidgetSelected(editWidget);
+			//if(this instanceof DesignSurfaceView){
+				selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
+				selectedDragController.makeDraggable(editWidget);
+				selectedDragController.selectWidget(editWidget);
+				widgetSelectionListener.onWidgetSelected(editWidget);
+			/*}
+			else{
+				DesignSurfaceView surface = (DesignSurfaceView)getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+				surface.stopHeaderLabelEdit(editWidget);
+			}*/
 			editWidget = null;
 		}
 	}
@@ -1017,7 +1028,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 				if(this instanceof DesignGroupWidget)
 					widgetSelectionListener.onWidgetSelected((DesignWidgetWrapper)this.getParent().getParent());
-				//else
+
+				//if(!(this instanceof DesignGroupWidget) || (this instanceof DesignGroupWidget && !((DesignWidgetWrapper)this.getParent().getParent()).isRepeated()))
+				//	widgetSelectionListener.onWidgetSelected(null);
+
 				widgetSelectionListener.onWidgetSelected(null);
 
 				clearGroupBoxSelection();

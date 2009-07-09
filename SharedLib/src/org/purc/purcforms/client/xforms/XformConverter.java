@@ -106,6 +106,7 @@ public class XformConverter implements Serializable{
 	public static final String ATTRIBUTE_NAME_REF = "ref";
 	public static final String ATTRIBUTE_NAME_NODESET = "nodeset";
 	public static final String ATTRIBUTE_NAME_LOCKED = "locked";
+	public static final String ATTRIBUTE_NAME_VISIBLE = "visible";
 	public static final String ATTRIBUTE_NAME_READONLY = "readonly";
 	public static final String ATTRIBUTE_NAME_RELEVANT = "relevant";
 	public static final String ATTRIBUTE_NAME_CONSTRAINT = "constraint";
@@ -611,6 +612,8 @@ public class XformConverter implements Serializable{
 			bindNode.setAttribute(ATTRIBUTE_NAME_READONLY, XPATH_VALUE_TRUE);
 		if(qtn.isLocked())
 			bindNode.setAttribute(ATTRIBUTE_NAME_LOCKED, XPATH_VALUE_TRUE);
+		if(!qtn.isVisible())
+			bindNode.setAttribute(ATTRIBUTE_NAME_VISIBLE, XPATH_VALUE_FALSE);
 
 		String bindAttributeName = ATTRIBUTE_NAME_REF;
 		if(!groupNode.getNodeName().equals(NODE_NAME_REPEAT)){
@@ -732,6 +735,8 @@ public class XformConverter implements Serializable{
 			inputNode.setAttribute(ATTRIBUTE_NAME_READONLY, XPATH_VALUE_TRUE);
 		if(qtnDef.isLocked())
 			inputNode.setAttribute(ATTRIBUTE_NAME_LOCKED, XPATH_VALUE_TRUE);
+		if(!qtnDef.isVisible())
+			inputNode.setAttribute(ATTRIBUTE_NAME_VISIBLE, XPATH_VALUE_FALSE);
 
 		parentControlNode.appendChild(inputNode);
 		qtnDef.setControlNode(inputNode);
@@ -1164,6 +1169,8 @@ public class XformConverter implements Serializable{
 						qtn.setEnabled(false);
 					if(child.getAttribute(ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(ATTRIBUTE_NAME_LOCKED).equals(XPATH_VALUE_TRUE))
 						qtn.setLocked(true);
+					if(child.getAttribute(ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(ATTRIBUTE_NAME_VISIBLE).equals(XPATH_VALUE_FALSE))
+						qtn.setVisible(false);
 
 					if(!addRepeatChildQtn(qtn,repeats,child,map,rptKidMap)){
 						map.put(child.getAttribute(ATTRIBUTE_NAME_ID), qtn.getVariableName());
@@ -1987,6 +1994,8 @@ public class XformConverter implements Serializable{
 			qtn.setEnabled(false);
 		if(child.getAttribute(ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(ATTRIBUTE_NAME_LOCKED).equals(XPATH_VALUE_TRUE))
 			qtn.setLocked(true);
+		if(child.getAttribute(ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(ATTRIBUTE_NAME_VISIBLE).equals(XPATH_VALUE_FALSE))
+			qtn.setVisible(false);
 
 		qtn.setVariableName(((ref != null) ? ref : bind));
 		formDef.addQuestion(qtn);

@@ -266,8 +266,12 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 	public void buildLayoutXml(Element parent, com.google.gwt.xml.client.Document doc){
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
-			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper)
-				((DesignWidgetWrapper)selectedPanel.getWidget(i)).buildLayoutXml(parent, doc);
+			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper){
+				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
+				Element node = ((DesignWidgetWrapper)selectedPanel.getWidget(i)).buildLayoutXml(parent, doc);
+				if(widget == headerLabel)
+					node.setAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL, "true");
+			}
 		}
 	}
 
@@ -314,7 +318,10 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		for(int i=0; i<nodes.getLength(); i++){
 			if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			DesignSurfaceView.loadWidget((Element)nodes.item(i),selectedDragController,selectedPanel,images,widgetPopup,this.widgetPopupMenuListener,this,formDef);
+			Element element = (Element)nodes.item(i);
+			DesignWidgetWrapper widget = DesignSurfaceView.loadWidget(element,selectedDragController,selectedPanel,images,widgetPopup,this.widgetPopupMenuListener,this,formDef);
+			if("true".equals(element.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL)))
+				setHeaderLabel(widget);
 		}
 	}
 
@@ -373,6 +380,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	
 	public void setHeaderLabel(DesignWidgetWrapper headerLabel){
 		this.headerLabel = headerLabel;
+		this.headerLabel.setPopupPanel(null);
 	}
 }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.PaletteWidget;
 
@@ -179,6 +180,14 @@ public class FormDesignerDragController extends AbstractDragController{
 		}
 
 		if(context.draggable instanceof DesignWidgetWrapper){
+			/*DesignWidgetWrapper wrapper = (DesignWidgetWrapper)context.draggable;
+
+			String s = "";
+			if(wrapper.getWrappedWidget() instanceof DesignGroupWidget){
+				s = DOM.getStyleAttribute(((DesignGroupWidget)wrapper.getWrappedWidget()).getHeaderLabel().getWrappedWidget().getElement(), "cursor");
+				wrapper = ((DesignGroupWidget)wrapper.getWrappedWidget()).getHeaderLabel();
+			}*/
+
 			String cursor = DOM.getStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor");
 
 			if(cursor.equalsIgnoreCase("w-resize"))
@@ -207,7 +216,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			}
 			else{
 				//if(!"100%".equals(((DesignWidgetWrapper)context.draggable).getWidth()))
-					DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
+				DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
 			}
 		}
 		else{
@@ -233,47 +242,34 @@ public class FormDesignerDragController extends AbstractDragController{
 	}
 
 	private void incrementWidth(boolean right){
+		DesignWidgetWrapper widget = (DesignWidgetWrapper)context.draggable;
+		
 		if(right){
-			//context.draggable.setWidth((context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft())+"");
-			int len = context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft();
-			//((DesignWidgetWrapper)context.draggable).setWidthInt(len);
-
-			//context.draggable.setWidth(len+3+"");
-			((DesignWidgetWrapper)context.draggable).setWidthInt(len+3);
-
-			//DOM.setStyleAttribute(movablePanel.getElement(), "width",len+5+"px");
+			int len = context.mouseX-widget.getLeftInt()-widget.getParent().getAbsoluteLeft();
+			widget.setWidthInt(len+3);
 		}
 		else{
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)context.draggable;
 			int oldLeft = widget.getLeftInt();
-			int newLeft = context.mouseX-context.draggable.getParent().getAbsoluteLeft();
+			int newLeft = context.mouseX-widget.getParent().getAbsoluteLeft();
 			int len = oldLeft - newLeft;
 
-			//((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
-			//DOM.setStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor", "e-resize");
 			widget.setLeftInt(newLeft-3);
 			widget.setWidthInt(Math.abs(widget.getWidthInt()+len+3));
-			//context.draggable.setWidth((context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft())+"");
 		}
 	}
 
 	private void incrementHeight(boolean bottom){
+		DesignWidgetWrapper widget = (DesignWidgetWrapper)context.draggable;
+		
 		if(bottom){
-			int len = (context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteTop());
-			//context.draggable.setHeight(len+3+"");
-			((DesignWidgetWrapper)context.draggable).setHeightInt(len+3);
+			int len = (context.mouseY-widget.getTopInt()-widget.getParent().getAbsoluteTop());
+			widget.setHeightInt(len+3);
 		}
 		else{
-			//context.draggable.setHeight((context.mouseY-((DesignWidgetWrapper)context.draggable).getTopInt()-context.draggable.getParent().getAbsoluteLeft())+"");
-			//((DesignWidgetWrapper)context.draggable).setTopInt(context.mouseY-context.draggable.getParent().getAbsoluteTop());
-
-			DesignWidgetWrapper widget = (DesignWidgetWrapper)context.draggable;
 			int oldLeft = widget.getTopInt();
-			int newLeft = context.mouseY-context.draggable.getParent().getAbsoluteTop();
+			int newLeft = context.mouseY-widget.getParent().getAbsoluteTop();
 			int len = oldLeft - newLeft;
 
-			//((DesignWidgetWrapper)context.draggable).setWidthInt(context.mouseX-((DesignWidgetWrapper)context.draggable).getLeftInt()-context.draggable.getParent().getAbsoluteLeft());
-			//DOM.setStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor", "e-resize");
 			widget.setTopInt(newLeft-3);
 			widget.setHeightInt(Math.abs(widget.getHeightInt()+len+3));
 		}
@@ -290,12 +286,12 @@ public class FormDesignerDragController extends AbstractDragController{
 
 		if(dragDropListener != null)
 			dragDropListener.onDragStart(context.draggable);
-		
+
 		WidgetLocation currentDraggableLocation = new WidgetLocation(context.draggable,context.boundaryPanel);
 		//currentDraggableLocation.
 		if (getBehaviorDragProxy()) {
 			movablePanel = newDragProxy(context);
-			
+
 			context.boundaryPanel.add(movablePanel, currentDraggableLocation.getLeft(),
 					currentDraggableLocation.getTop());
 			checkGWTIssue1813(movablePanel, context.boundaryPanel);
@@ -317,12 +313,12 @@ public class FormDesignerDragController extends AbstractDragController{
 				widgetLocation.put(widget, new CoordinateLocation(widget.getAbsoluteLeft(),
 						widget.getAbsoluteTop()));
 			}
-			
+
 			context.dropController = getIntersectDropController(context.mouseX, context.mouseY);
 			if (context.dropController != null) {
 				context.dropController.onEnter(context);
 			}
-			
+
 			for (Widget widget : context.selectedWidgets) {
 				Location location = widgetLocation.get(widget);
 
@@ -337,7 +333,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			movablePanel = container;
 		}
 		movablePanel.addStyleName(PRIVATE_CSS_MOVABLE_PANEL);
-		
+
 		// one time calculation of boundary panel location for efficiency during
 		// dragging
 		Location widgetLocation = new WidgetLocation(context.boundaryPanel, null);
@@ -442,17 +438,17 @@ public class FormDesignerDragController extends AbstractDragController{
 	public void registerDropController(DropController dropController) {
 		dropControllerList.add(dropController);
 	}
-	
+
 	public DropController getFormDesignerDropController() {
 		if(dropControllerList == null)
 			return null;
-		
+
 		for(int index = 0; index < dropControllerList.size(); index++){
 			DropController dropController = dropControllerList.get(index);
 			if(dropController instanceof FormDesignerDropController)
 				return dropController;
 		}
-		
+
 		return null;
 	}
 
@@ -577,7 +573,7 @@ public class FormDesignerDragController extends AbstractDragController{
 	public void unregisterDropController(DropController dropController) {
 		dropControllerList.remove(dropController);
 	}
-	
+
 	public void unregisterAllDropControllers() {
 		dropControllerList.clear();
 	}

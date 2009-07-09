@@ -676,6 +676,11 @@ public class QuestionDef implements Serializable{
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED,XformConverter.XPATH_VALUE_TRUE);
 			else
 				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED);
+			
+			if(!visible)
+				node.setAttribute(XformConverter.ATTRIBUTE_NAME_VISIBLE,XformConverter.XPATH_VALUE_FALSE);
+			else
+				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_VISIBLE);
 
 			if(dataNode != null)
 				updateDataNode(doc,formDef,orgFormVarName);

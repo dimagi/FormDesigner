@@ -63,6 +63,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private Button btnAdd;
 	private RuntimeWidgetWrapper firstInvalidWidget;
 
+
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.formDef = formDef;
@@ -86,9 +87,14 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 	//TODO The code below needs great refactoring together with PreviewView
 	private RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
-		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute("ParentBinding"));
-		if(parentWrapper == null && repeatQtnsDef != null){
-			QuestionDef qtn = repeatQtnsDef.getQuestion(node.getAttribute("ParentBinding"));
+		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+		if(parentWrapper == null){
+			QuestionDef qtn = null;
+			if(repeatQtnsDef != null)
+				qtn = repeatQtnsDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+			else
+				qtn = formDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 				parentWrapper.setQuestionDef(qtn,true);
@@ -176,16 +182,43 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 		}
 
+		RuntimeWidgetWrapper wrapper = null;
+		boolean wrapperSet = false;
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
+			/*widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			parentWrapper = getParentWrapper(widget,node);
+			((RadioButton)widget).setTabIndex(tabIndex);*/
+
 			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+
+			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+				wrapperSet = true;
+
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);
+
+			if(wrapperSet)
+				wrapper = parentWrapper;
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
+			/*widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			parentWrapper = getParentWrapper(widget,node);
+			((CheckBox)widget).setTabIndex(tabIndex);*/
+
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+				wrapperSet = true;
+
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
+
+			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
+			if(defaultValue != null && defaultValue.contains(binding))
+				((CheckBox)widget).setChecked(true);
+
+			if(wrapperSet)
+				wrapper = parentWrapper;
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -251,7 +284,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else
 			return tabIndex;
 
-		RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
+		if(!wrapperSet)
+			wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
+
+		//RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 		boolean loadWidget = true;
 
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
@@ -262,8 +298,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 		}
 
-		if(questionDef != null)
+		if(questionDef != null){
 			wrapper.setQuestionDef(questionDef,false);
+			ValidationRule validationRule = formDef.getValidationRule(questionDef);
+			wrapper.setValidationRule(validationRule);
+		}
 
 		if(binding != null)
 			wrapper.setBinding(binding);
@@ -312,13 +351,13 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		if(value != null && value.trim().length() > 0)
 			wrapper.setHeight(value);
 
-		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
-		if(value != null && value.trim().length() > 0)
-			wrapper.setLeft(value);
+		String left = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
+		if(left != null && left.trim().length() > 0)
+			wrapper.setLeft(left);
 
-		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
-		if(value != null && value.trim().length() > 0)
-			wrapper.setTop(value);
+		String top = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
+		if(top != null && top.trim().length() > 0)
+			wrapper.setTop(top);
 
 		if(wrapper.getWrappedWidget() instanceof Label)
 			WidgetEx.loadLabelProperties(node,wrapper);
@@ -328,7 +367,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else
 			addWidget(wrapper);
 
-		//FormDesignerUtil.setWidgetPosition(wrapper,left,top);
+		if(wrapperSet)
+			FormUtil.setWidgetPosition(wrapper,left,top);
 
 		if(widget instanceof Button && binding != null){
 			wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
@@ -627,10 +667,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		if(repeatQtnsDef != null)
 			repeatQtnsDef.getQtnDef().setAnswer(getRowCount()+"");
 	}
-	
+
 	public int getRowCount(){
 		int rows = 0;
-		
+
 		for(int row = 0; row < table.getRowCount(); row++){
 			boolean answerFound = false;
 			for(int col = 0; col < table.getCellCount(row); col++){
@@ -639,11 +679,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 					break;
 				}
 			}
-			
+
 			if(answerFound)
 				rows++;
 		}
-		
+
 		return rows;
 	}
 
@@ -694,16 +734,30 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	}
 
 	public boolean isValid(){
-		for(int row = 0; row < table.getRowCount(); row++){
-			for(int col = 0; col < table.getCellCount(row); col++){
-				boolean valid = ((RuntimeWidgetWrapper)table.getWidget(row, col)).isValid();
-				if(!valid){
-					firstInvalidWidget = (RuntimeWidgetWrapper)table.getWidget(row, col);
-					return false;
+		if(isRepeated){
+			for(int row = 0; row < table.getRowCount(); row++){
+				for(int col = 0; col < table.getCellCount(row); col++){
+					boolean valid = ((RuntimeWidgetWrapper)table.getWidget(row, col)).isValid();
+					if(!valid){
+						firstInvalidWidget = (RuntimeWidgetWrapper)table.getWidget(row, col);
+						return false;
+					}
 				}
 			}
+			return true;
 		}
-		return true;
+		else{
+			boolean valid = true;
+			for(int index=0; index<selectedPanel.getWidgetCount(); index++){
+				RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
+				if(!widget.isValid()){
+					valid = false;
+					if(firstInvalidWidget == null && widget.isFocusable())
+						firstInvalidWidget = widget.getInvalidWidget();
+				}
+			}
+			return valid;
+		}
 	}
 
 	public RuntimeWidgetWrapper getInvalidWidget(){
@@ -736,7 +790,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		return false;
 	}
-	
+
 	public boolean onMoveToNextWidget(Widget widget) {
 		int index = selectedPanel.getWidgetIndex(widget);
 		return moveToNextWidget(index);
@@ -751,12 +805,12 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		return false;
 	}
-	
+
 	protected boolean moveToNextWidget(int index){
 		while(++index < selectedPanel.getWidgetCount())
 			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus()){
 				return true;
-		}
+			}
 
 		return false;
 	}

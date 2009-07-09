@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
+
 
 /**
  * A condition which is part of a rule. For definition of a rule, go to the Rule class.
@@ -252,19 +254,19 @@ public class Condition implements Serializable{
 				return operator == ModelConstants.OPERATOR_IS_NULL;
 			}
 
-			Date answer = FormUtil.getDateTimeSubmitFormat().parse(qtn.getAnswer());
+			Date answer = getDateTimeSubmitFormat(qtn).parse(qtn.getAnswer());
 			Date dateValue = null;
 			if(QuestionDef.isDateFunction(value))
 				dateValue = QuestionDef.getDateFunctionValue(value);	
 			else
-				dateValue = FormUtil.getDateTimeSubmitFormat().parse(value);
+				dateValue = getDateTimeSubmitFormat(qtn).parse(value);
 
 			Date secondDateValue = dateValue;
 			if(secondValue != null && secondValue.trim().length() > 0){
 				if(QuestionDef.isDateFunction(secondValue))
 					secondDateValue = QuestionDef.getDateFunctionValue(secondValue);	
 				else
-					secondDateValue = FormUtil.getDateTimeSubmitFormat().parse(secondValue);
+					secondDateValue = getDateTimeSubmitFormat(qtn).parse(secondValue);
 			}
 
 			if(operator == ModelConstants.OPERATOR_EQUAL)
@@ -289,6 +291,13 @@ public class Condition implements Serializable{
 		}
 
 		return false;
+	}
+	
+	private DateTimeFormat getDateTimeSubmitFormat(QuestionDef qtn){
+		if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
+			return FormUtil.getDateTimeSubmitFormat();
+		else
+			return FormUtil.getDateSubmitFormat();
 	}
 
 	private boolean isDateTimeTrue(QuestionDef qtn, boolean validation){

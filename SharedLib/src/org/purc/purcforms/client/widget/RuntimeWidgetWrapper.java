@@ -346,8 +346,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		try{
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME)
 				return FormUtil.getTimeDisplayFormat().format(FormUtil.getTimeSubmitFormat().parse(value));
-			else
+			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
 				return FormUtil.getDateTimeDisplayFormat().format(FormUtil.getDateTimeSubmitFormat().parse(value));
+			else
+				return FormUtil.getDateDisplayFormat().format(FormUtil.getDateSubmitFormat().parse(value));
 		}catch(Exception ex){}
 		return null;
 	}
@@ -426,8 +428,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			if(questionDef.isDate() && value != null && value.trim().length() > 0){
 				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME)
 					value = FormUtil.getTimeSubmitFormat().format(FormUtil.getTimeDisplayFormat().parse(value));
-				else
+				else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
 					value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
+				else 
+					value = FormUtil.getDateSubmitFormat().format(FormUtil.getDateDisplayFormat().parse(value));
 			}
 		}
 		catch(Exception ex){

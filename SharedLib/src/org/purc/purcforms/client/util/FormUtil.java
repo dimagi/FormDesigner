@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -32,6 +31,8 @@ public class FormUtil {
 
 	private static DateTimeFormat dateTimeSubmitFormat;
 	private static DateTimeFormat dateTimeDisplayFormat;
+	private static DateTimeFormat dateSubmitFormat;
+	private static DateTimeFormat dateDisplayFormat;
 	private static DateTimeFormat timeSubmitFormat;
 	private static DateTimeFormat timeDisplayFormat;
 
@@ -287,6 +288,14 @@ public class FormUtil {
 		format = getDivValue("timeSubmitFormat");
 		if(format != null && format.trim().length() > 0)
 			setTimeSubmitFormat(format);
+		
+		format = getDivValue("dateDisplayFormat");
+		if(format != null && format.trim().length() > 0)
+			setDateDisplayFormat(format);
+
+		format = getDivValue("dateSubmitFormat");
+		if(format != null && format.trim().length() > 0)
+			setDateSubmitFormat(format);
 
 		defaultFontFamily = getDivValue("defaultFontFamily");
 		if(defaultFontFamily == null || defaultFontFamily.trim().length() == 0)
@@ -339,6 +348,14 @@ public class FormUtil {
 	public static DateTimeFormat getTimeDisplayFormat(){
 		return timeDisplayFormat;
 	}
+	
+	public static void setDateDisplayFormat(String format){
+		dateDisplayFormat = DateTimeFormat.getFormat(format);
+	}
+
+	public static DateTimeFormat getDateDisplayFormat(){
+		return dateDisplayFormat;
+	}
 
 	public static void setTimeSubmitFormat(String format){
 		timeSubmitFormat = DateTimeFormat.getFormat(format);
@@ -346,6 +363,14 @@ public class FormUtil {
 
 	public static DateTimeFormat getTimeSubmitFormat(){
 		return timeSubmitFormat;
+	}
+	
+	public static void setDateSubmitFormat(String format){
+		dateSubmitFormat = DateTimeFormat.getFormat(format);
+	}
+
+	public static DateTimeFormat getDateSubmitFormat(){
+		return dateSubmitFormat;
 	}
 
 	public static String getFormDefDownloadUrlSuffix(){

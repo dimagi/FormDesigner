@@ -34,7 +34,7 @@ public class DatePickerWidget extends DatePicker{
 	private ChangeListenerCollection changeListeners;
 
 	{
-		DateTimeFormat dateTimeFormat = FormUtil.getDateTimeDisplayFormat();
+		DateTimeFormat dateTimeFormat = FormUtil.getDateDisplayFormat();
 		if(dateTimeFormat == null)
 			dateTimeFormat = DateUtil.getDateTimeFormat();
 		dateFormatter = dateTimeFormat;

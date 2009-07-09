@@ -237,8 +237,10 @@ public class QuestionDef implements Serializable{
 		if(isDate() && isDateFunction(defaultValue)){
 			if(dataType == QuestionDef.QTN_TYPE_TIME)
 				return FormUtil.getTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
-			else
+			else if(dataType == QuestionDef.QTN_TYPE_DATE_TIME)
 				return FormUtil.getDateTimeDisplayFormat().format(getDateFunctionValue(defaultValue));
+			else
+				return FormUtil.getDateDisplayFormat().format(getDateFunctionValue(defaultValue));
 		}
 
 		return defaultValue;
@@ -248,8 +250,10 @@ public class QuestionDef implements Serializable{
 		if(isDate() && isDateFunction(defaultValue)){
 			if(dataType == QuestionDef.QTN_TYPE_TIME)
 				return FormUtil.getTimeSubmitFormat().format(new Date());
-			else
+			else if(dataType == QuestionDef.QTN_TYPE_DATE_TIME)
 				return FormUtil.getDateTimeSubmitFormat().format(new Date());
+			else
+				return FormUtil.getDateSubmitFormat().format(new Date());
 		}
 
 		return defaultValue;
@@ -785,7 +789,7 @@ public class QuestionDef implements Serializable{
 				&& value != null && value.trim().length() > 0){
 
 			if(withData){
-				DateTimeFormat formatter = FormUtil.getDateTimeSubmitFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
+				DateTimeFormat formatter = (dataType == QuestionDef.QTN_TYPE_DATE_TIME) ? FormUtil.getDateTimeSubmitFormat() : FormUtil.getDateSubmitFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
 
 				if(value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
 						||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"))

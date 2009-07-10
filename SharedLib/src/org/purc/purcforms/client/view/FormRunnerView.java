@@ -2,8 +2,10 @@ package org.purc.purcforms.client.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.model.DynamicOptionDef;
@@ -127,7 +129,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 		if(formDef != null)
 			formDef.clearChangeListeners();
-		
+
 		widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
 		labelMap = new HashMap<QuestionDef,List<Widget>>();
 		labelText = new HashMap<Widget,String>();
@@ -232,13 +234,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
 			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
-			
+
 			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
 				wrapperSet = true;
-			
+
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);
-			
+
 			if(wrapperSet)
 				wrapper = parentWrapper;
 		}
@@ -246,14 +248,14 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
 				wrapperSet = true;
-			
+
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);
 
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
 			if(defaultValue != null && defaultValue.contains(binding))
 				((CheckBox)widget).setChecked(true);
-			
+
 			if(wrapperSet)
 				wrapper = parentWrapper;
 		}
@@ -283,18 +285,18 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL)){
 			String text = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
 			widget = new Label(text);
-			
+
 			int pos1 = text.indexOf("${");
 			int pos2 = text.indexOf("}$");
 			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
 				String varname = text.substring(pos1+2,pos2);
 				labelText.put(widget, text);
 				labelReplaceText.put(widget, "${"+varname+"}$");
-				
+
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
 				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
 					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
-				
+
 				QuestionDef qtnDef = formDef.getQuestion(varname);
 				List<Widget> labels = labelMap.get(qtnDef);
 				if(labels == null){
@@ -317,6 +319,9 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,this,repeated);
 			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
+			getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
+			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
+			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
@@ -348,7 +353,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 		if(!wrapperSet)
 			wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
-		
+
 		boolean loadWidget = true;
 
 		if(questionDef != null){
@@ -505,7 +510,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 	public void onValueChanged(QuestionDef questionDef) {
 		fireRules();
 		updateDynamicOptions(questionDef);
-		
+
 		List<Widget> labels = labelMap.get(questionDef);
 		if(labels != null){
 			for(Widget widget : labels)
@@ -631,6 +636,30 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			PageDef pageDef = (PageDef)formDef.getPages().elementAt(i);
 			for(byte j=0; j<pageDef.getQuestions().size(); j++)
 				updateDynamicOptions((QuestionDef)pageDef.getQuestions().elementAt(j));
+		}
+	}
+
+	private void getLabelMap(HashMap<QuestionDef,List<Widget>> labelMap){
+		Iterator<Entry<QuestionDef,List<Widget>>> iterator = labelMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<QuestionDef,List<Widget>> entry = iterator.next();
+			this.labelMap.put(entry.getKey(), entry.getValue());
+		}
+	}
+
+	private void getLabelText(HashMap<Widget,String> labelText){
+		Iterator<Entry<Widget,String>> iterator = labelText.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Widget,String> entry = iterator.next();
+			this.labelText.put(entry.getKey(), entry.getValue());
+		}
+	}
+
+	private void getLabelReplaceText(HashMap<Widget,String> labelReplaceText){
+		Iterator<Entry<Widget,String>> iterator = labelReplaceText.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Widget,String> entry = iterator.next();
+			this.labelReplaceText.put(entry.getKey(), entry.getValue());
 		}
 	}
 }

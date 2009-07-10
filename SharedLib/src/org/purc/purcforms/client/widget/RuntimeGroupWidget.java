@@ -62,6 +62,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private FormDef formDef;
 	private Button btnAdd;
 	private RuntimeWidgetWrapper firstInvalidWidget;
+	
+	protected HashMap<QuestionDef,List<Widget>> labelMap = new HashMap<QuestionDef,List<Widget>>();;
+	protected HashMap<Widget,String> labelText = new HashMap<Widget,String>();
+	protected HashMap<Widget,String> labelReplaceText = new HashMap<Widget,String>();
 
 
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
@@ -98,8 +102,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 				parentWrapper.setQuestionDef(qtn,true);
-				widgetMap.put(node.getAttribute("ParentBinding"), parentWrapper);
-				addWidget(parentWrapper);
+				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
+				//addWidget(parentWrapper); //Misplaces first widget (with tabindex > 0) of a group (CheckBox and RadioButtons)
 			}
 		}	 
 		return parentWrapper;
@@ -248,8 +252,30 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				FormUtil.allowNumericOnly((TextBox)widget,questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL);
 			((TextBox)widget).setTabIndex(tabIndex);
 		}
-		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
-			widget = new Label(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL)){
+			String text = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
+			widget = new Label(text);
+			
+			int pos1 = text.indexOf("${");
+			int pos2 = text.indexOf("}$");
+			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
+				String varname = text.substring(pos1+2,pos2);
+				labelText.put(widget, text);
+				labelReplaceText.put(widget, "${"+varname+"}$");
+				
+				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
+				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
+					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
+				
+				QuestionDef qtnDef = formDef.getQuestion(varname);
+				List<Widget> labels = labelMap.get(qtnDef);
+				if(labels == null){
+					labels = new ArrayList<Widget>();
+					labelMap.put(qtnDef, labels);
+				}
+				labels.add(widget);
+			}
+		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
 			String xpath = binding;
@@ -813,5 +839,17 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 
 		return false;
+	}
+	
+	public HashMap<QuestionDef,List<Widget>> getLabelMap(){
+		return labelMap;
+	}
+	
+	public HashMap<Widget,String> getLabelText(){
+		return labelText;
+	}
+	
+	public HashMap<Widget,String> getLabelReplaceText(){
+		return labelReplaceText;
 	}
 }

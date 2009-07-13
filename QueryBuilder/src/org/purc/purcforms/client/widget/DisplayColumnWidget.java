@@ -5,8 +5,8 @@ import org.purc.purcforms.client.controller.DisplayColumnActionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.QueryBuilderConstants;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.model.SortField;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -26,7 +26,7 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 	private FormDef formDef;
 	private FieldWidget fieldWidget;
 	private SortHyperlink sortHyperlink;
-	private FieldNameWidget fieldNameWidget = new FieldNameWidget();
+	private FieldNameWidget fieldNameWidget;
 	private HorizontalPanel horizontalPanel;
 	private ColumnActionHyperlink actionHyperlink;
 	private AggregateFunctionHyperlink aggFuncHyperlink;
@@ -50,8 +50,9 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 		actionHyperlink = new ColumnActionHyperlink("<>",null,this);
 		aggFuncHyperlink = new AggregateFunctionHyperlink(AggregateFunctionHyperlink.FUNC_TEXT_COUNT,null,this);
 		fieldWidget = new FieldWidget(this);
-
-		sortHyperlink = new SortHyperlink(SortHyperlink.SORT_TEXT_NOT_SORTED,null,this);
+		fieldNameWidget = new FieldNameWidget(this);
+		
+		sortHyperlink = new SortHyperlink(SortHyperlink.SORT_TEXT_NOT_SORTED,null,this,true);
 
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
@@ -74,7 +75,7 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 
 		fieldWidget.setFormDef(formDef);
 
-		sortOrder = QueryBuilderConstants.SORT_ASCENDING;
+		sortOrder = SortField.SORT_ASCENDING;
 	}
 	
 	public void onItemSelected(Object sender, Object item) {
@@ -83,11 +84,16 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 			fieldNameWidget.setValue(questionDef.getText());
 			aggFuncHyperlink.setQuestionDef(questionDef);
 		}
+		else if(sender == fieldWidget){
+			
+		}
 		else if(sender == sortHyperlink){
 			sortOrder = ((Integer)item).intValue();
 			fieldWidget.stopSelection();
 			view.changeSortOrder(this,sortOrder);
 		}
+		else if(sender == fieldNameWidget)
+			view.changeDisplayText(this, (String)item);
 	}
 
 	public void onStartItemSelection(Object sender){
@@ -151,5 +157,33 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 	
 	public void changeSortOrder(Widget sender, int sortOrder){
 		view.changeSortOrder(this,sortOrder);
+	}
+	
+	public String getText(){
+		return fieldNameWidget.getValue();
+	}
+	
+	public String getName(){
+		return questionDef.getVariableName();
+	}
+	
+	public int getSortOrder(){
+		return sortOrder;
+	}
+	
+	public void setSortOrder(int sortOrder){
+		this.sortOrder = sortOrder;
+		sortHyperlink.setSortOrder(sortOrder);
+	}
+	
+	public String getAggregateFunction(){
+		if(horizontalPanel.getWidgetIndex(aggFuncHyperlink) > -1)
+			return aggFuncHyperlink.getAggregateFunction();
+		
+		return null;
+	}
+	
+	public void changeDisplayText(Widget sender, String text){
+		view.changeDisplayText(sender, text);
 	}
 }

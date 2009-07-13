@@ -117,7 +117,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	public void onDragEnd(Widget widget) {
 		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget));
+
 		((DesignWidgetWrapper)widget).refreshSize();
+		if(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)
+			DOM.setStyleAttribute(((DesignWidgetWrapper)widget).getWrappedWidget().getElement(), "cursor", "default");
 
 		//if(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)
 		//	((DesignGroupWidget)((DesignWidgetWrapper)widget).getWrappedWidget()).getHeaderLabel().refreshSize();
@@ -940,7 +943,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		// Allow multiple widgets to be selected at once using CTRL-click
 		selectedDragController.setBehaviorMultipleSelection(true);
-
+		selectedDragController.setBehaviorDragStartSensitivity(1);
 		//selectedDragController.setBehaviorCancelDocumentSelections(true);
 
 		// create a DropController for each drop target on which draggable widgets
@@ -980,10 +983,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			//selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
 
 			//if(this instanceof DesignSurfaceView){
-				selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
-				selectedDragController.makeDraggable(editWidget);
-				selectedDragController.selectWidget(editWidget);
-				widgetSelectionListener.onWidgetSelected(editWidget);
+			selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
+			selectedDragController.makeDraggable(editWidget);
+			selectedDragController.selectWidget(editWidget);
+			widgetSelectionListener.onWidgetSelected(editWidget);
 			/*}
 			else{
 				DesignSurfaceView surface = (DesignSurfaceView)getParent().getParent().getParent().getParent().getParent().getParent().getParent();

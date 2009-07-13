@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/gwt-windows-1.5.3/gwt-user.jar"/>
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SharedLib"/>
 	<classpathentry kind="lib" path="lib/gwt-datepicker-r29.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SharedLib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

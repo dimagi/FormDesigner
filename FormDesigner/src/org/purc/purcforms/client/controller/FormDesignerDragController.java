@@ -21,6 +21,7 @@ import com.allen_sauer.gwt.dnd.client.util.WidgetArea;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -189,7 +190,16 @@ public class FormDesignerDragController extends AbstractDragController{
 			}*/
 
 			String cursor = DOM.getStyleAttribute(((DesignWidgetWrapper)context.draggable).getWrappedWidget().getElement(), "cursor");
-
+			
+			if("default".equals(cursor) && ((DesignWidgetWrapper)context.draggable).getWrappedWidget() instanceof DesignGroupWidget){
+				//cursor = DOM.getStyleAttribute(((DesignGroupWidget)((DesignWidgetWrapper)context.draggable).getWrappedWidget()).getHeaderLabel().getElement(), "cursor");
+				Event event = DOM.eventGetCurrentEvent();
+				//cursor = ((DesignGroupWidget)((DesignWidgetWrapper)context.draggable).getWrappedWidget()).getHeaderLabel().getDesignCursor(event.getClientX(),event.getClientY(),3);
+			}
+			
+			//Event event = DOM.eventGetCurrentEvent();
+			//String cursor = ((DesignWidgetWrapper)context.draggable).getDesignCursor(event.getClientX(),event.getClientY(),3);
+				
 			if(cursor.equalsIgnoreCase("w-resize"))
 				incrementWidth(false);
 			else if(cursor.equalsIgnoreCase("e-resize"))
@@ -214,7 +224,7 @@ public class FormDesignerDragController extends AbstractDragController{
 				incrementHeight(false);
 				incrementWidth(false);
 			}
-			else{
+			else /*if(cursor.equalsIgnoreCase("move"))*/{
 				//if(!"100%".equals(((DesignWidgetWrapper)context.draggable).getWidth()))
 				DOMUtil.fastSetElementPosition(movablePanel.getElement(), desiredLeft, desiredTop);
 			}
@@ -272,7 +282,7 @@ public class FormDesignerDragController extends AbstractDragController{
 
 			widget.setTopInt(newLeft-3);
 			widget.setHeightInt(Math.abs(widget.getHeightInt()+len+3));
-		}
+		}		
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.controller.ItemSelectionListener;
+
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -24,8 +26,11 @@ public class FieldNameWidget extends Composite {
 	private HorizontalPanel horizontalPanel;
 	private TextBox txtValue = new TextBox();
 	private Hyperlink valueHyperlink;
+	ItemSelectionListener itemSelectionListener;
+	private String defaultValue;
 
-	public FieldNameWidget(){
+	public FieldNameWidget(ItemSelectionListener itemSelectionListener){
+		this.itemSelectionListener = itemSelectionListener;
 		setupWidgets();
 	}
 
@@ -97,18 +102,21 @@ public class FieldNameWidget extends Composite {
 		valueHyperlink.setText(val);
 		horizontalPanel.remove(txtValue);
 		horizontalPanel.add(valueHyperlink);
+		
+		itemSelectionListener.onItemSelected(this,val);
 	}
 
 
 	public String getValue(){
 		String val = valueHyperlink.getText();
 		if(val.equals(EMPTY_VALUE))
-			return null;
+			return defaultValue;
 
 		return val;
 	}
 
 	public void setValue(String value){
+		defaultValue = value;
 		valueHyperlink.setText(value);
 		txtValue.setText(value);
 	}

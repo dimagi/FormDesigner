@@ -1,7 +1,7 @@
 package org.purc.purcforms.client.widget;
 
 import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.model.QueryBuilderConstants;
+import org.purc.purcforms.client.model.SortField;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -23,10 +23,13 @@ public class SortHyperlink extends Hyperlink implements ItemSelectionListener{
 	private PopupPanel popup;
 	private ItemSelectionListener itemSelectionListener;
 	
+	private boolean includeNotSorted = true;
 	
-	public SortHyperlink(String text, String targetHistoryToken,ItemSelectionListener itemSelectionListener){
+	
+	public SortHyperlink(String text, String targetHistoryToken,ItemSelectionListener itemSelectionListener,boolean includeNotSorted){
 		super(text,targetHistoryToken);
 		this.itemSelectionListener = itemSelectionListener;
+		this.includeNotSorted = includeNotSorted;
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
 	
@@ -43,7 +46,10 @@ public class SortHyperlink extends Hyperlink implements ItemSelectionListener{
 		popup = new PopupPanel(true,true);
 
 		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(SORT_TEXT_NOT_SORTED,true, new SelectItemCommand(SORT_TEXT_NOT_SORTED,this));
+		
+		if(includeNotSorted)
+			menuBar.addItem(SORT_TEXT_NOT_SORTED,true, new SelectItemCommand(SORT_TEXT_NOT_SORTED,this));
+		
 		menuBar.addItem(SORT_TEXT_ASCENDING,true, new SelectItemCommand(SORT_TEXT_ASCENDING,this));
 		menuBar.addItem(SORT_TEXT_DESCENDING,true, new SelectItemCommand(SORT_TEXT_DESCENDING,this));
 		popup.setWidget(menuBar);
@@ -63,10 +69,20 @@ public class SortHyperlink extends Hyperlink implements ItemSelectionListener{
 	
 	private int fromSortText2Value(String text){
 		if(text.equals(SORT_TEXT_ASCENDING))
-			return QueryBuilderConstants.SORT_ASCENDING;
+			return SortField.SORT_ASCENDING;
 		else if(text.equals(SORT_TEXT_DESCENDING))
-			return QueryBuilderConstants.SORT_DESCENDING;
+			return SortField.SORT_DESCENDING;
 
-		return QueryBuilderConstants.SORT_NULL;
+		return SortField.SORT_NULL;
+	}
+	
+	public void setSortOrder(int sortOrder){
+		String text = SORT_TEXT_NOT_SORTED; 
+		if(sortOrder == SortField.SORT_ASCENDING)
+			text = SORT_TEXT_ASCENDING;
+		else if(sortOrder == SortField.SORT_DESCENDING)
+			text = SORT_TEXT_DESCENDING;
+		
+		setText(text);
 	}
 }

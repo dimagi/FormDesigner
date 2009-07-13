@@ -2,12 +2,14 @@ package org.purc.purcforms.client.sql;
 
 import java.util.List;
 
+import org.purc.purcforms.client.model.DisplayField;
 import org.purc.purcforms.client.model.FilterCondition;
 import org.purc.purcforms.client.model.FilterConditionGroup;
 import org.purc.purcforms.client.model.FilterConditionRow;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.model.SortField;
 import org.purc.purcforms.client.widget.GroupHyperlink;
 
 
@@ -21,20 +23,97 @@ public class SqlBuilder {
 	private static String DATE_SEPARATOR = "'";
 	private static  String LIKE_SEPARATOR = "%";
 
-	public static String buildSql(FormDef formDef, FilterConditionGroup filterConditionGroup){
+	public static String buildSql(FormDef formDef, List<DisplayField> displayFields, FilterConditionGroup filterConditionGroup, List<SortField> sortFields){
 		if(formDef == null || filterConditionGroup == null)
 			return null;
 
-		String sql = "SELECT * FROM " + formDef.getVariableName();
+		String sql = "SELECT " + getSelectList(displayFields) + " \r\nFROM " + formDef.getVariableName();
 
 		String filter = "";
 		if(filterConditionGroup.getConditionCount() > 0)
 			filter = getFilter(filterConditionGroup);
 
 		if(filter.length() > 0)
-			sql = sql + "\r\nWHERE " + filter;
+			sql = sql + " \r\nWHERE " + filter;
+		
+		String groupByClause = getGroupByClause(displayFields);
+		if(groupByClause != null)
+			sql = sql + " \r\nGROUP BY " + groupByClause;
+
+		
+		String orderByClause = getOrderByClause(sortFields);
+		if(orderByClause != null)
+			sql = sql + " \r\nORDER BY " + orderByClause;
 
 		return sql;
+	}
+	
+	private static String getSelectList(List<DisplayField> displayFields){
+		if(displayFields == null || displayFields.size() == 0)
+			return "*";
+		
+		String selectList = null;
+		
+		for(DisplayField field : displayFields){
+			if(selectList == null)
+				selectList = "";
+			else
+				selectList += ",";
+			
+			String aggFunc = field.getAggFunc();
+			if(aggFunc != null)
+				selectList += aggFunc + "(";
+			
+			selectList += field.getName();
+			
+			if(aggFunc != null)
+				selectList +=")";
+			
+			selectList += " AS '" + field.getText()+"'";
+		}
+		
+		return selectList;
+	}
+	
+	private static String getGroupByClause(List<DisplayField> displayFields){
+		if(displayFields == null || displayFields.size() == 0)
+			return null;
+		
+		int aggFuncCount = 0;
+		String groupByClause = null;
+		for(DisplayField field : displayFields){
+			if(groupByClause == null && field.getAggFunc() == null)
+				groupByClause = "";
+			else if(field.getAggFunc() == null)
+				groupByClause += ",";
+			
+			if(field.getAggFunc() == null)
+				groupByClause += field.getName();
+			else
+				aggFuncCount++;
+		}
+		
+		if(aggFuncCount > 0 && aggFuncCount < displayFields.size())
+			return groupByClause;
+		return null;
+	}
+	
+	private static String getOrderByClause(List<SortField> sortFields){
+		if(sortFields == null || sortFields.size() == 0)
+			return null;
+		
+		String orderByClause = null;
+		
+		for(SortField field : sortFields){
+			if(orderByClause == null)
+				orderByClause = "";
+			else
+				orderByClause += ",";
+			
+			orderByClause += field.getName() + " " + (field.getSortOrder() == SortField.SORT_ASCENDING ? "ASC" : "DESC");
+		}
+		
+		return orderByClause;
 	}
 
 	private static String getFilter(FilterConditionGroup filterGroup){

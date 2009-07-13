@@ -97,7 +97,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 					if(selectedTabIndex == 3)
 						txtDefXml.setText(FormUtil.formatXml(FormUtil.formatXml(XmlBuilder.buildXml(filterConditionsView.getFormDef(),filterConditionsView.getFilterConditionRows()))));
 					else if(selectedTabIndex == 4)
-						txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),filterConditionsView.getFilterConditionRows()));
+						txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),displayFieldsView.getDisplayFields(),filterConditionsView.getFilterConditionRows(),displayFieldsView.getSortFields()));
 
 					FormUtil.dlg.hide();
 				}

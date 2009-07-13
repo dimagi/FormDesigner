@@ -135,9 +135,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				((CheckBox)widget).setChecked(false);
 			//if(widget instanceof ListBox)
 			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
-
+			
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
-				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY()));
+				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY(),3));
 
 			break;
 
@@ -201,7 +201,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		return false;
 	}
 
-	private String getDesignCursor(int x, int y){
+	public String getDesignCursor(int x, int y, int incr){
 		x = x - getParent().getAbsoluteLeft();
 		y = y - getParent().getAbsoluteTop();
 
@@ -210,7 +210,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		int right = left + getWidthInt(); //element.getScrollWidth();
 		int bottom = top + getHeightInt(); //element.getScrollHeight();
 
-		int incr = 3; //A smaller value than this does not resize, it instead moves.
+		//int incr = 3; //A smaller value than this does not resize, it instead moves.
 
 		if(y >= top-incr && y <= top+incr && (x >= right-incr && x <= right+incr))
 			return "ne-resize";

@@ -89,4 +89,19 @@ public class AggregateFunctionHyperlink extends Hyperlink {
 	public void setQuestionDef(QuestionDef questionDef){
 		this.questionDef = questionDef;
 	}
+	
+	public String getAggregateFunction(){
+		String text = getText();
+		
+		if(text.equals(FUNC_TEXT_SUM))
+			return "SUM";
+		else if(text.equals(FUNC_TEXT_AVG))
+			return "AVG";
+		else if(text.equals(FUNC_TEXT_MIN))
+			return "MIN";
+		else if(text.equals(FUNC_TEXT_MAX))
+			return "MAX";
+		
+		return "COUNT";
+	}
 }

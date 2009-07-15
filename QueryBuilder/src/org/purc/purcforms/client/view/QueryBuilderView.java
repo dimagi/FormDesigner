@@ -155,8 +155,10 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			public void execute() {
 				try{
 					String xml = txtDefXml.getText().trim();
-					if(xml.length() > 0)
+					if(xml.length() > 0){
 						filterConditionsView.loadQueryDef(xml);
+						displayFieldsView.loadQueryDef(xml);
+					}
 					
 					FormUtil.dlg.hide();
 				}
@@ -179,6 +181,8 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			"   </xf:instance> " +
 			"   <xf:bind id=\"question1\" nodeset=\"/newform1/question1\" type=\"xsd:string\"/> " +
 			"   <xf:bind id=\"question2\" nodeset=\"/newform1/question2\" type=\"xsd:string\"/> " +
+			"   <xf:bind id=\"question3\" nodeset=\"/newform1/question3\" type=\"xsd:int\"/> " +
+			"   <xf:bind id=\"question4\" nodeset=\"/newform1/question4\" type=\"xsd:date\"/> " +
 			" </xf:model> " +
 			" <xf:group id=\"1\"> " +
 			"   <xf:label>Page1</xf:label> " +
@@ -188,12 +192,19 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			"  <xf:input bind=\"question2\"> " +
 			"    <xf:label>Question2</xf:label> " +
 			"  </xf:input> " +
+			"  <xf:input bind=\"question3\"> " +
+			"    <xf:label>Question3</xf:label> " +
+			"  </xf:input> " +
+			"  <xf:input bind=\"question4\"> " +
+			"    <xf:label>Question4</xf:label> " +
+			"  </xf:input> " +
 			" </xf:group> " +
 			" </xf:xforms>";
 	}
 	
 	private String getTestQueryDef(){
 		return "<querydef> "+
+			  " <FilterConditions> "+
 			  " <group operator=\"all\"> "+
 			  " <group operator=\"all\"> "+
 			  "     <condition field=\"question1\" operator=\"1\" value=\"aaa\"/> "+
@@ -202,6 +213,17 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			  "     <condition field=\"question1\" operator=\"1\" value=\"bbbb\"/> "+
 			  "   </group> "+
 			  " </group> "+
+			  " </FilterConditions> " +
+			  " <DisplayFields> " +
+			  " 	<Field name=\"question1\" text=\"Last Name\"/> " +
+			  " 	<Field name=\"question2\" text=\"First Name\"/> " +
+			  " 	<Field name=\"question3\" text=\"Weight\" AggFunc=\"COUNT\" /> " +
+			  " 	<Field name=\"question4\" text=\"Date of Birth\"/> " +
+			  " </DisplayFields> " +
+			  " <SortFields> " +
+			  " 	<Field name=\"question1\" sortOrder=\"1\"/> " +
+			  " 	<Field name=\"question2\" sortOrder=\"2\"/> " +
+			  " </SortFields> " +
 			  " </querydef>";
 	}
 }

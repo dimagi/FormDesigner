@@ -9,6 +9,7 @@ import org.purc.purcforms.client.controller.SortColumnActionListener;
 import org.purc.purcforms.client.model.DisplayField;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.SortField;
+import org.purc.purcforms.client.sql.XmlBuilder;
 import org.purc.purcforms.client.widget.ColumnActionHyperlink;
 import org.purc.purcforms.client.widget.ConditionWidget;
 import org.purc.purcforms.client.widget.DisplayColumnWidget;
@@ -22,6 +23,11 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -71,18 +77,18 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 		});
 	}
 
-	public ConditionWidget addColumn(Widget sender){
-		ConditionWidget conditionWidget = null;
+	public DisplayColumnWidget addColumn(Widget sender){
+		DisplayColumnWidget widget = null;
 
 		if(formDef != null && enabled){
-			Widget widget = new DisplayColumnWidget(formDef,null,this);
+			widget = new DisplayColumnWidget(formDef,null,this);
 
 			columnPanel.remove(addColumnLink);
 			columnPanel.add(widget);
 			columnPanel.add(addColumnLink);
 		}
 
-		return conditionWidget;
+		return widget;
 	}
 
 	public void setFormDef(FormDef formDef){
@@ -218,5 +224,55 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 		}
 
 		return sortFields;
+	}
+	
+	public void loadQueryDef(String xml){
+		Document doc = XMLParser.parse(xml);
+		Element rootNode = doc.getDocumentElement();
+		if(!rootNode.getNodeName().equalsIgnoreCase(XmlBuilder.NODE_NAME_QUERYDEF))
+			return;
+		
+		HashMap<String,DisplayColumnWidget> displayCols = new HashMap<String,DisplayColumnWidget>();
+		
+		NodeList nodes = rootNode.getElementsByTagName(XmlBuilder.NODE_NAME_DISPLAY_FIELDS);
+		if(nodes != null && nodes.getLength() > 0)
+			loadDisplayFields((Element)nodes.item(0),displayCols);
+		
+		nodes = rootNode.getElementsByTagName(XmlBuilder.NODE_NAME_SORT_FIELDS);
+		if(nodes != null && nodes.getLength() > 0)
+			loadSortFields((Element)nodes.item(0),displayCols);
+	}
+	
+	private HashMap<String,DisplayColumnWidget> loadDisplayFields(Element rootNode,HashMap<String,DisplayColumnWidget> displayCols){
+		
+		NodeList nodes = rootNode.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase(XmlBuilder.NODE_NAME_FIELD)){
+				Element element = (Element)node;
+				DisplayColumnWidget widget = addColumn(this);
+				widget.setName(element.getAttribute(XmlBuilder.ATTRIBUTE_NAME_NAME));
+				widget.setText(element.getAttribute(XmlBuilder.ATTRIBUTE_NAME_TEXT));
+				widget.setAggregateFunction(element.getAttribute(XmlBuilder.ATTRIBUTE_NAME_AGG_FUNC));
+				
+				displayCols.put(widget.getName(), widget);
+			}
+		}
+		
+		return displayCols;
+	}
+	
+	private void loadSortFields(Element rootNode,HashMap<String,DisplayColumnWidget> displayCols){
+		NodeList nodes = rootNode.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase(XmlBuilder.NODE_NAME_FIELD)){
+				Element element = (Element)node;
+				DisplayColumnWidget widget = displayCols.get(element.getAttribute(XmlBuilder.ATTRIBUTE_NAME_NAME));
+				int sortOrder = Integer.parseInt(element.getAttribute(XmlBuilder.ATTRIBUTE_NAME_SORT_ORDER));
+				widget.setSortOrder(sortOrder);
+				changeSortOrder(widget,sortOrder);
+			}
+		}
 	}
 }

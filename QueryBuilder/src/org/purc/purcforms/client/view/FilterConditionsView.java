@@ -271,8 +271,13 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		Element rootNode = doc.getDocumentElement();
 		if(!rootNode.getNodeName().equalsIgnoreCase(XmlBuilder.NODE_NAME_QUERYDEF))
 			return;
-
-		NodeList nodes = rootNode.getChildNodes();
+		
+		NodeList nodes = rootNode.getElementsByTagName(XmlBuilder.NODE_NAME_FILTER_CONDITIONS);
+		if(nodes == null || nodes.getLength() == 0)
+			return;
+		
+		rootNode = (Element)nodes.item(0);
+		nodes = rootNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node node = nodes.item(index);
 			if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equalsIgnoreCase(XmlBuilder.NODE_NAME_GROUP)){

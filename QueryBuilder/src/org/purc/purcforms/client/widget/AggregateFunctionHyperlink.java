@@ -104,4 +104,8 @@ public class AggregateFunctionHyperlink extends Hyperlink {
 		
 		return "COUNT";
 	}
+	
+	public void setAggregateFunction(String aggFunc){
+		setText(aggFunc);
+	}
 }

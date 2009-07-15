@@ -79,4 +79,8 @@ public class ColumnActionHyperlink extends Hyperlink {
 
 		popup.setWidget(menuBar);
 	}
+	
+	public void setAggregateFunctionMode(boolean set){
+		aggregateFunction = set;
+	}
 }

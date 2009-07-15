@@ -186,4 +186,23 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 	public void changeDisplayText(Widget sender, String text){
 		view.changeDisplayText(sender, text);
 	}
+	
+	public void setName(String name){
+		questionDef = formDef.getQuestion(name);
+		fieldWidget.setQuestion(questionDef);
+		aggFuncHyperlink.setQuestionDef(questionDef);
+	}
+	
+	public void setText(String text){
+		fieldNameWidget.setValue(text);
+	}
+	
+	public void setAggregateFunction(String aggFunc){
+		if(aggFunc == null || aggFunc.trim().length() == 0)
+			return;
+		
+		aggFuncHyperlink.setAggregateFunction(aggFunc);
+		showAggregateFunctions(true);
+		actionHyperlink.setAggregateFunctionMode(true);
+	}
 }

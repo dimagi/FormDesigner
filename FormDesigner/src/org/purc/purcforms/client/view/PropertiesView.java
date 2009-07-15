@@ -720,7 +720,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return;
 		}
 		
-		txtBinding.setEnabled(!Context.isStructureReadOnly());
+		txtBinding.setEnabled(Context.allowBindEdit() && !Context.isStructureReadOnly());
 
 		if(formItem instanceof FormDef)
 			setFormProperties((FormDef)formItem);

@@ -168,6 +168,10 @@ public class WidgetEx extends Composite{
 		return widget;
 	}
 	
+	public Widget getWrappedWidgetEx(){
+		return panel.getWidget(0);
+	}
+	
 	public void setWidth(String width){
 		if("100%".equalsIgnoreCase(this.width)) //Temporary hack for group header label which should always have a width of 100%
 			return;

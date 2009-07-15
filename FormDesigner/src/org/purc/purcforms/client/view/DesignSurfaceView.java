@@ -240,8 +240,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		deleteWidgetsSeparator = menuBar.addSeparator();
-		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("deleteSelected")),true,new Command(){
+		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteSelected")),true,new Command(){
 			public void execute() {popup.hide(); deleteWidgets();}});
+		
+		groupWidgetsSeparator = menuBar.addSeparator();
+		groupWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupWidgets")),true,new Command(){
+			public void execute() {popup.hide(); groupWidgets();}});
 		//}
 
 		menuBar.addSeparator();	
@@ -630,8 +634,15 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		loadQuestions(pageDef.getQuestions(),pageDef.getName());
 	}
 
+	
+	/**
+	 * Does automatic loading of question widgets onto the design surface.
+	 * 
+	 * @param questions
+	 * @param pageName
+	 */
 	private void loadQuestions(List<QuestionDef> questions, String pageName){
-		int max = FormUtil.convertDimensionToInt(sHeight) - 40;
+		int max = FormUtil.convertDimensionToInt(sHeight) - 0 + 150; //40; No longer adding submit button on every page
 		int tabIndex = 0;
 		x = y = 20;
 
@@ -713,7 +724,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			if((y+40+rptIncr) > max){
 				y += 10;
-				addNewButton(false);
+				//addNewButton(false);
 				addNewTab(pageName);
 				y = 20 + selectedPanel.getAbsoluteTop();
 			}

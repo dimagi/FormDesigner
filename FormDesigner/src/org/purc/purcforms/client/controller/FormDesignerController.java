@@ -153,7 +153,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void openFormLayout(boolean selectTabs) {
-		if(isOfflineMode())
+		//if(isOfflineMode())
 			openFormLayoutDeffered(selectTabs);
 	}
 
@@ -389,7 +389,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void refresh(Object sender) {
 		if(sender instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
 			if(formId != null){
-				FormUtil.dlg.setText(LocaleText.get("refresingForm"));
+				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();
 
 				DeferredCommand.addCommand(new Command(){

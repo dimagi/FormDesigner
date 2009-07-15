@@ -94,6 +94,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			getParent().getParent().getParent().getParent().onBrowserEvent(event);
 			return;
 		}*/
+		
+		if((widget instanceof Label && panel.getWidget(0) instanceof TextBox))
+			return; //Must be in label edit mode.
 
 		switch (type) {
 		case Event.ONCONTEXTMENU:
@@ -104,9 +107,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			}
 			break;
 		case Event.ONMOUSEDOWN:
-			if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
+			//if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
+			if(!(widget instanceof DesignGroupWidget))
 				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
-
+			//The above is turned on for now because of selectedDragController.setBehaviorDragStartSensitivity(1);
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:

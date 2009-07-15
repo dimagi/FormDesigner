@@ -30,11 +30,15 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 		FormDesignerUtil.setDesignerTitle();
 		
+		String s = FormUtil.getDivValue("allowBindEdit");
+		if(s != null && s.equals("0"))
+			Context.setAllowBindEdit(false);
+		
 		FormUtil.retrieveUserDivParameters();
 		
 		designer = new FormDesignerWidget(true,true,true);
 
-		String s = FormUtil.getFormId();
+		s = FormUtil.getFormId();
 		if(s != null)
 			designer.loadForm(Integer.parseInt(s));
 

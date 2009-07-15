@@ -71,9 +71,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected MenuItem cutMenu;
 	protected MenuItem pasteMenu;
 	protected MenuItem deleteWidgetsMenu;
+	protected MenuItem groupWidgetsMenu;
 	protected MenuItemSeparator cutCopySeparator;
 	protected MenuItemSeparator pasteSeparator;
 	protected MenuItemSeparator deleteWidgetsSeparator;
+	protected MenuItemSeparator groupWidgetsSeparator;
 
 	protected int selectionXPos;
 	protected int selectionYPos;
@@ -96,7 +98,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	private TextBox txtEdit = new TextBox();
 	protected DesignWidgetWrapper editWidget;
-
+	protected String rubberBandHeight;
+	protected String rubberBandWidth;
 
 	public DesignGroupView(Images images){
 		this.images = images;
@@ -145,6 +148,26 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	protected void cutWidgets(){
 		copyWidgets(true);
+	}
+
+	protected void groupWidgets(){
+		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
+			if(((DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i)).getWrappedWidget() instanceof DesignGroupWidget)
+				return; //We do not allow nested group boxes
+		}
+
+		cutWidgets();
+
+		x = clipboardLeftMostPos + selectedPanel.getAbsoluteLeft() ;
+		y = clipboardTopMostPos + selectedPanel.getAbsoluteTop();
+
+		DesignWidgetWrapper widget = ((DesignSurfaceView)this).addNewGroupBox(false);
+		DesignGroupView designGroupView = (DesignGroupView)widget.getWrappedWidget();
+		designGroupView.updateCursorPos(x+20, y+45);
+		designGroupView.pasteWidgets(true);
+		selectedDragController.clearSelection();
+		widget.setHeightInt(FormUtil.convertDimensionToInt(rubberBandHeight)+35);
+		widget.setWidth(rubberBandWidth);
 	}
 
 	protected void copyWidgets(boolean remove){
@@ -201,6 +224,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					clipboardTopMostPos = dimension;
 			}
 		}
+	}
+
+	protected void updateCursorPos(int x, int y){
+		this.x = x;
+		this.y = y;
 	}
 
 	protected void pasteWidgets(boolean afterContextMenu){
@@ -337,7 +365,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	public void deleteSelectedItem() {
 		if(selectedDragController.isAnyWidgetSelected())
-			this.deleteWidgets();
+			deleteWidgets();
 	}
 
 	private void rightAlignLabels(AbsolutePanel panel){
@@ -729,10 +757,15 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected void selectWidgets(Event event){
 		int endX = event.getClientX() - selectedPanel.getAbsoluteLeft();
 		int endY = event.getClientY() - selectedPanel.getAbsoluteTop();
+
+		//Store this for Group Widgets
+		rubberBandHeight = DOM.getStyleAttribute(rubberBand.getElement(), "height");
+		rubberBandWidth = DOM.getStyleAttribute(rubberBand.getElement(), "width");
+
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
 			if(selectedPanel.getWidget(i) instanceof  DesignWidgetWrapper){
 				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
-				if(widget.isWidgetInRect(this.selectionXPos, this.selectionYPos, endX, endY))
+				if(widget.isWidgetInRect(selectionXPos, selectionYPos, endX, endY))
 					this.selectedDragController.selectWidget(widget);
 			}
 		}
@@ -764,6 +797,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			visible = true;
 		deleteWidgetsSeparator.setVisible(visible);
 		deleteWidgetsMenu.setVisible(visible);
+
+		//For now this is only used by the DesignSurfaceView
+		if(groupWidgetsSeparator != null){
+			groupWidgetsSeparator.setVisible(visible);
+			groupWidgetsMenu.setVisible(visible);
+		}
+		
 		cutCopySeparator.setVisible(visible);
 		cutMenu.setVisible(visible);
 		copyMenu.setVisible(visible); 
@@ -1003,8 +1043,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			x = event.getClientX();
 			y = event.getClientY();
 
-			if(editWidget != null)
+			if(editWidget != null){
+				if(editWidget.getWrappedWidgetEx().getElement() == event.getTarget())
+					return;
 				handleStopLabelEditing();
+			}
 
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
 				updatePopup();
@@ -1090,7 +1133,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			else if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
 				selectAll();
 				DOM.eventPreventDefault(event);
-				ret = false; //For now this is reserved for only designsurfaceview
+				ret = true;
 			}
 			else if(event.getCtrlKey() && (keyCode == 'C' || keyCode == 'c')){
 				if(selectedDragController.isAnyWidgetSelected()){

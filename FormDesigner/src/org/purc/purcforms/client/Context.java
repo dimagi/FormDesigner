@@ -8,9 +8,6 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.TextBox;
-
 
 /**
  * Contains shared information that has the notion of being current (eg currently
@@ -24,6 +21,7 @@ public class Context {
 	private static String defaultLocale = "en";
 	private static String locale = defaultLocale;
 	private static List<Locale> locales = new ArrayList<Locale>();
+	private static boolean allowBindEdit = true;
 	
 	/** The form having focus. */
 	private static FormDef formDef;
@@ -85,5 +83,13 @@ public class Context {
 		if((formDef != null && formDef.isReadOnly()) || Context.inLocalizationMode())
 			return true;
 		return false;
+	}
+	
+	public static boolean allowBindEdit(){
+		return allowBindEdit;
+	}
+	
+	public static void setAllowBindEdit(boolean allowBindEdit){
+		Context.allowBindEdit = allowBindEdit;
 	}
 }

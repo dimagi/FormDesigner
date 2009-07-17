@@ -74,11 +74,11 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			}
 		});
 		
-		txtXform.setText(FormUtil.formatXml(getTestXform()));
-		parseXform();
+		//txtXform.setText(FormUtil.formatXml(getTestXform()));
+		//parseXform();
 		
-		txtDefXml.setText(getTestQueryDef());
-		parseQueryDef();
+		//txtDefXml.setText(getTestQueryDef());
+		//parseQueryDef();
 	}
 	
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
@@ -113,14 +113,6 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		txtXform.setHeight(height-50+"px");
 		txtDefXml.setHeight(height-50+"px");
 		txtSql.setHeight(height-50+"px");
-		
-		/*height -= (110+embeddedHeightOffset);
-		sHeight = height+"px";
-		super.setHeight(sHeight);
-
-		if(selectedPanel != null)
-			//selectedPanel.setHeight("100%");
-			selectedPanel.setHeight(sHeight);*/
 	} 
 	
 	private void parseXform(){
@@ -170,7 +162,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		});
 	}
 	
-	private String getTestXform(){
+	/*private String getTestXform(){
 		return "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"> " +
 			" <xf:model> " +
 			"   <xf:instance id=\"newform1\"> " +
@@ -225,5 +217,23 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			  " 	<Field name=\"question2\" sortOrder=\"2\"/> " +
 			  " </SortFields> " +
 			  " </querydef>";
+	}*/
+	
+	public String getQueryDef(){
+		return txtDefXml.getText();
+	}
+	
+	public String getSql(){
+		return txtDefXml.getText();
+	}
+	
+	public void setXform(String xml){
+		txtXform.setText(xml);
+		parseXform();
+	}
+	
+	public void setQueryDef(String xml){
+		txtDefXml.setText(xml);
+		parseQueryDef();
 	}
 }

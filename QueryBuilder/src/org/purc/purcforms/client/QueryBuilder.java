@@ -24,7 +24,5 @@ public class QueryBuilder implements EntryPoint {
 
 		queryBuilder.setWidth("100%");
 		queryBuilder.setHeight("100%");
-		
-		//FormUtil.maximizeWidget(queryBuilder);
 	}
 }

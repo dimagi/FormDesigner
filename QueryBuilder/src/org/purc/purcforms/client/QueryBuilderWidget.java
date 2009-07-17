@@ -20,20 +20,30 @@ public class QueryBuilderWidget extends Composite{
 	
 	public QueryBuilderWidget(){
 		
-		//view = new FormRunnerView(images);
 		dockPanel.setWidth("100%");
 		dockPanel.setHeight("100%");
-		
 		dockPanel.add(view, DockPanel.CENTER);
-		
-		//FormUtil.maximizeWidget(dockPanel);
-
 		initWidget(dockPanel);
-		
 		controller = new QueryBuilderController();
 	}
 	
 	public void setEmbeddedHeightOffset(int offset){
 		//view.setEmbeddedHeightOffset(offset);
+	}
+	
+	public void setXform(String xml){
+		view.setXform(xml);
+	}
+	
+	public void setQueryDef(String xml){
+		view.setQueryDef(xml);
+	}
+	
+	public String getQueryDef(){
+		return view.getQueryDef();
+	}
+	
+	public String getSql(){
+		return view.getSql();
 	}
 }

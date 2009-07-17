@@ -5,9 +5,15 @@ import com.google.gwt.user.client.ui.Label;
 
 public class ProgressDialog extends DialogBox{
 
+	private Label label = new Label("Please wait while processing...");
+	
 	public ProgressDialog(){
 		super(false,true);
 		
-		setWidget(new Label("Please wait while processing..."));
+		setWidget(label);
+	}
+	
+	public void setProgressMsg(String message){
+		label.setText(message);
 	}
 }

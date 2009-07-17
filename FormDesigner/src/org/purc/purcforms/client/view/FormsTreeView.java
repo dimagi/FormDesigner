@@ -191,9 +191,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		//Should not call this more than once for the same selected item.
 		if(item != this.item){
+			Context.setFormDef(FormDef.getFormDef(item.getUserObject()));
 			fireFormItemSelected(item.getUserObject());
 			this.item = item;
-			Context.setFormDef(FormDef.getFormDef(item));
 		}
 	}
 

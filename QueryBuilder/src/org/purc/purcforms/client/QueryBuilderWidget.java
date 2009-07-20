@@ -1,6 +1,5 @@
 package org.purc.purcforms.client;
 
-import org.purc.purcforms.client.controller.QueryBuilderController;
 import org.purc.purcforms.client.view.QueryBuilderView;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -15,7 +14,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 public class QueryBuilderWidget extends Composite{
 
 	private DockPanel dockPanel = new DockPanel();
-	private QueryBuilderController controller;
+	//private QueryBuilderController controller;
 	private QueryBuilderView view = new QueryBuilderView();
 	
 	public QueryBuilderWidget(){
@@ -24,7 +23,7 @@ public class QueryBuilderWidget extends Composite{
 		dockPanel.setHeight("100%");
 		dockPanel.add(view, DockPanel.CENTER);
 		initWidget(dockPanel);
-		controller = new QueryBuilderController();
+		//controller = new QueryBuilderController();
 	}
 	
 	public void setEmbeddedHeightOffset(int offset){
@@ -39,11 +38,19 @@ public class QueryBuilderWidget extends Composite{
 		view.setQueryDef(xml);
 	}
 	
+	public void setSql(String sql){
+		view.setSql(sql);
+	}
+	
 	public String getQueryDef(){
 		return view.getQueryDef();
 	}
 	
 	public String getSql(){
 		return view.getSql();
+	}
+	
+	public void load(){
+		view.load();
 	}
 }

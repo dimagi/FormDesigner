@@ -51,7 +51,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		tabs.addTabListener(this);
 		initWidget(tabs);
 		
-		tabs.selectTab(2);
+		tabs.selectTab(1);
 		
 		Window.addWindowResizeListener(this);
 
@@ -95,9 +95,9 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			public void execute() {
 				try{
 					if(selectedTabIndex == 3)
-						txtDefXml.setText(FormUtil.formatXml(FormUtil.formatXml(XmlBuilder.buildXml(filterConditionsView.getFormDef(),filterConditionsView.getFilterConditionRows(),displayFieldsView.getDisplayFields(),displayFieldsView.getSortFields()))));
+						buildQueryDef();
 					else if(selectedTabIndex == 4)
-						txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),displayFieldsView.getDisplayFields(),filterConditionsView.getFilterConditionRows(),displayFieldsView.getSortFields()));
+						buildSql();
 
 					FormUtil.dlg.hide();
 				}
@@ -122,12 +122,13 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
+					FormDef formDef = null;
 					String xml = txtXform.getText().trim();
-					if(xml.length() > 0){
-						FormDef formDef = XformConverter.fromXform2FormDef(xml);
-						filterConditionsView.setFormDef(formDef);
-						displayFieldsView.setFormDef(formDef);
-					}
+					if(xml.length() > 0)
+						formDef = XformConverter.fromXform2FormDef(xml);
+
+					filterConditionsView.setFormDef(formDef);
+					displayFieldsView.setFormDef(formDef);
 					
 					FormUtil.dlg.hide();
 				}
@@ -219,21 +220,40 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			  " </querydef>";
 	}*/
 	
+	private void buildSql(){
+		txtSql.setText(SqlBuilder.buildSql(filterConditionsView.getFormDef(),displayFieldsView.getDisplayFields(),filterConditionsView.getFilterConditionRows(),displayFieldsView.getSortFields()));
+	}
+	
+	private void buildQueryDef(){
+		txtDefXml.setText(FormUtil.formatXml(FormUtil.formatXml(XmlBuilder.buildXml(filterConditionsView.getFormDef(),filterConditionsView.getFilterConditionRows(),displayFieldsView.getDisplayFields(),displayFieldsView.getSortFields()))));
+	}
+	
 	public String getQueryDef(){
+		buildQueryDef();
 		return txtDefXml.getText();
 	}
 	
 	public String getSql(){
-		return txtDefXml.getText();
+		buildSql();
+		return txtSql.getText();
 	}
 	
 	public void setXform(String xml){
 		txtXform.setText(xml);
-		parseXform();
+		//parseXform();
 	}
 	
 	public void setQueryDef(String xml){
 		txtDefXml.setText(xml);
+		//parseQueryDef();
+	}
+	
+	public void setSql(String sql){
+		txtSql.setText(sql);
+	}
+	
+	public void load(){
+		parseXform();
 		parseQueryDef();
 	}
 }

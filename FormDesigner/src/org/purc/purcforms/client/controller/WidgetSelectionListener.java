@@ -1,6 +1,6 @@
 package org.purc.purcforms.client.controller;
 
-import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -10,5 +10,5 @@ import org.purc.purcforms.client.widget.DesignWidgetWrapper;
  */
 public interface WidgetSelectionListener {
 	
-	public void onWidgetSelected(DesignWidgetWrapper widget);
+	public void onWidgetSelected(Widget widget);
 }

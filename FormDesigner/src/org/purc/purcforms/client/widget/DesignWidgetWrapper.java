@@ -17,6 +17,7 @@ import org.zenika.widget.client.datePicker.DatePicker;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -94,7 +95,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			getParent().getParent().getParent().getParent().onBrowserEvent(event);
 			return;
 		}*/
-		
+
 		if((widget instanceof Label && panel.getWidget(0) instanceof TextBox))
 			return; //Must be in label edit mode.
 
@@ -139,7 +140,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				((CheckBox)widget).setChecked(false);
 			//if(widget instanceof ListBox)
 			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
-			
+
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY(),3));
 
@@ -150,9 +151,15 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 
 		FormDesignerUtil.disableContextMenu(widget.getElement());
-		DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
 
-		/*if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
+		//TODO Check to ensure this does not bring bugs. It has been put to allow
+		//Rubber band mouse drags to move out of design surface through group widgets.
+		if(!(widget instanceof DesignGroupWidget && type == Event.ONMOUSEMOVE))
+			DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
+
+		
+		//This is to prevent ListBox drop down from expanding on mouse down.
+		if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
 			final com.google.gwt.user.client.Element senderElem = this.getElement();
 		    int x = DOM.eventGetClientX(event)
 		        - DOM.getAbsoluteLeft(senderElem)
@@ -163,8 +170,11 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		        + DOM.getElementPropertyInt(senderElem, "scrollTop")
 		        + Window.getScrollTop();
 
-			mouseListeners.fireMouseMove(this, x, y);
-		}*/
+			mouseListeners.fireMouseMove(this, x+1, y+1);
+			
+			//if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
+			//	widgetSelectionListener.onWidgetSelected(this);
+		}
 	}
 
 	public void startEditMode(TextBox txtEdit){
@@ -415,6 +425,17 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	public boolean isWidgetInRect(int left, int top, int right, int bottom){
 		int x = FormUtil.convertDimensionToInt(getLeft());
 		int y = FormUtil.convertDimensionToInt(getTop());
+		int temp = left;
+		if(left > right){
+			left = right;
+			right = temp;
+		}
+		temp = top;
+		if(top > bottom){
+			top = bottom;
+			bottom = temp;
+		}
+
 		return (x > left && x < right && y > top && y < bottom) ||
 		(x > right && x < left && y > bottom && y < top);
 	}

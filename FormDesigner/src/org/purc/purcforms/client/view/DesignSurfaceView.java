@@ -63,7 +63,9 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ TabListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
 
-	private String sHeight = "100%";
+	private String sHeight = "100%"; //"100%";
+	private String sWidth = "100%";
+
 	private LayoutChangeListener layoutChangeListener;
 
 	//create a DropController for each drop target on which draggable widgets
@@ -74,8 +76,6 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	Document doc;
 
 	private int embeddedHeightOffset = 0;
-
-
 
 
 	public DesignSurfaceView(Images images){
@@ -164,11 +164,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		dragControllers.add(tabs.getWidgetCount()-1,selectedDragController);
 		panel.setHeight(sHeight);
+		String s = getHeight();
 
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				setHeight(getHeight());
 			}
 		});
 	}
@@ -242,7 +244,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		deleteWidgetsSeparator = menuBar.addSeparator();
 		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteSelected")),true,new Command(){
 			public void execute() {popup.hide(); deleteWidgets();}});
-		
+
 		groupWidgetsSeparator = menuBar.addSeparator();
 		groupWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupWidgets")),true,new Command(){
 			public void execute() {popup.hide(); groupWidgets();}});
@@ -301,22 +303,21 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				setHeight(getHeight());
 			}
 		});
 	}
 
 
 
-	public void onWindowResized(int width, int height){
-		height -= (160+embeddedHeightOffset); //(160 + 30);
-		//height = DOM.getIntStyleAttribute(getElement(), "height") - 45;
-		sHeight = height+"px";
+	/*public void onWindowResized(int width, int height){
+		//height -= (160+embeddedHeightOffset); //(160 + 30);
+		//sHeight = height+"px";
 		super.setHeight(sHeight);
 
-		for(int i=0; i<dragControllers.size(); i++)
-			dragControllers.elementAt(i).getBoundaryPanel().setHeight(sHeight);
-	}
+
+	}*/
 
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
 		return true;
@@ -349,6 +350,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		this.doc = doc;
 
 		boolean hasWidgets = false;
+		AbsolutePanel prevSelPanel = selectedPanel;
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			Element node = doc.createElement("Page");
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
@@ -359,16 +361,24 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			rootNode.appendChild(node);
 			AbsolutePanel panel = (AbsolutePanel)tabs.getWidget(i);
+
+			selectedPanel = panel;
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH, getWidth());
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT, getHeight());
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR, getBackgroundColor());
+
 			boolean b = buildLayoutXml(node,panel,doc);
 			if(b)
 				hasWidgets = true;
 		}
 
+		selectedPanel = prevSelPanel;
+
 		if(hasWidgets)
 			return FormDesignerUtil.formatXml(doc.toString());
 		else if(formDef != null)
 			formDef.setLayoutXml(null);
-		
+
 		return null;
 	}
 
@@ -437,6 +447,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				continue;
 			Element node = (Element)pages.item(i);
 			addNewTab(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+
+			((DesignGroupView)this).setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
+			((DesignGroupView)this).setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
+			((DesignGroupView)this).setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
+
 			loadPage(node.getChildNodes());
 		}
 
@@ -561,7 +576,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		if(!"true".equals(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL)))
 			dragController.makeDraggable(wrapper);
-		
+
 		panel.add(wrapper);
 		FormDesignerUtil.setWidgetPosition(wrapper, left, top);
 
@@ -583,6 +598,8 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 	private void deleteTab(){
 		if(tabs.getWidgetCount() == 1){
+			if(formDef != null)
+				formDef.setLayoutXml(null); //TODO Check if this does not bring bugs
 			Window.alert(LocaleText.get("cantDeleteAllTabs"));
 			return;
 		}
@@ -634,7 +651,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		loadQuestions(pageDef.getQuestions(),pageDef.getName());
 	}
 
-	
+
 	/**
 	 * Does automatic loading of question widgets onto the design surface.
 	 * 
@@ -642,7 +659,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	 * @param pageName
 	 */
 	private void loadQuestions(List<QuestionDef> questions, String pageName){
-		int max = FormUtil.convertDimensionToInt(sHeight) - 0 + 150; //40; No longer adding submit button on every page
+		int max = 999999; //FormUtil.convertDimensionToInt(sHeight) - 0 + 150; //40; No longer adding submit button on every page
 		int tabIndex = 0;
 		x = y = 20;
 
@@ -732,6 +749,8 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y += 10;
 		addNewButton(false);
+
+		setHeight(y+40+"px");
 	}
 
 	protected DesignWidgetWrapper addNewRepeatSection(boolean select){
@@ -882,7 +901,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		selectedPanel = panel;
 		selectedDragController = dragController;
-		
+
 		selectedDragController.makeDraggable(widget,headerLabel);
 		repeat.setHeaderLabel(headerLabel);
 		//End header label stuff
@@ -966,7 +985,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		selectedPanel = panel;
 		selectedDragController = dragController;
-		
+
 		selectedDragController.makeDraggable(widget,headerLabel);
 		repeat.setHeaderLabel(headerLabel);
 		//End header label stuff
@@ -1015,11 +1034,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		return widget;
 	}
-	
+
 	/*public void stopHeaderLabelEdit(DesignWidgetWrapper headerLabel){
 		if(selectedDragController.getSelectedWidgetCount() == 0)
 			return;
-		
+
 		DesignWidgetWrapper group = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
 		assert(group.getWrappedWidget() instanceof DesignGroupWidget);
 		selectedDragController.makeDraggable(group,headerLabel);
@@ -1264,22 +1283,31 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		this.layoutChangeListener = layoutChangeListener;
 	}
 
-	public void onDrop(Widget widget,int x, int y){
+	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
 		if(!(widget instanceof PaletteWidget))
-			return;
+			return null;
 
-		super.onDrop(widget, x, y);
+		DesignWidgetWrapper retWidget = super.onDrop(widget, x, y);
 
 		String text = ((PaletteWidget)widget).getText();
 
 		if(text.equals(LocaleText.get("groupBox")))
-			addNewGroupBox(true);
+			retWidget = addNewGroupBox(true);
 		else if(text.equals(LocaleText.get("repeatSection")))
-			addNewRepeatSection(true);
+			retWidget = addNewRepeatSection(true);
 		else if(text.equals(LocaleText.get("picture")))
-			addNewPictureSection(null,null,true);
+			retWidget = addNewPictureSection(null,null,true);
 		else if(text.equals(LocaleText.get("videoAudio")))
-			addNewVideoAudioSection(null,null,true);
+			retWidget = addNewVideoAudioSection(null,null,true);
+
+		if(retWidget != null){
+			int height = FormUtil.convertDimensionToInt(getHeight());
+			int h = retWidget.getTopInt() + retWidget.getHeightInt();
+			if(height < h)
+				setHeight(height + (h-height)+10+"px");
+		}
+
+		return retWidget;
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget){
@@ -1344,5 +1372,23 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 
 		super.selectAll();
+	}
+
+	public void setHeight(String height) {
+		if(height != null && height.trim().length() > 0 && !height.equals("100%"))
+			sHeight = height;
+		super.setHeight(sHeight);
+
+		//for(int i=0; i<dragControllers.size(); i++)
+		//	dragControllers.elementAt(i).getBoundaryPanel().setHeight(sHeight);
+	}
+
+	public void setWidth(String width) {
+		if(width != null && width.trim().length() > 0 && !width.equals("100%"))
+			sWidth = width;
+		super.setWidth(sWidth);
+
+		//for(int i=0; i<dragControllers.size(); i++)
+		//	dragControllers.elementAt(i).getBoundaryPanel().setWidth(sWidth);
 	}
 }

@@ -329,18 +329,20 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		return widgetPopupMenuListener;
 	}
 
-	public void onDrop(Widget widget,int x, int y){
+	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
 		if(!(widget instanceof PaletteWidget))
-			return;
+			return null;
 
-		super.onDrop(widget, x, y);
+		DesignWidgetWrapper retWidget = super.onDrop(widget, x, y);
 
 		String text = ((PaletteWidget)widget).getText();
 
 		if(text.equals(LocaleText.get("picture")))
-			addNewPicture();
+			return addNewPicture();
 		else if(text.equals(LocaleText.get("videoAudio")))
-			addNewVideoAudio(null);
+			return addNewVideoAudio(null);
+		
+		return retWidget;
 	}
 
 	public void onWidgetSelected(DesignWidgetWrapper widget) {

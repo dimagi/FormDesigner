@@ -27,9 +27,8 @@ import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
@@ -59,7 +58,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class FormRunnerView extends Composite implements WindowResizeListener,TabListener, EditListener{
+public class FormRunnerView extends Composite implements /*WindowResizeListener,*/TabListener, EditListener{
 
 	public interface Images extends ImageBundle {
 		AbstractImagePrototype error();
@@ -90,12 +89,13 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		initWidget(tabs);
 		tabs.addTabListener(this);
 
-		Window.addWindowResizeListener(this);
+		//Window.addWindowResizeListener(this);
 
 		//		This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				setHeight(getHeight());
 			}
 		});
 	}
@@ -143,6 +143,17 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 				continue;
 			Element node = (Element)pages.item(i);
 			addNewTab(node.getAttribute("Text"));
+			
+			setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
+			setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
+			setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
+			
+			/*selectedPanel.setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
+			selectedPanel.setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
+			try{
+				DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
+			}catch(Exception ex){}*/
+
 			loadPage(node.getChildNodes(),externalSourceWidgets);
 		}
 
@@ -163,7 +174,8 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				setHeight(getHeight());
 			}
 		});
 	}
@@ -181,7 +193,8 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+				setHeight(getHeight());
 			}
 		});
 	}
@@ -585,7 +598,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		tabs.clear();
 	}
 
-	public void onWindowResized(int width, int height) {
+	/*public void onWindowResized(int width, int height) {
 		height -= (110+embeddedHeightOffset);
 		sHeight = height+"px";
 		super.setHeight(sHeight);
@@ -593,7 +606,7 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 		if(selectedPanel != null)
 			//selectedPanel.setHeight("100%");
 			selectedPanel.setHeight(sHeight);
-	} 
+	}*/
 
 	public void setFormDef(FormDef formDef){
 		if(this.formDef != formDef){
@@ -661,5 +674,46 @@ public class FormRunnerView extends Composite implements WindowResizeListener,Ta
 			Entry<Widget,String> entry = iterator.next();
 			this.labelReplaceText.put(entry.getKey(), entry.getValue());
 		}
+	}
+	
+	public String getBackgroundColor(){
+		if(selectedPanel == null)
+			return "";
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
+	}
+	
+	public String getWidth(){
+		if(selectedPanel == null)
+			return "";
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
+	}
+	
+	public String getHeight(){
+		if(selectedPanel == null)
+			return "";
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
+	}
+	
+	public void setBackgroundColor(String backgroundColor){
+		try{
+			if(selectedPanel != null)
+				DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", backgroundColor);
+		}catch(Exception ex){}
+	}
+	
+	public void setWidth(String width){
+		try{
+			if(selectedPanel != null)
+				DOM.setStyleAttribute(selectedPanel.getElement(), "width", width);
+		}catch(Exception ex){}
+	}
+	
+	public void setHeight(String height){
+		try{
+			if(height != null && height.trim().length() > 0 && !height.equals("100%"))
+				sHeight = height;
+			if(selectedPanel != null)
+				DOM.setStyleAttribute(selectedPanel.getElement(), "height", sHeight);
+		}catch(Exception ex){}
 	}
 }

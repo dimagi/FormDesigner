@@ -122,8 +122,11 @@ public class FormDesignerUtil {
 				continue;
 			
 			oracle.add(questionDef.getText());	
+			
+			//TODO Allowed for now since repeat questions will have ids which cant be equal to
+			//those of parents. But test this to ensure it does not bring in bugs.
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				;//loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),oracle); //TODO These have different id sets and hence we are leaving them out for now
+				loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),refQuestion,oracle,dynamicOptions,sameTypesOnly); //TODO These have different id sets and hence we are leaving them out for now
 		}
 	}
 

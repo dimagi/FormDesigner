@@ -180,7 +180,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void saveForm() {
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj.isReadOnly())
-			return;
+			;//return; //TODO I think we should allow saving of form text and layout
 		
 		if(!leftPanel.isValidForm())
 			return;

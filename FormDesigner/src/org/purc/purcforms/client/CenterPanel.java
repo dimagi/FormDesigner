@@ -18,8 +18,10 @@ import org.purc.purcforms.client.view.PropertiesView;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
@@ -74,6 +76,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	private FormDef formDef;
 	private int selectedTabIndex = 0;	
 
+	private ScrollPanel scrollPanelDesign = new ScrollPanel();
+	private ScrollPanel scrollPanelPreview = new ScrollPanel();
+
+
 	public CenterPanel(Images images) {		
 		designSurfaceView = new DesignSurfaceView(images);
 		previewView = new PreviewView((PreviewView.Images)images);
@@ -91,7 +97,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		tabs.selectTab(0);
 		initWidget(tabs);
 		tabs.addTabListener(this);
-		
+
 		if(!FormUtil.getShowLanguageTab())
 			this.removeLanguageTab();
 	}
@@ -138,9 +144,19 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	private void initDesignSurface(){
-		tabs.add(designSurfaceView, "Design Surface");
-		FormDesignerUtil.maximizeWidget(designSurfaceView);
+		tabs.add(scrollPanelDesign, "Design Surface");
+
+		designSurfaceView.setWidth("100%"); //1015px
+		designSurfaceView.setHeight("500px"); //707px
 		designSurfaceView.setLayoutChangeListener(this);
+
+		scrollPanelDesign.setWidget(designSurfaceView);
+
+		//FormDesignerUtil.maximizeWidget(scrollPanel);
+
+		/*tabs.add(designSurfaceView, "Design Surface");
+		FormDesignerUtil.maximizeWidget(designSurfaceView);
+		designSurfaceView.setLayoutChangeListener(this);*/
 	}
 
 	private void initXformsSource(){
@@ -159,11 +175,15 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	private void initPreview(){
-		tabs.add(previewView, "Preview");
-		FormDesignerUtil.maximizeWidget(previewView);
+		tabs.add(scrollPanelPreview, "Preview");
+		//FormDesignerUtil.maximizeWidget(previewView);
+		previewView.setWidth("100%"); //1015px
+		previewView.setHeight("500px"); //707px
 		previewView.setSubmitListener(this);
 		previewView.setDesignSurface(designSurfaceView);
 		previewView.setCenterPanel(this);
+
+		scrollPanelPreview.setWidget(previewView);
 	}
 
 	private void initModelXml(){
@@ -205,13 +225,41 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 			//}
+			
+			//This is necessary for those running in a non GWT mode to update the 
+			//scroll bars on loading the form.
+			updateScrollPos();
 		}
 	}
 
 	public void onWindowResized(int width, int height){
 		propertiesView.onWindowResized(width, height);
-		designSurfaceView.onWindowResized(width, height);
-		previewView.onWindowResized(width, height);
+		//designSurfaceView.onWindowResized(width, height);
+		//previewView.onWindowResized(width, height);
+
+		updateScrollPos();
+
+		//scrollPanel.setWidth(width-261+"px");
+		//scrollPanel.setHeight(height-110+"px");
+		//FormDesignerUtil.maximizeWidget(scrollPanel);
+	}
+	
+	private void updateScrollPos(){
+		onVerticalResize();
+		
+		int height = tabs.getOffsetHeight()-48;
+		if(height > 0){
+			scrollPanelDesign.setHeight(height +"px");
+			scrollPanelPreview.setHeight(height +"px");
+		}
+	}
+
+	public void onVerticalResize(){
+		int d = Window.getClientWidth()-tabs.getAbsoluteLeft();
+		if(d > 0){
+			scrollPanelDesign.setWidth(d-16+"px");
+			scrollPanelPreview.setWidth(d-16+"px");
+		}
 	}
 
 	public void loadForm(FormDef formDef, String layoutXml){
@@ -273,7 +321,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void buildLanguageXml(){
 		Document doc = LanguageUtil.createNewLanguageDoc();
 		Element rootNode = doc.getDocumentElement();
-		
+
 		Element node = null;
 		if(formDef != null){
 			node = formDef.getLanguageNode();
@@ -336,7 +384,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 			if(selectTabs)
 				selectLanguageTab();
-			
+
 			if(formDef != null)
 				formDef.setLanguageXml(xml);
 		}
@@ -354,7 +402,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 	public void saveLanguageText(boolean selectTab){
 		buildLanguageXml();
-		
+
 		if(selectTab)
 			selectLanguageTab();
 
@@ -508,12 +556,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		if(formDef != null)
 			formDef.setLayoutXml(xml);
 	}
-	
+
 	private void selectLanguageTab(){
 		if(tabs.getTabBar().getTabCount() == 7)
 			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 	}
-	
+
 	public void removeLanguageTab(){
 		if(tabs.getTabBar().getTabCount() == 7){
 			tabs.remove(SELECTED_INDEX_LANGUAGE_XML);

@@ -9,9 +9,11 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.StyleUtil;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -45,6 +47,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 	private FlexTable table = new FlexTable(); //Grid(7,2);
 	private ScrollPanel scrollPanel = new ScrollPanel();
+	private DesignGroupView viewWidget;
 	private DesignWidgetWrapper widget;
 	private DesignWidgetWrapper prevWidget;
 	private String prevBinding;
@@ -287,14 +290,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				updateBinding(widget,null);
 			}
 		});
-		
+
 		txtChildBinding.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				if(txtChildBinding.getText().trim().length() == 0)
 					updateChildBinding();
 			}
 		});
-		
+
 		txtChildBinding.addFocusListener(new FocusListenerAdapter(){
 			public void onFocus(Widget sender){
 				txtChildBinding.selectAll();
@@ -379,87 +382,108 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 		txtForeColor.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setForeColor(txtForeColor.getText());
+				if(widget != null)
+					widget.setForeColor(txtForeColor.getText());
 			}
 		});
 		sgstForeColor.addEventHandler(new SuggestionHandler(){
 			public void onSuggestionSelected(SuggestionEvent event){
-				widget.setForeColor(txtForeColor.getText());
+				if(widget != null)
+					widget.setForeColor(txtForeColor.getText());
 			}
 		});
 		txtBackgroundColor.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setBackgroundColor(txtBackgroundColor.getText());
+				if(widget != null)
+					widget.setBackgroundColor(txtBackgroundColor.getText());
+				else if(viewWidget != null)
+					viewWidget.setBackgroundColor(txtBackgroundColor.getText());
 			}
 		});
 		sgstBackgroundColor.addEventHandler(new SuggestionHandler(){
 			public void onSuggestionSelected(SuggestionEvent event){
-				widget.setBackgroundColor(txtBackgroundColor.getText());
+				if(widget != null)
+					widget.setBackgroundColor(txtBackgroundColor.getText());
+				else if(viewWidget != null)
+					viewWidget.setBackgroundColor(txtBackgroundColor.getText());
 			}
 		});
 		txtBorderColor.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setBorderColor(txtBorderColor.getText());
+				if(widget != null)
+					widget.setBorderColor(txtBorderColor.getText());
 			}
 		});
 		sgstBorderColor.addEventHandler(new SuggestionHandler(){
 			public void onSuggestionSelected(SuggestionEvent event){
-				widget.setBorderColor(txtBorderColor.getText());
+				if(widget != null)
+					widget.setBorderColor(txtBorderColor.getText());
 			}
 		});
 		txtFontSize.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setFontSize(txtFontSize.getText());
+				if(widget != null)
+					widget.setFontSize(txtFontSize.getText());
 			}
 		});
 		txtFontSize.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				widget.setFontSize(txtFontSize.getText());
+				if(widget != null)
+					widget.setFontSize(txtFontSize.getText());
 			}
 		});
 		txtFontFamily.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setFontFamily(txtFontFamily.getText());
+				if(widget != null)
+					widget.setFontFamily(txtFontFamily.getText());
 			}
 		});
 		txtFontFamily.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				widget.setFontFamily(txtFontFamily.getText());
+				if(widget != null)
+					widget.setFontFamily(txtFontFamily.getText());
 			}
 		});
 		txtBorderWidth.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setBorderWidth(txtBorderWidth.getText());
+				if(widget != null)
+					widget.setBorderWidth(txtBorderWidth.getText());
 			}
 		});
 		txtBorderWidth.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				widget.setBorderWidth(txtBorderWidth.getText());
+				if(widget != null)
+					widget.setBorderWidth(txtBorderWidth.getText());
 			}
 		});
 		lbTextDecoration.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setTextDecoration(lbTextDecoration.getItemText(lbTextDecoration.getSelectedIndex()));
+				if(widget != null)
+					widget.setTextDecoration(lbTextDecoration.getItemText(lbTextDecoration.getSelectedIndex()));
 			}
 		});
 		lbTextAlign.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setTextAlign(lbTextAlign.getItemText(lbTextAlign.getSelectedIndex()));
+				if(widget != null)
+					widget.setTextAlign(lbTextAlign.getItemText(lbTextAlign.getSelectedIndex()));
 			}
 		});
 		lbFontStyle.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setFontStyle(lbFontStyle.getItemText(lbFontStyle.getSelectedIndex()));
+				if(widget != null)
+					widget.setFontStyle(lbFontStyle.getItemText(lbFontStyle.getSelectedIndex()));
 			}
 		});
 		lbFontWeight.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setFontWeight(lbFontWeight.getItemText(lbFontWeight.getSelectedIndex()));
+				if(widget != null)
+					widget.setFontWeight(lbFontWeight.getItemText(lbFontWeight.getSelectedIndex()));
 			}
 		});
 		lbBorderStyle.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				widget.setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
+				if(widget != null)
+					widget.setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
 			}
 		});
 	}
@@ -473,7 +497,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				updateBinding();
 		}	
 	}
-	
+
 	private void updateText(){
 		//if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
 		if(widget != null /*&& txtText.getText().length() > 0*/) //We now allow setting of empty strings as text.
@@ -511,7 +535,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			if(optionDef == null){
 				String text = txtChildBinding.getText();
 				//if("browse".equalsIgnoreCase(text) || "clear".equalsIgnoreCase(text))
-					widget.setBinding(text);
+				widget.setBinding(text);
 				return;
 			}
 
@@ -545,7 +569,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				String text = txtBinding.getText();
 				//if(text.equals("submit")||text.equals("addnew")||text.equals("remove")
 				//		||text.equals("browse")||text.equals("clear"))
-					widget.setBinding(text);
+				widget.setBinding(text);
 				return;
 			}
 
@@ -572,13 +596,29 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	}
 
 	private void updateWidth(){
-		if(widget != null && txtWidth.getText().trim().length() > 0)
-			widget.setWidth(txtWidth.getText()+"px");
+		if(txtWidth.getText().trim().length() > 0){
+			if(widget != null)
+				widget.setWidth(txtWidth.getText()+"px");
+			else if(viewWidget != null){
+				if(viewWidget instanceof DesignSurfaceView)
+					((DesignSurfaceView)viewWidget).setWidth(txtWidth.getText()+"px");
+				else
+					viewWidget.setWidth(txtWidth.getText()+"px");
+			}
+		}
 	}
 
 	private void updateHeight(){
-		if(widget != null && txtHeight.getText().trim().length() > 0)
-			widget.setHeight(txtHeight.getText()+"px");
+		if(txtHeight.getText().trim().length() > 0){
+			if(widget != null)
+				widget.setHeight(txtHeight.getText()+"px");
+			else if(viewWidget != null){
+				if(viewWidget instanceof DesignSurfaceView)
+					((DesignSurfaceView)viewWidget).setHeight(txtHeight.getText()+"px");
+				else
+					viewWidget.setHeight(txtHeight.getText()+"px");
+			}
+		}
 	}
 
 	private void updateLeft(){
@@ -596,10 +636,19 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
 	}
 
-	public void onWidgetSelected(DesignWidgetWrapper widget) {
-		prevWidget = this.widget;
-		prevBinding = sgstBinding.getText().trim();
-		this.widget = widget;
+	public void onWidgetSelected(Widget widget) {
+
+		if(widget instanceof DesignWidgetWrapper){
+			prevWidget = this.widget;
+			prevBinding = sgstBinding.getText().trim();
+			this.widget = (DesignWidgetWrapper)widget;
+			viewWidget = null;
+		}
+		else{
+			viewWidget = (DesignGroupView)widget;
+			prevWidget = this.widget;
+			this.widget = null;
+		}
 
 		//Removed from here for smooth updateing where value has not changed
 		/*txtText.setText(null);
@@ -613,63 +662,63 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtTop.setText(null);
 		txtLeft.setText(null);*/
 
-		if(widget != null){
-			if(widget.getWrappedWidget() instanceof TabBar)
+		if(this.widget != null){
+			if(this.widget.getWrappedWidget() instanceof TabBar)
 				clearProperties();
-				
-			txtText.setText(widget.getText());
-			txtBinding.setText(widget.getBinding());
-			
-			if(widget.getWrappedWidget() instanceof TabBar)
+
+			txtText.setText(this.widget.getText());
+			txtBinding.setText(this.widget.getBinding());
+
+			if(this.widget.getWrappedWidget() instanceof TabBar)
 				return;
 
-			String value = widget.getHeight();
+			String value = this.widget.getHeight();
 			if(value != null && value.trim().length() > 0)
 				txtHeight.setText(value.substring(0, value.length()-2));
 			else
 				txtHeight.setText(null);
 
-			value = widget.getWidth();
+			value = this.widget.getWidth();
 			if(value != null && value.trim().length() > 0)
 				txtWidth.setText(value.substring(0, value.length()-2));
 			else
 				txtWidth.setText(null);
 
-			value = widget.getTitle();
+			value = this.widget.getTitle();
 			if(value != null && value.trim().length() > 0)
 				txtHelpText.setText(value);
 			else
 				txtHelpText.setText(txtText.getText());
 
-			value = widget.getExternalSource();
+			value = this.widget.getExternalSource();
 			if(value != null && value.trim().length() > 0)
 				txtExternalSource.setText(value);
 			else
 				txtExternalSource.setText(null);
 
-			value = widget.getDisplayField();
+			value = this.widget.getDisplayField();
 			if(value != null && value.trim().length() > 0)
 				txtDisplayField.setText(value);
 			else
 				txtDisplayField.setText(null);
 
-			value = widget.getValueField();
+			value = this.widget.getValueField();
 			if(value != null && value.trim().length() > 0)
 				txtValueField.setText(value);
 			else
 				txtValueField.setText(null);
 
-			cbRepeat.setSelectedIndex(widget.isRepeated() ? 0 : 1);
+			cbRepeat.setSelectedIndex(this.widget.isRepeated() ? 0 : 1);
 
 			txtChildBinding.setText(null);
-			if(widget.getWrappedWidget() instanceof CheckBox || (widget.getWrappedWidget() instanceof Button &&
-					"browse".equalsIgnoreCase(widget.getBinding())||"clear".equalsIgnoreCase(widget.getBinding()))){
-				value = widget.getParentBinding();
+			if(this.widget.getWrappedWidget() instanceof CheckBox || (this.widget.getWrappedWidget() instanceof Button &&
+					"browse".equalsIgnoreCase(this.widget.getBinding())||"clear".equalsIgnoreCase(this.widget.getBinding()))){
+				value = this.widget.getParentBinding();
 				if(value != null && value.trim().length() > 0 && formDef != null){
 					questionDef = formDef.getQuestion(value);
 					if(questionDef != null)
 						sgstBinding.setText(questionDef.getText()); 
-					else if(value != null && value.equals("submit") && widget.getWrappedWidget() instanceof Button)
+					else if(value != null && value.equals("submit") && this.widget.getWrappedWidget() instanceof Button)
 						txtBinding.setText(value);
 					else
 						txtBinding.setText(null);
@@ -677,12 +726,12 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				else
 					txtBinding.setText(null);
 
-				value = widget.getBinding();
+				value = this.widget.getBinding();
 				if(questionDef != null && value != null && value.trim().length() > 0){
 					OptionDef optionDef = questionDef.getOptionWithValue(value);
 					if(optionDef != null)
 						sgstChildBinding.setText(optionDef.getText()); 
-					else if(widget.getWrappedWidget() instanceof Button)
+					else if(this.widget.getWrappedWidget() instanceof Button)
 						sgstChildBinding.setText(value);
 					else
 						txtChildBinding.setText(null);
@@ -691,7 +740,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					txtChildBinding.setText(null);
 			}
 			else{
-				value = widget.getBinding();
+				value = this.widget.getBinding();
 				if(formDef != null){
 					questionDef = formDef.getQuestion(value);
 					if(questionDef != null)
@@ -699,42 +748,52 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					else{
 						if("submit".equalsIgnoreCase(value)||"addnew".equalsIgnoreCase(value)||"remove".equalsIgnoreCase(value)
 								|| "browse".equalsIgnoreCase(value)||"clear".equalsIgnoreCase(value) ||
-								(widget.getWrappedWidget() instanceof Label || widget.getWrappedWidget() instanceof Hyperlink) ||
-								widget.getWrappedWidget() instanceof TabBar)
+								(this.widget.getWrappedWidget() instanceof Label || this.widget.getWrappedWidget() instanceof Hyperlink) ||
+								this.widget.getWrappedWidget() instanceof TabBar)
 							txtBinding.setText(value);
 						else
 							txtBinding.setText(null);
 					}
 				}
-				else if(!(widget.getWrappedWidget() instanceof TabBar || widget.getWrappedWidget() instanceof Label))
+				else if(!(this.widget.getWrappedWidget() instanceof TabBar || this.widget.getWrappedWidget() instanceof Label))
 					txtBinding.setText(null);
 			}
 
-			value = widget.getLeft();
+			value = this.widget.getLeft();
 			if(value != null && value.trim().length() > 0)
 				txtLeft.setText(value.substring(0, value.length()-2));
 			else
 				txtLeft.setText(null);
 
-			value = widget.getTop();
+			value = this.widget.getTop();
 			if(value != null && value.trim().length() > 0)
 				txtTop.setText(value.substring(0, value.length()-2));
 			else
 				txtTop.setText(null);
 
-			txtTabIndex.setText(String.valueOf(widget.getTabIndex()));
+			txtTabIndex.setText(String.valueOf(this.widget.getTabIndex()));
 
 			txtChildBinding.setEnabled((hasParentBinding() && this.sgstBinding.getText().trim().length() > 0));
 
 			if(!txtChildBinding.isEnabled())
 				txtChildBinding.setText(null);
 
-			enableLabelProperties(widget.getWrappedWidget() instanceof Label);
+			enableLabelProperties(this.widget.getWrappedWidget() instanceof Label);
 		}
-		else
+		else{
 			clearProperties();
+			setViewProperties();
+		}
 	}
-	
+
+	private void setViewProperties(){
+		if(viewWidget != null){
+			txtWidth.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getWidth())));
+			txtHeight.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getHeight())));
+			txtBackgroundColor.setText(viewWidget.getBackgroundColor());
+		}
+	}
+
 	private void clearProperties(){
 		txtText.setText(null);
 		txtHelpText.setText(null);

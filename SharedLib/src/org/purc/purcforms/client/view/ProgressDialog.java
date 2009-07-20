@@ -14,6 +14,6 @@ public class ProgressDialog extends DialogBox{
 	}
 	
 	public void setProgressMsg(String message){
-		label.setText(message);
+		//label.setText(message); TODO turned off for now because it is statically shared
 	}
 }

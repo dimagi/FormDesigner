@@ -541,8 +541,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 			if(index == 0){
 				Element dataNode = mainWidget.getQuestionDef().getDataNode();
-				if(dataNode == null)
+				if(dataNode == null){
+					Window.alert("Please first save the form"); //LocaleText.get("?????");
 					return; //possibly form not yet saved
+				}
 
 				Element repeatDataNode = getParentNode(dataNode,mainWidget.getBinding());
 				newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);

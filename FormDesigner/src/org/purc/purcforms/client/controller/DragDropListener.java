@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.controller;
 
+import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -11,5 +13,5 @@ import com.google.gwt.user.client.ui.Widget;
 public interface DragDropListener {
 	public void onDragStart(Widget widget);
 	public void onDragEnd(Widget widget);
-	public void onDrop(Widget widget,int x, int y);
+	public DesignWidgetWrapper onDrop(Widget widget,int x, int y);
 }

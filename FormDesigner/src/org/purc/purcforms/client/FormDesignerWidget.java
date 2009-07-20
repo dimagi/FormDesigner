@@ -4,10 +4,12 @@ import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSaveListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
@@ -47,6 +49,7 @@ public class FormDesignerWidget extends Composite{
 	private boolean showMenubar;
 	private boolean showToolbar;
 	//private boolean showFormAsRoot;
+	private boolean isResizing = false;
 
 
 	public FormDesignerWidget(boolean showMenubar, boolean showToolbar,boolean showFormAsRoot){
@@ -82,6 +85,8 @@ public class FormDesignerWidget extends Composite{
 		FormDesignerUtil.maximizeWidget(hsplitClient);
 
 		initWidget(dockPanel);
+		
+		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 	}
 
 	public void onWindowResized(int width, int height){		
@@ -96,6 +101,18 @@ public class FormDesignerWidget extends Composite{
 		centerPanel.onWindowResized(width, height);
 		hsplitClient.setHeight(shortcutHeight+"px");
 		//hsplitClient.setSize(width+"px", shortcutHeight+"px");
+	}
+	
+	public void onBrowserEvent(Event event) {
+		//TODO Firefox doesn't seem to give us mouse events when resizing.
+		if(isResizing)
+			centerPanel.onVerticalResize();
+		
+		isResizing = false;
+		if(hsplitClient.isResizing()){
+			isResizing = true;
+			centerPanel.onVerticalResize();
+		}
 	}
 	
 	public void loadForm(int formId){

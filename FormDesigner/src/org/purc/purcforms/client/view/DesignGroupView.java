@@ -142,8 +142,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
-	public void onWidgetSelected(DesignWidgetWrapper widget){
-
+	public void onWidgetSelected(Widget widget){
+		this.widgetSelectionListener.onWidgetSelected(widget);
 	}
 
 	protected void cutWidgets(){
@@ -944,9 +944,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return null;
 	}
 
-	public void onDrop(Widget widget,int x, int y){
+	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
 		if(!(widget instanceof PaletteWidget))
-			return;
+			return null;
 
 		this.x = x;
 		this.y = y;
@@ -954,21 +954,23 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		String text = ((PaletteWidget)widget).getText();
 
 		if(text.equals(LocaleText.get("label")))
-			addNewLabel(LocaleText.get("label"),true);
+			return addNewLabel(LocaleText.get("label"),true);
 		else if(text.equals(LocaleText.get("textBox")))
-			addNewTextBox(true);
+			return addNewTextBox(true);
 		else if(text.equals(LocaleText.get("checkBox")))
-			addNewCheckBox(true);
+			return addNewCheckBox(true);
 		else if(text.equals(LocaleText.get("radioButton")))
-			addNewRadioButton(true);
+			return addNewRadioButton(true);
 		else if(text.equals(LocaleText.get("listBox")))
-			addNewDropdownList(true);
+			return addNewDropdownList(true);
 		else if(text.equals(LocaleText.get("textArea")))
-			addNewTextArea(true);
+			return addNewTextArea(true);
 		else if(text.equals(LocaleText.get("button")))
-			addNewButton(true);
+			return addNewButton(true);
 		else if(text.equals(LocaleText.get("datePicker")))
-			addNewDatePicker(true);
+			return addNewDatePicker(true);
+		
+		return null;
 	}
 
 	protected void initPanel(){
@@ -1078,7 +1080,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				//if(!(this instanceof DesignGroupWidget) || (this instanceof DesignGroupWidget && !((DesignWidgetWrapper)this.getParent().getParent()).isRepeated()))
 				//	widgetSelectionListener.onWidgetSelected(null);
 
-				widgetSelectionListener.onWidgetSelected(null);
+				widgetSelectionListener.onWidgetSelected(this);
 
 				clearGroupBoxSelection();
 
@@ -1118,6 +1120,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected boolean handleKeyDownEvent(Event event){
+		/*if(isTextBoxFocus(event)){
+			if("none".equalsIgnoreCase(event.getTarget().getStyle().getProperty("borderStyle")));
+				return true;
+		}*/
+		
 		boolean ret = false;
 
 		if(this.isVisible()){
@@ -1182,5 +1189,35 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 
 		return ret;
+	}
+	
+	public String getBackgroundColor(){
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
+	}
+	
+	public String getWidth(){
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
+	}
+	
+	public String getHeight(){
+		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
+	}
+	
+	public void setBackgroundColor(String backgroundColor){
+		try{
+			DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", backgroundColor);
+		}catch(Exception ex){}
+	}
+	
+	public void setWidth(String width){
+		try{
+			DOM.setStyleAttribute(selectedPanel.getElement(), "width", width);
+		}catch(Exception ex){}
+	}
+	
+	public void setHeight(String height){
+		try{
+			DOM.setStyleAttribute(selectedPanel.getElement(), "height", height);
+		}catch(Exception ex){}
 	}
 }

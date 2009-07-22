@@ -347,6 +347,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 		if(xml != null && xml.trim().length() > 0){
 			designSurfaceView.setLayoutXml(xml,null);
+			updateScrollPos();
+			
 			if(selectTabs)
 				tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
 		}

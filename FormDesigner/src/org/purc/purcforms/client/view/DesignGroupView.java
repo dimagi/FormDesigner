@@ -249,7 +249,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			selectedDragController.makeDraggable(widget);
 			selectedPanel.add(widget);
 
-			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
+			if(widget.getWrappedWidget() instanceof DesignGroupWidget && !widget.isRepeated())
 				selectedDragController.makeDraggable(widget,((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
 
 			if(widget.getPopupPanel() != widgetPopup){

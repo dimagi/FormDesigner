@@ -564,18 +564,28 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
 		if(binding == null || binding.trim().length() == 0)
-			return;
+			;//return; DesignGroupWidget may not have binding
 
-		String xpathRoot = xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@";
-
+		String xpathRoot = xpath;
+		if(binding != null && binding.trim().length() > 0)
+			xpathRoot +=  "Binding='" + binding + "' and @";
+		
+		xpathRoot += WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@";
+			
 		buildLanguageText(doc,getText(),WidgetEx.WIDGET_PROPERTY_TEXT,parentNode,xpathRoot);
 		buildLanguageText(doc,getTitle(),WidgetEx.WIDGET_PROPERTY_HELPTEXT,parentNode,xpathRoot);
 		buildLanguageText(doc,getTop(),WidgetEx.WIDGET_PROPERTY_TOP,parentNode,xpathRoot);
 		buildLanguageText(doc,getLeft(),WidgetEx.WIDGET_PROPERTY_LEFT,parentNode,xpathRoot);
 		buildLanguageText(doc,getWidth(),WidgetEx.WIDGET_PROPERTY_WIDTH,parentNode,xpathRoot);
 
-		if(getWrappedWidget() instanceof DesignGroupWidget)
-			((DesignGroupWidget)getWrappedWidget()).buildLanguageXml(doc,parentNode, xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@Binding='");
+		if(getWrappedWidget() instanceof DesignGroupWidget){
+			if(binding != null && binding.trim().length() > 0)
+				xpath += binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@";
+			else
+				xpath += WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@";
+			
+			((DesignGroupWidget)getWrappedWidget()).buildLanguageXml(doc,parentNode, xpath/*xpath + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@Binding='"*/);
+		}
 	}
 
 	private void buildLanguageText(com.google.gwt.xml.client.Document doc, String text, String name, Element parentNode, String xpathRoot){

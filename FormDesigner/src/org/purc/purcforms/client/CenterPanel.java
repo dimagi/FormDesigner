@@ -346,7 +346,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			xml = txtLayoutXml.getText();
 
 		if(xml != null && xml.trim().length() > 0){
-			designSurfaceView.setLayoutXml(xml,null);
+			designSurfaceView.setLayoutXml(xml,Context.inLocalizationMode() ? formDef : null); //TODO This passed null formdef in localization mode
 			updateScrollPos();
 			
 			if(selectTabs)

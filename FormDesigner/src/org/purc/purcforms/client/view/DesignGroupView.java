@@ -670,6 +670,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected boolean isTextBoxFocus(Event event){
 		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextBox") || event.getTarget().getClassName().equalsIgnoreCase("gwt-SuggestBox");
 	}
+	
+	protected boolean isTextAreaFocus(Event event){
+		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextArea");
+	}
 
 	public int getRubberLeft(){
 		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(rubberBand.getElement(), "left"));
@@ -1138,8 +1142,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			else if(keyCode == KeyboardListener.KEY_DOWN)
 				ret = moveWidgets(MOVE_DOWN);  
 			else if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
-				selectAll();
-				DOM.eventPreventDefault(event);
+				if(!isTextAreaFocus(event)){ //TODO This works only when the textarea is clicked to get focus. Need to make it work even before clicking the text area (as long as it is visible)
+					selectAll();
+					DOM.eventPreventDefault(event);
+				}
 				ret = true;
 			}
 			else if(event.getCtrlKey() && (keyCode == 'C' || keyCode == 'c')){

@@ -13,7 +13,6 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.StyleUtil;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -636,7 +635,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
 	}
 
-	public void onWidgetSelected(Widget widget) {
+	public void onWidgetSelected(Widget widget, boolean multipleSel) {
 
 		if(widget instanceof DesignWidgetWrapper){
 			prevWidget = this.widget;

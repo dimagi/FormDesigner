@@ -320,8 +320,10 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 				continue;
 			Element element = (Element)nodes.item(i);
 			DesignWidgetWrapper widget = DesignSurfaceView.loadWidget(element,selectedDragController,selectedPanel,images,widgetPopup,this.widgetPopupMenuListener,this,formDef);
-			if("true".equals(element.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL)))
+			if("true".equals(element.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL))){
 				setHeaderLabel(widget);
+				widget.setBinding(((DesignWidgetWrapper)getParent().getParent()).getBinding());
+			}
 		}
 	}
 
@@ -345,7 +347,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		return retWidget;
 	}
 
-	public void onWidgetSelected(DesignWidgetWrapper widget) {
+	public void onWidgetSelected(DesignWidgetWrapper widget, boolean multipleSel) {
 		//if(DOM.eventGetCurrentEvent().getCtrlKey())
 		//	return;
 
@@ -360,7 +362,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			}
 		}
 
-		this.widgetSelectionListener.onWidgetSelected(widget);
+		this.widgetSelectionListener.onWidgetSelected(widget,multipleSel);
 	}
 
 	public void clearGroupBoxSelection(){

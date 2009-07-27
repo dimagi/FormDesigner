@@ -102,15 +102,18 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		switch (type) {
 		case Event.ONCONTEXTMENU:
 			if(popup != null){
-				widgetSelectionListener.onWidgetSelected(this);
+				if(!event.getCtrlKey())
+					widgetSelectionListener.onWidgetSelected(null,true); //clear current selection. Multiple sel is given a value of true because right click does not turn off other selections
+				
+				widgetSelectionListener.onWidgetSelected(this,true);
 				popup.setPopupPosition(event.getClientX(), event.getClientY());
 				popup.show();
 			}
 			break;
 		case Event.ONMOUSEDOWN:
 			//if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
-			if(!(widget instanceof DesignGroupWidget))
-				widgetSelectionListener.onWidgetSelected(this); //TODO verify that this does not introduce a bug
+			if(!(widget instanceof DesignGroupWidget) && !event.getCtrlKey())
+				widgetSelectionListener.onWidgetSelected(this,event.getCtrlKey()); //TODO verify that this does not introduce a bug
 			//The above is turned on for now because of selectedDragController.setBehaviorDragStartSensitivity(1);
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
@@ -533,8 +536,15 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		//if(widget instanceof Label)
 		buildLabelProperties(node);
 
-		if(widget instanceof DesignGroupWidget)
+		if(widget instanceof DesignGroupWidget){
 			((DesignGroupWidget)widget).buildLayoutXml(node, doc);
+			
+			if(!isRepeated()){
+				setBinding("LEFT"+getLeft()+"TOP"+getTop());
+				node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, binding);
+				((DesignGroupWidget)widget).getHeaderLabel().setBinding(binding);
+			}
+		}
 
 		if(isRepeated())
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED, WidgetEx.REPEATED_TRUE_VALUE);
@@ -564,7 +574,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void buildLanguageXml(com.google.gwt.xml.client.Document doc, Element parentNode, String xpath){
 		if(binding == null || binding.trim().length() == 0)
-			;//return; DesignGroupWidget may not have binding
+			return; //DesignGroupWidget may not have binding
 
 		String xpathRoot = xpath;
 		if(binding != null && binding.trim().length() > 0)

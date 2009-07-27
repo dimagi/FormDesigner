@@ -329,7 +329,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		selectedDragController = dragControllers.elementAt(selectedTabIndex);
 		selectedPanel = selectedDragController.getBoundaryPanel();
 
-		widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
+		widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget(),false);
 	}
 
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
@@ -393,10 +393,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		doc.appendChild(rootNode);
 
 		//String xpath = "Form/Page/Item[@Binding='";
-		String xpath = "Form/Page/Item[@";
+		//String xpath = "Form/Page/Item[@";
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			if(pageWidgets.get(i) == null)
 				continue; //TODO Need to deal with this case where all widgets are deleted but layout and locale text remains
+			
+			String xpath = "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"']/Item[@";
+			
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");
@@ -1311,7 +1314,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return retWidget;
 	}
 
-	public void onWidgetSelected(DesignWidgetWrapper widget){
+	public void onWidgetSelected(DesignWidgetWrapper widget, boolean multipleSel){
 
 		boolean ctrlKey = FormDesignerUtil.getCtrlKey();
 		if(!ctrlKey)
@@ -1356,7 +1359,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		}
 
-		widgetSelectionListener.onWidgetSelected(widget);
+		widgetSelectionListener.onWidgetSelected(widget, multipleSel);
 	}
 
 	protected void selectAll(){

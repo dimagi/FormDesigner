@@ -119,7 +119,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void onDragEnd(Widget widget) {
-		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget));
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget),true);
 
 		((DesignWidgetWrapper)widget).refreshSize();
 		if(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)
@@ -130,7 +130,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void onDragStart(Widget widget) {
-		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget));
+		onWidgetSelected(getSelectedWidget((DesignWidgetWrapper)widget),true);
 	}
 
 	private DesignWidgetWrapper getSelectedWidget(DesignWidgetWrapper widget){
@@ -142,8 +142,29 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
-	public void onWidgetSelected(Widget widget){
-		this.widgetSelectionListener.onWidgetSelected(widget);
+	public void onWidgetSelected(Widget widget, boolean multipleSel){
+		if(widget == null)
+			selectedDragController.clearSelection();
+		else if(widget instanceof DesignWidgetWrapper && !(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)){
+			String s = ((DesignWidgetWrapper)widget).getWidth();
+			if(!"100%".equals(s)){
+				if(widgetSelectionListener instanceof DesignSurfaceView){
+					((DesignSurfaceView)widgetSelectionListener).clearSelection();
+					if(selectedDragController.getSelectedWidgetCount() == 1)
+						((DesignSurfaceView)widgetSelectionListener).clearGroupBoxSelection();
+					
+					//if(!multipleSel && selectedDragController.getSelectedWidgetCount() == 1)
+					//	selectedDragController.clearSelection();
+				}
+				
+				if(!multipleSel && selectedDragController.getSelectedWidgetCount() == 1)
+					selectedDragController.clearSelection();
+				
+				selectedDragController.selectWidget(widget); //TODO Test this and make sure it does not introduce bugs
+			}
+		}
+		
+		widgetSelectionListener.onWidgetSelected(widget, multipleSel);
 	}
 
 	protected void cutWidgets(){
@@ -280,11 +301,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetPosition();
 
 			if(i == 0 && Context.clipBoardWidgets.size() == 1)
-				widgetSelectionListener.onWidgetSelected(widget);
+				widgetSelectionListener.onWidgetSelected(widget,true);
 		}
 
 		if(Context.clipBoardWidgets.size() > 1)
-			widgetSelectionListener.onWidgetSelected(null);
+			widgetSelectionListener.onWidgetSelected(null,true);
 	}
 
 	protected boolean deleteWidgets(){
@@ -845,7 +866,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			selectedDragController.clearSelection();
 			selectedDragController.toggleSelection(wrapper);
 			//widgetSelectionListener.onWidgetSelected(wrapper);
-			onWidgetSelected(wrapper);
+			onWidgetSelected(wrapper,false);
 		}
 		return wrapper;
 	}
@@ -1032,7 +1053,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
 			selectedDragController.makeDraggable(editWidget);
 			selectedDragController.selectWidget(editWidget);
-			widgetSelectionListener.onWidgetSelected(editWidget);
+			widgetSelectionListener.onWidgetSelected(editWidget,false);
 			/*}
 			else{
 				DesignSurfaceView surface = (DesignSurfaceView)getParent().getParent().getParent().getParent().getParent().getParent().getParent();
@@ -1071,7 +1092,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					if(event.getTarget() != this.selectedPanel.getElement()){
 						try{
 							if(event.getTarget().getInnerText().equals(DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(tabs.getTabBar().getSelectedTab())))){
-								widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget());
+								widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget(),event.getCtrlKey());
 								return;
 							}
 						}catch(Exception ex){}
@@ -1079,12 +1100,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				}
 
 				if(this instanceof DesignGroupWidget)
-					widgetSelectionListener.onWidgetSelected((DesignWidgetWrapper)this.getParent().getParent());
+					widgetSelectionListener.onWidgetSelected((DesignWidgetWrapper)this.getParent().getParent(),event.getCtrlKey());
 
 				//if(!(this instanceof DesignGroupWidget) || (this instanceof DesignGroupWidget && !((DesignWidgetWrapper)this.getParent().getParent()).isRepeated()))
 				//	widgetSelectionListener.onWidgetSelected(null);
 
-				widgetSelectionListener.onWidgetSelected(this);
+				widgetSelectionListener.onWidgetSelected(this,event.getCtrlKey());
 
 				clearGroupBoxSelection();
 
@@ -1120,7 +1141,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
 				continue;
 			((DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget()).clearGroupBoxSelection();
+			
+			if(selectedDragController.isWidgetSelected(wid))
+				selectedDragController.toggleSelection(wid);
 		}
+	}
+	
+	protected void clearSelection(){
+		selectedDragController.clearSelection();
 	}
 
 	protected boolean handleKeyDownEvent(Event event){

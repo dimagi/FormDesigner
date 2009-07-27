@@ -10,5 +10,5 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface WidgetSelectionListener {
 	
-	public void onWidgetSelected(Widget widget);
+	public void onWidgetSelected(Widget widget, boolean multipleSel);
 }

@@ -611,4 +611,9 @@ public class FormDesignerDragController extends AbstractDragController{
 	public List<Widget> getSelectedWidgets(){
 		return context.selectedWidgets;
 	}
+	
+	public boolean isWidgetSelected(Widget widget){
+		return context.selectedWidgets.contains(widget);
+			
+	}
 }

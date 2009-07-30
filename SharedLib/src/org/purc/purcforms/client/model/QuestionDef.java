@@ -878,7 +878,7 @@ public class QuestionDef implements Serializable{
 			return;
 
 		String name = dataNode.getNodeName();
-		if(name.equalsIgnoreCase(variableName)){
+		if(name.equals(variableName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
 				return;
 			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getVariableName().equals(dataNode.getParentNode().getNodeName()))
@@ -914,7 +914,7 @@ public class QuestionDef implements Serializable{
 
 			String parentName = variableName.substring(0,variableName.indexOf("/"));
 			String parentNodeName = dataNode.getParentNode().getNodeName();
-			if(!parentName.equalsIgnoreCase(parentNodeName)){
+			if(!parentName.equals(parentNodeName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 				if(variableName.equals(parentName+"/"+parentNodeName+"/"+name))
 					return;
 

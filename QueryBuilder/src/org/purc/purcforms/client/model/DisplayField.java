@@ -13,16 +13,18 @@ public class DisplayField implements Serializable {
 	private String name;
 	private String text;
 	private String AggFunc;
+	private int dataType;
 	
 	public DisplayField(){
 		
 	}
 
-	public DisplayField(String name, String text, String AggFunc) {
+	public DisplayField(String name, String text, String AggFunc, int dataType) {
 		super();
 		this.name = name;
 		this.text = text;
 		this.AggFunc = AggFunc;
+		this.dataType = dataType;
 	}
 
 	public String getName() {
@@ -47,5 +49,13 @@ public class DisplayField implements Serializable {
 
 	public void setAggFunc(String aggFunc) {
 		AggFunc = aggFunc;
+	}
+
+	public int getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(int dataType) {
+		this.dataType = dataType;
 	}
 }

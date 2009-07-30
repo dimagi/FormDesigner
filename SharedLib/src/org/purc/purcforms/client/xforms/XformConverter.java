@@ -96,7 +96,7 @@ public class XformConverter implements Serializable{
 	public static final String NODE_NAME_SUBMIT_MINUS_PREFIX = "submit";
 	public static final String NODE_NAME_VALUE_MINUS_PREFIX = "value";
 	public static final String NODE_NAME_GROUP_MINUS_PREFIX = "group";
-	
+
 	public static final String NODE_NAME_TEXT = "text";
 	public static final String ATTRIBUTE_NAME_XPATH = "xpath";
 	public static final String ATTRIBUTE_NAME_VALUE = "value";
@@ -151,20 +151,22 @@ public class XformConverter implements Serializable{
 	private static int getNextQuestionId(){
 		return currentQuestionId++;
 	}
-	
+
 	private static int getNextPageNo(){
 		return currentPageNo++;
 	}
-	
+
 	public static String getXmlType(int type, Element node){
-		if(type == QuestionDef.QTN_TYPE_VIDEO)
-			node.setAttribute(ATTRIBUTE_NAME_FORMAT,ATTRIBUTE_VALUE_VIDEO);
-		else if(type == QuestionDef.QTN_TYPE_AUDIO)
-			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_AUDIO);
-		else if(type == QuestionDef.QTN_TYPE_IMAGE)
-			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_IMAGE);
-		else if(type == QuestionDef.QTN_TYPE_GPS)
-			node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_GPS);
+		if(node != null){
+			if(type == QuestionDef.QTN_TYPE_VIDEO)
+				node.setAttribute(ATTRIBUTE_NAME_FORMAT,ATTRIBUTE_VALUE_VIDEO);
+			else if(type == QuestionDef.QTN_TYPE_AUDIO)
+				node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_AUDIO);
+			else if(type == QuestionDef.QTN_TYPE_IMAGE)
+				node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_IMAGE);
+			else if(type == QuestionDef.QTN_TYPE_GPS)
+				node.setAttribute(ATTRIBUTE_NAME_FORMAT, ATTRIBUTE_VALUE_GPS);
+		}
 
 		switch(type){
 		case QuestionDef.QTN_TYPE_BOOLEAN:
@@ -213,7 +215,7 @@ public class XformConverter implements Serializable{
 
 		return fromDoc2String(doc);
 	}
-	
+
 	private static void buildXform(FormDef formDef, Document doc, Element parentNode, Element modelNode){
 		Element instanceNode =  doc.createElement(NODE_NAME_INSTANCE);
 		instanceNode.setAttribute(ATTRIBUTE_NAME_ID, formDef.getVariableName());
@@ -245,7 +247,7 @@ public class XformConverter implements Serializable{
 			}
 
 			List<QuestionDef> questions = new ArrayList<QuestionDef>();
-			
+
 			HashMap<Integer,DynamicOptionDef> dynamicOptions = formDef.getDynamicOptions();
 			if(dynamicOptions != null){
 				Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
@@ -259,12 +261,12 @@ public class XformConverter implements Serializable{
 						questions.add(questionDef);
 				}
 			}
-			
+
 			if(questions.size() > 0)
 				updateDynamicOptions(dynamicOptions,questions,formDef,doc);
 		}
 	}
-	
+
 	/**
 	 * For creating dynamic options instance node for those that were not created in the
 	 * first pass because of dependant dynamic options not have also been created yet.
@@ -279,12 +281,12 @@ public class XformConverter implements Serializable{
 	 */
 	private static void updateDynamicOptions(HashMap<Integer,DynamicOptionDef> dynamicOptions, List<QuestionDef> questions, FormDef formDef,Document doc){
 		List<QuestionDef> newDynQtns = new ArrayList<QuestionDef>();
-		
+
 		for(QuestionDef qtn : questions){
 			if(!fromDynamicOptionDef2Xform(doc,dynamicOptions.get(qtn.getId()),qtn,formDef))
 				newDynQtns.add(qtn);
 		}
-		
+
 		//The size must have decrease, else we shall get infinite recursion.
 		if(newDynQtns.size() > 0 && newDynQtns.size() < questions.size())
 			updateDynamicOptions(dynamicOptions,newDynQtns,formDef,doc);
@@ -356,10 +358,10 @@ public class XformConverter implements Serializable{
 
 		Element itemSetNode = questionDef.getFirstOptionNode();
 		itemSetNode.setAttribute(ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
-		
+
 		return true;
 	}
-	
+
 	private static void addNewDynamicOption(Document doc, OptionDef optionDef, OptionDef parentOptionDef, Element dataNode){
 		Element itemNode =  doc.createElement("item");
 		optionDef.setControlNode(itemNode);
@@ -526,7 +528,7 @@ public class XformConverter implements Serializable{
 		pageDef.setGroupNode(groupNode);
 
 		groupNode.setAttribute(ATTRIBUTE_NAME_ID, pageDef.getPageNo()+"");
-		
+
 		Vector questions = pageDef.getQuestions();
 		if(questions != null){
 			for(int i=0; i<questions.size(); i++){
@@ -680,7 +682,7 @@ public class XformConverter implements Serializable{
 	public static Element fromOptionDef2Xform(OptionDef optionDef, Document doc, Element inputNode){
 		Element itemNode =  doc.createElement(NODE_NAME_ITEM);
 		itemNode.setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
-		
+
 		Element node =  doc.createElement(NODE_NAME_LABEL);
 		node.appendChild(doc.createTextNode(optionDef.getText()));
 		itemNode.appendChild(node);
@@ -1037,7 +1039,7 @@ public class XformConverter implements Serializable{
 	public static boolean setTextNodeValue(Element node, String value){
 		if(node == null)
 			return false;
-		
+
 		int numOfEntries = node.getChildNodes().getLength();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
@@ -1095,7 +1097,7 @@ public class XformConverter implements Serializable{
 		for (int i = 0; i < numOfEntries; i++) {
 			if(nodes.item(i) == null)
 				continue;
-			
+
 			if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
 				Element child = (Element)nodes.item(i);
 				String tagname = child.getNodeName(); //getNodeName(child);
@@ -1130,7 +1132,7 @@ public class XformConverter implements Serializable{
 				else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
 					if(formDef.getDataNode() != null)
 						continue; //we only take the first instance node for formdef ref
-					
+
 					Element dataNode = null;
 					for(int k=0; k<child.getChildNodes().getLength(); k++){
 						if(child.getChildNodes().item(k).getNodeType() == Node.ELEMENT_NODE){
@@ -1157,8 +1159,8 @@ public class XformConverter implements Serializable{
 							System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
 							//break;
 						}*/
-						//System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
-						/*qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
+					//System.out.println(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size());
+					/*qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1))); //TODO Could some questions be on pages other than the first
 					}*/
 					qtn.setId(getNextQuestionId());
 					qtn.setVariableName(getQuestionVariableName(child,formDef));
@@ -1338,32 +1340,32 @@ public class XformConverter implements Serializable{
 	private static void parseDynamicOptionsList(QuestionDef questionDef, String nodeset, FormDef formDef){
 		if(nodeset == null || nodeset.trim().length() == 0)
 			return;
-		
+
 		String binding = getDynamicOptionParentInstanceId(nodeset);
 		if(binding == null)
 			return;
-		
+
 		QuestionDef parentQuestionDef = formDef.getQuestion(binding);
 		if(parentQuestionDef == null)
 			return;
-				
+
 		String instanceId = getDynamicOptionChildInstanceId(nodeset);
 		if(instanceId == null)
 			return;
-			
+
 		/*String xpath = "/model/instance[@id=" + instanceId + "]";
-		
+
 		XPathExpression xpls = new XPathExpression(formDef.getModelNode(), xpath);
 		Vector result = xpls.getResult();
 		if(result == null || result.size() == 0)
 			return;
-		
+
 		Element instanceNode = (Element)result.get(0);*/
-		
+
 		Element instanceNode = getInstanceNode(formDef.getModelNode(), instanceId);
 		if(instanceNode == null)
 			return;
-		
+
 		HashMap<String,Integer> parentOptionIdMap = new HashMap<String,Integer>();
 		DynamicOptionDef dynamicOptionDef = new DynamicOptionDef();
 		dynamicOptionDef.setQuestionId(questionDef.getId());
@@ -1376,10 +1378,10 @@ public class XformConverter implements Serializable{
 				break;
 			}
 		}
-		
+
 		formDef.setDynamicOptionDef(parentQuestionDef.getId(), dynamicOptionDef);
 	}
-	
+
 	private static Element getInstanceNode(Element modelNode, String instanceId){
 		NodeList nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE);
 		if(nodes.getLength() == 0)
@@ -1393,25 +1395,25 @@ public class XformConverter implements Serializable{
 		}
 		return null;
 	}
-	
+
 	private static void parseDynamicOptions(DynamicOptionDef dynamicOptionDef, QuestionDef questionDef, QuestionDef parentQuestionDef, Node node, OptionDef optionDef, HashMap<String,Integer> parentOptionIdMap, FormDef formDef){
 		String label = "";
 		String value = "";
 		Element labelNode = null;
 		Element valueNode = null;
-		
+
 		NodeList nodes = node.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node child = nodes.item(index);
 			if(child.getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			
+
 			String name = child.getNodeName();
 			if(name.equals(NODE_NAME_ITEM_MINUS_PREFIX)){
 				String parent = ((Element)child).getAttribute(ATTRIBUTE_NAME_PARENT);
 				if(parent == null || parent.trim().length() == 0)
 					continue;
-				
+
 				optionDef = new OptionDef(dynamicOptionDef.getNextOptionId(true),label, value,questionDef);
 				optionDef.setControlNode((Element)child);
 				Integer optionId = parentOptionIdMap.get(parent);
@@ -1434,7 +1436,7 @@ public class XformConverter implements Serializable{
 					dynamicOptionDef.setOptionList(optionId, optionList);
 				}
 				optionList.add(optionDef);
-				
+
 				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,optionDef,parentOptionIdMap,formDef);
 			}
 			else if(name.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
@@ -1450,7 +1452,7 @@ public class XformConverter implements Serializable{
 				}
 			}
 		}
-		
+
 		if (!label.equals("") && !value.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (optionDef != null){
 				optionDef.setText(label);
@@ -1460,7 +1462,7 @@ public class XformConverter implements Serializable{
 			}
 		} 
 	}
-	
+
 	private static void setQuestionDataNode(QuestionDef qtn, FormDef formDef, PageDef pageDef,QuestionDef parentQtn){
 		String xpath = qtn.getVariableName();
 
@@ -1742,7 +1744,7 @@ public class XformConverter implements Serializable{
 		value = value.trim();
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value);
-			
+
 			//This is just for the designer
 			if(value.startsWith(formDef.getVariableName() + "/"))
 				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
@@ -1790,7 +1792,7 @@ public class XformConverter implements Serializable{
 		value = value.trim();
 		if(!(value.equals("null") || value.equals(""))){
 			condition.setValue(value);
-			
+
 			//This is just for the designer
 			if(value.startsWith(formDef.getVariableName() + "/"))
 				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
@@ -1980,7 +1982,7 @@ public class XformConverter implements Serializable{
 				return null;
 			qtn.setId(Integer.parseInt(String.valueOf(((PageDef)formDef.getPages().elementAt(0)).getQuestions().size()+1)));
 		}*/
-		
+
 		qtn.setId(getNextQuestionId());
 
 		if(child.getAttribute(ATTRIBUTE_NAME_TYPE) == null)
@@ -2037,11 +2039,11 @@ public class XformConverter implements Serializable{
 		parent.replaceChild(child, node);
 		return child;
 	}
-	
+
 	public static String getDynamicOptionChildInstanceId(String nodeset){
 		if(nodeset == null)
 			return null;
-		
+
 		int pos1 = nodeset.indexOf('\'');
 		if(pos1 < 0)
 			return null;
@@ -2052,26 +2054,26 @@ public class XformConverter implements Serializable{
 
 		return nodeset.substring(pos1 + 1, pos2);
 	}
-	
+
 	public static String getDynamicOptionParentInstanceId(String nodeset){
 		if(nodeset == null)
 			return null;
-		
+
 		int pos1 = nodeset.lastIndexOf('/');
 		if(pos1 < 0)
 			return null;
-		
+
 		int pos2 = nodeset.lastIndexOf(']');
 		if(pos2 < 0 || (pos1 == pos2))
 			return null;
-		
+
 		return nodeset.substring(pos1 + 1, pos2);
 	}
-	
+
 	public static String getDynamicOptionFormInstanceId(String nodeset){
 		if(nodeset == null)
 			return null;
-		
+
 		String token = "\')/item[@parent=instance(\'";
 		int pos1 = nodeset.indexOf(token);
 		if(pos1 < 0)
@@ -2083,7 +2085,7 @@ public class XformConverter implements Serializable{
 
 		return nodeset.substring(pos1+token.length(), pos2);
 	}
-	
+
 	public static String fromFormDef2Xhtml(FormDef formDef){
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
@@ -2094,26 +2096,26 @@ public class XformConverter implements Serializable{
 		htmlNode.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
 		htmlNode.setAttribute(XML_NAMESPACE_PREFIX+PREFIX_XFORMS, NAMESPACE_XFORMS);
 		htmlNode.setAttribute(XML_NAMESPACE_PREFIX+PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
-		
+
 		doc.appendChild(htmlNode);
 
 		//add head
 		Element headNode =  doc.createElement("head");
 		htmlNode.appendChild(headNode);
-		
+
 		//add title
 		Element titleNode =  doc.createElement("title");
 		titleNode.appendChild(doc.createTextNode(formDef.getName()));
 		headNode.appendChild(titleNode);
-		
+
 		//add body
 		Element bodyNode =  doc.createElement("body");
 		htmlNode.appendChild(bodyNode);
-		
+
 		//add model
 		Element modelNode =  doc.createElement(NODE_NAME_MODEL);
 		headNode.appendChild(modelNode);
-		
+
 		buildXform(formDef,doc,bodyNode,modelNode);
 
 		return fromDoc2String(doc);

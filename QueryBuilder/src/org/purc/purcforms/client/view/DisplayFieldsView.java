@@ -206,7 +206,7 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 			Widget widget = columnPanel.getWidget(i);
 			if(widget instanceof DisplayColumnWidget){
 				DisplayColumnWidget displayColumnWidget = (DisplayColumnWidget)widget;
-				displayFields.add(new DisplayField(displayColumnWidget.getName(),displayColumnWidget.getText(),displayColumnWidget.getAggregateFunction()));
+				displayFields.add(new DisplayField(displayColumnWidget.getName(),displayColumnWidget.getText(),displayColumnWidget.getAggregateFunction(),displayColumnWidget.getDataType()));
 			}
 		}
 

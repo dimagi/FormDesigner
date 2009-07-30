@@ -205,4 +205,8 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 		showAggregateFunctions(true);
 		actionHyperlink.setAggregateFunctionMode(true);
 	}
+	
+	public int getDataType(){
+		return questionDef.getDataType();
+	}
 }

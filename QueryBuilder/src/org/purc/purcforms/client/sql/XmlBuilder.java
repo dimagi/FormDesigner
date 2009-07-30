@@ -8,6 +8,7 @@ import org.purc.purcforms.client.model.FilterConditionGroup;
 import org.purc.purcforms.client.model.FilterConditionRow;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.SortField;
+import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -39,6 +40,8 @@ public class XmlBuilder {
 	public static final String ATTRIBUTE_NAME_AGG_FUNC = "AggFunc";
 	public static final String ATTRIBUTE_NAME_TEXT = "text";
 	public static final String ATTRIBUTE_NAME_SORT_ORDER = "sortOrder";
+	public static final String ATTRIBUTE_NAME_TYPE = "type";
+	//public static final String ATTRIBUTE_NAME_TABLE = "table";
 
 	private static Document doc;
 
@@ -61,6 +64,7 @@ public class XmlBuilder {
 
 		if(!(displayFields == null || displayFields.size() == 0)){
 			Element displayFieldsNode = doc.createElement(NODE_NAME_DISPLAY_FIELDS);
+			//displayFieldsNode.setAttribute(ATTRIBUTE_NAME_TABLE, formDef.getVariableName());
 			rootNode.appendChild(displayFieldsNode);
 			buildDisplayFields(displayFieldsNode,displayFields);
 		}
@@ -102,6 +106,7 @@ public class XmlBuilder {
 			Element node = doc.createElement(NODE_NAME_FIELD);
 			node.setAttribute(ATTRIBUTE_NAME_NAME, field.getName());
 			node.setAttribute(ATTRIBUTE_NAME_TEXT, field.getText());
+			node.setAttribute(ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(field.getDataType(),null));
 			if(field.getAggFunc() != null)
 				node.setAttribute(ATTRIBUTE_NAME_AGG_FUNC, field.getAggFunc());
 			displayFieldsNode.appendChild(node);

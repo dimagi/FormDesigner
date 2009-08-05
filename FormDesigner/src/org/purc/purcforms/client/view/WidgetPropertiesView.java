@@ -11,6 +11,7 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.StyleUtil;
+import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
 import com.google.gwt.user.client.ui.Button;
@@ -411,12 +412,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			public void onChange(Widget sender){
 				if(widget != null)
 					widget.setBorderColor(txtBorderColor.getText());
+				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderColor(txtBorderColor.getText());
 			}
 		});
 		sgstBorderColor.addEventHandler(new SuggestionHandler(){
 			public void onSuggestionSelected(SuggestionEvent event){
 				if(widget != null)
 					widget.setBorderColor(txtBorderColor.getText());
+				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderColor(txtBorderColor.getText());
 			}
 		});
 		txtFontSize.addChangeListener(new ChangeListener(){
@@ -447,12 +452,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			public void onChange(Widget sender){
 				if(widget != null)
 					widget.setBorderWidth(txtBorderWidth.getText());
+				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderWidth(txtBorderWidth.getText());
 			}
 		});
 		txtBorderWidth.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				if(widget != null)
 					widget.setBorderWidth(txtBorderWidth.getText());
+				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderWidth(txtBorderWidth.getText());
 			}
 		});
 		lbTextDecoration.addChangeListener(new ChangeListener(){
@@ -483,6 +492,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			public void onChange(Widget sender){
 				if(widget != null)
 					widget.setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
+				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
 			}
 		});
 	}
@@ -790,6 +801,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtWidth.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getWidth())));
 			txtHeight.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getHeight())));
 			txtBackgroundColor.setText(viewWidget.getBackgroundColor());
+			
+			if(viewWidget instanceof DesignGroupWidget){
+				DesignWidgetWrapper designWidgetWrapper = (DesignWidgetWrapper)viewWidget.getParent().getParent();
+				
+				StyleUtil.setBorderStyleIndex(designWidgetWrapper.getBorderStyle(), lbBorderStyle);
+				txtBorderColor.setText(designWidgetWrapper.getBorderColor());
+				txtBorderWidth.setText(FormUtil.convertDimensionToInt(designWidgetWrapper.getBorderWidth())+"");
+			}
 		}
 	}
 
@@ -918,13 +937,13 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtForeColor.setText(widget.getForeColor());
 			StyleUtil.setFontWeightIndex(widget.getFontWeight(), lbFontWeight);
 			StyleUtil.setFontStyleIndex(widget.getFontStyle(), lbFontStyle);
-			txtFontSize.setText(widget.getFontSize());
+			txtFontSize.setText(FormUtil.convertDimensionToInt(widget.getFontSize())+"");
 			txtFontFamily.setText(widget.getFontFamily());
 			StyleUtil.setTextDecorationIndex(widget.getTextDecoration(), lbTextDecoration);
 			StyleUtil.setTextAlignIndex(widget.getTextAlign(), lbTextAlign);
 			txtBackgroundColor.setText(widget.getBackgroundColor());
 			StyleUtil.setBorderStyleIndex(widget.getBorderStyle(), lbBorderStyle);
-			txtBorderWidth.setText(widget.getBorderWidth());
+			txtBorderWidth.setText(FormUtil.convertDimensionToInt(widget.getBorderWidth())+"");
 			txtBorderColor.setText(widget.getBorderColor());
 		}
 		else if(widget == null){

@@ -116,6 +116,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 					previewView.moveToFirstWidget();
 			}
 		}
+		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			designSurfaceView.refresh();
 		//else if(selectedTabIndex == SELECTED_INDEX_LAYOUT_XML)
 		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 	}

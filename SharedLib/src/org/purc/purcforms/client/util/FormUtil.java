@@ -288,7 +288,7 @@ public class FormUtil {
 		format = getDivValue("timeSubmitFormat");
 		if(format != null && format.trim().length() > 0)
 			setTimeSubmitFormat(format);
-		
+
 		format = getDivValue("dateDisplayFormat");
 		if(format != null && format.trim().length() > 0)
 			setDateDisplayFormat(format);
@@ -348,7 +348,7 @@ public class FormUtil {
 	public static DateTimeFormat getTimeDisplayFormat(){
 		return timeDisplayFormat;
 	}
-	
+
 	public static void setDateDisplayFormat(String format){
 		dateDisplayFormat = DateTimeFormat.getFormat(format);
 	}
@@ -364,7 +364,7 @@ public class FormUtil {
 	public static DateTimeFormat getTimeSubmitFormat(){
 		return timeSubmitFormat;
 	}
-	
+
 	public static void setDateSubmitFormat(String format){
 		dateSubmitFormat = DateTimeFormat.getFormat(format);
 	}
@@ -484,7 +484,12 @@ public class FormUtil {
 	public static int convertDimensionToInt(String dimension){
 		if(dimension == null || dimension.trim().length() == 0)
 			return 0;
-		return Integer.parseInt(dimension.substring(0,dimension.length()-2));
+
+		try{
+			return Integer.parseInt(dimension.substring(0,dimension.length()-2));
+		}catch(Exception ex){}
+		
+		return 1;
 	}
 
 	public static String getNodePath(com.google.gwt.xml.client.Node node){

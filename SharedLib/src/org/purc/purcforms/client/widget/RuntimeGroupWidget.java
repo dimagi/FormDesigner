@@ -17,6 +17,7 @@ import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -281,7 +282,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			((Image)widget).setUrl(URL.encode("multimedia?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
+			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
 			widget = new HTML();
@@ -296,7 +297,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				//extension = ".wav";
 			}
 
-			((HTML)widget).setHTML("<a href=" + URL.encode("multimedia"+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 
 			String answer = questionDef.getAnswer();
 			if(answer == null || answer.trim().length() == 0 )
@@ -504,7 +505,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				else
 					html = (HTML)wrapper.getWrappedWidget();
 
-				OpenFileDialog dlg = new OpenFileDialog(this,"multimedia");
+				OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getMultimediaUrlSuffix());
 				dlg.center();
 			}
 		}
@@ -722,7 +723,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			RuntimeWidgetWrapper widgetWrapper = null;
 
 			if(image != null){
-				image.setUrl("multimedia?action=recentbinary"+"&time="+ new java.util.Date().getTime());
+				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary"+"&time="+ new java.util.Date().getTime());
 				widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
 			}
 			else{
@@ -740,7 +741,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				}
 
 				html.setVisible(true);
-				html.setHTML("<a href=" + URL.encode("multimedia"+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
+				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
 			}
 
 			widgetWrapper.getQuestionDef().setAnswer(contents);

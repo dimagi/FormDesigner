@@ -43,6 +43,7 @@ public class FormUtil {
 	private static String afterSubmitUrlSuffix;
 	private static String formDefRefreshUrlSuffix;
 	private static String externalSourceUrlSuffix;
+	private static String multimediaUrlSuffix;
 
 	private static String formIdName;
 	private static String entityIdName;
@@ -261,6 +262,10 @@ public class FormUtil {
 		afterSubmitUrlSuffix = getDivValue("afterSubmitUrlSuffix");
 		formDefRefreshUrlSuffix = getDivValue("formDefRefreshUrlSuffix");
 		externalSourceUrlSuffix = getDivValue("externalSourceUrlSuffix");
+		multimediaUrlSuffix = getDivValue("multimediaUrlSuffix");
+		
+		if(multimediaUrlSuffix == null || multimediaUrlSuffix.trim().length() == 0)
+			multimediaUrlSuffix = "multimedia";
 
 		formIdName = getDivValue("formIdName");
 		if(formIdName == null || formIdName.trim().length() == 0)
@@ -399,6 +404,10 @@ public class FormUtil {
 
 	public static String getExternalSourceUrlSuffix(){
 		return externalSourceUrlSuffix;
+	}
+	
+	public static String getMultimediaUrlSuffix(){
+		return getHostPageBaseURL()+ multimediaUrlSuffix;
 	}
 
 	public static String getFormIdName(){

@@ -117,7 +117,7 @@ public class PreviewView extends FormRunnerView {
 	}
 
 	public boolean isPreviewing(){
-		return tabs.getWidgetCount() > 0;
+		return tabs.getWidgetCount() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() > 0;
 	}
 
 	public void onBrowserEvent(Event event) {

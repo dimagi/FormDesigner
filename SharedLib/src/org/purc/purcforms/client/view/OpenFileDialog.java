@@ -4,6 +4,7 @@ import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;

@@ -155,12 +155,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			//if(txtValue1 instanceof DatePicker){
 			txtValue1.addChangeListener(new ChangeListener(){
 				public void onChange(Widget sender){
-					stopEdit(true);
+					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
 			txtValue2.addChangeListener(new ChangeListener(){
 				public void onChange(Widget sender){
-					stopEdit(true);
+					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
 			//}

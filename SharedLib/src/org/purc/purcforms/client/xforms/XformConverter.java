@@ -930,6 +930,7 @@ public class XformConverter implements Serializable{
 	}
 
 	private static void setDefaultValues(Element dataNode,FormDef formDef,HashMap id2VarNameMap){
+		boolean valueSet = false;
 		String id, val;
 		Iterator keys = id2VarNameMap.keySet().iterator();
 		while(keys.hasNext()){
@@ -940,14 +941,28 @@ public class XformConverter implements Serializable{
 			if(def == null)
 				continue;
 
+			valueSet = false; val = null;
+			
 			if(variableName.contains("@"))
 				setAttributeDefaultValue(def,variableName,dataNode);
 			else{
-				val = getNodeTextValue(dataNode,id);
-				if(val == null || val.trim().length() == 0) //we are not allowing empty strings for now.
-					continue;
+				Element node = dataNode;
+				if(!id.equals(variableName)){
+					valueSet = true;
+					node = getValueNode(dataNode,variableName);
+					if(node != null)
+						val = getTextValue(node);
+				}
 
-				def.setDefaultValue(val);
+				if(node != null){
+					if(!valueSet)
+						val = getNodeTextValue(node,id);
+					
+					if(val == null || val.trim().length() == 0) //we are not allowing empty strings for now.
+						continue;
+
+					def.setDefaultValue(val);
+				}
 			}
 		}
 
@@ -960,6 +975,27 @@ public class XformConverter implements Serializable{
 					setQtnsDefaultValues(questionDef.getDataNode(),formDef,questionDef.getRepeatQtnsDef());
 			}
 		}
+	}
+
+	private static Element getValueNode(Element dataNode,String variableName){
+		Element node = dataNode;
+		int startPos = 0;
+		int endPos = variableName.indexOf('/');
+		if(endPos < 0)
+			return null;
+			
+		while(endPos >= 0){
+			String name = variableName.substring(startPos, endPos);
+			node = getNode(node,name);
+			if(node == null)
+				return null;
+			startPos = endPos + 1;
+			endPos = variableName.indexOf('/', startPos);
+		}
+		
+		String name = variableName.substring(startPos);
+		node = getNode(node,name);
+		return node;
 	}
 
 	private static void setAttributeDefaultValue(QuestionDef qtn, String variableName,Element dataNode){

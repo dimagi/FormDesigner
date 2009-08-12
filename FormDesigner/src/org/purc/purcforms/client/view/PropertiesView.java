@@ -314,6 +314,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtText.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				updateText();
+				
+				if(propertiesObj != null && propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform"))
+					((FormDef)propertiesObj).setVariableName(FormDesignerUtil.getXmlTagName(txtText.getText()));
 			}
 		});
 		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
@@ -618,19 +621,20 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	private void enableQuestionOnlyProperties(boolean enabled){
-		boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
+		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
+		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
 		
-		cbDataType.setEnabled(enable);
+		cbDataType.setEnabled(enable2);
 		//cbControlType.setEnabled(enable);
-		chkVisible.setEnabled(enable);
-		chkEnabled.setEnabled(enable);
-		chkLocked.setEnabled(enable);
-		chkRequired.setEnabled(enable);
-		txtDefaultValue.setEnabled(enable);
-		txtHelpText.setEnabled(enabled);
-		skipRulesView.setEnabled(enable);
-		validationRulesView.setEnabled(enable);
-		dynamicListsView.setEnabled(enable);
+		chkVisible.setEnabled(enable2);
+		chkEnabled.setEnabled(enable2);
+		chkLocked.setEnabled(enable2);
+		chkRequired.setEnabled(enable2);
+		txtDefaultValue.setEnabled(enable2);
+		txtHelpText.setEnabled(enable2);
+		skipRulesView.setEnabled(enable2);
+		validationRulesView.setEnabled(enable2);
+		dynamicListsView.setEnabled(enable2);
 
 		clearProperties();
 	}

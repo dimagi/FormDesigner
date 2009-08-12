@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -49,12 +50,12 @@ public class PreviewView extends FormRunnerView {
 		popup.setWidget(menuBar);
 
 		addNewTab(LocaleText.get("page")+"1");
-		
+
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN);
 
 		//Window.addWindowResizeListener(this);
-		
-//		This is needed for IE
+
+		//		This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
@@ -62,7 +63,7 @@ public class PreviewView extends FormRunnerView {
 			}
 		});
 	}
-	
+
 	//TODO These two should bind to interfaces.
 	public void setDesignSurface(DesignSurfaceView designSurfaceView){
 		this.designSurfaceView = designSurfaceView;
@@ -85,12 +86,12 @@ public class PreviewView extends FormRunnerView {
 			}
 		});
 	}
-	
+
 	protected void submit(){
 		if(formDef != null){
 			if(formDef.getDoc() == null)
 				XformConverter.fromFormDef2Xform(formDef);
-			
+
 			saveValues();
 
 			if(!isValid())
@@ -107,7 +108,7 @@ public class PreviewView extends FormRunnerView {
 		height -= (160+embeddedHeightOffset);
 		sHeight = height+"px";
 		super.setHeight(sHeight);
-		
+
 		for(int index=0; index<tabs.getWidgetCount(); index++)
 			tabs.getWidget(index).setHeight(sHeight);
 	}*/
@@ -126,9 +127,11 @@ public class PreviewView extends FormRunnerView {
 		switch (type) {
 		case Event.ONMOUSEDOWN:
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
-				popup.setPopupPosition(event.getClientX(), event.getClientY());
-				popup.show();
-				FormDesignerUtil.disableContextMenu(popup.getElement());
+				if(event.getTarget().getClassName().length() == 0){
+					popup.setPopupPosition(event.getClientX(), event.getClientY());
+					popup.show();
+					FormDesignerUtil.disableContextMenu(popup.getElement());
+				}
 			}
 			break;
 		}	
@@ -152,7 +155,7 @@ public class PreviewView extends FormRunnerView {
 			}
 		});
 	}
-	
+
 	public void clearPreview(){
 		tabs.clear();
 	}

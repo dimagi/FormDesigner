@@ -1,7 +1,10 @@
 package org.purc.purcforms.client.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.purc.purcforms.client.model.QuestionDef;
 
@@ -189,5 +192,78 @@ public class FormDesignerUtil {
 		if(event == null)
 			return false;
 		return event.getCtrlKey();
+	}
+	
+	/**
+	 * Converts a string into a valid XML token (tag name)
+	 * 
+	 * @param s string to convert into XML token
+	 * @return valid XML token based on s
+	 */
+	public static String getXmlTagName(String s) {
+		// Converts a string into a valid XML token (tag name)
+		// No spaces, start with a letter or underscore, not 'xml*'
+		
+		// if len(s) < 1, return '_blank'
+		if (s == null || s.length() < 1)
+			return "_blank";
+		
+		// xml tokens must start with a letter
+		String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
+		
+		// after the leading letter, xml tokens may have
+		// digits, period, or hyphen
+		String nameChars = letters + "0123456789.-";
+		
+		// special characters that should be replaced with valid text
+		// all other invalid characters will be removed
+		HashMap<String, String> swapChars = new HashMap<String, String>();
+		swapChars.put("!", "bang");
+		swapChars.put("#", "pound");
+		swapChars.put("\\*", "star");
+		swapChars.put("'", "apos");
+		swapChars.put("\"", "quote");
+		swapChars.put("%", "percent");
+		swapChars.put("<", "lt");
+		swapChars.put(">", "gt");
+		swapChars.put("=", "eq");
+		swapChars.put("/", "slash");
+		swapChars.put("\\\\", "backslash");
+		
+		// start by cleaning whitespace and converting to lowercase
+		s = s.replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll("\\s+", "_").toLowerCase();
+		
+		// swap characters
+		Set<Entry<String, String>> swaps = swapChars.entrySet();
+		for (Entry<String, String> entry : swaps) {
+			if (entry.getValue() != null)
+				s = s.replaceAll(entry.getKey(), "_" + entry.getValue() + "_");
+			else
+				s = s.replaceAll(String.valueOf(entry.getKey()), "");
+		}
+		
+		// ensure that invalid characters and consecutive underscores are
+		// removed
+		String token = "";
+		boolean underscoreFlag = false;
+		for (int i = 0; i < s.length(); i++) {
+			if (nameChars.indexOf(s.charAt(i)) != -1) {
+				if (s.charAt(i) != '_' || !underscoreFlag) {
+					token += s.charAt(i);
+					underscoreFlag = (s.charAt(i) == '_');
+				}
+			}
+		}
+		
+		// remove extraneous underscores before returning token
+		token = token.replaceAll("_+", "_");
+		token = token.replaceAll("_+$", "");
+		
+		// make sure token starts with valid letter
+		if (letters.indexOf(token.charAt(0)) == -1 || token.startsWith("xml"))
+			token = "_" + token;
+		
+		// return token
+		return token;
 	}
 }

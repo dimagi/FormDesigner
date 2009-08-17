@@ -162,6 +162,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				
 				selectedDragController.selectWidget(widget); //TODO Test this and make sure it does not introduce bugs
 			}
+			
+			stopLabelEdit();
 		}
 		
 		widgetSelectionListener.onWidgetSelected(widget, multipleSel);

@@ -255,7 +255,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				String s = txtBinding.getText();
-				
+
 				/*String s = String.valueOf(keyCode);
 				if(s.equalsIgnoreCase("%") || s.equalsIgnoreCase("\b") || s.equalsIgnoreCase("(") ||
 						s.equalsIgnoreCase("\r") || s.equalsIgnoreCase("!") || s.equalsIgnoreCase("&") ||
@@ -263,7 +263,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 						s.equalsIgnoreCase("\"")){
 					return true;
 				}*/
-				
+
 				s = s.replace("%", "");
 				s = s.replace("(", "");
 				s = s.replace("!", "");
@@ -273,7 +273,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				s = s.replace("\"", "");
 				s = s.replace("$", "");
 				s = s.replace("#", "");
-				
+
 				txtBinding.setText(s);
 				updateBinding();
 			}
@@ -296,7 +296,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 						return;
 					}
 				}
-				else{
+				else if(propertiesObj instanceof FormDef || propertiesObj instanceof QuestionDef){
 					if(((TextBox) sender).getCursorPos() == 0){
 						if(!isAllowedXmlNodeNameStartChar(keyCode)){
 							((TextBox) sender).cancelKey(); 
@@ -307,16 +307,23 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 						((TextBox) sender).cancelKey(); 
 						return;
 					}
-				}
+				} //else OptionDef varname can be anything
 			}
 		});
 
 		txtText.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				updateText();
-				
-				if(propertiesObj != null && propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform"))
-					((FormDef)propertiesObj).setVariableName(FormDesignerUtil.getXmlTagName(txtText.getText()));
+
+				if(propertiesObj != null){
+					String name = FormDesignerUtil.getXmlTagName(txtText.getText());
+					if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform"))
+						((FormDef)propertiesObj).setVariableName(name);
+					else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().startsWith("question"))
+						((QuestionDef)propertiesObj).setVariableName(name);
+					else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().startsWith("option"))
+						((OptionDef)propertiesObj).setVariableName(name);
+				}
 			}
 		});
 		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
@@ -431,7 +438,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		if(txtBinding.getText().trim().length() == 0)
 			return;
-			
+
 		if(propertiesObj instanceof QuestionDef)
 			((QuestionDef)propertiesObj).setVariableName(txtBinding.getText());
 		else if(propertiesObj instanceof OptionDef)
@@ -623,7 +630,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private void enableQuestionOnlyProperties(boolean enabled){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
 		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
-		
+
 		cbDataType.setEnabled(enable2);
 		//cbControlType.setEnabled(enable);
 		chkVisible.setEnabled(enable2);
@@ -723,7 +730,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			btnDescTemplate.setEnabled(false);
 			return;
 		}
-		
+
 		txtBinding.setEnabled(Context.allowBindEdit() && !Context.isStructureReadOnly());
 
 		if(formItem instanceof FormDef)

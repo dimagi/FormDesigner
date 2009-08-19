@@ -218,7 +218,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					}
 
 					formDef.setXformXml(xml);
-					centerPanel.setXformsSource(xml,formId == null);
+					centerPanel.setXformsSource(xml,formSaveListener == null);
 					centerPanel.buildLayoutXml();
 					//formDef.setLayout(centerPanel.getLayoutXml());
 
@@ -260,7 +260,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						String xml = null;
 						xml = XformConverter.fromFormDef2Xform((FormDef)obj);
 						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formId == null);
+						centerPanel.setXformsSource(xml,formSaveListener == null);
 						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){
@@ -799,7 +799,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						String xml = null;
 						xml = XformConverter.fromFormDef2Xhtml(new FormDef((FormDef)obj));
 						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formId == null);
+						centerPanel.setXformsSource(xml,formSaveListener == null);
 						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){

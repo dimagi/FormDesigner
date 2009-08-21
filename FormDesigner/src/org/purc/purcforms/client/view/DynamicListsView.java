@@ -84,7 +84,20 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		});
 
 		btnAdd.addClickListener(this);
+		
 		table.setStyleName("cw-FlexTable");
+		table.setWidget(0, 0,new Label(LocaleText.get("text")));
+		table.setWidget(0, 1,new Label(LocaleText.get("binding")));
+		table.setWidget(0, 2,new Label(LocaleText.get("action")));
+		table.getFlexCellFormatter().setColSpan(0, 2, 3);
+		
+		table.setWidth("100%");
+		table.setHeight("100%");
+		
+		table.getCellFormatter().setStyleName(0, 0, "getting-started-label");
+		table.getCellFormatter().setStyleName(0, 1, "getting-started-label");
+		table.getCellFormatter().setStyleName(0, 2, "getting-started-label");
+		
 		initWidget(verticalPanel);
 	}
 
@@ -147,8 +160,8 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	}
 
 	private void clearValues(){
-		while(table.getRowCount() > 0)
-			table.removeRow(0);
+		while(table.getRowCount() > 1)
+			table.removeRow(1);
 	}
 
 	public void setEnabled(boolean enabled){
@@ -263,14 +276,14 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			addNewOption();
 		else{
 			int rowCount = table.getRowCount();
-			for(int row = 0; row < rowCount; row++){
+			for(int row = 1; row < rowCount; row++){
 				if(sender == table.getWidget(row, 2)){
-					OptionDef optionDef = optionList.get(row);
+					OptionDef optionDef = optionList.get(row-1);
 					if(!Window.confirm(LocaleText.get("removeRowPrompt") + " [" + optionDef.getText() + " - " + optionDef.getVariableName() + "]"))
 						return;
 					
 					table.removeRow(row);
-					optionList.remove(row);
+					optionList.remove(row-1);
 	
 					//if(optionList.size() == 0)
 					//		firstOptionNode = null;
@@ -280,26 +293,26 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					break;
 				}
 				else if(sender == table.getWidget(row, 3)){
-					if(row == 0)
+					if(row == 1)
 						return;
-					moveOptionUp(optionList.get(row));
+					moveOptionUp(optionList.get(row-1));
 					
-					OptionDef optionDef = optionList.get(row);
+					OptionDef optionDef = optionList.get(row-1);
 					addValue(optionDef.getText(),optionDef.getVariableName(),row);
 					
-					optionDef = optionList.get(row-1);
+					optionDef = optionList.get(row-2);
 					addValue(optionDef.getText(),optionDef.getVariableName(),row-1);
 					break;
 				}
 				else if(sender == table.getWidget(row, 4)){
 					if(row == (rowCount - 2))
 						return;
-					moveOptionDown(optionList.get(row));
+					moveOptionDown(optionList.get(row-1));
 					
-					OptionDef optionDef = optionList.get(row);
+					OptionDef optionDef = optionList.get(row-1);
 					addValue(optionDef.getText(),optionDef.getVariableName(),row);
 					
-					optionDef = optionList.get(row+1);
+					optionDef = optionList.get(row);
 					addValue(optionDef.getText(),optionDef.getVariableName(),row+1);
 					break;
 				}
@@ -345,8 +358,6 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		table.getFlexCellFormatter().setWidth(row, 4, "3.3%");
 		table.getWidget(row, 0).setWidth("100%");
 		table.getWidget(row, 1).setWidth("100%");
-		table.setWidth("100%");
-		table.setHeight("100%");
 
 		txtName.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
@@ -384,11 +395,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 	private void updateName(TextBox txtName){
 		int rowCount = table.getRowCount();
-		for(int row = 0; row < rowCount; row++){
+		for(int row = 1; row < rowCount; row++){
 			if(txtName == table.getWidget(row, 0)){
 				OptionDef optionDef = null;
-				if(optionList.size() > row)
-					optionDef = optionList.get(row);
+				if(optionList.size() > row-1)
+					optionDef = optionList.get(row-1);
 
 				if(optionDef == null)
 					optionDef = addNewOptionDef();
@@ -409,11 +420,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 	private void updateValue(TextBox txtValue){
 		int rowCount = table.getRowCount();
-		for(int row = 0; row < rowCount; row++){
+		for(int row = 1; row < rowCount; row++){
 			if(txtValue == table.getWidget(row, 1)){
 				OptionDef optionDef = null;
-				if(optionList.size() > row)
-					optionDef = optionList.get(row);
+				if(optionList.size() > row-1)
+					optionDef = optionList.get(row-1);
 
 				if(optionDef == null)
 					optionDef = addNewOptionDef();
@@ -435,7 +446,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	private void moveToNextWidget(Widget sender, int col, boolean sameCol){
 		if(sameCol){
 			int rowCount = table.getRowCount();
-			for(int row = 0; row < rowCount; row++){
+			for(int row = 1; row < rowCount; row++){
 				if(sender == table.getWidget(row, col)){
 					if(row == (rowCount - 2))
 						return;
@@ -449,7 +460,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 		else{
 			int rowCount = table.getRowCount();
-			for(int row = 0; row < rowCount; row++){
+			for(int row = 1; row < rowCount; row++){
 				if(sender == table.getWidget(row, col)){
 					TextBox textBox = ((TextBox)table.getWidget(row, col));
 					if(col == 1){
@@ -478,9 +489,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 	private void moveToPrevWidget(Widget sender, int col){
 		int rowCount = table.getRowCount();
-		for(int row = 0; row < rowCount; row++){
+		for(int row = 1; row < rowCount; row++){
 			if(sender == table.getWidget(row, col)){
-				if(row == 0)
+				if(row == 1)
 					return;
 
 				TextBox textBox = ((TextBox)table.getWidget(row - 1, col));
@@ -517,7 +528,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		for(int i=0; i<list.size(); i++){
 			if(i == 0){
 				OptionDef optnDef = (OptionDef)list.get(i);
-				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
+				if(parentNode != null && optnDef.getControlNode() != null && optionDef.getControlNode() != null)
 					parentNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
 			}
 			optns.add(list.get(i));
@@ -553,7 +564,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				OptionDef optnDef = getNextSavedOption(list,i); //(OptionDef)list.get(i);
 				if(optnDef.getControlNode() != null && optionDef.getControlNode() != null)
 					parentNode.insertBefore(optionDef.getControlNode(), optnDef.getControlNode());
-				else
+				else if(parentNode != null)
 					parentNode.appendChild(optionDef.getControlNode());
 			}
 			optns.add(list.get(i));

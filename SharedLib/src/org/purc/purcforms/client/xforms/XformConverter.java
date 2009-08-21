@@ -505,12 +505,16 @@ public class XformConverter implements Serializable{
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef != null){			
 			String value = " '" + condition.getValue() + "'";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || 
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT || condition.getFunction() == ModelConstants.FUNCTION_LENGTH)
 				value = " " + condition.getValue();
 
 			constraint = ". ";
-			if(actionQtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				constraint = "count(.) ";
+			//if(actionQtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			//	constraint = "count(.) ";
+			if(condition.getFunction() == ModelConstants.FUNCTION_LENGTH)
+				constraint = "length(.) ";
+			
 			constraint += getOperator(condition.getOperator(),action)+value;
 		}
 		return constraint;
@@ -1838,6 +1842,9 @@ public class XformConverter implements Serializable{
 		}
 		else
 			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);
+		
+		if(constraint.contains("length(.)") || constraint.contains("count(.)"))
+			condition.setFunction(ModelConstants.FUNCTION_LENGTH);
 
 		return condition;
 	}

@@ -2,7 +2,6 @@ package org.purc.purcforms.client.widget.skiprule;
 
 import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -10,7 +9,6 @@ import org.purc.purcforms.client.model.QuestionDef;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -33,7 +31,9 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private int operator;
 	private IConditionController view;
 	private Condition condition;
-	private Label lbLabel = new Label(LocaleText.get("value"));
+	//private Label lbLabel = new Label(LocaleText.get("value"));
+	FunctionHyperlink funcHyperlink;
+	private int function = ModelConstants.FUNCTION_VALUE;
 
 	private boolean allowFieldSelection = false;
 
@@ -52,7 +52,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			fieldWidget = new FieldWidget(this);
 
 		operatorHyperlink = new OperatorHyperlink(OperatorHyperlink.OP_TEXT_EQUAL,null,this);
-
+		funcHyperlink = new FunctionHyperlink(FunctionHyperlink.FUNCTION_TEXT_VALUE,null,this);
+		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 		horizontalPanel.add(actionHyperlink);
@@ -60,9 +61,11 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		if(allowFieldSelection)
 			horizontalPanel.add(fieldWidget);
 		else{
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			/*if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				lbLabel.setText(LocaleText.get("count"));
-			horizontalPanel.add(lbLabel);
+			horizontalPanel.add(lbLabel);*/
+			
+			horizontalPanel.add(funcHyperlink);
 		}
 
 		horizontalPanel.add(operatorHyperlink);
@@ -94,8 +97,13 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			if(allowFieldSelection)
 				fieldWidget.stopSelection();
 		}
+		else if(sender == funcHyperlink){
+			function = ((Byte)item).byteValue();
+			valueWidget.setFunction(function);
+			operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
+		}
 		else if(sender == valueWidget){
-
+			
 		}
 	}
 
@@ -131,6 +139,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		condition.setOperator(operator);
 		condition.setValue(valueWidget.getValue());
 		condition.setValueQtnDef(valueWidget.getValueQtnDef());
+		condition.setFunction(function);
 
 		if(condition.getValue() == null)
 			return null;
@@ -161,11 +170,12 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		if(condition != null){
 			operator = condition.getOperator();
+			function = condition.getFunction();
 
 			if(allowFieldSelection)
 				fieldWidget.setQuestion(questionDef);
 
-
+			funcHyperlink.setFunction(function);
 			operatorHyperlink.setOperator(operator);
 			valueWidget.setOperator(operator);
 			valueWidget.setValueQtnDef(condition.getValueQtnDef()); //Should be set before value such that value processing finds it.

@@ -50,6 +50,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 	private QuestionDef questionDef;
 	private int operator = ModelConstants.OPERATOR_NULL;
+	private int function = ModelConstants.FUNCTION_VALUE;
 
 	private HorizontalPanel horizontalPanel;
 	private TextBox txtValue1 = new TextBox();
@@ -91,6 +92,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			valueHyperlink.setText("");
 		else if(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			valueHyperlink.setText(EMPTY_VALUE + BETWEEN_VALUE_SEPARATOR + EMPTY_VALUE);
+	}
+
+	public void setFunction(int function){
+		if(this.function != function)
+			valueHyperlink.setText(EMPTY_VALUE);
+		this.function = function;
 	}
 
 	private void setupWidgets(){

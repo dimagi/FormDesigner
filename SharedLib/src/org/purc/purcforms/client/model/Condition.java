@@ -22,18 +22,21 @@ public class Condition implements Serializable{
 	/** The operator of the condition. Eg Equal to, Greater than, etc. */
 	private int operator = ModelConstants.OPERATOR_NULL;
 
+	/** The aggregate function. Eg Length, Value. */
+	private int function = ModelConstants.FUNCTION_VALUE;
+
 	/** The value checked to see if the condition is true or false.
 	 * For the above example, the value would be 4 or the id of the Male option.
 	 * For a list of options this value is the option id, not the value or text value.
 	 */
 	private String value = ModelConstants.EMPTY_STRING;
-	
+
 	/** The the question whose value is dynamically put in the value property. 
 	 * This is useful for only design mode when the question variablename changes
 	 * and hence we need to change the value or the value property.
 	 * */
 	private QuestionDef valueQtnDef;
-	
+
 
 	private String secondValue = ModelConstants.EMPTY_STRING;
 
@@ -47,7 +50,7 @@ public class Condition implements Serializable{
 
 	/** Copy constructor. */
 	public Condition(Condition condition){
-		this(condition.getId(),condition.getQuestionId(),condition.getOperator(),condition.getValue());
+		this(condition.getId(),condition.getQuestionId(),condition.getOperator(),condition.getFunction(),condition.getValue());
 	}
 
 	/**
@@ -58,10 +61,11 @@ public class Condition implements Serializable{
 	 * @param operator - the condition operator.
 	 * @param value - the value to be equated to.
 	 */
-	public Condition(int id,int questionId, int operator, String value) {
+	public Condition(int id,int questionId, int operator, int function, String value) {
 		this();
 		setQuestionId(questionId);
 		setOperator(operator);
+		setFunction(function);
 		setValue(value);
 		setId(id);
 	}
@@ -72,6 +76,14 @@ public class Condition implements Serializable{
 	public void setOperator(int operator) {
 		this.operator = operator;
 	}
+	public int getFunction() {
+		return function;
+	}
+
+	public void setFunction(int function) {
+		this.function = function;
+	}
+
 	public int getQuestionId() {
 		return questionId;
 	}
@@ -105,12 +117,12 @@ public class Condition implements Serializable{
 	public boolean isTrue(FormDef formDef, boolean validation){
 		String tempValue = value;
 		boolean ret = true;
-		
+
 		try{
 			QuestionDef qn = formDef.getQuestion(this.questionId);
 			if(qn == null)
 				return false; //possibly question deleted
-	
+
 			if(value.startsWith(formDef.getVariableName()+"/")){
 				QuestionDef qn2 = formDef.getQuestion(value.substring(value.indexOf('/')+1));
 				if(qn2 != null){
@@ -165,7 +177,7 @@ public class Condition implements Serializable{
 		}
 
 		value = tempValue;
-		
+
 		return ret;
 	}
 
@@ -196,12 +208,12 @@ public class Condition implements Serializable{
 				return answer < longValue || longValue == answer;
 			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer > longValue;
-				else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-					return answer > longValue || longValue == answer;
-					else if(operator == ModelConstants.OPERATOR_BETWEEN)
-						return answer > longValue && longValue < secondLongValue;
-						else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-							return !(answer > longValue && longValue < secondLongValue);
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
+				return answer > longValue || longValue == answer;
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
+				return answer > longValue && longValue < secondLongValue;
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
+				return !(answer > longValue && longValue < secondLongValue);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -213,27 +225,59 @@ public class Condition implements Serializable{
 	//TODO Should this test be case sensitive?
 	private boolean isTextTrue(QuestionDef qtn, boolean validation){
 		String answer = qtn.getAnswer();
-		if(answer == null || answer.trim().length() == 0){
-			if(validation || operator == ModelConstants.OPERATOR_NOT_EQUAL ||
-					operator == ModelConstants.OPERATOR_NOT_START_WITH ||
-					operator == ModelConstants.OPERATOR_NOT_CONTAIN)
-				return true;
 
-			return operator == ModelConstants.OPERATOR_IS_NULL;
+		if(function == ModelConstants.FUNCTION_VALUE){
+			if(answer == null || answer.trim().length() == 0){
+				if(validation || operator == ModelConstants.OPERATOR_NOT_EQUAL ||
+						operator == ModelConstants.OPERATOR_NOT_START_WITH ||
+						operator == ModelConstants.OPERATOR_NOT_CONTAIN)
+					return true;
+
+				return operator == ModelConstants.OPERATOR_IS_NULL;
+			}
+
+			if(operator == ModelConstants.OPERATOR_EQUAL)
+				return value.equals(qtn.getAnswer());
+			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
+				return !value.equals(qtn.getAnswer());
+			else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
+				return answer.startsWith(value);
+			else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
+				return !answer.startsWith(value);
+			else if(operator == ModelConstants.OPERATOR_CONTAINS)
+				return answer.contains(value);
+			else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
+				return !answer.contains(value);
 		}
+		else{
+			if(answer == null || answer.trim().length() == 0)
+				return true;
+			
+			long len1 = 0, len2 = 0, len = 0;
+			if(value != null && value.trim().length() > 0)
+				len1 = Long.parseLong(value);
+			if(secondValue != null && secondValue.trim().length() > 0)
+				len2 = Long.parseLong(secondValue);
+			
+			len = answer.trim().length();
 
-		if(operator == ModelConstants.OPERATOR_EQUAL)
-			return value.equals(qtn.getAnswer());
-		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
-			return !value.equals(qtn.getAnswer());
-		else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
-			return answer.startsWith(value);
-		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
-			return !answer.startsWith(value);
-		else if(operator == ModelConstants.OPERATOR_CONTAINS)
-			return answer.contains(value);
-		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
-			return !answer.contains(value);
+			if(operator == ModelConstants.OPERATOR_EQUAL)
+				return len == len1;
+			else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
+				return len != len1;
+			else if(operator == ModelConstants.OPERATOR_LESS)
+				return len < len1;
+			else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
+				return len <= len1;
+			else if(operator == ModelConstants.OPERATOR_GREATER)
+				return len > len1;
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
+				return len >= len1;
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
+				return len > len1 && len < len2;
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
+				return !(len > len1 && len < len2);
+		}
 
 		return false;
 	}
@@ -292,7 +336,7 @@ public class Condition implements Serializable{
 
 		return false;
 	}
-	
+
 	private DateTimeFormat getDateTimeSubmitFormat(QuestionDef qtn){
 		if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
 			return FormUtil.getDateTimeSubmitFormat();
@@ -412,7 +456,7 @@ public class Condition implements Serializable{
 
 		return false;
 	}
-	
+
 	public String getValue(FormDef formDef){	
 		if(value.startsWith(formDef.getVariableName()+"/")){
 			QuestionDef qn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
@@ -421,16 +465,16 @@ public class Condition implements Serializable{
 		}
 		return value;
 	}
-	
+
 	public void updateValue(String origValue, String newValue){
 		if(origValue.equals(value))
 			value = newValue;
 	}
-	
+
 	public void setValueQtnDef(QuestionDef valueQtnDef){
 		this.valueQtnDef = valueQtnDef;
 	}
-	
+
 	public QuestionDef getValueQtnDef(){
 		return valueQtnDef;
 	}

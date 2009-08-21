@@ -698,32 +698,32 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		questionDef.addChangeListener(this);
 	}
 
-	public void onBindingChanged(String newValue) {
+	public void onBindingChanged(QuestionDef sender,String newValue) {
 		this.binding = newValue;
 
 	}
 
-	public void onEnabledChanged(boolean enabled) {
+	public void onEnabledChanged(QuestionDef sender,boolean enabled) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void onLockedChanged(boolean locked) {
+	public void onLockedChanged(QuestionDef sender,boolean locked) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void onRequiredChanged(boolean required) {
+	public void onRequiredChanged(QuestionDef sender,boolean required) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void onVisibleChanged(boolean visible) {
+	public void onVisibleChanged(QuestionDef sender,boolean visible) {
 		// TODO Auto-generated method stub
 
 	}	
 
-	public void onDataTypeChanged(int dataType){
+	public void onDataTypeChanged(QuestionDef sender,int dataType){
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
 			if(!(widget instanceof DatePicker)){
 				storePosition();
@@ -781,7 +781,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 	}
 
-	public void onOptionsChanged(List<OptionDef> optionList){
+	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 
 	}
 

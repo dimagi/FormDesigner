@@ -285,7 +285,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onEnabledChanged(enabled);
+				changeListeners.get(index).onEnabledChanged(this,enabled);
 		}
 	}
 
@@ -308,7 +308,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onLockedChanged(locked);
+				changeListeners.get(index).onLockedChanged(this,locked);
 		}
 	}
 
@@ -323,7 +323,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onRequiredChanged(required);
+				changeListeners.get(index).onRequiredChanged(this,required);
 		}
 	}
 
@@ -356,7 +356,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onDataTypeChanged(dataType);
+				changeListeners.get(index).onDataTypeChanged(this,dataType);
 		}
 	}
 
@@ -371,7 +371,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onBindingChanged(variableName);
+				changeListeners.get(index).onBindingChanged(this,variableName);
 		}
 	}
 
@@ -478,7 +478,7 @@ public class QuestionDef implements Serializable{
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onVisibleChanged(visible);
+				changeListeners.get(index).onVisibleChanged(this,visible);
 		}
 	}
 
@@ -1158,7 +1158,7 @@ public class QuestionDef implements Serializable{
 		options = optionList;
 
 		for(int index = 0; index < changeListeners.size(); index++)
-			changeListeners.get(index).onOptionsChanged(optionList);
+			changeListeners.get(index).onOptionsChanged(this,optionList);
 	}
 
 	public void updateDataNodes(Element parentDataNode){

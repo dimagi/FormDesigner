@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
@@ -58,7 +59,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class FormRunnerView extends Composite implements /*WindowResizeListener,*/TabListener, EditListener{
+public class FormRunnerView extends Composite implements /*WindowResizeListener,*/TabListener, EditListener,QuestionChangeListener{
 
 	public interface Images extends ImageBundle {
 		AbstractImagePrototype error();
@@ -80,6 +81,8 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	protected HashMap<QuestionDef,List<Widget>> labelMap;
 	protected HashMap<Widget,String> labelText;
 	protected HashMap<Widget,String> labelReplaceText;
+	
+	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap;
 
 	public FormRunnerView(Images images){
 		this.images = images;
@@ -134,6 +137,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		labelMap = new HashMap<QuestionDef,List<Widget>>();
 		labelText = new HashMap<Widget,String>();
 		labelReplaceText = new HashMap<Widget,String>();
+		checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
 
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
 		Element root = doc.getDocumentElement();
@@ -335,6 +339,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
 			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
 			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
+			getCheckBoxGroupMap(((RuntimeGroupWidget)widget).getCheckBoxGroupMap());
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
@@ -451,8 +456,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
 				selectedPanel.add(parentWrapper);
+				
+				qtn.addChangeListener(this);
+				List<CheckBox> list = new ArrayList<CheckBox>();
+				list.add((CheckBox)widget);
+				checkBoxGroupMap.put(qtn, list);
 			}
-		}	 
+		}
+		else
+			checkBoxGroupMap.get(parentWrapper.getQuestionDef()).add((CheckBox)widget);
+		
 		return parentWrapper;
 	}
 
@@ -528,6 +541,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		if(labels != null){
 			for(Widget widget : labels)
 				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), questionDef.getAnswer()));
+		}
+		
+		List<CheckBox> list = checkBoxGroupMap.get(questionDef);
+		if(list != null && questionDef.isRequired()){
+			for(CheckBox checkBox : list)
+				((RuntimeWidgetWrapper)checkBox.getParent().getParent()).isValid();
 		}
 	}
 
@@ -676,6 +695,14 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 	
+	private void getCheckBoxGroupMap(HashMap<QuestionDef,List<CheckBox>> labelMap){
+		Iterator<Entry<QuestionDef,List<CheckBox>>> iterator = labelMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<QuestionDef,List<CheckBox>> entry = iterator.next();
+			this.checkBoxGroupMap.put(entry.getKey(), entry.getValue());
+		}
+	}
+	
 	public String getBackgroundColor(){
 		if(selectedPanel == null)
 			return "";
@@ -715,5 +742,43 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			if(selectedPanel != null)
 				DOM.setStyleAttribute(selectedPanel.getElement(), "height", sHeight);
 		}catch(Exception ex){}
+	}
+	
+	public void onEnabledChanged(QuestionDef sender,boolean enabled){
+		List<CheckBox> list = checkBoxGroupMap.get(sender);
+		if(list == null)
+			return;
+		
+		for(CheckBox checkBox : list)
+			checkBox.setEnabled(enabled);
+	}
+	
+	public void onVisibleChanged(QuestionDef sender,boolean visible){
+		List<CheckBox> list = checkBoxGroupMap.get(sender);
+		if(list == null)
+			return;
+		
+		for(CheckBox checkBox : list)
+			checkBox.setVisible(visible);
+	}
+	
+	public void onRequiredChanged(QuestionDef sender,boolean required){
+		
+	}
+	
+	public void onLockedChanged(QuestionDef sender,boolean locked){
+		
+	}
+	
+	public void onBindingChanged(QuestionDef sender,String newValue){
+		
+	}
+	
+	public void onDataTypeChanged(QuestionDef sender,int dataType){
+		
+	}
+	
+	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
+		
 	}
 }

@@ -180,7 +180,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						isValid();
 						editListener.onValueChanged(questionDef);
 					}
-					
+
 					if(widget instanceof DatePickerWidget)
 						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 				}
@@ -331,7 +331,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			questionDef.setAnswer("0");
-		
+
 		isValid();
 
 		if(!questionDef.isEnabled())
@@ -588,10 +588,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public boolean isValid(){
 		if(widget instanceof Label || widget instanceof Button || questionDef == null || 
 				(widget instanceof CheckBox && childWidgets == null)){
-			
+
 			if(widget instanceof RuntimeGroupWidget)
 				return ((RuntimeGroupWidget)widget).isValid();
-			
+
 			return true;
 		}
 
@@ -602,7 +602,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
 			return false;
 		}
-		
+
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			boolean valid = ((RuntimeGroupWidget)widget).isValid();
 			if(!valid)
@@ -634,16 +634,16 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private Object getAnswer() {
 		if(questionDef == null)
 			return null;
-		
+
 		return questionDef.getAnswer();
 	}
 
 	public boolean setFocus(){
 		if(questionDef != null && (!questionDef.isVisible() || !questionDef.isEnabled() || questionDef.isLocked()))
 			return false;
-		
+
 		//Browser does not seem to set focus to check boxes and radio buttons
-		
+
 		/*if(widget instanceof RadioButton)
 			((RadioButton)widget).setFocus(true);
 		else if(widget instanceof CheckBox)
@@ -687,35 +687,38 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			questionDef.setAnswer(null);
 	}
 
-	public void onEnabledChanged(boolean enabled) {
+	public void onEnabledChanged(QuestionDef sender,boolean enabled) {
 		if(!enabled)
 			clearValue();
 
 		setEnabled(enabled);
 	}
 
-	public void onLockedChanged(boolean locked) {
+	public void onLockedChanged(QuestionDef sender,boolean locked) {
 		if(locked)
 			clearValue();
 
 		setLocked(locked);
 	}
 
-	public void onRequiredChanged(boolean required) {
-		if(!required && panel.getWidgetCount() > 1)
-			panel.remove(errorImage);
-		else if(required && panel.getWidgetCount() < 2)
-			panel.add(errorImage);
+	public void onRequiredChanged(QuestionDef sender,boolean required) {
+		//As for now we do not set error messages on labels.
+		if(!(widget instanceof Label)){
+			if(!required && panel.getWidgetCount() > 1)
+				panel.remove(errorImage);
+			else if(required && panel.getWidgetCount() < 2)
+				panel.add(errorImage);
+		}
 	}
 
-	public void onVisibleChanged(boolean visible) {
+	public void onVisibleChanged(QuestionDef sender,boolean visible) {
 		if(!visible)
 			clearValue();
 
 		setVisible(visible);
 	}
 
-	public void onBindingChanged(String newValue){
+	public void onBindingChanged(QuestionDef sender,String newValue){
 		if(newValue != null && newValue.trim().length() > 0)
 			binding = newValue;
 	}
@@ -724,7 +727,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return questionDef;
 	}
 
-	public void onDataTypeChanged(int dataType){
+	public void onDataTypeChanged(QuestionDef sender,int dataType){
 
 	}
 
@@ -736,7 +739,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		this.validationRule = validationRule;
 	}
 
-	public void onOptionsChanged(List<OptionDef> optionList){
+	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 		loadQuestion();
 
 		/*if(questionDef == null)
@@ -748,13 +751,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if(widget instanceof ListBox)
 			((ListBox)widget).setSelectedIndex(-1);*/
 	}
-	
+
 	public RuntimeWidgetWrapper getInvalidWidget(){
 		if(widget instanceof RuntimeGroupWidget)
 			return ((RuntimeGroupWidget)widget).getInvalidWidget();
 		return this;
 	}
-	
+
 	public boolean isFocusable(){
 		Widget wg = getWrappedWidget();
 		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||

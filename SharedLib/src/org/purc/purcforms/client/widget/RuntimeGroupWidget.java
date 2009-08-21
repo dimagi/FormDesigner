@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
+import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.ValidationRule;
@@ -17,7 +19,6 @@ import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -45,7 +46,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEventListener{
+public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEventListener,QuestionChangeListener{
 
 	private final Images images;
 	private RepeatQtnsDef repeatQtnsDef;
@@ -68,7 +69,9 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	protected HashMap<Widget,String> labelText = new HashMap<Widget,String>();
 	protected HashMap<Widget,String> labelReplaceText = new HashMap<Widget,String>();
 
-
+	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
+	
+	
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.formDef = formDef;
@@ -105,8 +108,16 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
 				//addWidget(parentWrapper); //Misplaces first widget (with tabindex > 0) of a group (CheckBox and RadioButtons)
+			
+				qtn.addChangeListener(this);
+				List<CheckBox> list = new ArrayList<CheckBox>();
+				list.add((CheckBox)widget);
+				checkBoxGroupMap.put(qtn, list);
 			}
 		}	 
+		else
+			checkBoxGroupMap.get(parentWrapper.getQuestionDef()).add((CheckBox)widget);
+		
 		return parentWrapper;
 	}
 
@@ -854,5 +865,47 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	
 	public HashMap<Widget,String> getLabelReplaceText(){
 		return labelReplaceText;
+	}
+	
+	public HashMap<QuestionDef,List<CheckBox>> getCheckBoxGroupMap(){
+		return checkBoxGroupMap;
+	}
+	
+	public void onEnabledChanged(QuestionDef sender,boolean enabled){
+		List<CheckBox> list = checkBoxGroupMap.get(sender);
+		if(list == null)
+			return;
+		
+		for(CheckBox checkBox : list)
+			checkBox.setEnabled(enabled);
+	}
+	
+	public void onVisibleChanged(QuestionDef sender,boolean visible){
+		List<CheckBox> list = checkBoxGroupMap.get(sender);
+		if(list == null)
+			return;
+		
+		for(CheckBox checkBox : list)
+			checkBox.setVisible(visible);
+	}
+	
+	public void onRequiredChanged(QuestionDef sender,boolean required){
+		
+	}
+	
+	public void onLockedChanged(QuestionDef sender,boolean locked){
+		
+	}
+	
+	public void onBindingChanged(QuestionDef sender,String newValue){
+		
+	}
+	
+	public void onDataTypeChanged(QuestionDef sender,int dataType){
+		
+	}
+	
+	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
+		
 	}
 }

@@ -749,8 +749,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		if(list == null)
 			return;
 		
-		for(CheckBox checkBox : list)
+		for(CheckBox checkBox : list){
 			checkBox.setEnabled(enabled);
+			if(!enabled)
+				checkBox.setChecked(false);
+		}
 	}
 	
 	public void onVisibleChanged(QuestionDef sender,boolean visible){
@@ -758,8 +761,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		if(list == null)
 			return;
 		
-		for(CheckBox checkBox : list)
+		for(CheckBox checkBox : list){
 			checkBox.setVisible(visible);
+			if(!visible)
+				checkBox.setChecked(false);
+		}
 	}
 	
 	public void onRequiredChanged(QuestionDef sender,boolean required){

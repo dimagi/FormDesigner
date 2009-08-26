@@ -724,6 +724,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}	
 
 	public void onDataTypeChanged(QuestionDef sender,int dataType){
+		if(widget instanceof Label)
+			return; //We do not change labels into data input widgets.
+		
 		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
 			if(!(widget instanceof DatePicker)){
 				storePosition();

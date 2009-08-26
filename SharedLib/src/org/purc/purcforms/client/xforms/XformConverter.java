@@ -2188,6 +2188,7 @@ public class XformConverter implements Serializable{
 			Element newModel = getModelNode(doc.getDocumentElement());
 			
 			if(oldModel != null && newModel != null){
+				oldModel = (Element)oldModel.cloneNode(true);
 				doc.importNode(oldModel, true);
 				newModel.getParentNode().appendChild(oldModel);
 				newModel.getParentNode().removeChild(newModel);

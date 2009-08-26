@@ -303,10 +303,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 			String extension = "";//.3gp ".mpeg";
 			String contentType = "&contentType=video/3gpp";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO){
-				contentType = "&contentType=audio/x-wav";
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+				contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 				//extension = ".wav";
-			}
+			
+			contentType += "&name="+questionDef.getVariableName()+".3gp";
 
 			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 
@@ -747,10 +748,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			else{
 				String extension = "";//.3gp ".mpeg";
 				String contentType = "&contentType=video/3gpp";
-				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO){
-					contentType = "&contentType=audio/x-wav";
+				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO)
+					contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 					//extension = ".wav";
-				}
+				
+				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
 
 				html.setVisible(true);
 				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				

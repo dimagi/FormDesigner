@@ -21,6 +21,7 @@ import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NamedNodeMap;
@@ -870,6 +871,25 @@ public class XformConverter implements Serializable{
 				return (Element)element.getChildNodes().item(i);
 		}
 
+		return null;
+	}
+	
+	private static Element getModelNode(Element element){
+		int numOfEntries = element.getChildNodes().getLength();
+		for (int i = 0; i < numOfEntries; i++) {
+			if (element.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element child = (Element)element.getChildNodes().item(i);
+				//String tagname = getNodeName(child);
+				String tagname = child.getNodeName(); //NODE_NAME_INSTANCE has prefix
+				if (tagname.equals(NODE_NAME_MODEL)||tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX))
+					return child;
+				else{
+					child = getModelNode(child);
+					if(child != null)
+						return child;
+				}
+			}
+		}
 		return null;
 	}
 
@@ -2130,6 +2150,8 @@ public class XformConverter implements Serializable{
 	}
 
 	public static String fromFormDef2Xhtml(FormDef formDef){
+		Document prevdoc = formDef.getDoc();
+		
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
 
@@ -2161,6 +2183,17 @@ public class XformConverter implements Serializable{
 
 		buildXform(formDef,doc,bodyNode,modelNode);
 
+		if(prevdoc != null){			
+			Element oldModel = getModelNode(prevdoc.getDocumentElement());
+			Element newModel = getModelNode(doc.getDocumentElement());
+			
+			if(oldModel != null && newModel != null){
+				doc.importNode(oldModel, true);
+				newModel.getParentNode().appendChild(oldModel);
+				newModel.getParentNode().removeChild(newModel);
+			}
+		}
+		
 		return fromDoc2String(doc);
 	}
 }

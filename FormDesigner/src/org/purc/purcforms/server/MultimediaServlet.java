@@ -45,7 +45,11 @@ public class MultimediaServlet extends HttpServlet {
 			String sFormId = request.getParameter("formId");
 			String xpath = request.getParameter("xpath");
 			String contentType = request.getParameter("contentType");
-
+			String name = request.getParameter("name");
+			
+			if(name == null || name.trim().length() == 0)
+				name = "multimedia.3gp";
+				
 			if(sFormId == null || sFormId.trim().length() == 0)
 				return;
 
@@ -79,7 +83,7 @@ public class MultimediaServlet extends HttpServlet {
 						
 						//Send it as an attachement such that atleast firefox can also detect it
 						if(contentType.contains("video") || contentType.contains("audio"))
-							response.setHeader(OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION, OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "multimedia.3gp" + "\"");
+							response.setHeader(OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION, OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
 					}
 					
 					response.getOutputStream().write(bytes);

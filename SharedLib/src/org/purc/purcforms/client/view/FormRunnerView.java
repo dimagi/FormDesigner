@@ -374,8 +374,10 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 					String extension = "";//.3gp ".mpeg";
 					String contentType = "&contentType=video/3gpp";
 					if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
-						contentType = "&contentType=audio/x-wav";
+						contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 
+					contentType += "&name="+questionDef.getVariableName()+".3gp";
+					
 					((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 				}
 			}

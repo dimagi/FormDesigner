@@ -103,9 +103,23 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		});
 	}
 
+	/**
+	 * This function is called when on selected the refresh button on the runner view
+	 * 
+	 * @param formDef the form definition to load
+	 * @param layoutXml the form widget layout xml
+	 * @param externalSourceWidgets a list of widgets which get their data from sources external to the xform
+	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
-		this.formDef = formDef;
-
+		if(formDef == null)
+			this.formDef = null;
+		else{
+			this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
+			
+			//set the document xml which we shall need for updating the model with question answers
+			XformConverter.fromFormDef2Xform(this.formDef);
+		}
+		
 		tabs.clear();
 		if(formDef == null || layoutXml == null || layoutXml.trim().length() == 0){
 			addNewTab("Page1");
@@ -627,13 +641,20 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			selectedPanel.setHeight(sHeight);
 	}*/
 
+	
+	/**
+	 * This function is called when one switches between forms in the tree view
+	 */
 	public void setFormDef(FormDef formDef){
 		if(this.formDef != formDef){
 			tabs.clear();
 			addNewTab("Page1");
 		}
 
-		this.formDef = formDef;
+		if(formDef == null)
+			this.formDef = null;
+		else
+			this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
 	}
 
 	public void setEmbeddedHeightOffset(int offset){

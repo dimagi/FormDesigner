@@ -752,7 +752,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 
 		y += 10;
-		addNewButton(false);
+		
+		//The submit button is added only to the first tab such that we dont keep
+		//adding multiple submit buttons everytime one refreshes the design surface
+		if(tabs.getTabBar().getTabCount() == 1)
+			addNewButton(false);
 
 		setHeight(y+40+"px");
 	}

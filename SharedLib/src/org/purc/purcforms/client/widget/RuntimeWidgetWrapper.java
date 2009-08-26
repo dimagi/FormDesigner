@@ -448,6 +448,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 			return;
 		}
+		
+		//These are not used for filling any answers
+		if(widget instanceof Label || widget instanceof Button)
+			return;
 
 		String defaultValue = questionDef.getDefaultValueSubmit();
 
@@ -534,7 +538,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		else if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).saveValue(formDef);
 
-		questionDef.updateNodeValue(formDef);
+		//Repeat widgets have a value for row count which does not go anywhere in the model
+		if(!(widget instanceof RuntimeGroupWidget))
+			questionDef.updateNodeValue(formDef);
 	}
 
 	public void addChildWidget(RuntimeWidgetWrapper childWidget){

@@ -188,9 +188,11 @@ public class PageDef implements Serializable{
 	}
 
 	private void copyQuestions(Vector questions){
-		this.questions = new Vector();
-		for(int i=0; i<questions.size(); i++)
-			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),this));
+		if(questions != null){
+			this.questions = new Vector();
+			for(int i=0; i<questions.size(); i++)
+				this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),this));
+		}
 	}
 
 	public boolean removeQuestion(QuestionDef qtnDef, FormDef formDef){

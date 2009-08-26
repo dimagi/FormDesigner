@@ -12,7 +12,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -145,7 +144,7 @@ public class PreviewView extends FormRunnerView {
 			public void execute() {
 				try{
 					centerPanel.commitChanges();
-					loadForm(formDef, designSurfaceView.getLayoutXml(),null);
+					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),null);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
-import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -67,9 +66,9 @@ public class FormDef implements Serializable{
 	private String layoutXml;
 	private String xformXml;
 	private String languageXml;
-	
+
 	private boolean readOnly = false;
-	
+
 
 	/** Constructs a form definition object. */
 	public FormDef() {
@@ -79,7 +78,7 @@ public class FormDef implements Serializable{
 	public FormDef(FormDef formDef) {
 		this(formDef,true);
 	}
-	
+
 	public FormDef(FormDef formDef, boolean copyValidationRules) {
 		setId(formDef.getId());
 		setName(formDef.getName());
@@ -90,12 +89,12 @@ public class FormDef implements Serializable{
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
 		copyPages(formDef.getPages());
 		copySkipRules(formDef.getSkipRules());
-		
+
 		//This is a temporary fix for an infinite recursion that happens when validation
 		//rule copy constructor tries to set a formdef using the FormDef copy constructor.
 		if(copyValidationRules)
 			copyValidationRules(formDef.getValidationRules());
-		
+
 		copyDynamicOptions(formDef.getDynamicOptions());
 	}
 
@@ -306,10 +305,10 @@ public class FormDef implements Serializable{
 			dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, String.valueOf(id));
 		else
 			setId(Integer.parseInt(val));*/
-		
+
 		//TODO Check this with the above
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID,String.valueOf(id));
-		
+
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){
 			dataNode = XformConverter.renameNode(dataNode,variableName);
@@ -435,9 +434,11 @@ public class FormDef implements Serializable{
 	}
 
 	private void copyPages(Vector pages){
-		this.pages =  new Vector();
-		for(int i=0; i<pages.size(); i++) //Should have atleast one page is why we are not checking for nulls.
-			this.pages.addElement(new PageDef((PageDef)pages.elementAt(i),this));
+		if(pages != null){
+			this.pages =  new Vector();
+			for(int i=0; i<pages.size(); i++) //Should have atleast one page is why we are not checking for nulls.
+				this.pages.addElement(new PageDef((PageDef)pages.elementAt(i),this));
+		}
 	}
 
 	private void copySkipRules(Vector rules){
@@ -870,18 +871,18 @@ public class FormDef implements Serializable{
 				for(int index = 0; index < pages.size(); index++)
 					((PageDef)pages.elementAt(index)).buildLanguageNodes(doc, rootNode);
 			}
-			
+
 			if(validationRules != null){
 				for(int index = 0; index < validationRules.size(); index++)
 					((ValidationRule)validationRules.elementAt(index)).buildLanguageNodes(this, rootNode);
 			}
-			
+
 			if(dynamicOptions != null){
 				Iterator<Entry<Integer,DynamicOptionDef>> iterator = dynamicOptions.entrySet().iterator();
 				while(iterator.hasNext())
 					iterator.next().getValue().buildLanguageNodes(this, rootNode);
 			}
-			
+
 			/*XPathExpression xpls = new XPathExpression(this.doc, "xforms/model/instance/newform1"); //"/xforms/model/instance/newform1"
 			Vector result = xpls.getResult();
 			if(result.size() > 0)
@@ -890,7 +891,7 @@ public class FormDef implements Serializable{
 
 		return rootNode;
 	}
-	
+
 	public static FormDef getFormDef(Object formItem){
 		if(formItem instanceof FormDef)
 			return (FormDef)formItem;
@@ -907,7 +908,7 @@ public class FormDef implements Serializable{
 
 		return null;
 	}
-	
+
 	public void clearChangeListeners(){
 		if(pages == null)
 			return;

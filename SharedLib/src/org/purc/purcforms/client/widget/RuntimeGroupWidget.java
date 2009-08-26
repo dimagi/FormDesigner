@@ -733,17 +733,18 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			contents = contents.replace("</pre>", "");
 			RuntimeWidgetWrapper widgetWrapper = null;
 
-			if(image != null){
-				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary"+"&time="+ new java.util.Date().getTime());
+			if(image != null)
 				widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
-			}
-			else{
+			else
 				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
-
-				String xpath = widgetWrapper.getBinding();
-				if(!xpath.startsWith(formDef.getVariableName()))
-					xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
-
+			
+			String xpath = widgetWrapper.getBinding();
+			if(!xpath.startsWith(formDef.getVariableName()))
+				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
+			
+			if(image != null)
+				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
+			else{
 				String extension = "";//.3gp ".mpeg";
 				String contentType = "&contentType=video/3gpp";
 				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO){

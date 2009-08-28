@@ -126,8 +126,10 @@ public class SkipRulesView extends Composite implements IConditionController{
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 
-			if(!(rdEnable.isChecked()||rdDisable.isChecked()||rdShow.isChecked()||rdHide.isChecked()))
+			if(!(rdEnable.isChecked()||rdDisable.isChecked()||rdShow.isChecked()||rdHide.isChecked())){
 				rdEnable.setChecked(true);
+				updateMakeRequired();
+			}
 		}
 	}
 

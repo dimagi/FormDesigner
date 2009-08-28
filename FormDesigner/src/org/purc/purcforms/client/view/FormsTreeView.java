@@ -341,14 +341,14 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Deletes the selected question.
 	 */
 	public void deleteSelectedItem(){
-		if(inReadOnlyMode())
-			return;
-
 		TreeItem item = tree.getSelectedItem();
 		if(item == null){
 			Window.alert(LocaleText.get("selectDeleteItem"));
 			return;
 		}
+		
+		if(inReadOnlyMode() && !(item.getUserObject() instanceof FormDef))
+			return;
 
 		if(!inCutMode && !Window.confirm(LocaleText.get("deleteTreeItemPrompt")))
 			return;
@@ -740,9 +740,6 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	public void copyItem() {
-		if(inReadOnlyMode())
-			return;
-
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
 			return;
@@ -754,6 +751,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	 * Paste clipboard item as a child of the selected item.
 	 */
 	public void pasteItem(){
+		if(inReadOnlyMode())
+			return;
+		
 		//Check if we have anything in the clipboard.
 		if(clipboardItem == null)
 			return;

@@ -7,6 +7,8 @@ import org.purc.purcforms.client.widget.FormRunnerWidget;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -17,34 +19,61 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class FormRunnerEntryPoint implements EntryPoint{
 
 	private FormRunnerWidget formRunner;
-	
+
 	/**
 	 * Instantiate an application-level image bundle. This object will provide
 	 * programmatic access to all the images needed by widgets.
 	 */
 	private static final Images images = (Images) GWT.create(Images.class);
-	
-	
+
+
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		FormUtil.setupUncaughtExceptionHandler();	
+		FormUtil.dlg.setText("loading");
+		FormUtil.dlg.center();
 
-		FormUtil.retrieveUserDivParameters();
-		
-		formRunner = new FormRunnerWidget(images);
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				onModuleLoadDeffered();
+			}
+		});		
+	}
 
-		String formId = FormUtil.getFormId();
-		String entityId = FormUtil.getEntityId();
-		if(formId != null && entityId != null)
-			formRunner.loadForm(Integer.parseInt(formId),Integer.parseInt(entityId));
-		else
-			Window.alert(LocaleText.get("noFormId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
-		
-		RootPanel.get("purcformrunner").add(formRunner);
-		
-		FormUtil.maximizeWidget(formRunner);
+	public void onModuleLoadDeffered() {
+		try{
+			FormUtil.setupUncaughtExceptionHandler();	
 
+			FormUtil.retrieveUserDivParameters();
+
+			formRunner = new FormRunnerWidget(images);
+
+			String formId = FormUtil.getFormId();
+			String entityId = FormUtil.getEntityId();
+			if(formId != null && entityId != null)
+				formRunner.loadForm(Integer.parseInt(formId),Integer.parseInt(entityId));
+			else{
+				FormUtil.dlg.hide();
+				Window.alert(LocaleText.get("noFormId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
+			}
+
+			RootPanel.get("purcformrunner").add(formRunner);
+
+			FormUtil.maximizeWidget(formRunner);
+			
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					String formId = FormUtil.getFormId();
+					String entityId = FormUtil.getEntityId();
+					if(formId != null && entityId != null)
+						FormUtil.dlg.hide();
+				}
+			});
+		}
+		catch(Exception ex){
+			FormUtil.dlg.hide();
+			FormUtil.displayException(ex);
+		}
 	}
 }

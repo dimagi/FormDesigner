@@ -114,10 +114,10 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		if(formDef == null)
 			this.formDef = null;
 		else{
-			this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
+			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
 			
 			//set the document xml which we shall need for updating the model with question answers
-			XformConverter.fromFormDef2Xform(this.formDef);
+			this.formDef = XformConverter.copyFormDef(formDef);
 		}
 		
 		tabs.clear();
@@ -655,8 +655,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 		if(formDef == null)
 			this.formDef = null;
-		else
-			this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
+		else{
+			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
+		
+			//set the document xml which we shall need for updating the model with question answers
+			this.formDef = XformConverter.copyFormDef(formDef);
+		}
 	}
 
 	public void setEmbeddedHeightOffset(int offset){

@@ -542,7 +542,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(!isRepeated()){
 				setBinding("LEFT"+getLeft()+"TOP"+getTop());
 				node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, binding);
-				((DesignGroupWidget)widget).getHeaderLabel().setBinding(binding);
+				DesignWidgetWrapper headerLabel = ((DesignGroupWidget)widget).getHeaderLabel();
+				if(headerLabel != null)
+					headerLabel.setBinding(binding);
 			}
 		}
 

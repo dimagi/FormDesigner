@@ -397,9 +397,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		for(int i=0; i<tabs.getWidgetCount(); i++){
 			if(pageWidgets.get(i) == null)
 				continue; //TODO Need to deal with this case where all widgets are deleted but layout and locale text remains
-			
+
 			String xpath = "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"']/Item[@";
-			
+
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");
@@ -473,13 +473,20 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		for(int i=0; i<nodes.getLength(); i++){
 			if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			Element node = (Element)nodes.item(i);
-			DesignWidgetWrapper widget = loadWidget(node,selectedDragController,selectedPanel,images,widgetPopup,this,currentWidgetSelectionListener,formDef); //TODO CHECK ???????????????
-			if(widget != null && (widget.getWrappedWidget() instanceof DesignGroupWidget)){
-				((DesignGroupWidget)widget.getWrappedWidget()).loadWidgets(node,formDef);
-				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK
-				if(!widget.isRepeated())
-					selectedDragController.makeDraggable(widget, ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
+
+			try{
+				Element node = (Element)nodes.item(i);
+				DesignWidgetWrapper widget = loadWidget(node,selectedDragController,selectedPanel,images,widgetPopup,this,currentWidgetSelectionListener,formDef); //TODO CHECK ???????????????
+				if(widget != null && (widget.getWrappedWidget() instanceof DesignGroupWidget)){
+					((DesignGroupWidget)widget.getWrappedWidget()).loadWidgets(node,formDef);
+					((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK
+					if(!widget.isRepeated())
+						selectedDragController.makeDraggable(widget, ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
+				}
+			}
+			catch(Exception ex){
+				//FormUtil.displayException(ex);
+				ex.printStackTrace();
 			}
 		}
 	}
@@ -752,7 +759,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 
 		y += 10;
-		
+
 		//The submit button is added only to the first tab such that we dont keep
 		//adding multiple submit buttons everytime one refreshes the design surface
 		if(tabs.getTabBar().getTabCount() == 1)

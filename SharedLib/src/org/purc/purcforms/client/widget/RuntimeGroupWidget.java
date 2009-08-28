@@ -517,7 +517,16 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				else
 					html = (HTML)wrapper.getWrappedWidget();
 
-				OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getMultimediaUrlSuffix());
+				String xpath = wrapper.getBinding();
+				if(!xpath.startsWith(formDef.getVariableName()))
+					xpath = "/" + formDef.getVariableName() + "/" + wrapper.getBinding();
+
+				String contentType = "&contentType=video/3gpp";
+				contentType += "&name="+wrapper.getQuestionDef().getVariableName()+".3gp";
+				
+				//TODO What if the multimedia url suffix already has a ?
+				String url = FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime();
+				OpenFileDialog dlg = new OpenFileDialog(this,url);
 				dlg.center();
 			}
 		}

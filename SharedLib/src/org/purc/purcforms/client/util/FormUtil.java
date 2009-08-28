@@ -44,6 +44,7 @@ public class FormUtil {
 	private static String formDefRefreshUrlSuffix;
 	private static String externalSourceUrlSuffix;
 	private static String multimediaUrlSuffix;
+	private static String closeUrl;
 
 	private static String formIdName;
 	private static String entityIdName;
@@ -263,6 +264,7 @@ public class FormUtil {
 		formDefRefreshUrlSuffix = getDivValue("formDefRefreshUrlSuffix");
 		externalSourceUrlSuffix = getDivValue("externalSourceUrlSuffix");
 		multimediaUrlSuffix = getDivValue("multimediaUrlSuffix");
+		closeUrl = getDivValue("closeUrl");
 		
 		if(multimediaUrlSuffix == null || multimediaUrlSuffix.trim().length() == 0)
 			multimediaUrlSuffix = "multimedia";
@@ -410,6 +412,10 @@ public class FormUtil {
 		return getHostPageBaseURL()+ multimediaUrlSuffix;
 	}
 
+	public static String getCloseUrl(){
+		return closeUrl;
+	}
+	
 	public static String getFormIdName(){
 		return formIdName;
 	}
@@ -479,7 +485,7 @@ public class FormUtil {
 		//This check is a temporary workaround for firefox 3.5 which
 		//throws this error on certain mouse moves which i have not
 		//yet got the exact cause for.
-		if(!s.contains("(NS_ERROR_DOM_NOT_SUPPORTED_ERR):")){
+		if(!(s != null && s.contains("(NS_ERROR_DOM_NOT_SUPPORTED_ERR):"))){
 			ErrorDialog dialogBox = new ErrorDialog();
 			dialogBox.setText(LocaleText.get("unexpectedFailure"));
 			dialogBox.setBody(s);

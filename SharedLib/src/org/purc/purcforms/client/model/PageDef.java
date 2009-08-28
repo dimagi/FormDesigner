@@ -196,7 +196,7 @@ public class PageDef implements Serializable{
 	}
 
 	public boolean removeQuestion(QuestionDef qtnDef, FormDef formDef){
-		if(qtnDef.getControlNode() != null){
+		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				qtnDef.getControlNode().getParentNode().getParentNode().removeChild(qtnDef.getControlNode().getParentNode());
 			else

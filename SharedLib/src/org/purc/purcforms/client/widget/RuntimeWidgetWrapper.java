@@ -449,8 +449,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			return;
 		}
 		
-		//These are not used for filling any answers
-		if(widget instanceof Label || widget instanceof Button)
+		//These are not used for filling any answers. HTML is used for audio and video
+		if((widget instanceof Label || widget instanceof Button) && !(widget instanceof HTML))
 			return;
 
 		String defaultValue = questionDef.getDefaultValueSubmit();

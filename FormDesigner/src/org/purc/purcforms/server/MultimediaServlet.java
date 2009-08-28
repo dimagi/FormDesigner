@@ -1,17 +1,13 @@
 package org.purc.purcforms.server;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -24,29 +20,38 @@ public class MultimediaServlet extends HttpServlet {
 
 	//private Log log = LogFactory.getLog(this.getClass());
 
-	private byte[] postData = null;
-	private String postContentType;
+	private final String KEY_MULTIMEDIA_POST_DATA = "MultidemiaPostData";
+	private final String KEY_MULTIMEDIA_POST_CONTENT_TYPE = "MultidemiaPostContentType";
 
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		/*if("recentbinary".equals(request.getParameter("action"))){
+		//Setting header from hear ensures that user is not given a blank page
+		//if there is not data
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Pragma", "no-cache");
+		response.setDateHeader("Expires", -1);
+		response.setHeader("Cache-Control", "no-store");
+
+		String sFormId = request.getParameter("formId");
+		String xpath = request.getParameter("xpath");
+		String contentType = request.getParameter("contentType");
+		String name = request.getParameter("name");
+		
+		if("recentbinary".equals(request.getParameter("action"))){
+			byte[] postData = (byte[])getSessionData(request,sFormId,KEY_MULTIMEDIA_POST_DATA+getFieldKey(sFormId,xpath)); //(byte[])session.getAttribute(KEY_MULTIMEDIA_POST_DATA+getFieldKey(sFormId,xpath));
 			if(postData != null){				
-				response.setContentType(postContentType);
+				response.setContentType((String)getSessionData(request,sFormId,KEY_MULTIMEDIA_POST_CONTENT_TYPE+getFieldKey(sFormId,xpath)));
 				response.getOutputStream().write(postData);
-				postData = null;
-				postContentType = null;
+				
+				setSessionData(request,sFormId,KEY_MULTIMEDIA_POST_CONTENT_TYPE+getFieldKey(sFormId,xpath),null);
+				setSessionData(request,sFormId,KEY_MULTIMEDIA_POST_DATA+getFieldKey(sFormId,xpath),null);
 			}
 			return;
 		}
 
-		try{
-			String sFormId = request.getParameter("formId");
-			String xpath = request.getParameter("xpath");
-			String contentType = request.getParameter("contentType");
-			String name = request.getParameter("name");
-			
+		/*try{			
 			if(name == null || name.trim().length() == 0)
 				name = "multimedia.3gp";
 				
@@ -56,22 +61,31 @@ public class MultimediaServlet extends HttpServlet {
 			if(xpath == null || xpath.trim().length() == 0)
 				return;
 
-			int id = Integer.parseInt(sFormId);
-			FormData formData = Context.getStudyManagerService().getFormData(id);
-			if(formData == null)
-				return;
+			byte[] bytes = (byte[])getSessionData(request,sFormId,KEY_MULTIMEDIA_POST_DATA+getFieldKey(sFormId,xpath)); 
 
-			String xml = formData.getData();
-			if(xml == null || xml.trim().length() == 0)
-				return;
-
-			Document doc = XmlUtil.fromString2Doc(xml);
-			if(doc == null)
-				return;
-
-			String value = XmlUtil.getNodeValue(doc, xpath);
-			if(value != null && value.trim().length() > 0){
-				byte[] bytes = Base64.decode(value);
+			String value = null;
+			
+			if(bytes == null){
+				int id = Integer.parseInt(sFormId);
+				FormData formData = getFormData(id);
+				if(formData == null)
+					return;
+	
+				String xml = formData.getData();
+				if(xml == null || xml.trim().length() == 0)
+					return;
+	
+				Document doc = XmlUtil.fromString2Doc(xml);
+				if(doc == null)
+					return;
+	
+				String value = XmlUtil.getNodeValue(doc, xpath);
+			}
+			
+			if(bytes != null || (value != null && value.trim().length() > 0)){
+				if(bytes == null)
+					bytes = Base64.decode(value);
+					
 				if(bytes != null){
 					response.setHeader("Cache-Control", "no-cache");
 			        response.setHeader("Pragma", "no-cache");
@@ -83,12 +97,15 @@ public class MultimediaServlet extends HttpServlet {
 						
 						//Send it as an attachement such that atleast firefox can also detect it
 						if(contentType.contains("video") || contentType.contains("audio"))
-							response.setHeader(OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION, OmevacConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
+							response.setHeader(Constants.HTTP_HEADER_CONTENT_DISPOSITION, Constants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
 					}
 					
 					response.getOutputStream().write(bytes);
 				}
-			}
+			}//This elese if is to prevent a blank page if there is no data.
+			else if(contentType != null && (contentType.contains("video") || contentType.contains("audio")))
+				response.setHeader(Constants.HTTP_HEADER_CONTENT_DISPOSITION, Constants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
+
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -96,18 +113,55 @@ public class MultimediaServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*postData = null;
-		postContentType = null;
+		/*String formId = request.getParameter("formId");
+		String xpath = request.getParameter("xpath");
 
-		CommonsMultipartResolver multipartResover = new CommonsMultipartResolver();
+		CommonsMultipartResolver multipartResover = new CommonsMultipartResolver(this.getServletContext());
 		if(multipartResover.isMultipart(request)){
 			MultipartHttpServletRequest multipartRequest = multipartResover.resolveMultipart(request);
 			MultipartFile uploadedFile = multipartRequest.getFile("filecontents");
 			if (uploadedFile != null && !uploadedFile.isEmpty()) {
-				postContentType = uploadedFile.getContentType();
-				postData = uploadedFile.getBytes();
+				byte[] postData = uploadedFile.getBytes();
 				response.getOutputStream().print(Base64.encode(postData));
+
+				setSessionData(request,formId,KEY_MULTIMEDIA_POST_CONTENT_TYPE+getFieldKey(formId,xpath),uploadedFile.getContentType());
+				setSessionData(request,formId,KEY_MULTIMEDIA_POST_DATA+getFieldKey(formId,xpath),postData);
 			}
 		}*/
+	}
+
+	private static String getFieldKey(String formId, String xpath){
+		return formId + xpath;
+	}
+	
+	private static String getFormKey(String formId){
+		return "MultidemiaData"+formId;
+	}
+	
+	private void setSessionData(HttpServletRequest request,String formId, String key, Object data){
+		HttpSession session = request.getSession();
+		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(getFormKey(formId));
+		
+		if(dataMap == null){
+			dataMap = new HashMap<String,Object>();
+			session.setAttribute(getFormKey(formId), dataMap);
+		}
+		
+		dataMap.put(key, data);
+	}
+	
+	private Object getSessionData(HttpServletRequest request,String formId, String key){
+		HttpSession session = request.getSession();
+		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(getFormKey(formId));
+		
+		if(dataMap != null)
+			return dataMap.get(key);
+
+		return null;
+	}
+	
+	public static void clearFormSessionData(HttpServletRequest request,String formId){
+		HttpSession session = request.getSession();
+		session.setAttribute(getFormKey(formId), null);
 	}
 }

@@ -196,7 +196,22 @@ public class XformConverter implements Serializable{
 
 		return "";
 	}
-
+	
+	/**
+	 * Creates a copy of a formDef together with its xform xml.
+	 * 
+	 * @param formDef
+	 * @return
+	 */
+	public static FormDef copyFormDef(FormDef formDef){
+		if(formDef.getDoc() == null)
+			return new FormDef(formDef);
+		else
+			formDef.updateDoc(false);
+		
+		return fromXform2FormDef(fromDoc2String(formDef.getDoc()));
+	}
+	
 	public static String fromFormDef2Xform(FormDef formDef){
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
@@ -2183,18 +2198,22 @@ public class XformConverter implements Serializable{
 
 		buildXform(formDef,doc,bodyNode,modelNode);
 
-		if(prevdoc != null){			
-			Element oldModel = getModelNode(prevdoc.getDocumentElement());
-			Element newModel = getModelNode(doc.getDocumentElement());
+		copyModel(prevdoc,doc);
+		
+		return fromDoc2String(doc);
+	}
+	
+	private static void copyModel(Document srcDoc, Document destDoc){
+		if(srcDoc != null){			
+			Element oldModel = getModelNode(srcDoc.getDocumentElement());
+			Element newModel = getModelNode(destDoc.getDocumentElement());
 			
 			if(oldModel != null && newModel != null){
 				oldModel = (Element)oldModel.cloneNode(true);
-				doc.importNode(oldModel, true);
+				destDoc.importNode(oldModel, true);
 				newModel.getParentNode().appendChild(oldModel);
 				newModel.getParentNode().removeChild(newModel);
 			}
 		}
-		
-		return fromDoc2String(doc);
 	}
 }

@@ -17,6 +17,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.LocalesDialog;
+import org.purc.purcforms.client.view.LoginDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XformConverter;
@@ -47,10 +48,23 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	private IFormSaveListener formSaveListener;
 	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
+	private static final byte CA_NONE = 0;
+	private static final byte CA_LOAD_FORM = 1;
+	private static final byte CA_SAVE_FORM = 2;
+	private static final byte CA_REFRESH_FORM = 3;
+	private static final byte CA_SET_FILE_CONTENTS = 4;
+
+	private static byte currentAction = CA_NONE;
+
+	private static LoginDialog loginDlg = new LoginDialog();
+	private static FormDesignerController controller;
+	private Object refreshObject;
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
 		this.centerPanel = centerPanel;
+
+		controller = this;
 	}
 
 	public void addNewItem() {
@@ -67,7 +81,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	public void closeForm() {
 		//back();
-		
+
 		String url = FormUtil.getCloseUrl();
 		if(url != null && url.trim().length() > 0)
 			Window.Location.replace(url);
@@ -90,7 +104,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		if(isOfflineMode())
 			leftPanel.addNewForm();
 	}
-  
+
 	public void openForm() {
 		if(isOfflineMode()){
 			String xml = null;
@@ -181,7 +195,16 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
-	public void saveForm() {
+	public void saveForm(){
+		if(isOfflineMode())
+			saveTheForm();
+		else{
+			currentAction = CA_SAVE_FORM;
+			FormUtil.isAuthenticated();
+		}
+	}
+
+	private void saveTheForm() {
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj.isReadOnly())
 			;//return; //TODO I think we should allow saving of form text and layout
@@ -390,8 +413,8 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		centerPanel.format();
 	}
 
-	public void refresh(Object sender) {
-		if(sender instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
+	private void refreshObject() {
+		if(refreshObject instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
 			if(formId != null){
 				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();
@@ -412,9 +435,18 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
-	public void loadForm(int frmId){
-		this.formId = frmId;
+	public void refresh(Object sender) {
+		refreshObject = sender;
 
+		if(isOfflineMode())
+			refreshObject();
+		else{
+			currentAction = CA_REFRESH_FORM;
+			FormUtil.isAuthenticated();
+		}
+	}
+
+	private void loadForm(){
 		FormUtil.dlg.setText(LocaleText.get("openingForm"));
 		FormUtil.dlg.center();
 
@@ -452,7 +484,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 							centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 							centerPanel.setLayoutXml(layoutXml,false);
 							openFormDeffered(formId,false);
-							
+
 							//FormUtil.dlg.hide(); //openFormDeffered above will close it
 						}
 
@@ -468,6 +500,17 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}
 			}
 		});
+	}
+
+	public void loadForm(int frmId){
+		this.formId = frmId;
+
+		if(isOfflineMode())
+			loadForm();
+		else{
+			currentAction = CA_LOAD_FORM;
+			FormUtil.isAuthenticated();
+		}
 	}
 
 	public void saveForm(String xformXml, String layoutXml){
@@ -522,7 +565,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 					centerPanel.setXformsSource(xml,false);
 					refreshFormDeffered();
-
 				}
 
 				public void onError(Request request, Throwable exception){
@@ -585,6 +627,15 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	public void onSetFileContents(String contents) {
+		if(isOfflineMode())
+			setFileContents();
+		else{
+			currentAction = CA_SET_FILE_CONTENTS;
+			FormUtil.isAuthenticated();
+		}
+	}
+
+	private void setFileContents() {
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,"formopen");
 
@@ -820,5 +871,24 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}
 			});
 		}
+	}
+
+	private static void authenticationCallback(boolean authenticated) {		
+		if(authenticated){	
+			loginDlg.hide();
+
+			if(currentAction == CA_REFRESH_FORM)
+				controller.refreshObject();
+			else if(currentAction == CA_LOAD_FORM)
+				controller.loadForm();
+			else if(currentAction == CA_SAVE_FORM)
+				controller.saveTheForm();
+			else if(currentAction == CA_SET_FILE_CONTENTS)
+				controller.setFileContents();
+
+			currentAction = CA_NONE;
+		}
+		else
+			loginDlg.center();
 	}
 }

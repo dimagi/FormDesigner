@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -55,9 +56,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 		this.widgetSelectionListener = designWidgetWrapper.widgetSelectionListener;
 		this.popup = designWidgetWrapper.popup;
-
-		if(widgetSelectionListener == null)
-			widget.getElement();
+		
+		//TODO Make sure this does not introduce bugs. It seems logical to copy questiondef too
+		//we also need it when changing widgets from ListBox to RadioButtons
+		this.questionDef = designWidgetWrapper.questionDef;
 
 		initWidget();
 	}
@@ -157,8 +159,10 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 		//TODO Check to ensure this does not bring bugs. It has been put to allow
 		//Rubber band mouse drags to move out of design surface through group widgets.
-		if(!(widget instanceof DesignGroupWidget && type == Event.ONMOUSEMOVE))
-			DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
+		if(!(widget instanceof DesignGroupWidget && type == Event.ONMOUSEMOVE)){
+			if(type != Event.ONMOUSEMOVE) //This lets firefox display tooltips on widget design surface
+				DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
+		}
 
 		
 		//This is to prevent ListBox drop down from expanding on mouse down.
@@ -282,7 +286,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void setTitle(String title){
 		if(widget instanceof RadioButton)
-			((RadioButton)widget).setText(title);
+			((RadioButton)widget).setTitle(title);
 		else if(widget instanceof CheckBox)
 			((CheckBox)widget).setTitle(title);
 		else if(widget instanceof Button)
@@ -696,12 +700,23 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 	}
 
 	public void setQuestionDef(QuestionDef questionDef){
+		if(questionDef != null && (this.questionDef != questionDef)){
+			String title = questionDef.getHelpText();
+			if(title == null || title.trim().length() == 0)
+				title = questionDef.getText();
+			setTitle(title);
+		}
+		
 		this.questionDef = questionDef;
-		questionDef.addChangeListener(this);
+		this.questionDef.addChangeListener(this);
+	}
+	
+	public QuestionDef getQuestionDef(){
+		return questionDef;
 	}
 
 	public void onBindingChanged(QuestionDef sender,String newValue) {
-		this.binding = newValue;
+		setBinding(newValue);
 
 	}
 

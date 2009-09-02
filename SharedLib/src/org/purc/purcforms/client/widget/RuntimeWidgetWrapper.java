@@ -60,17 +60,26 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public RuntimeWidgetWrapper(RuntimeWidgetWrapper widget){
 		super(widget);
 
-		this.editListener = widget.getEditListener();
-		this.errorImage = widget.getErrorImage().createImage();
-		this.errorImageProto = widget.getErrorImage();
+		editListener = widget.getEditListener();
+		errorImage = widget.getErrorImage().createImage();
+		errorImageProto = widget.getErrorImage();
 		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
+		
+		if(widget.getValidationRule() != null)
+			validationRule = new ValidationRule(widget.getValidationRule());
 
 		panel.add(this.widget);
 		initWidget(panel);
 		setupEventListeners();
 
-		if(widget.questionDef != null) //TODO For long list of options may need to share list
-			questionDef = new QuestionDef(widget.questionDef,widget.questionDef.getParent());
+		if(widget.questionDef != null){ //TODO For long list of options may need to share list
+			//If we have a validation rule, then it already has a question copy
+			//which we should use if validations are to fire expecially for repeats
+			if(validationRule != null)
+				questionDef = validationRule.getFormDef().getQuestion(widget.questionDef.getId());
+			else
+				questionDef = new QuestionDef(widget.questionDef,widget.questionDef.getParent());
+		}
 	}
 
 	public RuntimeWidgetWrapper(Widget widget,AbstractImagePrototype errorImageProto,EditListener editListener){

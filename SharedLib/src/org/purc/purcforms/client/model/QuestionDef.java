@@ -501,7 +501,7 @@ public class QuestionDef implements Serializable{
 	}
 
 	public void addOption(OptionDef optionDef, boolean setAsParent){
-		if(options == null)
+		if(options == null || !(options instanceof ArrayList))
 			options = new ArrayList();
 		((List)options).add(optionDef);
 		

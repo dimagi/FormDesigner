@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
@@ -100,6 +101,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true, new Command(){
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
+
+		MenuItemSeparator separator = menuBar.addSeparator(); //LocaleText.get("??????")?????????
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget H"),true, new Command(){
+			public void execute() {widgetPopup.hide(); changeWidget(false);}});
+		
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget V"),true, new Command(){
+			public void execute() {widgetPopup.hide(); changeWidget(true);}});
 
 		widgetPopup.setWidget(menuBar);
 
@@ -685,6 +693,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			if(!(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_IMAGE)){
 				widgetWrapper = addNewLabel(questionDef.getText(),false);
 				widgetWrapper.setBinding(questionDef.getVariableName());
+				widgetWrapper.setTitle(questionDef.getText());
 			}
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -1077,6 +1086,33 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
+			wrapper.setText(optionDef.getText());
+			wrapper.setTitle(optionDef.getText());
+		}
+		return null;
+	}
+	
+	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
+		List options = questionDef.getOptions();
+		for(int i=0; i<options.size(); i++){
+			/*if(i != 0){
+				if(vertically)
+					y += 40;
+				else
+					x += 40;
+			}*/
+			
+			OptionDef optionDef = (OptionDef)options.get(i);
+			DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+			wrapper.setBinding(optionDef.getVariableName());
+			wrapper.setParentBinding(questionDef.getVariableName());
+			wrapper.setText(optionDef.getText());
+			wrapper.setTitle(optionDef.getText());
+			
+			if(vertically)
+				y += 40;
+			else
+				x += (optionDef.getText().length() * 12);
 		}
 		return null;
 	}
@@ -1381,7 +1417,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				if(widget.getWrappedWidget() instanceof DesignGroupWidget){
 					selectedDragController.clearSelection();
 					((DesignGroupWidget)widget.getWrappedWidget()).selectAll();
-					return;
+					//return;
 				}
 			}
 		}
@@ -1405,5 +1441,28 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//for(int i=0; i<dragControllers.size(); i++)
 		//	dragControllers.elementAt(i).getBoundaryPanel().setWidth(sWidth);
+	}
+
+	private void changeWidget(boolean vertically){
+		if(selectedDragController.getSelectedWidgetCount() != 1)
+			return;
+
+		DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
+		if(!(widget.getWrappedWidget() instanceof ListBox))
+			return;
+
+		QuestionDef questionDef = widget.getQuestionDef();
+		if(questionDef == null)
+			return;
+		
+		x = widget.getLeftInt() + selectedPanel.getAbsoluteLeft();
+		y = widget.getTopInt() + selectedPanel.getAbsoluteTop();
+		
+		if(widget.getLayoutNode() != null)
+			widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
+		selectedPanel.remove(widget);
+		selectedDragController.clearSelection();
+
+		addNewRadioButtonSet(questionDef,vertically);
 	}
 }

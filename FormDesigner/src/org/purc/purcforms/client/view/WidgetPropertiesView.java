@@ -592,6 +592,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			}
 			else{
 				widget.setBinding(questionDef.getVariableName());
+				widget.setQuestionDef(questionDef);
 
 				if((widget.getWrappedWidget() instanceof Label) && ((Label)widget.getWrappedWidget()).getText().equals("Label")){
 					txtText.setText(txtBinding.getText());

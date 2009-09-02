@@ -762,6 +762,7 @@ public class XformConverter implements Serializable{
 
 		parentControlNode.appendChild(inputNode);
 		qtnDef.setControlNode(inputNode);
+		qtnDef.setBindNode(inputNode);
 
 		Element labelNode =  doc.createElement(NODE_NAME_LABEL);
 		labelNode.appendChild(doc.createTextNode(qtnDef.getText()));
@@ -1321,7 +1322,15 @@ public class XformConverter implements Serializable{
 							QuestionDef rptQtnDef = formDef.getQuestion(varName);
 							qtn.setId(getNextQuestionId());
 							rptQtnDef.addRepeatQtnsDef(qtn);
+							
+							//This should be before the data and control nodes are set because it removed them.
 							formDef.removeQuestion(qtn);
+							
+							qtn.setBindNode(child);
+							qtn.setControlNode(child);
+							
+							//Remove repeat question constraint if any
+							replaceConstraintQtn(constraints,qtn);
 						}
 
 						questionDef = qtn;
@@ -1683,6 +1692,22 @@ public class XformConverter implements Serializable{
 		}
 
 		formDef.setValidationRules(rules);
+	}
+	
+	private static void replaceConstraintQtn(HashMap constraints, QuestionDef questionDef){
+		Iterator keys = constraints.keySet().iterator();
+		int id = 0;
+		while(keys.hasNext()){
+			QuestionDef qtn = (QuestionDef)keys.next();
+			if(qtn.getVariableName().equals(questionDef.getVariableName())){
+				String constraint = (String)constraints.get(qtn);
+				if(constraint != null){
+					constraints.remove(qtn);
+					constraints.put(questionDef, constraint);
+				}
+				return;
+			}
+		}
 	}
 
 	private static int getAction(QuestionDef qtn){

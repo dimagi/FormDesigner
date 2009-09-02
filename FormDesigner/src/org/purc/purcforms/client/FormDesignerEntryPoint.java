@@ -2,10 +2,12 @@ package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.LoginDialog;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -21,9 +23,11 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-
+		
 		FormUtil.dlg.setText("loading");
 		FormUtil.dlg.center();
+		
+		publishJS();
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -49,8 +53,6 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 			FormUtil.retrieveUserDivParameters();
 
-			// Hook the window resize event, so that we can adjust the UI.
-			Window.addWindowResizeListener(this);
 
 			// Get rid of scrollbars, and clear out the window's built-in margin,
 			// because we want to take advantage of the entire client area.
@@ -87,6 +89,12 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 						FormUtil.dlg.hide();
 				}
 			});
+
+			
+			//LoginDialog dlg = new LoginDialog(null);
+			//dlg.center();
+			
+			//FormDesignerUtil.authenticate();
 			
 			//FormUtil.dlg.hide();
 
@@ -96,6 +104,9 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 			//DOM.removeChild(RootPanel.getBodyElement(), DOM.getElementById("loading")); 
 
 			//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+			
+			// Hook the window resize event, so that we can adjust the UI.
+			Window.addWindowResizeListener(this);
 		}
 		catch(Exception ex){
 			FormUtil.dlg.hide();
@@ -107,4 +118,9 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 	public void onWindowResized(int width, int height) {
 		designer.onWindowResized(width, height);
 	}
+	
+	// Set up the JS-callable signature as a global JS function.
+	private native void publishJS() /*-{
+   		$wnd.authenticationCallback = @org.purc.purcforms.client.controller.FormDesignerController::authenticationCallback(Z);
+	}-*/;
 }

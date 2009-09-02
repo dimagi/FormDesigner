@@ -12,6 +12,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -70,6 +71,7 @@ public class FormUtil {
 		widget.setSize("100%", "100%");
 	}
 
+	//TODO These two functions need to be merged.
 	public static void allowNumericOnly(TextBox textBox, boolean allowDecimal){
 		final boolean allowDecimalPoints = allowDecimal;
 		textBox.addKeyboardListener(new KeyboardListenerAdapter() {
@@ -83,10 +85,26 @@ public class FormUtil {
 						return;
 
 					String text = ((TextBox) sender).getText().trim();
-					if(text.length() == 0 && keyCode == '-')
-						return;
+					if(keyCode == '-'){
+						if(text.length() == 0 || ((TextBox)sender).getCursorPos() == 0)
+							return;
+					}
 
 					((TextBox) sender).cancelKey(); 
+				}
+			}
+		});
+		
+		textBox.addChangeListener(new ChangeListener(){
+			public void onChange(Widget sender){
+				try{
+					if(allowDecimalPoints)
+						Double.parseDouble(((TextBox) sender).getText().trim());
+					else
+						Integer.parseInt(((TextBox) sender).getText().trim());
+				}
+				catch(Exception ex){
+					((TextBox) sender).setText(null);
 				}
 			}
 		});
@@ -105,7 +123,7 @@ public class FormUtil {
 						return;
 
 					String text = ((TextBox) sender).getText().trim();
-					if(text.length() == 0 && keyCode == '-')
+					if((text.length() == 0 && keyCode == '-') || (keyCode == '-' && ((TextBox)sender).getCursorPos() == 0))
 						return;
 
 					((TextBox) sender).cancelKey(); 
@@ -531,4 +549,12 @@ public class FormUtil {
 	public static String getNodeName(Element node){
 		return removePrefix(node.getNodeName());
 	}
+	
+	public static native boolean isAuthenticated() /*-{
+		return $wnd.isUserAuthenticated();
+	}-*/;
+	
+	public static native boolean authenticate(String username, String password) /*-{
+		return $wnd.authenticateUser(username,password);
+	}-*/;
 }

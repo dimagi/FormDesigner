@@ -489,6 +489,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 			deleteKids = true;
 		}
+		else if((questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT) &&
+				!(index == DT_REPEAT)){
+			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
+				index = DT_REPEAT;
+				cbDataType.setSelectedIndex(index);
+				return;
+			}
+			deleteKids = true;
+		}
 
 		//cbDataType.setSelectedIndex(index);
 		setQuestionDataType((QuestionDef)propertiesObj);

@@ -129,6 +129,8 @@ public class WidgetEx extends Composite{
 		setBorderStyle(widget.getBorderStyle());
 		setBorderWidth(widget.getBorderWidth());
 		setBorderColor(widget.getBorderColor());
+		
+		setTitle(widget.getTitle());
 	}
 	
 	protected void copyWidget(WidgetEx widget){

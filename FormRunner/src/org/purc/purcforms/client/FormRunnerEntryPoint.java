@@ -31,8 +31,11 @@ public class FormRunnerEntryPoint implements EntryPoint{
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
 		FormUtil.dlg.setText("loading");
 		FormUtil.dlg.center();
+		
+		publishJS();
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -48,6 +51,10 @@ public class FormRunnerEntryPoint implements EntryPoint{
 			FormUtil.retrieveUserDivParameters();
 
 			formRunner = new FormRunnerWidget(images);
+			
+			RootPanel.get("purcformrunner").add(formRunner);
+
+			FormUtil.maximizeWidget(formRunner);
 
 			String formId = FormUtil.getFormId();
 			String entityId = FormUtil.getEntityId();
@@ -58,15 +65,11 @@ public class FormRunnerEntryPoint implements EntryPoint{
 				Window.alert(LocaleText.get("noFormId") + FormUtil.getEntityIdName() + LocaleText.get("divFound"));
 			}
 
-			RootPanel.get("purcformrunner").add(formRunner);
-
-			FormUtil.maximizeWidget(formRunner);
-			
 			DeferredCommand.addCommand(new Command() {
 				public void execute() {
 					String formId = FormUtil.getFormId();
 					String entityId = FormUtil.getEntityId();
-					if(formId != null && entityId != null)
+					if(formId == null || entityId == null)
 						FormUtil.dlg.hide();
 				}
 			});
@@ -76,4 +79,17 @@ public class FormRunnerEntryPoint implements EntryPoint{
 			FormUtil.displayException(ex);
 		}
 	}
+	
+	/*public static native void okTest(String text) -{
+		$wnd.heyMen(text);
+	}-;
+
+	private static boolean getGWT(String a, String b){
+		return true;
+	}*/
+
+	// Set up the JS-callable signature as a global JS function.
+	private native void publishJS() /*-{
+   		$wnd.authenticationCallback = @org.purc.purcforms.client.view.FormRunnerView::authenticationCallback(Z);
+	}-*/;
 }

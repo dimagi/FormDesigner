@@ -100,6 +100,9 @@ public class RepeatQtnsDef implements Serializable {
 	}
 	
 	public QuestionDef getQuestion(int id){
+		if(questions == null)
+			return null;
+		
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)

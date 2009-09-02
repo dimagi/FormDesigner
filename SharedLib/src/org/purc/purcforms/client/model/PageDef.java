@@ -148,8 +148,15 @@ public class PageDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getVariableName().equals(varName))
 				return def;
-			else{
-				/*String binding = def.getVariableName();
+			
+			//Without this, then we have not validation and skip rules in repeat questions.
+			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
+				def = def.getRepeatQtnsDef().getQuestion(varName);
+				if(def != null)
+					return def;
+			}
+			/*else{
+				String binding = def.getVariableName();
 				if(varName.endsWith(binding) && parent != null){
 					if(!binding.startsWith("/")) 
 						binding = "/"+binding;
@@ -158,13 +165,13 @@ public class PageDef implements Serializable{
 						binding = "/"+binding;
 					if(binding.equals(varName))
 						return def;
-				}*/
+				}
 				if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
 					def = def.getRepeatQtnsDef().getQuestion(varName);
 					if(def != null)
 						return def;
 				}
-			}
+			}*/
 		}
 
 		return null;
@@ -178,6 +185,13 @@ public class PageDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)
 				return def;
+			
+			//Without this, then we have not validation and skip rules in repeat questions.
+			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
+				def = def.getRepeatQtnsDef().getQuestion(id);
+				if(def != null)
+					return def;
+			}
 		}
 
 		return null;
@@ -205,9 +219,9 @@ public class PageDef implements Serializable{
 
 		//Either no / or just one occurrence. More than one nestings are avoided to make things simple
 		if(qtnDef.getVariableName().indexOf('/') == qtnDef.getVariableName().lastIndexOf('/')){
-			if(qtnDef.getDataNode() != null)
+			if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
 				qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
-			if(qtnDef.getBindNode() != null && qtnDef.getBindNode() != null)
+			if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
 				qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
 		}
 

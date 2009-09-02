@@ -81,8 +81,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	protected HashMap<QuestionDef,List<Widget>> labelMap;
 	protected HashMap<Widget,String> labelText;
 	protected HashMap<Widget,String> labelReplaceText;
-	
+
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap;
+
+	private static LoginDialog loginDlg = new LoginDialog();
+	private static FormRunnerView formRunnerView;
+	
 
 	public FormRunnerView(Images images){
 		this.images = images;
@@ -101,6 +105,8 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				setHeight(getHeight());
 			}
 		});
+		
+		formRunnerView = this;
 	}
 
 	/**
@@ -115,11 +121,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			this.formDef = null;
 		else{
 			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
-			
+
 			//set the document xml which we shall need for updating the model with question answers
 			this.formDef = XformConverter.copyFormDef(formDef);
 		}
-		
+
 		tabs.clear();
 		if(formDef == null || layoutXml == null || layoutXml.trim().length() == 0){
 			addNewTab("Page1");
@@ -161,11 +167,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				continue;
 			Element node = (Element)pages.item(i);
 			addNewTab(node.getAttribute("Text"));
-			
+
 			setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
 			setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
 			setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
-			
+
 			/*selectedPanel.setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
 			selectedPanel.setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
 			try{
@@ -377,7 +383,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 						contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 
 					contentType += "&name="+questionDef.getVariableName()+".3gp";
-					
+
 					((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 				}
 			}
@@ -472,7 +478,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
 				selectedPanel.add(parentWrapper);
-				
+
 				qtn.addChangeListener(this);
 				List<CheckBox> list = new ArrayList<CheckBox>();
 				list.add((CheckBox)widget);
@@ -481,28 +487,31 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 		else
 			checkBoxGroupMap.get(parentWrapper.getQuestionDef()).add((CheckBox)widget);
-		
+
 		return parentWrapper;
 	}
 
 	protected void submit(){
-		if(formDef != null){
-			if(formDef.getDoc() == null)
-				XformConverter.fromFormDef2Xform(formDef);
-
-			saveValues();
-
-			if(!isValid())
-				return;
-
-			String xml = XformConverter.getInstanceDataDoc(formDef.getDoc()).toString();
-			xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
-			submitListener.onSubmit(xml);
-		}
+		if(formDef != null)
+			FormUtil.isAuthenticated();
 	}
 
 	public void onSubmit(){
 		submit();
+	}
+
+	private void submitData(){
+		if(formDef.getDoc() == null)
+			XformConverter.fromFormDef2Xform(formDef);
+
+		saveValues();
+
+		if(!isValid())
+			return;
+
+		String xml = XformConverter.getInstanceDataDoc(formDef.getDoc()).toString();
+		xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
+		submitListener.onSubmit(xml);
 	}
 
 	protected boolean isValid(){
@@ -558,7 +567,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			for(Widget widget : labels)
 				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), questionDef.getAnswer()));
 		}
-		
+
 		List<CheckBox> list = checkBoxGroupMap.get(questionDef);
 		if(list != null && questionDef.isRequired()){
 			for(CheckBox checkBox : list)
@@ -643,7 +652,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			selectedPanel.setHeight(sHeight);
 	}*/
 
-	
+
 	/**
 	 * This function is called when one switches between forms in the tree view
 	 */
@@ -657,7 +666,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			this.formDef = null;
 		else{
 			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
-		
+
 			//set the document xml which we shall need for updating the model with question answers
 			this.formDef = XformConverter.copyFormDef(formDef);
 		}
@@ -721,7 +730,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			this.labelReplaceText.put(entry.getKey(), entry.getValue());
 		}
 	}
-	
+
 	private void getCheckBoxGroupMap(HashMap<QuestionDef,List<CheckBox>> labelMap){
 		Iterator<Entry<QuestionDef,List<CheckBox>>> iterator = labelMap.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -729,39 +738,39 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			this.checkBoxGroupMap.put(entry.getKey(), entry.getValue());
 		}
 	}
-	
+
 	public String getBackgroundColor(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
 	}
-	
+
 	public String getWidth(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
 	}
-	
+
 	public String getHeight(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
 	}
-	
+
 	public void setBackgroundColor(String backgroundColor){
 		try{
 			if(selectedPanel != null)
 				DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", backgroundColor);
 		}catch(Exception ex){}
 	}
-	
+
 	public void setWidth(String width){
 		try{
 			if(selectedPanel != null)
 				DOM.setStyleAttribute(selectedPanel.getElement(), "width", width);
 		}catch(Exception ex){}
 	}
-	
+
 	public void setHeight(String height){
 		try{
 			if(height != null && height.trim().length() > 0 && !height.equals("100%"))
@@ -770,48 +779,57 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				DOM.setStyleAttribute(selectedPanel.getElement(), "height", sHeight);
 		}catch(Exception ex){}
 	}
-	
+
 	public void onEnabledChanged(QuestionDef sender,boolean enabled){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
 			return;
-		
+
 		for(CheckBox checkBox : list){
 			checkBox.setEnabled(enabled);
 			if(!enabled)
 				checkBox.setChecked(false);
 		}
 	}
-	
+
 	public void onVisibleChanged(QuestionDef sender,boolean visible){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
 			return;
-		
+
 		for(CheckBox checkBox : list){
 			checkBox.setVisible(visible);
 			if(!visible)
 				checkBox.setChecked(false);
 		}
 	}
-	
+
 	public void onRequiredChanged(QuestionDef sender,boolean required){
-		
+
 	}
-	
+
 	public void onLockedChanged(QuestionDef sender,boolean locked){
-		
+
 	}
-	
+
 	public void onBindingChanged(QuestionDef sender,String newValue){
-		
+
 	}
-	
+
 	public void onDataTypeChanged(QuestionDef sender,int dataType){
-		
+
 	}
-	
+
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
-		
+
+	}
+
+	private static void authenticationCallback(boolean authenticated) {		
+		if(authenticated){
+			loginDlg.hide();
+			formRunnerView.submitData();
+		}
+		else
+			loginDlg.center();
 	}
 }

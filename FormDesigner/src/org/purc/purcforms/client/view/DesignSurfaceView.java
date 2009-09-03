@@ -1114,6 +1114,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			else
 				x += (optionDef.getText().length() * 12);
 		}
+		
+		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
+		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+		wrapper.setParentBinding(questionDef.getVariableName());
+		wrapper.setText(optionDef.getText());
+		wrapper.setTitle(optionDef.getText());
+		
 		return null;
 	}
 

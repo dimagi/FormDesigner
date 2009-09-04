@@ -645,6 +645,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateTabIndex(){
 		if(widget != null && txtTabIndex.getText().trim().length() > 0)
 			widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
+		else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+			((DesignWidgetWrapper)viewWidget.getParent().getParent()).setTabIndex(Integer.parseInt(txtTabIndex.getText()));
 	}
 
 	public void onWidgetSelected(Widget widget, boolean multipleSel) {
@@ -809,6 +811,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				StyleUtil.setBorderStyleIndex(designWidgetWrapper.getBorderStyle(), lbBorderStyle);
 				txtBorderColor.setText(designWidgetWrapper.getBorderColor());
 				txtBorderWidth.setText(FormUtil.convertDimensionToInt(designWidgetWrapper.getBorderWidth())+"");
+				txtTabIndex.setText(designWidgetWrapper.getTabIndex()+"");
 			}
 		}
 	}

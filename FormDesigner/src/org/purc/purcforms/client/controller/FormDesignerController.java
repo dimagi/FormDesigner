@@ -245,7 +245,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					}
 
 					formDef.setXformXml(xml);
-					centerPanel.setXformsSource(xml,formSaveListener == null);
+					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 					centerPanel.buildLayoutXml();
 					//formDef.setLayout(centerPanel.getLayoutXml());
 
@@ -287,7 +287,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						String xml = null;
 						xml = XformConverter.fromFormDef2Xform((FormDef)obj);
 						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formSaveListener == null);
+						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){
@@ -861,7 +861,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
 						xml = XformConverter.fromFormDef2Xhtml(formDef);
 						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formSaveListener == null);
+						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){

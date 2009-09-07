@@ -53,6 +53,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public DesignWidgetWrapper(DesignWidgetWrapper designWidgetWrapper,Images images){
 		super(designWidgetWrapper);
+		
+		setText(designWidgetWrapper.getText());
 
 		this.widgetSelectionListener = designWidgetWrapper.widgetSelectionListener;
 		this.popup = designWidgetWrapper.popup;
@@ -267,66 +269,32 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		if (mouseListeners != null)
 			mouseListeners.remove(listener);
 	}
+	
+	public String getText(){
+		if(widget instanceof TabBar)
+			return DesignWidgetWrapper.getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
+		return super.getText();
+	}
 
 	public void setText(String text){
-		if(widget instanceof RadioButton)
-			((RadioButton)widget).setText(text);
-		else if(widget instanceof CheckBox)
-			((CheckBox)widget).setText(text);
-		else if(widget instanceof Button)
-			((Button)widget).setText(text);
-		else if(widget instanceof Label)
-			((Label)widget).setText(text);
-		else if(widget instanceof Hyperlink)
-			((Hyperlink)widget).setText(text);
-		else if(widget instanceof TabBar && text != null && text.trim().length() > 0)
+		if(widget instanceof TabBar && text != null && text.trim().length() > 0)
 			//((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), URL.encode(text));
 			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
+		else
+			super.setText(text);
 	}
-
+	
+	public String getTitle(){
+		if(widget instanceof DesignGroupWidget)
+			return ((DesignGroupWidget)widget).getTitle();
+		return super.getTitle();
+	}
+	
 	public void setTitle(String title){
-		if(widget instanceof RadioButton)
-			((RadioButton)widget).setTitle(title);
-		else if(widget instanceof CheckBox)
-			((CheckBox)widget).setTitle(title);
-		else if(widget instanceof Button)
-			((Button)widget).setTitle(title);
-		else if(widget instanceof ListBox)
-			((ListBox)widget).setTitle(title);
-		else if(widget instanceof TextArea)
-			((TextArea)widget).setTitle(title);
-		else if(widget instanceof DatePicker)
-			((DatePicker)widget).setTitle(title);
-		else if(widget instanceof TextBox)
-			((TextBox)widget).setTitle(title);
-		else if(widget instanceof Label)
-			((Label)widget).setTitle(title);
-		else if(widget instanceof Image)
-			((Image)widget).setTitle(title);
-		else if(widget instanceof Hyperlink)
-			((Hyperlink)widget).setTitle(title);
-		else if(widget instanceof DesignGroupWidget)
+		if(widget instanceof DesignGroupWidget)
 			((DesignGroupWidget)widget).setTitle(title);
-	}
-
-	public String getText(){
-		if(widget instanceof RadioButton)
-			return ((RadioButton)widget).getText();
-		else if(widget instanceof CheckBox)
-			return ((CheckBox)widget).getText();
-		else if(widget instanceof Button)
-			return ((Button)widget).getText();
-		else if(widget instanceof Label)
-			return ((Label)widget).getText();
-		else if(widget instanceof TextArea)
-			return ((TextArea)widget).getText();
-		else if(widget instanceof TextBox)
-			return ((TextBox)widget).getText();
-		else if(widget instanceof Hyperlink)
-			return ((Hyperlink)widget).getText();
-		else if(widget instanceof TabBar)
-			return DesignWidgetWrapper.getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
-		return null;
+		else
+			super.setTitle(title);
 	}
 
 	public static String getTabDisplayText(String html){
@@ -336,32 +304,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			html = html.substring(html.indexOf(">")+1,html.indexOf("</"));
 		//s = URL.decode(s);
 		return html;
-	}
-
-	public String getTitle(){
-		if(widget instanceof RadioButton)
-			return ((RadioButton)widget).getTitle();
-		else if(widget instanceof CheckBox)
-			return ((CheckBox)widget).getTitle();
-		else if(widget instanceof Button)
-			return ((Button)widget).getTitle();
-		else if(widget instanceof ListBox)
-			return ((ListBox)widget).getTitle();
-		else if(widget instanceof TextArea)
-			return ((TextArea)widget).getTitle();
-		else if(widget instanceof DatePicker)
-			return ((DatePicker)widget).getTitle();
-		else if(widget instanceof TextBox)
-			return ((TextBox)widget).getTitle();
-		else if(widget instanceof Label)
-			return ((Label)widget).getTitle();
-		else if(widget instanceof Image)
-			return ((Image)widget).getTitle();
-		else if(widget instanceof Hyperlink)
-			return ((Hyperlink)widget).getTitle();
-		else if(widget instanceof DesignGroupWidget)
-			return ((DesignGroupWidget)widget).getTitle();
-		return null;
 	}
 
 	public String getWidgetName(){

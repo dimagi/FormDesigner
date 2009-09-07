@@ -39,7 +39,6 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
@@ -102,10 +101,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true, new Command(){
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
 
-		MenuItemSeparator separator = menuBar.addSeparator(); //LocaleText.get("??????")?????????
+		menuBar.addSeparator(); //LocaleText.get("??????")?????????
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget H"),true, new Command(){
 			public void execute() {widgetPopup.hide(); changeWidget(false);}});
-		
+
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget V"),true, new Command(){
 			public void execute() {widgetPopup.hide(); changeWidget(true);}});
 
@@ -611,6 +610,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			return true;
 		}
+		
+		if(tabs.getTabBar().getTabCount() == 1 && selectedPanel != null && selectedPanel.getWidgetCount() == 0)
+			layoutChangeListener.onLayoutChanged(null);
 
 		return true;
 	}
@@ -711,8 +713,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				widgetWrapper = addNewDropdownList(false);
 			else if(type == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
-			else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
+			else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
+				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName,true,tabIndex);
+				tabIndex += questionDef.getOptions().size();
+			}
 			else if(type == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList(false);
 			else if(type == QuestionDef.QTN_TYPE_REPEAT)
@@ -1069,58 +1073,33 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		editWidget = null;
 	}*/
 
-	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
+	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName, boolean vertically, int tabIndex){
 		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
-			if(i != 0){
+			/*if(i != 0){
 				y += 40;
 
 				if((y+40) > max){
 					y += 10;
-					addNewButton(false);
+					//addNewButton(false);
 					addNewTab(pageName);
 					y = 20;
 				}
-			}
+			}*/
+			
 			OptionDef optionDef = (OptionDef)options.get(i);
 			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
 			wrapper.setText(optionDef.getText());
 			wrapper.setTitle(optionDef.getText());
-		}
-		return null;
-	}
-	
-	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
-		List options = questionDef.getOptions();
-		for(int i=0; i<options.size(); i++){
-			/*if(i != 0){
-				if(vertically)
-					y += 40;
-				else
-					x += 40;
-			}*/
-			
-			OptionDef optionDef = (OptionDef)options.get(i);
-			DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
-			wrapper.setBinding(optionDef.getVariableName());
-			wrapper.setParentBinding(questionDef.getVariableName());
-			wrapper.setText(optionDef.getText());
-			wrapper.setTitle(optionDef.getText());
+			wrapper.setTabIndex(++tabIndex);
 			
 			if(vertically)
 				y += 40;
 			else
 				x += (optionDef.getText().length() * 12);
 		}
-		
-		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
-		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
-		wrapper.setParentBinding(questionDef.getVariableName());
-		wrapper.setText(optionDef.getText());
-		wrapper.setTitle(optionDef.getText());
-		
 		return null;
 	}
 
@@ -1185,8 +1164,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				widgetWrapper = addNewDropdownList(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
-			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
+				widgetWrapper = addNewCheckBoxSet(qtn,max,pageName,false,index);
+				index += qtn.getOptions().size();
+			}
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_IMAGE)
@@ -1197,10 +1178,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			else
 				widgetWrapper = addNewTextBox(select);
 
-			widgetWrapper.setBinding(qtn.getVariableName());
-			widgetWrapper.setQuestionDef(qtn);
-			widgetWrapper.setTitle(qtn.getText());
-			widgetWrapper.setTabIndex(index + 1);
+			if(widgetWrapper != null){//addNewCheckBoxSet returns null
+				widgetWrapper.setBinding(qtn.getVariableName());
+				widgetWrapper.setQuestionDef(qtn);
+				widgetWrapper.setTitle(qtn.getText());
+				widgetWrapper.setTabIndex(index + 1);
+			}
 		}
 
 		selectedDragController.clearSelection();
@@ -1448,28 +1431,5 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//for(int i=0; i<dragControllers.size(); i++)
 		//	dragControllers.elementAt(i).getBoundaryPanel().setWidth(sWidth);
-	}
-
-	private void changeWidget(boolean vertically){
-		if(selectedDragController.getSelectedWidgetCount() != 1)
-			return;
-
-		DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
-		if(!(widget.getWrappedWidget() instanceof ListBox))
-			return;
-
-		QuestionDef questionDef = widget.getQuestionDef();
-		if(questionDef == null)
-			return;
-		
-		x = widget.getLeftInt() + selectedPanel.getAbsoluteLeft();
-		y = widget.getTopInt() + selectedPanel.getAbsoluteTop();
-		
-		if(widget.getLayoutNode() != null)
-			widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
-		selectedPanel.remove(widget);
-		selectedDragController.clearSelection();
-
-		addNewRadioButtonSet(questionDef,vertically);
 	}
 }

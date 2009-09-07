@@ -12,6 +12,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
@@ -94,7 +95,7 @@ public class FormUtil {
 				}
 			}
 		});
-		
+
 		textBox.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				try{
@@ -283,7 +284,7 @@ public class FormUtil {
 		externalSourceUrlSuffix = getDivValue("externalSourceUrlSuffix");
 		multimediaUrlSuffix = getDivValue("multimediaUrlSuffix");
 		closeUrl = getDivValue("closeUrl");
-		
+
 		if(multimediaUrlSuffix == null || multimediaUrlSuffix.trim().length() == 0)
 			multimediaUrlSuffix = "multimedia";
 
@@ -425,7 +426,7 @@ public class FormUtil {
 	public static String getExternalSourceUrlSuffix(){
 		return externalSourceUrlSuffix;
 	}
-	
+
 	public static String getMultimediaUrlSuffix(){
 		return getHostPageBaseURL()+ multimediaUrlSuffix;
 	}
@@ -433,7 +434,7 @@ public class FormUtil {
 	public static String getCloseUrl(){
 		return closeUrl;
 	}
-	
+
 	public static String getFormIdName(){
 		return formIdName;
 	}
@@ -521,7 +522,7 @@ public class FormUtil {
 		try{
 			return Integer.parseInt(dimension.substring(0,dimension.length()-2));
 		}catch(Exception ex){}
-		
+
 		return 1;
 	}
 
@@ -549,11 +550,11 @@ public class FormUtil {
 	public static String getNodeName(Element node){
 		return removePrefix(node.getNodeName());
 	}
-	
+
 	public static native boolean isAuthenticated() /*-{
 		return $wnd.isUserAuthenticated();
 	}-*/;
-	
+
 	public static native boolean authenticate(String username, String password) /*-{
 		return $wnd.authenticateUser(username,password);
 	}-*/;

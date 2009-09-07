@@ -123,6 +123,9 @@ public class RepeatQtnsDef implements Serializable {
 	}
 	
 	private void copyQuestions(Vector questions){
+		if(questions == null)
+			return;
+		
 		this.questions = new Vector();
 		for(int i=0; i<questions.size(); i++)
 			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),qtnDef));

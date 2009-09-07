@@ -86,7 +86,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 	private static LoginDialog loginDlg = new LoginDialog();
 	private static FormRunnerView formRunnerView;
-	
+
 
 	public FormRunnerView(Images images){
 		this.images = images;
@@ -105,7 +105,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				setHeight(getHeight());
 			}
 		});
-		
+
 		formRunnerView = this;
 	}
 
@@ -117,14 +117,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	 * @param externalSourceWidgets a list of widgets which get their data from sources external to the xform
 	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
-		if(formDef == null)
-			this.formDef = null;
-		else{
-			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
-
-			//set the document xml which we shall need for updating the model with question answers
-			this.formDef = XformConverter.copyFormDef(formDef);
+		if(externalSourceWidgets == null){
+			//Here we must be in preview mode where we need to create a new copy of the formdef
+			//such that we dont set preview values as default formdef values.
+			if(formDef == null)
+				this.formDef = null;
+			else //set the document xml which we shall need for updating the model with question answers
+				this.formDef = XformConverter.copyFormDef(formDef);
 		}
+		else
+			this.formDef = formDef;
 
 		tabs.clear();
 		if(formDef == null || layoutXml == null || layoutXml.trim().length() == 0){
@@ -245,8 +247,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		//We are adding widgets to the panel according to the tab index.
 		for(int index = 0; index <= maxTabIndex; index++){
 			RuntimeWidgetWrapper widget = widgets.get(new Integer(index));
-			if(widget != null)
+			if(widget != null){
 				selectedPanel.add(widget);
+				FormUtil.setWidgetPosition(widget,widget.getLeft(),widget.getTop());
+				//FormUtil.setWidgetPosition(selectedPanel,widget,widget.getLeft(),widget.getTop());
+			}
 		}
 	}
 
@@ -452,10 +457,13 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		//if(wrapper.getWrappedWidget() instanceof Label)
 		WidgetEx.loadLabelProperties(node,wrapper);
 
+		wrapper.setTabIndex(tabIndex);
+		
 		if(tabIndex > 0)
 			widgets.put(new Integer(tabIndex), wrapper);
 		else
 			selectedPanel.add(wrapper);
+		
 		FormUtil.setWidgetPosition(wrapper,left,top);
 
 		if(widget instanceof Button && binding != null && binding.equals("submit")){
@@ -477,8 +485,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
 				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
-				selectedPanel.add(parentWrapper);
-
+				//selectedPanel.add(parentWrapper);		//will be added by the caller		
 				qtn.addChangeListener(this);
 				List<CheckBox> list = new ArrayList<CheckBox>();
 				list.add((CheckBox)widget);
@@ -661,15 +668,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			tabs.clear();
 			addNewTab("Page1");
 		}
-
-		if(formDef == null)
+		
+		//No need of calling this because we shall eventually call loadForm
+		/*if(formDef == null)
 			this.formDef = null;
 		else{
 			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
 
 			//set the document xml which we shall need for updating the model with question answers
 			this.formDef = XformConverter.copyFormDef(formDef);
-		}
+		}*/
 	}
 
 	public void setEmbeddedHeightOffset(int offset){
@@ -700,6 +708,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	}
 
 	private void updateDynamicOptions(){
+		if(formDef.getPages() == null)
+			return;
+		
 		for(byte i=0; i<formDef.getPages().size(); i++){
 			PageDef pageDef = (PageDef)formDef.getPages().elementAt(i);
 			for(byte j=0; j<pageDef.getQuestions().size(); j++)

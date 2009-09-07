@@ -12,6 +12,7 @@ import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
@@ -1263,5 +1264,60 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "height", height);
 		}catch(Exception ex){}
+	}
+	
+	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
+		List options = questionDef.getOptions();
+		for(int i=0; i<options.size(); i++){
+			/*if(i != 0){
+				if(vertically)
+					y += 40;
+				else
+					x += 40;
+			}*/
+
+			OptionDef optionDef = (OptionDef)options.get(i);
+			DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+			wrapper.setBinding(optionDef.getVariableName());
+			wrapper.setParentBinding(questionDef.getVariableName());
+			wrapper.setText(optionDef.getText());
+			wrapper.setTitle(optionDef.getText());
+
+			if(vertically)
+				y += 40;
+			else
+				x += (optionDef.getText().length() * 12);
+		}
+
+		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
+		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+		wrapper.setParentBinding(questionDef.getVariableName());
+		wrapper.setText(optionDef.getText());
+		wrapper.setTitle(optionDef.getText());
+
+		return null;
+	}
+	
+	protected void changeWidget(boolean vertically){
+		if(selectedDragController.getSelectedWidgetCount() != 1)
+			return;
+
+		DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
+		if(!(widget.getWrappedWidget() instanceof ListBox))
+			return;
+
+		QuestionDef questionDef = widget.getQuestionDef();
+		if(questionDef == null)
+			return;
+
+		x = widget.getLeftInt() + selectedPanel.getAbsoluteLeft();
+		y = widget.getTopInt() + selectedPanel.getAbsoluteTop();
+
+		if(widget.getLayoutNode() != null)
+			widget.getLayoutNode().getParentNode().removeChild(widget.getLayoutNode());
+		selectedPanel.remove(widget);
+		selectedDragController.clearSelection();
+
+		addNewRadioButtonSet(questionDef,vertically);
 	}
 }

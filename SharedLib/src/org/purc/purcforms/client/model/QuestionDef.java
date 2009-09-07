@@ -355,6 +355,9 @@ public class QuestionDef implements Serializable{
 		this.dataType = dataType;
 
 		if(changed){
+			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				options = new ArrayList();
+			
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onDataTypeChanged(this,dataType);
 		}
@@ -528,6 +531,9 @@ public class QuestionDef implements Serializable{
 	}
 
 	private void copyQuestionOptions(List options){
+		if(options == null)
+			return;
+		
 		this.options = new ArrayList();
 		for(int i=0; i<options.size(); i++)
 			((List)this.options).add(new OptionDef((OptionDef)options.get(i),this));

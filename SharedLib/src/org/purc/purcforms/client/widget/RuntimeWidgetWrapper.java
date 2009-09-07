@@ -214,44 +214,6 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
-	public void setText(String text){
-		if(widget instanceof RadioButton)
-			((RadioButton)widget).setText(text);
-		else if(widget instanceof CheckBox)
-			((CheckBox)widget).setText(text);
-		else if(widget instanceof Button)
-			((Button)widget).setText(text);
-		else if(widget instanceof Label)
-			((Label)widget).setText(text);
-		else if(widget instanceof HTML)
-			((HTML)widget).setText(text);
-		else if(widget instanceof Hyperlink)
-			((Label)widget).setText(text);
-		else if(widget instanceof TabBar && text != null && text.trim().length() > 0)
-			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
-	}
-
-	public void setTitle(String title){
-		if(widget instanceof RadioButton)
-			((RadioButton)widget).setText(title);
-		else if(widget instanceof CheckBox)
-			((CheckBox)widget).setTitle(title);
-		else if(widget instanceof Button)
-			((Button)widget).setTitle(title);
-		else if(widget instanceof ListBox)
-			((ListBox)widget).setTitle(title);
-		else if(widget instanceof TextArea)
-			((TextArea)widget).setTitle(title);
-		else if(widget instanceof TextBox)
-			((TextBox)widget).setTitle(title);
-		else if(widget instanceof Label)
-			((Label)widget).setTitle(title);
-		else if(widget instanceof Hyperlink)
-			((Hyperlink)widget).setTitle(title);
-		else if(widget instanceof HTML)
-			((HTML)widget).setTitle(title);
-	}
-
 	public void setQuestionDef(QuestionDef questionDef ,boolean loadWidget){
 		this.questionDef = questionDef;
 

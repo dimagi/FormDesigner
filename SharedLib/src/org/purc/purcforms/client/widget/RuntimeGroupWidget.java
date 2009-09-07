@@ -64,14 +64,14 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private FormDef formDef;
 	private Button btnAdd;
 	private RuntimeWidgetWrapper firstInvalidWidget;
-	
+
 	protected HashMap<QuestionDef,List<Widget>> labelMap = new HashMap<QuestionDef,List<Widget>>();;
 	protected HashMap<Widget,String> labelText = new HashMap<Widget,String>();
 	protected HashMap<Widget,String> labelReplaceText = new HashMap<Widget,String>();
 
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
-	
-	
+
+
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.formDef = formDef;
@@ -108,7 +108,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				parentWrapper.setQuestionDef(qtn,true);
 				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
 				//addWidget(parentWrapper); //Misplaces first widget (with tabindex > 0) of a group (CheckBox and RadioButtons)
-			
+
 				qtn.addChangeListener(this);
 				List<CheckBox> list = new ArrayList<CheckBox>();
 				list.add((CheckBox)widget);
@@ -117,7 +117,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		}	 
 		else
 			checkBoxGroupMap.get(parentWrapper.getQuestionDef()).add((CheckBox)widget);
-		
+
 		return parentWrapper;
 	}
 
@@ -157,6 +157,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			}
 		}
 
+		//Now add the button widgets, if any.
 		if(isRepeated){
 			HorizontalPanel panel = new HorizontalPanel();
 			panel.setSpacing(5);
@@ -170,6 +171,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				RuntimeWidgetWrapper widget = buttons.get(index);
 				selectedPanel.add(widget);
 				FormUtil.setWidgetPosition(widget,widget.getLeft(),widget.getTop());
+				//FormUtil.setWidgetPosition(selectedPanel,widget,widget.getLeft(),widget.getTop());
 			}
 		}
 	}
@@ -267,18 +269,18 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL)){
 			String text = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
 			widget = new Label(text);
-			
+
 			int pos1 = text.indexOf("${");
 			int pos2 = text.indexOf("}$");
 			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
 				String varname = text.substring(pos1+2,pos2);
 				labelText.put(widget, text);
 				labelReplaceText.put(widget, "${"+varname+"}$");
-				
+
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
 				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
 					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
-				
+
 				QuestionDef qtnDef = formDef.getQuestion(varname);
 				List<Widget> labels = labelMap.get(qtnDef);
 				if(labels == null){
@@ -305,8 +307,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			String contentType = "&contentType=video/3gpp";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
 				contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
-				//extension = ".wav";
-			
+			//extension = ".wav";
+
 			contentType += "&name="+questionDef.getVariableName()+".3gp";
 
 			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
@@ -398,8 +400,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		if(top != null && top.trim().length() > 0)
 			wrapper.setTop(top);
 
-		if(wrapper.getWrappedWidget() instanceof Label)
-			WidgetEx.loadLabelProperties(node,wrapper);
+		//if(wrapper.getWrappedWidget() instanceof Label)
+		WidgetEx.loadLabelProperties(node,wrapper);
+
+		wrapper.setTabIndex(tabIndex);
+		wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 
 		if(tabIndex > 0 && !(wrapper.getWrappedWidget() instanceof Button))
 			widgets.put(new Integer(tabIndex), wrapper);
@@ -407,10 +412,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			addWidget(wrapper);
 
 		if(wrapperSet)
-			FormUtil.setWidgetPosition(wrapper,left,top);
+			;//FormUtil.setWidgetPosition(wrapper,left,top);
 
 		if(widget instanceof Button && binding != null){
-			wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+			//wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 
 			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
 					binding.equals("browse")||binding.equals("clear")){
@@ -433,7 +438,15 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		String binding = wrapper.getBinding();
 		if(wrapper.getWrappedWidget() instanceof Button && 
 				!("browse".equals(binding) || "clear".equals(binding))){
-			buttons.add(wrapper);
+
+			//Ensure that the Add New and Remove buttons are displayed according to tab index
+			if(buttons.size() == 0 || (buttons.get(0).getTabIndex() <= wrapper.getTabIndex()))
+				buttons.add(wrapper);
+			else{
+				RuntimeWidgetWrapper w = buttons.remove(0);
+				buttons.add(wrapper);
+				buttons.add(w);
+			}
 			return;
 		}
 
@@ -450,6 +463,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else{
 			selectedPanel.add(wrapper);
 			FormUtil.setWidgetPosition(wrapper,wrapper.getLeft(),wrapper.getTop());
+			//FormUtil.setWidgetPosition(selectedPanel,wrapper,wrapper.getLeft(),wrapper.getTop());
 		}
 	}
 
@@ -523,7 +537,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 				String contentType = "&contentType=video/3gpp";
 				contentType += "&name="+wrapper.getQuestionDef().getVariableName()+".3gp";
-				
+
 				//TODO What if the multimedia url suffix already has a ?
 				String url = FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime();
 				OpenFileDialog dlg = new OpenFileDialog(this,url);
@@ -553,6 +567,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	}
 
 	private void addNewRow(Widget sender){
+		HashMap<String,RuntimeWidgetWrapper> widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
+
 		Element newRepeatDataNode = null;
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
@@ -568,7 +584,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 					return; //possibly form not yet saved
 				}
 
-				Element repeatDataNode = getParentNode(dataNode,mainWidget.getBinding());
+				Element repeatDataNode = getParentNode(dataNode,(mainWidget.getWrappedWidget() instanceof CheckBox) ? mainWidget.getParentBinding() : mainWidget.getBinding());
 				newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);
 				repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
 				dataNodes.add(newRepeatDataNode);
@@ -577,6 +593,18 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			table.setWidget(row, index, copyWidget);
 
 			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
+
+			if(copyWidget.getWrappedWidget() instanceof RadioButton)
+				((RadioButton)copyWidget.getWrappedWidget()).setName(((RadioButton)copyWidget.getWrappedWidget()).getName()+row);
+
+			if(copyWidget.getWrappedWidget() instanceof CheckBox){
+				RuntimeWidgetWrapper widget = widgetMap.get(copyWidget.getParentBinding());
+				if(widget == null){
+					widget = copyWidget;
+					widgetMap.put(copyWidget.getParentBinding(), widget);
+				}
+				widget.addChildWidget(copyWidget);
+			}
 		}
 
 		btnAdd = (Button)sender;
@@ -624,7 +652,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	}
 
 	private void setDataNode(RuntimeWidgetWrapper widget, Element parentNode, String binding, boolean loadQtn){
-		String name = binding;
+		if(widget.getQuestionDef() == null)
+			return; //for checkboxes, only the first may have reference to the parent questiondef
+
+		String name = (widget.getWrappedWidget() instanceof CheckBox) ? widget.getParentBinding() : binding;
 		int pos = name.indexOf('/');
 		if(pos > 0)
 			name = name.substring(0, pos);
@@ -747,11 +778,11 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				widgetWrapper = (RuntimeWidgetWrapper)image.getParent().getParent();
 			else
 				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
-			
+
 			String xpath = widgetWrapper.getBinding();
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
-			
+
 			if(image != null)
 				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
 			else{
@@ -759,8 +790,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 				String contentType = "&contentType=video/3gpp";
 				if(widgetWrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_AUDIO)
 					contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
-					//extension = ".wav";
-				
+				//extension = ".wav";
+
 				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
 
 				html.setVisible(true);
@@ -866,64 +897,64 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		return false;
 	}
-	
+
 	public HashMap<QuestionDef,List<Widget>> getLabelMap(){
 		return labelMap;
 	}
-	
+
 	public HashMap<Widget,String> getLabelText(){
 		return labelText;
 	}
-	
+
 	public HashMap<Widget,String> getLabelReplaceText(){
 		return labelReplaceText;
 	}
-	
+
 	public HashMap<QuestionDef,List<CheckBox>> getCheckBoxGroupMap(){
 		return checkBoxGroupMap;
 	}
-	
+
 	public void onEnabledChanged(QuestionDef sender,boolean enabled){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
 			return;
-		
+
 		for(CheckBox checkBox : list){
 			checkBox.setEnabled(enabled);
 			if(!enabled)
 				checkBox.setChecked(false);
 		}
 	}
-	
+
 	public void onVisibleChanged(QuestionDef sender,boolean visible){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
 			return;
-		
+
 		for(CheckBox checkBox : list){
 			checkBox.setVisible(visible);
 			if(!visible)
 				checkBox.setChecked(false);
 		}
 	}
-	
+
 	public void onRequiredChanged(QuestionDef sender,boolean required){
-		
+
 	}
-	
+
 	public void onLockedChanged(QuestionDef sender,boolean locked){
-		
+
 	}
-	
+
 	public void onBindingChanged(QuestionDef sender,String newValue){
-		
+
 	}
-	
+
 	public void onDataTypeChanged(QuestionDef sender,int dataType){
-		
+
 	}
-	
+
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
-		
+
 	}
 }

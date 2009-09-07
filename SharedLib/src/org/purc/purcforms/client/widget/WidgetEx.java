@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -131,6 +132,7 @@ public class WidgetEx extends Composite{
 		setBorderColor(widget.getBorderColor());
 		
 		setTitle(widget.getTitle());
+		setText(widget.getText());
 	}
 	
 	protected void copyWidget(WidgetEx widget){
@@ -166,6 +168,92 @@ public class WidgetEx extends Composite{
 			widget.setHeight(height);
 		if(width != null)
 			widget.setWidth(width);
+	}
+	
+	public String getText(){
+		if(widget instanceof RadioButton)
+			return ((RadioButton)widget).getText();
+		else if(widget instanceof CheckBox)
+			return ((CheckBox)widget).getText();
+		else if(widget instanceof Button)
+			return ((Button)widget).getText();
+		else if(widget instanceof Label)
+			return ((Label)widget).getText();
+		else if(widget instanceof TextArea)
+			return ((TextArea)widget).getText();
+		else if(widget instanceof TextBox)
+			return ((TextBox)widget).getText();
+		else if(widget instanceof Hyperlink)
+			return ((Hyperlink)widget).getText();
+		return null;
+	}
+	
+	public void setText(String text){
+		if(widget instanceof RadioButton)
+			((RadioButton)widget).setText(text);
+		else if(widget instanceof CheckBox)
+			((CheckBox)widget).setText(text);
+		else if(widget instanceof Button)
+			((Button)widget).setText(text);
+		else if(widget instanceof Label)
+			((Label)widget).setText(text);
+		else if(widget instanceof TextArea)
+			((TextArea)widget).setText(text);
+		else if(widget instanceof TextBox)
+			((TextBox)widget).setText(text);
+		else if(widget instanceof Hyperlink)
+			((Hyperlink)widget).setText(text);
+		else if(widget instanceof TabBar && text != null && text.trim().length() > 0)
+			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
+
+	}
+	
+	public String getTitle(){
+		if(widget instanceof RadioButton)
+			return ((RadioButton)widget).getTitle();
+		else if(widget instanceof CheckBox)
+			return ((CheckBox)widget).getTitle();
+		else if(widget instanceof Button)
+			return ((Button)widget).getTitle();
+		else if(widget instanceof ListBox)
+			return ((ListBox)widget).getTitle();
+		else if(widget instanceof TextArea)
+			return ((TextArea)widget).getTitle();
+		else if(widget instanceof DatePicker)
+			return ((DatePicker)widget).getTitle();
+		else if(widget instanceof TextBox)
+			return ((TextBox)widget).getTitle();
+		else if(widget instanceof Label)
+			return ((Label)widget).getTitle();
+		else if(widget instanceof Image)
+			return ((Image)widget).getTitle();
+		else if(widget instanceof Hyperlink)
+			return ((Hyperlink)widget).getTitle();
+		return null;
+	}
+
+	
+	public void setTitle(String title){
+		if(widget instanceof RadioButton)
+			((RadioButton)widget).setTitle(title);
+		else if(widget instanceof CheckBox)
+			((CheckBox)widget).setTitle(title);
+		else if(widget instanceof Button)
+			((Button)widget).setTitle(title);
+		else if(widget instanceof ListBox)
+			((ListBox)widget).setTitle(title);
+		else if(widget instanceof TextArea)
+			((TextArea)widget).setTitle(title);
+		else if(widget instanceof DatePicker)
+			((DatePicker)widget).setTitle(title);
+		else if(widget instanceof TextBox)
+			((TextBox)widget).setTitle(title);
+		else if(widget instanceof Label)
+			((Label)widget).setTitle(title);
+		else if(widget instanceof Image)
+			((Image)widget).setTitle(title);
+		else if(widget instanceof Hyperlink)
+			((Hyperlink)widget).setTitle(title);
 	}
 	
 	public Widget getWrappedWidget(){
@@ -547,5 +635,13 @@ public class WidgetEx extends Composite{
 
 	public void setTop(String sTop){
 		DOM.setStyleAttribute(getElement(), "top",sTop);
+	}
+	
+	public int getTabIndex(){
+		return tabIndex;
+	}
+	
+	public void setTabIndex(int tabIndex){
+		this.tabIndex = tabIndex;
 	}
 }

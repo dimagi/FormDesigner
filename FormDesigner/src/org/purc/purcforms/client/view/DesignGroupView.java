@@ -950,6 +950,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected DesignWidgetWrapper addNewButton(boolean select){
 		return addNewButton(LocaleText.get("submit"),"submit",select);
 	}
+	
+	protected DesignWidgetWrapper addCancelButton(boolean select){
+		return addNewButton(LocaleText.get("cancel"),"cancel",select);
+	}
 
 	public void onCopy(Widget sender) {
 		selectedDragController.clearSelection();

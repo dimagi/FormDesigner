@@ -418,7 +418,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			//wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 
 			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
-					binding.equals("browse")||binding.equals("clear")){
+					binding.equals("browse")||binding.equals("clear")||binding.equals("cancel")){
 				((Button)widget).addClickListener(new ClickListener(){
 					public void onClick(Widget sender){
 						execute(sender);
@@ -472,6 +472,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 		if(binding.equalsIgnoreCase("submit"))
 			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onSubmit();
+		else if(binding.equalsIgnoreCase("cancel"))
+			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onCancel();
 		else if(repeatQtnsDef != null){
 			if(binding.equalsIgnoreCase("addnew"))
 				addNewRow(sender);

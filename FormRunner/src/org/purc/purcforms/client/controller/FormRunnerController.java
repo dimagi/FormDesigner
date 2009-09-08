@@ -127,6 +127,18 @@ public class FormRunnerController implements SubmitListener{
 			}
 		});
 	}
+	
+	public void onCancel(){
+		String url = FormUtil.getHostPageBaseURL();
+		url += FormUtil.getAfterSubmitUrlSuffix();
+
+		if(FormUtil.appendEntityIdAfterSubmit()){
+			url += FormUtil.getEntityIdName();
+			url += "=" + entityId;
+		}
+
+		Window.Location.replace(url);
+	}
 
 	public void onSubmit(String xml){
 

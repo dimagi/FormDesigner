@@ -21,7 +21,6 @@ import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NamedNodeMap;
@@ -606,6 +605,17 @@ public class XformConverter implements Serializable{
 
 		return dataNode;
 	}
+	
+	private static String getBindFromVariableName(String id){
+		if(id.contains("/")){
+			if(id.indexOf("/") == id.lastIndexOf('/'))
+				id = id.substring(id.lastIndexOf('/')+1); //as one / eg encounter/encounter.encounter_datetime
+			else
+				id = id.substring(id.indexOf('/')+1,id.lastIndexOf('/')); //has two / eg obs/method_of_delivery/value
+		}
+		
+		return id;
+	}
 
 	public static void fromQuestionDef2Xform(QuestionDef qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
 		Element dataNode =  fromVariableName2NodeName(doc,qtn.getVariableName(),formDef,formNode);
@@ -614,9 +624,7 @@ public class XformConverter implements Serializable{
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(NODE_NAME_BIND);
-		String id = qtn.getVariableName();
-		if(id.contains("/"))
-			id = id.substring(id.lastIndexOf('/')+1);
+		String id = getBindFromVariableName(qtn.getVariableName());
 		bindNode.setAttribute(ATTRIBUTE_NAME_ID, id);
 
 		String nodeset = qtn.getVariableName();
@@ -795,10 +803,7 @@ public class XformConverter implements Serializable{
 		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			name = NODE_NAME_GROUP;
 
-		String id = qtnDef.getVariableName();
-		if(id.contains("/"))
-			id = id.substring(id.lastIndexOf('/')+1);
-
+		String id = getBindFromVariableName(qtnDef.getVariableName());
 		Element node = doc.createElement(name);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);

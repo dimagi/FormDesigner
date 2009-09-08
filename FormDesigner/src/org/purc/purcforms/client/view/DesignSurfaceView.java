@@ -775,8 +775,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//The submit button is added only to the first tab such that we dont keep
 		//adding multiple submit buttons everytime one refreshes the design surface
-		if(tabs.getTabBar().getTabCount() == 1)
+		if(tabs.getTabBar().getTabCount() == 1){
 			addNewButton(false);
+			
+			x += 200;
+			addCancelButton(false);
+		}
 
 		setHeight(y+40+"px");
 	}
@@ -1431,5 +1435,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//for(int i=0; i<dragControllers.size(); i++)
 		//	dragControllers.elementAt(i).getBoundaryPanel().setWidth(sWidth);
+	}
+	
+	public String getSelectedPageHtml(){
+		if(selectedPanel == null)
+			return "";
+		return selectedPanel.getElement().getInnerHTML();
 	}
 }

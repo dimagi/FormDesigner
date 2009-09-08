@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
@@ -30,6 +31,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
@@ -458,20 +460,29 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		WidgetEx.loadLabelProperties(node,wrapper);
 
 		wrapper.setTabIndex(tabIndex);
-		
+
 		if(tabIndex > 0)
 			widgets.put(new Integer(tabIndex), wrapper);
 		else
 			selectedPanel.add(wrapper);
-		
+
 		FormUtil.setWidgetPosition(wrapper,left,top);
 
-		if(widget instanceof Button && binding != null && binding.equals("submit")){
-			((Button)widget).addClickListener(new ClickListener(){
-				public void onClick(Widget sender){
-					submit();
-				}
-			});
+		if(widget instanceof Button && binding != null){
+			if(binding.equals("submit")){
+				((Button)widget).addClickListener(new ClickListener(){
+					public void onClick(Widget sender){
+						submit();
+					}
+				});
+			}
+			else if(binding.equals("cancel")){
+				((Button)widget).addClickListener(new ClickListener(){
+					public void onClick(Widget sender){
+						onCancel();
+					}
+				});
+			}
 		}
 
 		return tabIndex;
@@ -505,6 +516,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 	public void onSubmit(){
 		submit();
+	}
+
+	public void onCancel(){
+		if(Window.confirm(LocaleText.get("cancelFormPrompt")))
+			submitListener.onCancel();
 	}
 
 	private void submitData(){
@@ -668,7 +684,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			tabs.clear();
 			addNewTab("Page1");
 		}
-		
+
 		//No need of calling this because we shall eventually call loadForm
 		/*if(formDef == null)
 			this.formDef = null;
@@ -710,7 +726,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	private void updateDynamicOptions(){
 		if(formDef.getPages() == null)
 			return;
-		
+
 		for(byte i=0; i<formDef.getPages().size(); i++){
 			PageDef pageDef = (PageDef)formDef.getPages().elementAt(i);
 			for(byte j=0; j<pageDef.getQuestions().size(); j++)

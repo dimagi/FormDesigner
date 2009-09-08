@@ -296,6 +296,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public String getLanguageXml(){
 		return txtLanguageXml.getText();
 	}
+	
+	public String getFormInnerHtml(){
+		return designSurfaceView.getSelectedPageHtml();
+	}
 
 	public void setLayoutXml(String xml, boolean selectTabs){
 		txtLayoutXml.setText(xml);
@@ -467,6 +471,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	public void onSubmit(String xml) {
 		this.txtModelXml.setText(xml);
 		tabs.selectTab(SELECTED_INDEX_MODEL_XML);
+	}
+	
+	public void onCancel(){
+		
 	}
 
 	/**

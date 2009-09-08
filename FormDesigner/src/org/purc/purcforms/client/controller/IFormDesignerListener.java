@@ -40,4 +40,6 @@ public interface IFormDesignerListener extends IFormActionListener{
 	public void changeLocale(String locale);
 	
 	public void saveAsXhtml();
+	
+	public void printForm();
 }

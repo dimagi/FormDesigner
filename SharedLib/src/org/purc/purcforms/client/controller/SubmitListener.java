@@ -8,4 +8,5 @@ package org.purc.purcforms.client.controller;
  */
 public interface SubmitListener {
 	public void onSubmit(String xml);
+	public void onCancel();
 }

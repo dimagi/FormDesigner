@@ -74,6 +74,19 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	public void addNewChildItem() {
 		leftPanel.addNewChildItem();
 	}
+	
+	public void printForm(){
+		FormDef formDef = centerPanel.getFormDef();
+		if(formDef != null)
+			printForm(formDef.getName(), centerPanel.getFormInnerHtml());
+	}
+	
+	public static native void printForm(String title,String html) /*-{
+		 var win =window.open('','purcforms','width=350,height=250,menubar=1,toolbar=1,status=1,scrollbars=1,resizable=1');
+		 win.document.open("text/html","replace");
+		 win.document.writeln('<html><head><title>' + title + '</title></head><body bgcolor=white onLoad="self.focus()">'+html+'</body></html>');
+		 win.document.close();
+	}-*/;
 
 	public static native void back() /*-{
 		window.history.go(-1);

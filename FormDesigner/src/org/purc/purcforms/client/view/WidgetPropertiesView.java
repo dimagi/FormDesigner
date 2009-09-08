@@ -760,7 +760,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 						txtBinding.setText(questionDef.getText());
 					else{
 						if("submit".equalsIgnoreCase(value)||"addnew".equalsIgnoreCase(value)||"remove".equalsIgnoreCase(value)
-								|| "browse".equalsIgnoreCase(value)||"clear".equalsIgnoreCase(value) ||
+								|| "browse".equalsIgnoreCase(value) || "clear".equalsIgnoreCase(value) || "cancel".equalsIgnoreCase(value) ||
 								(this.widget.getWrappedWidget() instanceof Label || this.widget.getWrappedWidget() instanceof Hyperlink) ||
 								this.widget.getWrappedWidget() instanceof TabBar)
 							txtBinding.setText(value);
@@ -870,6 +870,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		oracle.add("remove");
 		oracle.add("browse");
 		oracle.add("clear");
+		oracle.add("cancel");
 
 		//sgstBinding.
 		//table.remove(sgstBinding);

@@ -208,7 +208,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			public void execute() {popup.hide(); addNewTextArea(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
-			public void execute() {popup.hide(); addNewButton(true);}});
+			public void execute() {popup.hide(); addNewButton(LocaleText.get("button"),null,true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker(true);}});
@@ -776,7 +776,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		//The submit button is added only to the first tab such that we dont keep
 		//adding multiple submit buttons everytime one refreshes the design surface
 		if(tabs.getTabBar().getTabCount() == 1){
-			addNewButton(false);
+			addSubmitButton(false);
 			
 			x += 200;
 			addCancelButton(false);
@@ -1404,6 +1404,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	}
 
 	protected void selectAll(){
+		if(editWidget != null)
+			return; //let label editor do select all
+		
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets != null){
 			for(int index = 0; index < widgets.size(); index++){

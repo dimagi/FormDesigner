@@ -149,7 +149,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			public void execute() {popup.hide(); addNewTextArea(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("button")),true,new Command(){
-			public void execute() {popup.hide(); addNewButton(true);}});
+			public void execute() {popup.hide(); addNewButton(LocaleText.get("button"),null,true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker(true);}});

@@ -622,6 +622,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected void selectAll(){
+		if(editWidget != null)
+			return; //let label editor do select all
+		
 		selectedDragController.clearSelection();
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
 			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper){
@@ -947,7 +950,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 
-	protected DesignWidgetWrapper addNewButton(boolean select){
+	protected DesignWidgetWrapper addSubmitButton(boolean select){
 		return addNewButton(LocaleText.get("submit"),"submit",select);
 	}
 	
@@ -999,7 +1002,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		else if(text.equals(LocaleText.get("textArea")))
 			return addNewTextArea(true);
 		else if(text.equals(LocaleText.get("button")))
-			return addNewButton(true);
+			return addNewButton(LocaleText.get("button"),null,true);
 		else if(text.equals(LocaleText.get("datePicker")))
 			return addNewDatePicker(true);
 		

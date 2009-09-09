@@ -21,7 +21,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FocusListenerAdapter;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
@@ -32,9 +31,9 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestionEvent;
 import com.google.gwt.user.client.ui.SuggestionHandler;
-import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -64,7 +63,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		errorImage = widget.getErrorImage().createImage();
 		errorImageProto = widget.getErrorImage();
 		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
-		
+
 		if(widget.getValidationRule() != null)
 			validationRule = new ValidationRule(widget.getValidationRule());
 
@@ -283,20 +282,30 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					listBox.setSelectedIndex(2);
 			}
 		}
+		else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE && defaultValue != null 
+				&& defaultValue.trim().length() > 0&& binding != null 
+				&& binding.trim().length() > 0 && widget instanceof CheckBox){
+			if(defaultValue.contains(binding))
+				((CheckBox)widget).setChecked(true);
+		}
 
-		if(widget instanceof TextBox && defaultValue != null){
-			if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
-				OptionDef optionDef = questionDef.getOptionWithValue(defaultValue);
-				if(optionDef != null)
-					((TextBox)widget).setText(optionDef.getText());
-			}
-			else{
-				if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
-					defaultValue = questionDef.getDefaultValueDisplay();
-				else if(defaultValue.trim().length() > 0 && questionDef.isDate())
-					defaultValue = fromSubmit2DisplayDate(defaultValue);
+		if(widget instanceof TextBoxBase){
+			((TextBoxBase)widget).setText(""); //first init just incase we have default value
 
-				((TextBox)widget).setText(defaultValue);
+			if(defaultValue != null && defaultValue.trim().length() > 0){
+				if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+					OptionDef optionDef = questionDef.getOptionWithValue(defaultValue);
+					if(optionDef != null)
+						((TextBox)widget).setText(optionDef.getText());
+				}
+				else{
+					if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
+						defaultValue = questionDef.getDefaultValueDisplay();
+					else if(defaultValue.trim().length() > 0 && questionDef.isDate())
+						defaultValue = fromSubmit2DisplayDate(defaultValue);
+
+					((TextBoxBase)widget).setText(defaultValue);
+				}
 			}
 		}
 
@@ -419,7 +428,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 			return;
 		}
-		
+
 		//These are not used for filling any answers. HTML is used for audio and video
 		if((widget instanceof Label || widget instanceof Button) && !(widget instanceof HTML))
 			return;
@@ -520,14 +529,19 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		childWidgets.add(childWidget);
 
 		String defaultValue = questionDef.getDefaultValue();
-		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && 
-				widget instanceof RadioButton && defaultValue != null){ 
+		int type = questionDef.getDataType();
+		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+			type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				&& widget instanceof CheckBox && defaultValue != null){ 
 			if(childWidgets.size() == questionDef.getOptions().size()){
 				for(int index=0; index < childWidgets.size(); index++){
 					RuntimeWidgetWrapper kidWidget = childWidgets.get(index);
-					if(defaultValue.equals(kidWidget.getBinding())){
-						((RadioButton)((RuntimeWidgetWrapper)kidWidget).getWrappedWidget()).setChecked(true);
-						break;
+					if((type == QuestionDef.QTN_TYPE_LIST_MULTIPLE && defaultValue.contains(kidWidget.getBinding())) ||
+					   (type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && defaultValue.equals(kidWidget.getBinding()))){
+						
+						((CheckBox)((RuntimeWidgetWrapper)kidWidget).getWrappedWidget()).setChecked(true);
+						if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+							break; //for this we can't select more than one.
 					}
 				}
 			}

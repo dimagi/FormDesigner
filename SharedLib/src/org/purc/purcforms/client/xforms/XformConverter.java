@@ -195,7 +195,7 @@ public class XformConverter implements Serializable{
 
 		return "";
 	}
-	
+
 	/**
 	 * Creates a copy of a formDef together with its xform xml.
 	 * 
@@ -207,10 +207,10 @@ public class XformConverter implements Serializable{
 			return new FormDef(formDef);
 		else
 			formDef.updateDoc(false);
-		
+
 		return fromXform2FormDef(fromDoc2String(formDef.getDoc()));
 	}
-	
+
 	public static String fromFormDef2Xform(FormDef formDef){
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
@@ -529,7 +529,7 @@ public class XformConverter implements Serializable{
 			//	constraint = "count(.) ";
 			if(condition.getFunction() == ModelConstants.FUNCTION_LENGTH)
 				constraint = "length(.) ";
-			
+
 			constraint += getOperator(condition.getOperator(),action)+value;
 		}
 		return constraint;
@@ -605,15 +605,15 @@ public class XformConverter implements Serializable{
 
 		return dataNode;
 	}
-	
-	private static String getBindFromVariableName(String id){
-		if(id.contains("/")){
-			if(id.indexOf("/") == id.lastIndexOf('/'))
+
+	private static String getBindFromVariableName(String id, boolean isRepeatKid){
+		if(!isRepeatKid && id.contains("/")){
+			if(id.indexOf('/') == id.lastIndexOf('/'))
 				id = id.substring(id.lastIndexOf('/')+1); //as one / eg encounter/encounter.encounter_datetime
 			else
 				id = id.substring(id.indexOf('/')+1,id.lastIndexOf('/')); //has two / eg obs/method_of_delivery/value
 		}
-		
+
 		return id;
 	}
 
@@ -624,7 +624,7 @@ public class XformConverter implements Serializable{
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(NODE_NAME_BIND);
-		String id = getBindFromVariableName(qtn.getVariableName());
+		String id = getBindFromVariableName(qtn.getVariableName(),false);
 		bindNode.setAttribute(ATTRIBUTE_NAME_ID, id);
 
 		String nodeset = qtn.getVariableName();
@@ -652,7 +652,7 @@ public class XformConverter implements Serializable{
 			bindAttributeName = ATTRIBUTE_NAME_BIND;
 		}	
 
-		Element inputNode =  getXformInputElementName(doc,qtn,bindAttributeName);
+		Element inputNode =  getXformInputElementName(doc,qtn,bindAttributeName,false);
 		if(groupNode != null) //Some forms may not be in groups
 			groupNode.appendChild(inputNode);
 		else
@@ -690,7 +690,7 @@ public class XformConverter implements Serializable{
 
 			RepeatQtnsDef rptQtns = qtn.getRepeatQtnsDef();
 			for(int j=0; j<rptQtns.size(); j++)
-				createQuestion(rptQtns.getQuestionAt(j),repeatNode,dataNode,doc);
+				createQuestion(rptQtns.getQuestionAt(j),repeatNode,dataNode,doc,true);
 		}
 	}
 
@@ -743,7 +743,7 @@ public class XformConverter implements Serializable{
 		return itemSetNode;
 	}
 
-	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
+	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc, boolean isRepeatKid){
 		String name = qtnDef.getVariableName();
 
 		//TODO Should do this for all invalid characters in node names.
@@ -757,7 +757,7 @@ public class XformConverter implements Serializable{
 		parentDataNode.appendChild(dataNode);
 		qtnDef.setDataNode(dataNode);
 
-		Element inputNode =  getXformInputElementName(doc,qtnDef,ATTRIBUTE_NAME_REF);
+		Element inputNode =  getXformInputElementName(doc,qtnDef,ATTRIBUTE_NAME_REF,isRepeatKid);
 		inputNode.setAttribute(ATTRIBUTE_NAME_TYPE, getXmlType(qtnDef.getDataType(),inputNode));
 		if(qtnDef.isRequired())
 			inputNode.setAttribute(ATTRIBUTE_NAME_REQUIRED, XPATH_VALUE_TRUE);
@@ -792,7 +792,7 @@ public class XformConverter implements Serializable{
 		}
 	}
 
-	private static Element getXformInputElementName(Document doc, QuestionDef qtnDef, String bindAttributeName){
+	private static Element getXformInputElementName(Document doc, QuestionDef qtnDef, String bindAttributeName, boolean isRepeatKid){
 
 		String name = NODE_NAME_INPUT;
 
@@ -803,7 +803,7 @@ public class XformConverter implements Serializable{
 		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			name = NODE_NAME_GROUP;
 
-		String id = getBindFromVariableName(qtnDef.getVariableName());
+		String id = getBindFromVariableName(qtnDef.getVariableName(), isRepeatKid);
 		Element node = doc.createElement(name);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
@@ -894,7 +894,7 @@ public class XformConverter implements Serializable{
 
 		return null;
 	}
-	
+
 	private static Element getModelNode(Element element){
 		int numOfEntries = element.getChildNodes().getLength();
 		for (int i = 0; i < numOfEntries; i++) {
@@ -987,7 +987,7 @@ public class XformConverter implements Serializable{
 				continue;
 
 			valueSet = false; val = null;
-			
+
 			if(variableName.contains("@"))
 				setAttributeDefaultValue(def,variableName,dataNode);
 			else{
@@ -1002,7 +1002,7 @@ public class XformConverter implements Serializable{
 				if(node != null){
 					if(!valueSet)
 						val = getNodeTextValue(node,id);
-					
+
 					if(val == null || val.trim().length() == 0) //we are not allowing empty strings for now.
 						continue;
 
@@ -1028,7 +1028,7 @@ public class XformConverter implements Serializable{
 		int endPos = variableName.indexOf('/');
 		if(endPos < 0)
 			return null;
-			
+
 		while(endPos >= 0){
 			String name = variableName.substring(startPos, endPos);
 			node = getNode(node,name);
@@ -1037,7 +1037,7 @@ public class XformConverter implements Serializable{
 			startPos = endPos + 1;
 			endPos = variableName.indexOf('/', startPos);
 		}
-		
+
 		String name = variableName.substring(startPos);
 		node = getNode(node,name);
 		return node;
@@ -1327,13 +1327,13 @@ public class XformConverter implements Serializable{
 							QuestionDef rptQtnDef = formDef.getQuestion(varName);
 							qtn.setId(getNextQuestionId());
 							rptQtnDef.addRepeatQtnsDef(qtn);
-							
+
 							//This should be before the data and control nodes are set because it removed them.
 							formDef.removeQuestion(qtn);
-							
+
 							qtn.setBindNode(child);
 							qtn.setControlNode(child);
-							
+
 							//Remove repeat question constraint if any
 							replaceConstraintQtn(constraints,qtn);
 						}
@@ -1698,7 +1698,7 @@ public class XformConverter implements Serializable{
 
 		formDef.setValidationRules(rules);
 	}
-	
+
 	private static void replaceConstraintQtn(HashMap constraints, QuestionDef questionDef){
 		Iterator keys = constraints.keySet().iterator();
 		int id = 0;
@@ -1907,7 +1907,7 @@ public class XformConverter implements Serializable{
 		}
 		else
 			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);
-		
+
 		if(constraint.contains("length(.)") || constraint.contains("count(.)"))
 			condition.setFunction(ModelConstants.FUNCTION_LENGTH);
 
@@ -2196,7 +2196,7 @@ public class XformConverter implements Serializable{
 
 	public static String fromFormDef2Xhtml(FormDef formDef){
 		Document prevdoc = formDef.getDoc();
-		
+
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
 
@@ -2229,15 +2229,15 @@ public class XformConverter implements Serializable{
 		buildXform(formDef,doc,bodyNode,modelNode);
 
 		copyModel(prevdoc,doc);
-		
+
 		return fromDoc2String(doc);
 	}
-	
+
 	private static void copyModel(Document srcDoc, Document destDoc){
 		if(srcDoc != null){			
 			Element oldModel = getModelNode(srcDoc.getDocumentElement());
 			Element newModel = getModelNode(destDoc.getDocumentElement());
-			
+
 			if(oldModel != null && newModel != null){
 				oldModel = (Element)oldModel.cloneNode(true);
 				destDoc.importNode(oldModel, true);

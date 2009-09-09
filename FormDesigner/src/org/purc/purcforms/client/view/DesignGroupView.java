@@ -97,7 +97,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	protected WidgetSelectionListener currentWidgetSelectionListener;
 
-	private TextBox txtEdit = new TextBox();
+	protected TextBox txtEdit = new TextBox();
 	protected DesignWidgetWrapper editWidget;
 	protected String rubberBandHeight;
 	protected String rubberBandWidth;
@@ -622,8 +622,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected void selectAll(){
-		if(editWidget != null)
+		if(editWidget != null){
+			txtEdit.selectAll();
 			return; //let label editor do select all
+		}
 		
 		selectedDragController.clearSelection();
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){

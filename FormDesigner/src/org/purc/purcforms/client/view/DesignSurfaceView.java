@@ -1404,8 +1404,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	}
 
 	protected void selectAll(){
-		if(editWidget != null)
+		if(editWidget != null){
+			txtEdit.selectAll();
 			return; //let label editor do select all
+		}
 		
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets != null){

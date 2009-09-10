@@ -25,7 +25,6 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -119,6 +118,20 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			if(!(widget instanceof DesignGroupWidget) && !event.getCtrlKey())
 				widgetSelectionListener.onWidgetSelected(this,event.getCtrlKey()); //TODO verify that this does not introduce a bug
 			//The above is turned on for now because of selectedDragController.setBehaviorDragStartSensitivity(1);
+			
+			//When the header label of a groupbox is selected, all widgets within should be deselected.
+			if(widget instanceof Label && "100%".equals(width) && getParent().getParent() instanceof DesignGroupWidget){
+				DesignGroupWidget designGroupWidget = (DesignGroupWidget)getParent().getParent();
+				if(designGroupWidget.getHeaderLabel() == this)
+					designGroupWidget.clearGroupBoxSelection();
+			}
+			else if(widget instanceof DesignGroupWidget){
+				//When a group box is clicked anywhere outside a widget, deselect it to turn off the selection graying out
+				//but reselect it such that its properties can be shown in the properties pane.
+				widgetSelectionListener.onWidgetSelected(null,false);
+				widgetSelectionListener.onWidgetSelected(this,false);
+			}
+			
 		case Event.ONMOUSEUP:
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
@@ -166,7 +179,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
 		}
 
-		
 		//This is to prevent ListBox drop down from expanding on mouse down.
 		if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
 			final com.google.gwt.user.client.Element senderElem = this.getElement();
@@ -188,9 +200,11 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void startEditMode(TextBox txtEdit){
 		if(hasLabelEdidting()){
-			storePosition();
-			panel.remove(0);
-			panel.add(txtEdit);
+			if(!(widget instanceof TabBar)){
+				storePosition();
+				panel.remove(0);
+				panel.add(txtEdit);
+			}
 
 			String text = null;
 			if(widget instanceof Label)
@@ -201,24 +215,31 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 				text = ((RadioButton)widget).getText();
 			else if(widget instanceof CheckBox)
 				text = ((CheckBox)widget).getText();
-			else
+			else if(widget instanceof Button)
 				text = ((Button)widget).getText();
+			else
+				text = getText();
 
 			txtEdit.setText(text);
 			txtEdit.selectAll();
 			txtEdit.setFocus(true);
+			
+			//if(widget instanceof TabBar)
+			//	((TabBar)widget).setTabHTML(0, txtEdit.getElement().getInnerHTML());
 		}
 	}
 
 	public boolean hasLabelEdidting(){
-		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button || widget instanceof CheckBox || widget instanceof RadioButton);
+		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button ||
+				widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof TabBar*/);
 	}
 
 	public boolean stopEditMode(){
 		if(hasLabelEdidting()){
 			panel.remove(0);
 			panel.add(widget);
-			restorePosition();
+			if(!(widget instanceof TabBar))
+				restorePosition();
 			return true;
 		}
 		return false;

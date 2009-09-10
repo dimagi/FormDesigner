@@ -11,17 +11,24 @@ import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
 /**
  * Contains shared information that has the notion of being current (eg currently
- * selected form, current locale)
+ * selected form, current locale). 
+ * It represents the runtime context of the form designer.
+ * Contexts are associated with the current thread.
  * 
  * @author daniel
  *
  */
 public class Context {
 	
+	public static final byte MODE_NONE = 0;
+	public static final byte MODE_DESIGN = 1;
+	public static final byte MODE_PREVIEW = 2;
+	
 	private static String defaultLocale = "en";
 	private static String locale = defaultLocale;
 	private static List<Locale> locales = new ArrayList<Locale>();
 	private static boolean allowBindEdit = true;
+	private static byte currentMode = MODE_NONE;
 	
 	/** The form having focus. */
 	private static FormDef formDef;
@@ -91,5 +98,13 @@ public class Context {
 	
 	public static void setAllowBindEdit(boolean allowBindEdit){
 		Context.allowBindEdit = allowBindEdit;
+	}
+	
+	public static byte getCurrentMode(){
+		return currentMode;
+	}
+	
+	public static void setCurrentMode(byte currentMode){
+		Context.currentMode = currentMode;
 	}
 }

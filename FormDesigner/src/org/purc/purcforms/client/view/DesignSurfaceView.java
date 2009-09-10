@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -130,7 +131,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		DOM.addEventPreview(new EventPreview() { 
 			public boolean onEventPreview(Event event) 
 			{ 
-				if(!isVisible())
+				if(Context.getCurrentMode() != Context.MODE_DESIGN)
 					return true;
 
 				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
@@ -1063,7 +1064,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		group.setHeaderLabel(headerLabel);
 		//End header label stuff
 
-
+		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+		//edited text is not automatically selected.
+		widget.removeStyleName("dragdrop-handle");
+		
 		return widget;
 	}
 
@@ -1359,7 +1363,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		boolean ctrlKey = FormDesignerUtil.getCtrlKey();
 		if(!ctrlKey)
-			stopLabelEdit();
+			stopLabelEdit(false);
 
 		if(widget == null){
 			selectedDragController.clearSelection(); //New and may cause bugs

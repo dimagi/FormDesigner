@@ -153,20 +153,26 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					((DesignSurfaceView)widgetSelectionListener).clearSelection();
 					if(selectedDragController.getSelectedWidgetCount() == 1)
 						((DesignSurfaceView)widgetSelectionListener).clearGroupBoxSelection();
-					
+
 					//if(!multipleSel && selectedDragController.getSelectedWidgetCount() == 1)
 					//	selectedDragController.clearSelection();
 				}
-				
+
 				if(!multipleSel && selectedDragController.getSelectedWidgetCount() == 1)
 					selectedDragController.clearSelection();
+
+				//Deselect and stop editing of any widget in group boxes
+				//TODO Doesnt this slow us a bit?
+				if(widget instanceof DesignWidgetWrapper &&  ((DesignWidgetWrapper)widget).getWidgetSelectionListener() instanceof DesignSurfaceView)
+					clearGroupBoxSelection();
 				
+				//Deselect any previously selected widgets in groupbox
 				selectedDragController.selectWidget(widget); //TODO Test this and make sure it does not introduce bugs
 			}
-			
-			stopLabelEdit();
+
+			stopLabelEdit(false);
 		}
-		
+
 		widgetSelectionListener.onWidgetSelected(widget, multipleSel);
 	}
 
@@ -190,8 +196,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		designGroupView.updateCursorPos(x+20, y+45);
 		designGroupView.pasteWidgets(true);
 		selectedDragController.clearSelection();
+		designGroupView.clearSelection();
 		widget.setHeightInt(FormUtil.convertDimensionToInt(rubberBandHeight)+35);
 		widget.setWidth(rubberBandWidth);
+
+		selectedDragController.selectWidget(widget);
+		widgetSelectionListener.onWidgetSelected(((DesignGroupWidget)designGroupView).getHeaderLabel(),false);
 	}
 
 	protected void copyWidgets(boolean remove){
@@ -626,7 +636,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			txtEdit.selectAll();
 			return; //let label editor do select all
 		}
-		
+
 		selectedDragController.clearSelection();
 		for(int i=0; i<selectedPanel.getWidgetCount(); i++){
 			if(selectedPanel.getWidget(i) instanceof DesignWidgetWrapper){
@@ -650,13 +660,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widgetPopup;
 	}
 
-	protected void handleStartLabelEditing(Event event){
+	protected boolean handleStartLabelEditing(Event event){
 		String s = event.getTarget().getClassName();
 		s.toString();
 		if(!event.getCtrlKey() && !isTextBoxFocus(event)){
 			if(selectedDragController.getSelectedWidgetCount() == 1 /*||
 					(selectedDragController.getSelectedWidgetCount() == 0 && this instanceof DesignGroupWidget)*/){
-				stopLabelEdit();
+				stopLabelEdit(false);
 
 				if(selectedDragController.getSelectedWidgetCount() == 0 && this instanceof DesignGroupWidget)
 					editWidget = ((DesignGroupWidget)this).getHeaderLabel();
@@ -665,41 +675,73 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 				if(editWidget != null){
 					if(editWidget.getWidgetSelectionListener() instanceof DesignGroupWidget & !(this instanceof DesignGroupWidget)){
-						((DesignGroupWidget)editWidget.getWidgetSelectionListener()).handleStartLabelEditing(event);
+						boolean ret = ((DesignGroupWidget)editWidget.getWidgetSelectionListener()).handleStartLabelEditing(event);
 						editWidget = null;
-						return;
+						return ret;
 					}
 					else if(editWidget.hasLabelEdidting()){
 						selectedDragController.makeNotDraggable(editWidget);
+
+						//editWidget.removeStyleName("dragdrop-handle");
+						//editWidget.removeStyleName("dragdrop-draggable");
+
+						if(this instanceof DesignGroupWidget){
+							//this.removeStyleName("dragdrop-handle");
+							//this.removeStyleName("dragdrop-draggable");
+							((DesignGroupWidget)this).clearSelection();
+						}
+
 						selectedDragController.clearSelection();
 						editWidget.startEditMode(txtEdit);
+						return true;
+					}
+					else if(editWidget.getWrappedWidget() instanceof DesignGroupWidget){
+						//Handle label editing
+						DesignWidgetWrapper headerLabel = ((DesignGroupWidget)editWidget.getWrappedWidget()).getHeaderLabel();
+						if(headerLabel == null)
+							return false;
+
+						//Without these two lines, the edit text is not selected, not even with Ctrl + A
+						selectedDragController.makeNotDraggable(editWidget);
+						editWidget.removeStyleName("dragdrop-handle");
+
+						((DesignGroupWidget)editWidget.getWrappedWidget()).clearSelection();
+						selectedDragController.clearSelection();
+						headerLabel.startEditMode(txtEdit);
+						return true;
 					}
 					else
 						editWidget = null;
 				}
 			}
+			/*else{
+				editWidget = getSelPageDesignWidget();
+				editWidget.startEditMode(txtEdit);
+				return true;
+			}*/
 		}
+		return false;
 	}
 
-	protected void handleStopLabelEditing(){
+	protected void handleStopLabelEditing(boolean select){
 		if(editWidget == null && selectedDragController.isAnyWidgetSelected()){
 			editWidget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
 			if(editWidget.getWidgetSelectionListener() instanceof DesignGroupWidget & !(this instanceof DesignGroupWidget)){
-				((DesignGroupWidget)editWidget.getWidgetSelectionListener()).handleStopLabelEditing();
+				((DesignGroupWidget)editWidget.getWidgetSelectionListener()).handleStopLabelEditing(select);
 				editWidget = null;
 				return;
 			}
 			else if(editWidget.hasLabelEdidting())
-				stopLabelEdit();
+				stopLabelEdit(select);
 		}
 		else
-			stopLabelEdit();
+			stopLabelEdit(select);
 	}
 
 	protected boolean isTextBoxFocus(Event event){
 		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextBox") || event.getTarget().getClassName().equalsIgnoreCase("gwt-SuggestBox");
 	}
-	
+
 	protected boolean isTextAreaFocus(Event event){
 		return event.getTarget().getClassName().equalsIgnoreCase("gwt-TextArea");
 	}
@@ -726,6 +768,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		DOM.setStyleAttribute(rubberBand.getElement(), "left", x+"px");
 		DOM.setStyleAttribute(rubberBand.getElement(), "top", y+"px");
 		DOM.setStyleAttribute(rubberBand.getElement(), "visibility", "visible");
+
+		DOM.setCapture(getElement());
 	}
 
 	public void stopRubberBand(Event event){
@@ -836,7 +880,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			groupWidgetsSeparator.setVisible(visible);
 			groupWidgetsMenu.setVisible(visible);
 		}
-		
+
 		cutCopySeparator.setVisible(visible);
 		cutMenu.setVisible(visible);
 		copyMenu.setVisible(visible); 
@@ -858,7 +902,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected DesignWidgetWrapper addNewWidget(Widget widget, boolean select){
-		stopLabelEdit();
+		stopLabelEdit(false);
 
 		DesignWidgetWrapper wrapper = new DesignWidgetWrapper(widget,widgetPopup,currentWidgetSelectionListener);
 
@@ -955,7 +999,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected DesignWidgetWrapper addSubmitButton(boolean select){
 		return addNewButton(LocaleText.get("submit"),"submit",select);
 	}
-	
+
 	protected DesignWidgetWrapper addCancelButton(boolean select){
 		return addNewButton(LocaleText.get("cancel"),"cancel",select);
 	}
@@ -1007,7 +1051,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return addNewButton(LocaleText.get("button"),null,true);
 		else if(text.equals(LocaleText.get("datePicker")))
 			return addNewDatePicker(true);
-		
+
 		return null;
 	}
 
@@ -1045,11 +1089,26 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//txtEdit.addStyleName("purcforms-label-editor");
 	}
 
-	protected void stopLabelEdit(){
+	/**
+	 * Stops inplace editing of widget text.
+	 * 
+	 * @param select a flag to determine whether to select the stoped edit widget.
+	 */
+	protected void stopLabelEdit(boolean select){
 		if(editWidget != null){
 			if(selectedPanel.getWidgetIndex(editWidget) < 0){
 				editWidget = null;
 				return;
+			}
+
+			DesignWidgetWrapper designGroupWidgetWrapper = null;
+			if(editWidget.getWrappedWidget() instanceof DesignGroupWidget){
+				//Stop header label editing
+				DesignWidgetWrapper headerLabel = ((DesignGroupWidget)editWidget.getWrappedWidget()).getHeaderLabel();
+				if(headerLabel != null){
+					designGroupWidgetWrapper = editWidget;
+					editWidget = headerLabel;
+				}
 			}
 
 			editWidget.stopEditMode();
@@ -1063,10 +1122,22 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			//selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
 
 			//if(this instanceof DesignSurfaceView){
-			selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
-			selectedDragController.makeDraggable(editWidget);
-			selectedDragController.selectWidget(editWidget);
-			widgetSelectionListener.onWidgetSelected(editWidget,false);
+
+			if(designGroupWidgetWrapper == null){
+				selectedPanel.setWidgetPosition(editWidget, editWidget.getLeftInt(), editWidget.getTopInt());
+				selectedDragController.makeDraggable(editWidget);
+			}
+			else
+				selectedDragController.makeDraggable(designGroupWidgetWrapper,editWidget);
+
+			if(designGroupWidgetWrapper != null)
+				editWidget = designGroupWidgetWrapper;
+
+			if(select){
+				selectedDragController.selectWidget(editWidget);
+				widgetSelectionListener.onWidgetSelected(editWidget,false);
+			}
+
 			/*}
 			else{
 				DesignSurfaceView surface = (DesignSurfaceView)getParent().getParent().getParent().getParent().getParent().getParent().getParent();
@@ -1086,7 +1157,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(editWidget != null){
 				if(editWidget.getWrappedWidgetEx().getElement() == event.getTarget())
 					return;
-				handleStopLabelEditing();
+				handleStopLabelEditing(false);
 			}
 
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
@@ -1139,10 +1210,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(selectionXPos != -1 && mouseMoved)
 				selectWidgets(event);
 			mouseMoved = false;
+			DOM.releaseCapture(getElement()); //Mouse could have been captured in startRubberBand and so release it.
 			break;
-		case Event.ONKEYDOWN:
+			/*case Event.ONKEYDOWN: This when not commented out makes me have to press enter twice to edit checkbox labels
 			handleKeyDownEvent(event);
-			break;
+			break;*/
 		}
 	}
 
@@ -1154,12 +1226,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(!(((DesignWidgetWrapper)wid).getWrappedWidget() instanceof DesignGroupWidget))
 				continue;
 			((DesignGroupWidget)((DesignWidgetWrapper)wid).getWrappedWidget()).clearGroupBoxSelection();
-			
+
 			if(selectedDragController.isWidgetSelected(wid))
 				selectedDragController.toggleSelection(wid);
 		}
 	}
-	
+
 	protected void clearSelection(){
 		selectedDragController.clearSelection();
 	}
@@ -1169,7 +1241,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if("none".equalsIgnoreCase(event.getTarget().getStyle().getProperty("borderStyle")));
 				return true;
 		}*/
-		
+
 		boolean ret = false;
 
 		if(this.isVisible()){
@@ -1189,9 +1261,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					//right click and select all
 					if(this instanceof DesignSurfaceView)
 						((DesignSurfaceView)this).selectAll();
+					else if(this instanceof DesignGroupWidget && ((DesignGroupWidget)this).editWidget != null)
+						((DesignGroupWidget)this).txtEdit.selectAll();
 					else if(widgetSelectionListener instanceof DesignSurfaceView)
 						((DesignSurfaceView)widgetSelectionListener).selectAll();
-					
+
 					DOM.eventPreventDefault(event);
 				}
 				ret = true;
@@ -1232,49 +1306,54 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				ret = false; //For now this is reserved for only designsurfaceview
 			}
 
-			boolean textBoxFocus = isTextBoxFocus(event);
-			if(!textBoxFocus || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
-				if(keyCode != KeyboardListener.KEY_DELETE)
-					handleStartLabelEditing(event);
+			if(!ret){
+				boolean textBoxFocus = isTextBoxFocus(event);
+				if(!textBoxFocus || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
+					boolean ret1 = false;
+					if(keyCode != KeyboardListener.KEY_DELETE && editWidget == null)
+						ret1 = handleStartLabelEditing(event);
+					else if(keyCode == KeyboardListener.KEY_ENTER && editWidget != null)
+						handleStopLabelEditing(true);
 
-				if(keyCode == KeyboardListener.KEY_ENTER)
-					handleStopLabelEditing();
+					if(ret1) //If handle start label edit is handled, need to signal such that others are not called for the same.
+						ret = true;
+				}
 			}
 		}
 
 		return ret;
 	}
-	
+
 	public String getBackgroundColor(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
 	}
-	
+
 	public String getWidth(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
 	}
-	
+
 	public String getHeight(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
 	}
-	
+
 	public void setBackgroundColor(String backgroundColor){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", backgroundColor);
 		}catch(Exception ex){}
 	}
-	
+
 	public void setWidth(String width){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "width", width);
 		}catch(Exception ex){}
 	}
-	
+
 	public void setHeight(String height){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "height", height);
 		}catch(Exception ex){}
 	}
-	
+
 	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
 		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
@@ -1306,7 +1385,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		return null;
 	}
-	
+
 	protected void changeWidget(boolean vertically){
 		if(selectedDragController.getSelectedWidgetCount() != 1)
 			return;

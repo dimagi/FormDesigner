@@ -358,7 +358,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		//if(DOM.eventGetCurrentEvent().getCtrlKey())
 		//	return;
 
-		stopLabelEdit();
+		stopLabelEdit(false);
 
 		if(!(widget.getWrappedWidget() instanceof TabBar)){
 			Event event = DOM.eventGetCurrentEvent();
@@ -373,7 +373,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	}
 
 	public void clearGroupBoxSelection(){
-		stopLabelEdit();
+		stopLabelEdit(false);
 		selectedDragController.clearSelection();
 	}
 

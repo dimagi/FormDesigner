@@ -1234,6 +1234,19 @@ public class QuestionDef implements Serializable{
 		}
 	}
 	
+	public FormDef getParentFormDef(){
+		return getParentFormDef(this);
+	}
+	
+	private FormDef getParentFormDef(QuestionDef questionDef){
+		Object parent = questionDef.getParent();
+		if(parent instanceof PageDef)
+			return ((PageDef)parent).getParent();
+		else if(parent instanceof QuestionDef)
+			return getParentFormDef((QuestionDef)parent);
+		return null;
+	}
+	
 	public String getDisplayText(){
 		String displayText = getText();
 		int pos1 = displayText.indexOf("${");

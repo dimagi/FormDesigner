@@ -107,6 +107,14 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex){
+		if(tabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+			Context.setCurrentMode(Context.MODE_DESIGN);
+		else if(tabIndex == SELECTED_INDEX_PREVIEW)
+			Context.setCurrentMode(Context.MODE_PREVIEW);
+		else
+			Context.setCurrentMode(Context.MODE_NONE);;
+			
+			
 		selectedTabIndex = tabIndex;
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
 			if(formDef != null){
@@ -149,7 +157,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		tabs.add(scrollPanelDesign, "Design Surface");
 
 		designSurfaceView.setWidth("100%"); //1015px
-		designSurfaceView.setHeight("500px"); //707px
+		designSurfaceView.setHeight("700px"); //707px
 		designSurfaceView.setLayoutChangeListener(this);
 
 		scrollPanelDesign.setWidget(designSurfaceView);
@@ -180,7 +188,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		tabs.add(scrollPanelPreview, "Preview");
 		//FormDesignerUtil.maximizeWidget(previewView);
 		previewView.setWidth("100%"); //1015px
-		previewView.setHeight("500px"); //707px
+		previewView.setHeight("700px"); //707px
 		previewView.setSubmitListener(this);
 		previewView.setDesignSurface(designSurfaceView);
 		previewView.setCenterPanel(this);

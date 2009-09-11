@@ -159,7 +159,9 @@ public class FormRunnerController implements SubmitListener{
 					builder.sendRequest(submitXml, new RequestCallback(){
 						public void onResponseReceived(Request request, Response response){
 							FormUtil.dlg.hide();
-							Window.alert(LocaleText.get("formSubmitSuccess"));
+							
+							if(FormUtil.showSubmitSuccessMsg())
+								Window.alert(LocaleText.get("formSubmitSuccess"));
 
 							String url = FormUtil.getHostPageBaseURL();
 							url += FormUtil.getAfterSubmitUrlSuffix();

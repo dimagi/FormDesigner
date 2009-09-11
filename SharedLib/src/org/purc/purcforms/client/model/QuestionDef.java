@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
 import org.purc.purcforms.client.xpath.XPathExpression;
@@ -30,8 +31,8 @@ public class QuestionDef implements Serializable{
 	public static final String TRUE_VALUE = "true";
 	public static final String FALSE_VALUE = "false";
 
-	public static final String TRUE_DISPLAY_VALUE = "Yes";
-	public static final String FALSE_DISPLAY_VALUE = "No";
+	public static final String TRUE_DISPLAY_VALUE = LocaleText.get("yes");
+	public static final String FALSE_DISPLAY_VALUE = LocaleText.get("no");
 
 	/** The prompt text. The text the user sees. */
 	private String text = ModelConstants.EMPTY_STRING;
@@ -219,8 +220,8 @@ public class QuestionDef implements Serializable{
 		if(value == null)
 			return false;
 
-		return (value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
-				||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"));
+		return (value.contains("now()") || value.contains("date()")
+				||value.contains("getdate()") || value.contains("today()"));
 	}
 
 	public static Date getDateFunctionValue(String function){
@@ -797,8 +798,8 @@ public class QuestionDef implements Serializable{
 			if(withData){
 				DateTimeFormat formatter = (dataType == QuestionDef.QTN_TYPE_DATE_TIME) ? FormUtil.getDateTimeSubmitFormat() : FormUtil.getDateSubmitFormat(); //DateTimeFormat.getFormat(); //new DateTimeFormat("yyyy-MM-dd");
 
-				if(value.equalsIgnoreCase("now()") || value.equalsIgnoreCase("date()")
-						||value.equalsIgnoreCase("getdate()") || value.equalsIgnoreCase("today()"))
+				if(value.contains("now()") || value.contains("date()")
+						||value.contains("getdate()") || value.contains("today()"))
 					value = formatter.format(new Date());
 				else{
 					//if(formatter != null)

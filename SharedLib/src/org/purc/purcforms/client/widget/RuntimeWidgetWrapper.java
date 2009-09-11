@@ -483,16 +483,22 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 		else if(widget instanceof RadioButton){ //Should be before CheckBox
-			if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || childWidgets == null)
+			if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN) || childWidgets == null)
 				return;
 
 			String value = null;
-			for(int index=0; index < childWidgets.size(); index++){
-				RuntimeWidgetWrapper childWidget = childWidgets.get(index);
-				String binding = childWidget.getBinding();
-				if(((RadioButton)((RuntimeWidgetWrapper)childWidget).getWrappedWidget()).isChecked() && binding != null){
-					value = binding;
-					break;
+
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
+				value = questionDef.getAnswer();
+			else{
+				for(int index=0; index < childWidgets.size(); index++){
+					RuntimeWidgetWrapper childWidget = childWidgets.get(index);
+					String binding = childWidget.getBinding();
+					if(((RadioButton)((RuntimeWidgetWrapper)childWidget).getWrappedWidget()).isChecked() && binding != null){
+						value = binding;
+						break;
+					}
 				}
 			}
 
@@ -531,14 +537,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		String defaultValue = questionDef.getDefaultValue();
 		int type = questionDef.getDataType();
 		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-			type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof CheckBox && defaultValue != null){ 
 			if(childWidgets.size() == questionDef.getOptions().size()){
 				for(int index=0; index < childWidgets.size(); index++){
 					RuntimeWidgetWrapper kidWidget = childWidgets.get(index);
 					if((type == QuestionDef.QTN_TYPE_LIST_MULTIPLE && defaultValue.contains(kidWidget.getBinding())) ||
-					   (type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && defaultValue.equals(kidWidget.getBinding()))){
-						
+							(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE && defaultValue.equals(kidWidget.getBinding()))){
+
 						((CheckBox)((RuntimeWidgetWrapper)kidWidget).getWrappedWidget()).setChecked(true);
 						if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
 							break; //for this we can't select more than one.
@@ -598,6 +604,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			boolean valid = ((RuntimeGroupWidget)widget).isValid();
 			if(!valid)
 				return false;
+		}
+
+		//For some reason the validation rule object, before saving, has a formdef different
+		//from the one we are using and hence need to update it
+		if(validationRule != null){
+			FormDef formDef = questionDef.getParentFormDef();
+			if(formDef != validationRule.getFormDef())
+				validationRule.setFormDef(formDef);
 		}
 
 		if(validationRule != null && !validationRule.isValid()){

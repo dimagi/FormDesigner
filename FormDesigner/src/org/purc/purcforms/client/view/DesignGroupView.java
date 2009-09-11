@@ -165,7 +165,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				//TODO Doesnt this slow us a bit?
 				if(widget instanceof DesignWidgetWrapper &&  ((DesignWidgetWrapper)widget).getWidgetSelectionListener() instanceof DesignSurfaceView)
 					clearGroupBoxSelection();
-				
+
 				//Deselect any previously selected widgets in groupbox
 				selectedDragController.selectWidget(widget); //TODO Test this and make sure it does not introduce bugs
 			}
@@ -1355,7 +1355,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
-		List options = questionDef.getOptions();
+		List<OptionDef> options = questionDef.getOptions();
+
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
+			options = new ArrayList<OptionDef>();
+			options.add(new OptionDef(1,QuestionDef.TRUE_DISPLAY_VALUE,QuestionDef.TRUE_VALUE,questionDef));
+			options.add(new OptionDef(1,QuestionDef.FALSE_DISPLAY_VALUE,QuestionDef.FALSE_VALUE,questionDef));
+		}
+
 		for(int i=0; i<options.size(); i++){
 			/*if(i != 0){
 				if(vertically)

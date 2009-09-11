@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
@@ -60,6 +59,7 @@ public class FormUtil {
 
 	private static boolean showLanguageTab = false;
 
+	private static boolean showSubmitSuccessMsg = false;
 
 	public static ProgressDialog dlg = new ProgressDialog();
 
@@ -332,9 +332,13 @@ public class FormUtil {
 			appendEntityIdAfterSubmit = false;
 		else
 			appendEntityIdAfterSubmit = !s.equals("0");
+		
+		s = getDivValue("showSubmitSuccessMsg");
+		if("1".equals(s) || "true".equals(s))
+			showSubmitSuccessMsg = true;
 
 		s = getDivValue("showLanguageTab");
-		if(s != null && s.equals("1"))
+		if("1".equals(s) || "true".equals(s))
 			showLanguageTab = true;
 	}
 
@@ -481,6 +485,10 @@ public class FormUtil {
 
 	public static boolean appendEntityIdAfterSubmit(){
 		return appendEntityIdAfterSubmit;
+	}
+	
+	public static boolean showSubmitSuccessMsg(){
+		return showSubmitSuccessMsg;
 	}
 
 	public static void displayException(Throwable ex){

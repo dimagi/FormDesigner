@@ -76,11 +76,11 @@ public class RepeatQtnsDef implements Serializable {
 	}
 	
 	public void removeQuestion(QuestionDef qtnDef, FormDef formDef){
-		if(qtnDef.getControlNode() != null)
+		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null)
 			qtnDef.getControlNode().getParentNode().removeChild(qtnDef.getControlNode());
-		if(qtnDef.getDataNode() != null)
+		if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
 			qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
-		if(qtnDef.getBindNode() != null)
+		if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
 			qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
 		
 		if(formDef != null)

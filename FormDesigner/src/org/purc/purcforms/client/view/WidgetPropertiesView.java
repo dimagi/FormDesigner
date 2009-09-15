@@ -725,7 +725,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 			txtChildBinding.setText(null);
 			if(this.widget.getWrappedWidget() instanceof CheckBox || (this.widget.getWrappedWidget() instanceof Button &&
-					"browse".equalsIgnoreCase(this.widget.getBinding())||"clear".equalsIgnoreCase(this.widget.getBinding()))){
+					"browse".equalsIgnoreCase(this.widget.getBinding())||"clear".equalsIgnoreCase(this.widget.getBinding()) ||
+					"search".equalsIgnoreCase(this.widget.getBinding()))){
 				value = this.widget.getParentBinding();
 				if(value != null && value.trim().length() > 0 && formDef != null){
 					questionDef = formDef.getQuestion(value);
@@ -762,7 +763,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 						if("submit".equalsIgnoreCase(value)||"addnew".equalsIgnoreCase(value)||"remove".equalsIgnoreCase(value)
 								|| "browse".equalsIgnoreCase(value) || "clear".equalsIgnoreCase(value) || "cancel".equalsIgnoreCase(value) ||
 								(this.widget.getWrappedWidget() instanceof Label || this.widget.getWrappedWidget() instanceof Hyperlink) ||
-								this.widget.getWrappedWidget() instanceof TabBar)
+								"search".equalsIgnoreCase(value) || this.widget.getWrappedWidget() instanceof TabBar)
 							txtBinding.setText(value);
 						else
 							txtBinding.setText(null);
@@ -847,6 +848,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		if(widget.getWrappedWidget() instanceof Button){
 			oracle.add("browse");
 			oracle.add("clear");
+			oracle.add("search");
 			txtChildBinding.setEnabled(true);
 		}
 		else{
@@ -871,6 +873,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		oracle.add("browse");
 		oracle.add("clear");
 		oracle.add("cancel");
+		oracle.add("search");
 
 		//sgstBinding.
 		//table.remove(sgstBinding);

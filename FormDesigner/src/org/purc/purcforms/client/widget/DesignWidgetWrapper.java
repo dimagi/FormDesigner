@@ -39,6 +39,8 @@ import com.google.gwt.xml.client.Element;
 
 /**
  * 
+ * Wraps a widget and gives it capability to be designed.
+ * 
  * @author daniel
  *
  */

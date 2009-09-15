@@ -16,6 +16,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.StyleUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
@@ -932,6 +933,49 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
+	
+	/*protected DesignWidgetWrapper addNewCustomWiget(boolean select){
+		//HTML html = new HTML("<div dojoType=\"ConceptSearch\" widgetId=\"conceptId_search\" conceptId=\"\" showVerboseListing=\"true\"></div> <span style='white-space:nowrap'>HTML</span> " +
+		//"<div dojoType=\"OpenmrsPopup\" widgetId=\"conceptId_selection\" hiddenInputName=\"conceptId\" searchWidget=\"conceptId_search\" searchTitle=\"\" otherValue=\"\"></div>");
+
+		HTML html = new HTML(getStuff());
+		DesignWidgetWrapper wrapper = addNewWidget(html,select);		
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		//Window.alert(this.getElement().getInnerHTML());
+		return wrapper;
+	}*/
+	
+	/*private String getStuff(){
+		return "<script src=\"/openmrs/scripts/dojoConfig.js?v=1.6.0.9619\" type=\"text/javascript\" ></script> "+
+"<script src=\"/openmrs/scripts/dojo/dojo.js?v=1.6.0.9619\" type=\"text/javascript\" ></script> "+
+" "+
+"<script type=\"text/javascript\"> "+
+" "+
+"	dojo.require(\"dojo.widget.openmrs.ConceptSearch\"); "+
+"	dojo.require(\"dojo.widget.openmrs.OpenmrsPopup\"); "+
+"	 "+
+"	dojo.addOnLoad( function() { "+
+"		dojo.event.topic.subscribe(\"conceptId_search/select\",  "+
+"			function(msg) { "+
+"				if (msg) { "+
+"					var concept = msg.objs[0]; "+
+"					var conceptPopup = dojo.widget.manager.getWidgetById(\"conceptId_selection\"); "+
+"					conceptPopup.displayNode.innerHTML = concept.name; "+
+"					conceptPopup.hiddenInputNode.value = concept.conceptId; "+
+"					dojo.debug(\"Before adding if statement\"); "+
+"					 "+
+"					 "+
+"				} "+
+"			} "+
+"		); "+
+"	})	 "+
+" "+
+"</script> "+
+" "+
+"<div dojoType=\"ConceptSearch\" widgetId=\"conceptId_search\" conceptId=\"\" showVerboseListing=\"true\"></div> "+
+" "+
+"<div dojoType=\"OpenmrsPopup\" widgetId=\"conceptId_selection\" hiddenInputName=\"conceptId\" searchWidget=\"conceptId_search\" searchTitle=\"\" otherValue=\"\"></div> <span style='white-space:nowrap'>HTML</span> ";
+	}*/
 
 	protected DesignWidgetWrapper addNewVideoAudio(String text, boolean select){
 		if(text == null)
@@ -939,6 +983,16 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		Hyperlink link = new Hyperlink(text,null);
 
 		DesignWidgetWrapper wrapper = addNewWidget(link,select);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		return wrapper;
+	}
+	
+	protected DesignWidgetWrapper addNewServerSearch(String text, boolean select){
+		if(text == null)
+			text = LocaleText.get("noSelection");
+		Label label = new Label(text);
+
+		DesignWidgetWrapper wrapper = addNewWidget(label,select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
@@ -1051,6 +1105,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return addNewButton(LocaleText.get("button"),null,true);
 		else if(text.equals(LocaleText.get("datePicker")))
 			return addNewDatePicker(true);
+		/*else if(text.equals("Custom"))
+			return addNewCustomWiget(true); */
 
 		return null;
 	}
@@ -1398,7 +1454,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return;
 
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
-		if(!(widget.getWrappedWidget() instanceof ListBox))
+		if(!(widget.getWrappedWidget() instanceof ListBox || widget.getWrappedWidget() instanceof TextBox))
 			return;
 
 		QuestionDef questionDef = widget.getQuestionDef();
@@ -1413,6 +1469,101 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		selectedPanel.remove(widget);
 		selectedDragController.clearSelection();
 
-		addNewRadioButtonSet(questionDef,vertically);
+		if(widget.getWrappedWidget() instanceof ListBox)
+			addNewRadioButtonSet(questionDef,vertically);
+		else
+			addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
+	}
+	
+	protected DesignWidgetWrapper addNewSearchServerWidget(String parentBinding, String text, boolean select){
+		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
+		repeat.addStyleName("getting-started-label2");
+		DOM.setStyleAttribute(repeat.getElement(), "height","70px");
+		DOM.setStyleAttribute(repeat.getElement(), "width","285px");
+		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
+
+		DesignWidgetWrapper widget = addNewWidget(repeat,select);
+		widget.setRepeated(false);
+
+		FormDesignerDragController selDragController = selectedDragController;
+		AbsolutePanel absPanel = selectedPanel;
+		PopupPanel wdpopup = widgetPopup;
+		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+		widgetPopup = repeat.getWidgetPopup();
+		currentWidgetSelectionListener = repeat;
+
+		int oldY = y;
+
+		y = 28; //20 + 25;
+		x = 5; //45;
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+		addNewServerSearch(null,false).setBinding(parentBinding);
+
+		y = 28; //60 + 25;
+		x = 10;
+		
+		//new
+		x = LocaleText.get("noSelection").length() * 10;
+		
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		if(selectedPanel.getAbsoluteTop() > 0)
+			y += selectedPanel.getAbsoluteTop();
+
+		addNewButton(LocaleText.get("search"),"search",false).setParentBinding(parentBinding);
+		//x = 120;
+		
+		x = 10;
+		x = (LocaleText.get("noSelection").length() * 12) + (LocaleText.get("search").length() * 10);
+		
+		if(selectedPanel.getAbsoluteLeft() > 0)
+			x += selectedPanel.getAbsoluteLeft();
+		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
+
+		selectedDragController.clearSelection();
+
+		selectedDragController = selDragController;
+		selectedPanel = absPanel;
+		widgetPopup = wdpopup;
+		currentWidgetSelectionListener = wgSelectionListener;
+
+		y = oldY;
+
+		//Header label stuff
+		widget.setBorderStyle("dashed");
+		AbsolutePanel panel = selectedPanel;
+		FormDesignerDragController dragController = selectedDragController;
+
+		selectedDragController = widget.getDragController();
+		selectedPanel = widget.getPanel();
+
+		y = selectedPanel.getAbsoluteTop();
+		x = selectedPanel.getAbsoluteLeft();
+		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : LocaleText.get("searchServer"), false);
+		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
+		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
+		headerLabel.setTextAlign("center");
+		selectedDragController.makeNotDraggable(headerLabel);
+		headerLabel.setWidth("100%");
+		headerLabel.setHeightInt(20);
+		headerLabel.setForeColor("white");
+		headerLabel.setFontWeight("bold");
+
+		selectedPanel = panel;
+		selectedDragController = dragController;
+
+		selectedDragController.makeDraggable(widget,headerLabel);
+		repeat.setHeaderLabel(headerLabel);
+		//End header label stuff
+
+		y = oldY;
+
+		return widget;
 	}
 }

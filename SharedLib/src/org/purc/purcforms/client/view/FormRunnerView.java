@@ -88,8 +88,8 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 	private static LoginDialog loginDlg = new LoginDialog();
 	private static FormRunnerView formRunnerView;
-
-
+	
+	
 	public FormRunnerView(Images images){
 		this.images = images;
 
@@ -119,6 +119,8 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	 * @param externalSourceWidgets a list of widgets which get their data from sources external to the xform
 	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
+		FormUtil.initialize();
+		
 		if(externalSourceWidgets == null){
 			//Here we must be in preview mode where we need to create a new copy of the formdef
 			//such that we dont set preview values as default formdef values.
@@ -135,7 +137,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			addNewTab("Page1");
 			return;
 		}
-
+		
 		loadLayout(layoutXml,externalSourceWidgets);
 		moveToFirstWidget();
 	}
@@ -267,6 +269,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 		QuestionDef questionDef = null;
 		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
+		String parentBinding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING);
 		if(binding != null && binding.trim().length() > 0){
 			questionDef = formDef.getQuestion(binding);
 			if(questionDef != null)
@@ -277,9 +280,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		boolean wrapperSet = false;
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
-			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new RadioButton(parentBinding,node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 
-			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+			if(widgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
 			parentWrapper = getParentWrapper(widget,node);
@@ -290,7 +293,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
-			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+			if(widgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
 			parentWrapper = getParentWrapper(widget,node);
@@ -483,6 +486,13 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 					}
 				});
 			}
+			else if(binding.equals("search") && parentBinding != null){
+				((Button)widget).addClickListener(new ClickListener(){
+					public void onClick(Widget sender){
+						onSearch(null,sender);
+					}
+				});
+			}
 		}
 
 		return tabIndex;
@@ -521,6 +531,10 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	public void onCancel(){
 		if(Window.confirm(LocaleText.get("cancelFormPrompt")))
 			submitListener.onCancel();
+	}
+	
+	public void onSearch(String key,Widget widget){
+		//FormUtil.searchExternal(key,widget.getElement(),widget.getElement(),null);
 	}
 
 	private void submitData(){

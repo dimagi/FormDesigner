@@ -1006,7 +1006,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		y = selectedPanel.getAbsoluteTop();
 		x = selectedPanel.getAbsoluteLeft();
-		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : "Recording", false);
+		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : LocaleText.get("recording"), false);
 		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
 		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
 		headerLabel.setTextAlign("center");
@@ -1348,6 +1348,8 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			retWidget = addNewPictureSection(null,null,true);
 		else if(text.equals(LocaleText.get("videoAudio")))
 			retWidget = addNewVideoAudioSection(null,null,true);
+		else if(text.equals(LocaleText.get("searchServer")))
+			retWidget = addNewSearchServerWidget(null,null,true);
 
 		if(retWidget != null){
 			int height = FormUtil.convertDimensionToInt(getHeight());

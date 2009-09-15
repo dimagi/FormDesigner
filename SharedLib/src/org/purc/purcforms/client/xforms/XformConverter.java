@@ -371,6 +371,10 @@ public class XformConverter implements Serializable{
 			}
 		}
 
+		//Sometimes the FirstOptionNode can be null. eg when a form is opened with a type
+		//other than single select dynamic and then changed to it.
+		if(questionDef.getFirstOptionNode() == null)
+			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
 		Element itemSetNode = questionDef.getFirstOptionNode();
 		itemSetNode.setAttribute(ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
 

@@ -14,6 +14,7 @@ import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -91,6 +92,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		initWidget(panel);
 		setupEventListeners();
 		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
+		
+		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS /*| Event.ONCONTEXTMENU | Event.KEYEVENTS*/);
 	}
 
 	public AbstractImagePrototype getErrorImage(){
@@ -104,6 +107,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public void onBrowserEvent(Event event) {
 		if(locked)
 			event.preventDefault();
+		
+		int type = DOM.eventGetType(event);
+		if(type == Event.ONMOUSEUP && widget instanceof CheckBox && questionDef != null){
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+				if(((CheckBox)widget).isChecked())
+					((CheckBox)widget).setChecked(false);
+			}
+		}
 	}
 
 	private void setupEventListeners(){
@@ -209,6 +220,29 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 				else if(keyCode == KeyboardListener.KEY_UP)
 					editListener.onMoveToPrevWidget((RuntimeWidgetWrapper)panel.getParent());
+			}
+
+			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+				if(keyCode == (char) KeyboardListener.KEY_DELETE || keyCode == (char) KeyboardListener.KEY_BACKSPACE){
+					((TextBox) sender).setText("");
+					while(panel.getWidgetCount() > 1)
+						panel.remove(1);
+
+					if(questionDef != null)
+						questionDef.setAnswer(null);
+
+					return;
+				}
+				else if(externalSource != null && externalSource.trim().length() > 0){
+					((TextBox) sender).cancelKey(); 
+					while(panel.getWidgetCount() > 1)
+						panel.remove(1);
+
+					Label label = new Label("");
+					label.setVisible(false);
+					panel.add(label);
+					FormUtil.searchExternal(externalSource,String.valueOf(keyCode), widget.getElement(), label.getElement(), widget.getElement());
+				}
 			}
 		});
 	}
@@ -449,8 +483,20 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 		else if(widget instanceof TextBox){
-			questionDef.setAnswer(getTextBoxAnswer());
+			String answer = getTextBoxAnswer();
+			if(externalSource != null && externalSource.trim().length() > 0 &&
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC){
+				answer = null;
 
+				if(panel.getWidgetCount() == 2){
+					Widget wid = panel.getWidget(1);
+					if(wid instanceof Label)
+						answer = ((Label)wid).getText();
+				}
+			}
+			
+			questionDef.setAnswer(answer);
+			
 			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
 			if(defaultValue != null && defaultValue.trim().length() > 0 && !((TextBox)widget).isEnabled()){
 				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)

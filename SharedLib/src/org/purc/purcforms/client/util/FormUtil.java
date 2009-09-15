@@ -558,7 +558,15 @@ public class FormUtil {
 	public static String getNodeName(Element node){
 		return removePrefix(node.getNodeName());
 	}
+	
+	public static native void initialize() /*-{
+		return $wnd.initialize();
+	}-*/;
 
+	public static native void searchExternal(String key,String value,com.google.gwt.user.client.Element parentElement, com.google.gwt.user.client.Element textElement, com.google.gwt.user.client.Element valueElement) /*-{
+		return $wnd.searchExternal(key,value,parentElement.parentNode.parentNode,textElement,valueElement);
+	}-*/;
+	
 	public static native boolean isAuthenticated() /*-{
 		return $wnd.isUserAuthenticated();
 	}-*/;

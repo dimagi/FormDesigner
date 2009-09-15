@@ -35,7 +35,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Element;
@@ -318,11 +317,29 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			if(answer == null || answer.trim().length() == 0 )
 				((HTML)widget).setVisible(false);
 		}
-		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_GROUPBOX)||s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
+			RepeatQtnsDef repeatQtnsDef = null;
+			if(questionDef != null)
+				repeatQtnsDef = questionDef.getRepeatQtnsDef();
+
+			boolean repeated = false;
+			String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
+			if(value != null && value.trim().length() > 0)
+				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
+
+			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,editListener,repeated);
+			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
+			/*getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
+			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
+			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
+			getCheckBoxGroupMap(((RuntimeGroupWidget)widget).getCheckBoxGroupMap());*/
+		}
+
+		/*else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
 			//Not dealing with nexted repeats
 			//widget = new RunTimeGroupWidget();
 			//((RunTimeGroupWidget)widget).setTabIndex(tabIndex);
-		}
+		}*/
 		else
 			return tabIndex;
 
@@ -419,7 +436,7 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 			//wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
 
 			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
-					binding.equals("browse")||binding.equals("clear")||binding.equals("cancel")){
+					binding.equals("browse")||binding.equals("clear")||binding.equals("cancel")||binding.equals("search")){
 				((Button)widget).addClickListener(new ClickListener(){
 					public void onClick(Widget sender){
 						execute(sender);
@@ -471,7 +488,12 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 	private void execute(Widget sender){
 		String binding = ((RuntimeWidgetWrapper)sender.getParent().getParent()).getBinding();
 
-		if(binding.equalsIgnoreCase("submit"))
+		if(binding.equalsIgnoreCase("search")){
+			RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
+			if(wrapper != null && wrapper.getExternalSource() != null)
+				;//FormUtil.searchExternal(wrapper.getExternalSource(),sender.getElement(),wrapper.getWrappedWidget().getElement(),null);
+		}
+		else if(binding.equalsIgnoreCase("submit"))
 			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onSubmit();
 		else if(binding.equalsIgnoreCase("cancel"))
 			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onCancel();
@@ -518,6 +540,8 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 					image.setUrl(null);
 					html = null;
 				}
+				else if(wrapper.getWrappedWidget() instanceof Label)
+					((Label)wrapper.getWrappedWidget()).setText(LocaleText.get("noSelection"));
 				else{
 					html = (HTML)wrapper.getWrappedWidget();
 					html.setHTML(LocaleText.get("clickToPlay"));
@@ -561,8 +585,10 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		RuntimeWidgetWrapper button = (RuntimeWidgetWrapper)sender.getParent().getParent();
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
-			if(widget.getWrappedWidget() instanceof Image || widget.getWrappedWidget() instanceof HTML){
-				if(widget.getBinding().equalsIgnoreCase(button.getParentBinding()))
+			Widget wrappedWidget = widget.getWrappedWidget();
+			if(wrappedWidget instanceof Image || wrappedWidget instanceof HTML || wrappedWidget instanceof Label){
+				String binding  = widget.getBinding();
+				if(binding != null && binding.equalsIgnoreCase(button.getParentBinding()))
 					return widget;
 			}
 		}

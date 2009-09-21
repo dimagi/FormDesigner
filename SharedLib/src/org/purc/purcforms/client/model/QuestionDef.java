@@ -1100,15 +1100,17 @@ public class QuestionDef implements Serializable{
 	}
 
 	/**
-	 * Updates this questionDef (as the main) with the parameter one
+	 * Updates this questionDef (as the main) with the parameter one (which is the old)
 	 * 
-	 * @param questionDef
+	 * @param questionDef the old question before the refresh
 	 */
 	public void refresh(QuestionDef questionDef){
 		setText(questionDef.getText());
 		setHelpText(questionDef.getHelpText());
 		setDefaultValue(questionDef.getDefaultValue());
 
+		int prevDataType = dataType;
+		
 		//The old data type can only overwrite the new one if its not text (The new one is this question)
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_TEXT)
 			setDataType(questionDef.getDataType());
@@ -1119,8 +1121,18 @@ public class QuestionDef implements Serializable{
 		setVisible(questionDef.isVisible());
 
 		if((dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-				(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) )
+				(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ){
 			refreshOptions(questionDef);
+			
+			if(!(prevDataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || prevDataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+				//A single or multiple select may have had options added on the client and so we do wanna
+				//lose them for instance when the server has text data type.
+				//TODO We may need to assign new option ids
+				for(int index = 0; index < questionDef.getOptionCount(); index++)
+					addOption(new OptionDef(questionDef.getOptionAt(index),this));
+			}
+
+		}
 		else if(dataType == QuestionDef.QTN_TYPE_REPEAT && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			questionDef.getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
@@ -1143,6 +1155,10 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			return 0;
 		return ((List)options).size();
+	}
+	
+	public OptionDef getOptionAt(int index){
+		return (OptionDef)((List)options).get(index);
 	}
 
 	public void clearOptions(){

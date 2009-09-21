@@ -20,6 +20,7 @@ import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -498,16 +499,27 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 		else if(binding.equalsIgnoreCase("cancel"))
 			((FormRunnerView)getParent().getParent().getParent().getParent().getParent().getParent().getParent()).onCancel();
 		else if(repeatQtnsDef != null){
-			if(binding.equalsIgnoreCase("addnew"))
+			if(binding.equalsIgnoreCase("addnew")){
+				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
+				int y = getHeightInt();
+				
 				addNewRow(sender);
+				
+				editListener.onRowAdded(wrapper,getHeightInt()-y);
+			}
 			else if(binding.equalsIgnoreCase("remove")){
 				if(table.getRowCount() > 1){//There should be atleast one row{
+					RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
+					int y = getHeightInt();
+					
 					table.removeRow(table.getRowCount()-1);
 					Element node = dataNodes.get(dataNodes.size() - 1);
 					node.getParentNode().removeChild(node);
 					dataNodes.remove(node);
 					if(btnAdd != null)
 						btnAdd.setEnabled(true);
+					
+					editListener.onRowRemoved(wrapper,y-getHeightInt());
 				}
 
 				RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
@@ -985,5 +997,9 @@ public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEven
 
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 
+	}
+	
+	public int getHeightInt(){
+		return getElement().getOffsetHeight();
 	}
 }

@@ -362,38 +362,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			((DesignGroupWidget)widget).storePosition();
 	}
 
-	public void setWidthInt(int width){
-		setWidth(width+"px");
-	}
-
-	public void setHeightInt(int height){
-		setHeight(height+"px");
-	}
-
-	public int getWidthInt(){
-		return FormUtil.convertDimensionToInt(getWidth());
-	}
-
-	public int getHeightInt(){
-		return FormUtil.convertDimensionToInt(getHeight());
-	}
-
-	public int getLeftInt(){
-		return FormUtil.convertDimensionToInt(getLeft());
-	}
-
-	public int getTopInt(){
-		return FormUtil.convertDimensionToInt(getTop());
-	}
-
-	public void setLeftInt(int left){
-		setLeft(left+"px");
-	}
-
-	public void setTopInt(int top){
-		setTop(top+"px");
-	}
-
 	public boolean isWidgetInRect(int left, int top, int right, int bottom){
 		int x = FormUtil.convertDimensionToInt(getLeft());
 		int y = FormUtil.convertDimensionToInt(getTop());

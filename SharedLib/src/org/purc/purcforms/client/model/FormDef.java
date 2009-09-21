@@ -816,7 +816,7 @@ public class FormDef implements Serializable{
 	/**
 	 * Updates this formDef (as the main) with the parameter one
 	 * 
-	 * @param formDef
+	 * @param formDef the old formdef to copy from.
 	 */
 	public void refresh(FormDef formDef){
 		this.id = formDef.getId();
@@ -829,6 +829,40 @@ public class FormDef implements Serializable{
 
 		for(int index = 0; index < formDef.getSkipRuleCount(); index++)
 			formDef.getSkipRuleAt(index).refresh(this, formDef);
+		
+		for(int index = 0; index < formDef.getValidationRuleCount(); index++)
+			formDef.getSkipRuleAt(index).refresh(this, formDef);
+		
+		if(formDef.getDynamicOptions() != null){
+			dynamicOptions =  new HashMap<Integer,DynamicOptionDef>();
+
+			Iterator<Entry<Integer,DynamicOptionDef>> iterator = formDef.getDynamicOptions().entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<Integer,DynamicOptionDef> entry = iterator.next();
+				
+				QuestionDef oldParentQtnDef = formDef.getQuestion(entry.getKey());
+				if(oldParentQtnDef == null)
+					continue; //How can this be missing in the original formdef???
+				
+				QuestionDef newParentQtnDef = getQuestion(oldParentQtnDef.getVariableName());
+				if(newParentQtnDef == null)
+					continue; //My be deleted by refresh source.
+				
+				DynamicOptionDef oldDynOptionDef = entry.getValue();
+				QuestionDef oldChildQtnDef = formDef.getQuestion(oldDynOptionDef.getQuestionId());
+				if(oldChildQtnDef == null)
+					return; //can this be lost in the old formdef????
+				
+				QuestionDef newChildQtnDef = getQuestion(oldChildQtnDef.getVariableName());
+				if(newChildQtnDef == null)
+					continue; //possibly deleted by refresh sourced (eg server).
+				
+				DynamicOptionDef newDynOptionDef = new DynamicOptionDef();
+				newDynOptionDef.setQuestionId(newChildQtnDef.getId());
+				newDynOptionDef.refresh(this, formDef, newDynOptionDef, oldDynOptionDef,newParentQtnDef,oldParentQtnDef,newChildQtnDef,oldChildQtnDef);
+				dynamicOptions.put(new Integer(newParentQtnDef.getId()),newDynOptionDef);
+			}
+		}
 	}
 
 	private void refresh(PageDef pageDef){

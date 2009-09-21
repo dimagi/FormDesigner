@@ -19,11 +19,9 @@ import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.StyleUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
-import org.purc.purcforms.client.widget.PaletteWidget;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConverter;
 
@@ -786,291 +784,6 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		setHeight(y+40+"px");
 	}
 
-	protected DesignWidgetWrapper addNewRepeatSection(boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","100px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","500px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(true);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-		y = 55 + 0; //50;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("addNew"),"addnew",false);
-		x = 150;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("remove"),"remove",false);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-
-		//Group label headers are turned off from repeats because we use tables
-		//instead of absolute panels.
-		//Header label stuff
-		/*widget.setBorderStyle("dashed");
-		AbsolutePanel panel = selectedPanel;
-		FormDesignerDragController dragController = selectedDragController;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-
-		oldY = y;
-		x = selectedPanel.getAbsoluteLeft();
-		y = selectedPanel.getAbsoluteTop();
-		DesignWidgetWrapper w = addNewLabel("Header Label", false);
-		w.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(w.getElement(), "width","100%");
-		w.setTextAlign("center");
-		//selectedDragController.makeNotDraggable(w);
-		w.setWidth("100%");
-		w.setForeColor("white");
-		w.setFontWeight("bold");
-
-		selectedPanel = panel;
-		selectedDragController = dragController;
-		y = oldY;*/
-		//End header label stuff
-
-		return widget;
-	}
-
-	protected DesignWidgetWrapper addNewPictureSection(String parentBinding, String text, boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","245px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(false);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-
-		y = 35;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-		addNewPicture(false).setBinding(parentBinding);
-
-		y = 55 + 120 + 25;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
-		x = 120;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-		//Header label stuff
-		widget.setBorderStyle("dashed");
-		AbsolutePanel panel = selectedPanel;
-		FormDesignerDragController dragController = selectedDragController;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-
-		y = selectedPanel.getAbsoluteTop();
-		x = selectedPanel.getAbsoluteLeft();
-		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : "Picture", false);
-		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
-		headerLabel.setTextAlign("center");
-		selectedDragController.makeNotDraggable(headerLabel);
-		headerLabel.setWidth("100%");
-		headerLabel.setHeightInt(20);
-		headerLabel.setForeColor("white");
-		headerLabel.setFontWeight("bold");
-
-		selectedPanel = panel;
-		selectedDragController = dragController;
-
-		selectedDragController.makeDraggable(widget,headerLabel);
-		repeat.setHeaderLabel(headerLabel);
-		//End header label stuff
-
-		y = oldY;
-
-		return widget;
-	}
-
-	protected DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, String text, boolean select){
-		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
-		repeat.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(repeat.getElement(), "height","125px");
-		DOM.setStyleAttribute(repeat.getElement(), "width","200px");
-		repeat.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ????????????????
-
-		DesignWidgetWrapper widget = addNewWidget(repeat,select);
-		widget.setRepeated(false);
-
-		FormDesignerDragController selDragController = selectedDragController;
-		AbsolutePanel absPanel = selectedPanel;
-		PopupPanel wdpopup = widgetPopup;
-		WidgetSelectionListener wgSelectionListener = currentWidgetSelectionListener;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-		widgetPopup = repeat.getWidgetPopup();
-		currentWidgetSelectionListener = repeat;
-
-		int oldY = y;
-
-		y = 20 + 25;
-		x = 45;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-		addNewVideoAudio(null,false).setBinding(parentBinding);
-
-		y = 60 + 25;
-		x = 10;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		if(selectedPanel.getAbsoluteTop() > 0)
-			y += selectedPanel.getAbsoluteTop();
-
-		addNewButton(LocaleText.get("browse"),"browse",false).setParentBinding(parentBinding);
-		x = 120;
-		if(selectedPanel.getAbsoluteLeft() > 0)
-			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("clear"),"clear",false).setParentBinding(parentBinding);
-
-		selectedDragController.clearSelection();
-
-		selectedDragController = selDragController;
-		selectedPanel = absPanel;
-		widgetPopup = wdpopup;
-		currentWidgetSelectionListener = wgSelectionListener;
-
-		y = oldY;
-
-		//Header label stuff
-		widget.setBorderStyle("dashed");
-		AbsolutePanel panel = selectedPanel;
-		FormDesignerDragController dragController = selectedDragController;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-
-		y = selectedPanel.getAbsoluteTop();
-		x = selectedPanel.getAbsoluteLeft();
-		DesignWidgetWrapper headerLabel = addNewLabel(text != null ? text : LocaleText.get("recording"), false);
-		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
-		headerLabel.setTextAlign("center");
-		selectedDragController.makeNotDraggable(headerLabel);
-		headerLabel.setWidth("100%");
-		headerLabel.setHeightInt(20);
-		headerLabel.setForeColor("white");
-		headerLabel.setFontWeight("bold");
-
-		selectedPanel = panel;
-		selectedDragController = dragController;
-
-		selectedDragController.makeDraggable(widget,headerLabel);
-		repeat.setHeaderLabel(headerLabel);
-		//End header label stuff
-
-		y = oldY;
-
-		return widget;
-	}
-
-	protected DesignWidgetWrapper addNewGroupBox(boolean select){
-		DesignGroupWidget group = new DesignGroupWidget(images,this);
-		group.addStyleName("getting-started-label2");
-		DOM.setStyleAttribute(group.getElement(), "height","200px");
-		DOM.setStyleAttribute(group.getElement(), "width","500px");
-		group.setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK ??????????????
-
-		DesignWidgetWrapper widget = addNewWidget(group,select);
-		//selectedDragController.makeNotDraggable(widget);
-
-
-		//Header label stuff
-		widget.setBorderStyle("dashed");
-		AbsolutePanel panel = selectedPanel;
-		FormDesignerDragController dragController = selectedDragController;
-
-		selectedDragController = widget.getDragController();
-		selectedPanel = widget.getPanel();
-
-		DesignWidgetWrapper headerLabel = addNewLabel("Header Label", false);
-		headerLabel.setBackgroundColor(StyleUtil.COLOR_GROUP_HEADER);
-		DOM.setStyleAttribute(headerLabel.getElement(), "width","100%");
-		headerLabel.setTextAlign("center");
-		selectedDragController.makeNotDraggable(headerLabel);
-		headerLabel.setWidth("100%");
-		headerLabel.setHeightInt(20);
-		headerLabel.setForeColor("white");
-		headerLabel.setFontWeight("bold");
-
-		selectedPanel = panel;
-		selectedDragController = dragController;
-
-		selectedDragController.makeDraggable(widget,headerLabel);
-		group.setHeaderLabel(headerLabel);
-		//End header label stuff
-
-		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
-		//edited text is not automatically selected.
-		widget.removeStyleName("dragdrop-handle");
-		
-		return widget;
-	}
-
 	/*public void stopHeaderLabelEdit(DesignWidgetWrapper headerLabel){
 		if(selectedDragController.getSelectedWidgetCount() == 0)
 			return;
@@ -1202,7 +915,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		currentWidgetSelectionListener = wgSelectionListener;
 
 		y = oldY;
-		y += 130; //25;
+		y += 90; //130; //25;
 
 		if(questions.size() == 1)
 			widget.setWidthInt(265);
@@ -1332,7 +1045,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		this.layoutChangeListener = layoutChangeListener;
 	}
 
-	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
+	/*public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
 		if(!(widget instanceof PaletteWidget))
 			return null;
 
@@ -1359,7 +1072,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 
 		return retWidget;
-	}
+	}*/
 
 	public void onWidgetSelected(DesignWidgetWrapper widget, boolean multipleSel){
 

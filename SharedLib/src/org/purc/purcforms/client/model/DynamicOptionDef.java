@@ -27,7 +27,7 @@ public class DynamicOptionDef  implements Serializable{
 	private HashMap<Integer,List<OptionDef>> parentToChildOptions;
 
 	/** This is not persisted but rather used only during design mode. **/
-	private int nextOptionId = 1;
+	private static int nextOptionId = 1;
 
 	private Element dataNode;
 
@@ -40,10 +40,7 @@ public class DynamicOptionDef  implements Serializable{
 		setQuestionId(dynamicOptionDef.getQuestionId());
 		parentToChildOptions = new HashMap<Integer,List<OptionDef>>();
 
-		if(parentToChildOptions == null)
-			return;
-
-		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = dynamicOptionDef.getParentToChildOptions().entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,List<OptionDef>> entry = iterator.next();
 			List<OptionDef> list = entry.getValue();
@@ -270,4 +267,49 @@ public class DynamicOptionDef  implements Serializable{
 				list.get(index).buildLanguageNodes(xpath,formDef.getDoc(), parentNode);
 		}
 	}	
+	
+	public void refresh(FormDef dstFormDef, FormDef srcFormDef,DynamicOptionDef newDynOptionDef, DynamicOptionDef srcDynOptionDef, QuestionDef newParentQtnDef, QuestionDef oldParentQtnDef, QuestionDef oldChildQtnDef, QuestionDef newChildQtnDef){
+		parentToChildOptions = new HashMap<Integer,List<OptionDef>>();
+
+		Iterator<Entry<Integer,List<OptionDef>>> iterator = srcDynOptionDef.getParentToChildOptions().entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer,List<OptionDef>> entry = iterator.next();
+			
+			OptionDef optionDef = oldParentQtnDef.getOption(entry.getKey());
+			if(optionDef == null)
+				continue; //how can this be????.
+			
+			optionDef = newParentQtnDef.getOptionWithValue(optionDef.getVariableName());
+			if(optionDef == null)
+				continue; //possibly option deleted.
+			
+			List<OptionDef> newList = refreshList(newDynOptionDef,entry.getValue(),newParentQtnDef, oldParentQtnDef, oldChildQtnDef, newChildQtnDef);
+			if(newList.size() > 0)
+				parentToChildOptions.put(new Integer(optionDef.getId()), newList);
+		}
+	}
+	
+	private List<OptionDef> refreshList(DynamicOptionDef dynamicOptionDef, List<OptionDef> list, QuestionDef newParentQtnDef, QuestionDef oldParentQtnDef, QuestionDef oldChildQtnDef, QuestionDef newChildQtnDef){
+		List<OptionDef> newList = new ArrayList<OptionDef>();
+		
+		for(int index = 0; index < list.size(); index++){
+			OptionDef oldOptionDef = list.get(index);
+			
+			OptionDef newOptionDef = newParentQtnDef.getOptionWithValue(oldOptionDef.getVariableName());
+			if(newOptionDef == null){
+				//We do not want to lose options we had created before refresh.
+				//The user should manually delete them after a refresh, if they don't want them.
+				
+				//TODO The new optiondef may need a new id 
+				newOptionDef = new OptionDef(oldOptionDef,newChildQtnDef);
+				newOptionDef.setId(dynamicOptionDef.getNextOptionId());
+			}
+			else
+				newOptionDef.setText(oldOptionDef.getText());
+			
+			newList.add(newOptionDef);
+		}
+		
+		return newList;
+	}
 }

@@ -1,6 +1,8 @@
 package org.purc.purcforms.client.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.util.FormUtil;
@@ -31,10 +33,8 @@ public class ValidationRule implements Serializable{
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
 	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
 	
-	
 	private FormDef formDef;
 	
-		
 	/** Constructs a rule object ready to be initialized. */
 	public ValidationRule(FormDef formDef){
 		this.formDef = formDef;
@@ -195,10 +195,10 @@ public class ValidationRule implements Serializable{
 		XformConverter.fromValidationRule2Xform(this,formDef);
 	}
 	
-	public void refresh(FormDef dstFormDef, FormDef srcFormDef){
+	/*public void refresh(FormDef dstFormDef, FormDef srcFormDef){
 		ValidationRule validationRule = null;
 		
-		for(int index = 0; index < this.getConditionCount(); index++){
+		for(int index = 0; index < getConditionCount(); index++){
 			Condition condition = getConditionAt(index);
 			QuestionDef qtn = srcFormDef.getQuestion(condition.getQuestionId());
 			if(qtn == null)
@@ -217,7 +217,7 @@ public class ValidationRule implements Serializable{
 		
 		if(validationRule.getConditionCount() > 0)
 			dstFormDef.addValidationRule(validationRule);
-	}
+	}*/
 
 	//TODO This should be smarter
 	public byte getMaxValue(FormDef formDef){
@@ -250,5 +250,73 @@ public class ValidationRule implements Serializable{
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, errorMessage);
 		parentNode.appendChild(node);
+	}
+	
+	public void refresh(FormDef dstFormDef, FormDef srcFormDef){
+		
+		QuestionDef qtn = srcFormDef.getQuestion(questionId);
+		if(qtn == null)
+			return; //can this question really dissapear?
+		
+		//using variable name instead of id because id could have changed as more questions are
+		//added or some deleted.
+		QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+		if(questionDef == null)
+			return; //possibly question for the validation rule has been deleted.
+		
+		ValidationRule validationRule = new ValidationRule(questionDef.getId(),dstFormDef);
+		
+		for(int index = 0; index < getConditionCount(); index++){
+			Condition condition = getConditionAt(index);
+			qtn = srcFormDef.getQuestion(condition.getQuestionId());
+			if(qtn == null)
+				continue;
+			
+			questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			if(questionDef == null)
+				continue;
+			
+			condition.setQuestionId(questionDef.getId());
+			validationRule.addCondition(new Condition(condition));
+		}
+		
+		if(validationRule.getConditionCount() > 0)
+			dstFormDef.addValidationRule(validationRule);
+	}
+	
+	/**
+	 * Checks of a validation rule references a particualar question in any of its conditions.
+	 * 
+	 * @param questionDef the question to be referenced.
+	 * @return true if it does, else false.
+	 */
+	public boolean hasQuestion(QuestionDef questionDef){
+		if(conditions == null)
+			return false;
+		
+		for(int i=0; i<conditions.size(); i++){
+			Condition condition = (Condition)conditions.elementAt(i);
+			if(condition.hasQuestion(questionDef, formDef))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	//TODO Why does the validation rule have a value of formDef different from the one passed in as parameter?
+	public List<QuestionDef> getQuestions(FormDef formDef){
+		if(conditions == null)
+			return null;
+		
+		List<QuestionDef> questions = new ArrayList<QuestionDef>();
+		
+		for(int i=0; i<conditions.size(); i++){
+			Condition condition = (Condition)conditions.elementAt(i);
+			QuestionDef questionDef = condition.getQuestion(formDef);
+			if(questionDef != null && !questions.contains(questionDef))
+				questions.add(questionDef);
+		}
+		
+		return questions;
 	}
 }

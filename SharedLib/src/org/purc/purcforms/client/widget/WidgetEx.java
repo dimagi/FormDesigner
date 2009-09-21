@@ -644,4 +644,36 @@ public class WidgetEx extends Composite{
 	public void setTabIndex(int tabIndex){
 		this.tabIndex = tabIndex;
 	}
+	
+	public int getWidthInt(){
+		return FormUtil.convertDimensionToInt(getWidth());
+	}
+
+	public int getHeightInt(){
+		return FormUtil.convertDimensionToInt(getHeight());
+	}
+
+	public int getLeftInt(){
+		return FormUtil.convertDimensionToInt(getLeft());
+	}
+
+	public int getTopInt(){
+		return FormUtil.convertDimensionToInt(getTop());
+	}
+	
+	public void setWidthInt(int width){
+		setWidth(width+"px");
+	}
+
+	public void setHeightInt(int height){
+		setHeight(height+"px");
+	}
+
+	public void setLeftInt(int left){
+		setLeft(left+"px");
+	}
+
+	public void setTopInt(int top){
+		setTop(top+"px");
+	}
 }

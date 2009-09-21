@@ -135,7 +135,8 @@ public class Condition implements Serializable{
 					}
 					else if(qn.getAnswer() == null || qn.getAnswer().trim().length() == 0){
 						value = tempValue;
-						return false;
+						//return false;
+						return validation; //TODO Do we really need validations to return true when qtn is not answered?
 					}
 				}
 			}
@@ -477,5 +478,29 @@ public class Condition implements Serializable{
 
 	public QuestionDef getValueQtnDef(){
 		return valueQtnDef;
+	}
+	
+	/**
+	 * Checks if a condition references an answer of a particular question.
+	 * 
+	 * @param questionDef the question whose answer is referenced.
+	 * @param formDef the form being filled.
+	 * @return true if it does, else false.
+	 */
+	public boolean hasQuestion(QuestionDef questionDef, FormDef formDef){
+		if(value.startsWith(formDef.getVariableName()+"/")){
+			QuestionDef qtn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
+			if(qtn != null && qtn == questionDef)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public QuestionDef getQuestion(FormDef formDef){
+		if(value.startsWith(formDef.getVariableName()+"/"))
+			return formDef.getQuestion(value.substring(value.indexOf('/')+1));
+		
+		return null;
 	}
 }

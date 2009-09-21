@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
@@ -57,6 +58,8 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 /**
+ * This widgets is responsible for displaying a form at run time and lets user fill data 
+ * as it controls the running of skip and validation rules.
  * 
  * @author daniel
  *
@@ -67,17 +70,39 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		AbstractImagePrototype error();
 	}
 
+	/** Images reference where we get the error icon for widgets with errors. */
 	protected final Images images;
 
+	/** The tabs where we lay various page panels. */
 	protected DecoratedTabPanel tabs = new DecoratedTabPanel();
+	
+	/** The currently selected tab index. */
 	protected int selectedTabIndex;
+	
+	/** The currently selected tab panel. */
 	protected AbsolutePanel selectedPanel;
+	
+	/** The height of the currently selected tab panel. */
 	protected String sHeight = "100%";
+	
+	/** Reference to the form definition. */
 	protected FormDef formDef;
+	
+	/** Listener to form submit events. */
 	protected SubmitListener submitListener;
+	
 	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
+	
+	/** 
+	 * The first invalid widget. This is used when we validate more than one widget in a group
+	 * and at the end of the list we want to set focus to the first widget that we found invalid.
+	 */
 	protected RuntimeWidgetWrapper firstInvalidWidget;
 
+	/** 
+	 * Used when we are used as an emebeded widgets in another GWT application
+	 * and the user wants to control the space in which to embbed us.
+	 */
 	protected int embeddedHeightOffset = 0;
 
 	protected HashMap<QuestionDef,List<Widget>> labelMap;
@@ -85,11 +110,34 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	protected HashMap<Widget,String> labelReplaceText;
 
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap;
+	
+	/** 
+	 * A map where the key widget's value change requires a list of other widgets to
+	 * run their validation rules. Eg key qtn: Total No of kids born and dependant qtn: how many are male?
+	 * Then the validation rule could be like no of male kids should be less than total
+	 * no of kids born. So whenever the tatal no changes, no of males should be revalidated.
+	 */
+	protected HashMap<RuntimeWidgetWrapper,List<RuntimeWidgetWrapper>> validationWidgetsMap;
 
+	/** 
+	 * A reference to the login dialog to be used when user leaves the form open for long and the
+	 * server session times out. Because we do not want them lose their changes, when they try to
+	 * submit data, we use this dialog to logon the server.
+	 */
 	private static LoginDialog loginDlg = new LoginDialog();
+	
+	/**
+	 * Reference to this very view. We need this static reference because the javascript login
+	 * callback method is static and will need this view to submit the data on successful login.
+	 */
 	private static FormRunnerView formRunnerView;
 	
 	
+	/**
+	 * Constructs an instance of the form runner.
+	 *
+	 * @param images reference to images used in the application.
+	 */
 	public FormRunnerView(Images images){
 		this.images = images;
 
@@ -98,9 +146,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		initWidget(tabs);
 		tabs.addTabListener(this);
 
-		//Window.addWindowResizeListener(this);
-
-		//		This is needed for IE
+		//This is needed for IE which does not seem to set the height properly.
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
@@ -112,11 +158,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	}
 
 	/**
-	 * This function is called when on selected the refresh button on the runner view
+	 * Reloads the form runner view
 	 * 
-	 * @param formDef the form definition to load
-	 * @param layoutXml the form widget layout xml
-	 * @param externalSourceWidgets a list of widgets which get their data from sources external to the xform
+	 * @param formDef the form definition to load.
+	 * @param layoutXml the form widget layout xml.
+	 * @param externalSourceWidgets a list of widgets which get their data from sources 
+	 * 		  external to the xform.
 	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		FormUtil.initialize();
@@ -142,6 +189,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		moveToFirstWidget();
 	}
 
+	/**
+	 * Sets focus to the widget with the smallest tab index.
+	 */
 	public void moveToFirstWidget(){
 		moveToNextWidget(-1);
 	}
@@ -164,7 +214,21 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		labelText = new HashMap<Widget,String>();
 		labelReplaceText = new HashMap<Widget,String>();
 		checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
-
+		validationWidgetsMap = new HashMap<RuntimeWidgetWrapper,List<RuntimeWidgetWrapper>>();
+		
+		//A list of widgets with validation rules.
+		List<RuntimeWidgetWrapper> validationRuleWidgets = new ArrayList<RuntimeWidgetWrapper>();
+		
+		//A map of parent validation widgets keyed by their QuestionDef.
+		//A parent validation widget is one whose QuestionDef is contained in any condition
+		//of any validation rule.
+		HashMap<QuestionDef,RuntimeWidgetWrapper> qtnParentValidationWidgetMap = new HashMap<QuestionDef,RuntimeWidgetWrapper>();
+		
+		//A list of questions for parent validation widgets.
+		List<QuestionDef> parentValidationWidgetQtns = new ArrayList<QuestionDef>();
+		
+		initValidationWidgetsMap(parentValidationWidgetQtns);
+		
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
 		Element root = doc.getDocumentElement();
 		NodeList pages = root.getChildNodes();
@@ -184,11 +248,13 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
 			}catch(Exception ex){}*/
 
-			loadPage(node.getChildNodes(),externalSourceWidgets);
+			loadPage(node.getChildNodes(),externalSourceWidgets,parentValidationWidgetQtns,validationRuleWidgets,qtnParentValidationWidgetMap);
 		}
+		
+		setValidationWidgetsMap(validationRuleWidgets,qtnParentValidationWidgetMap);
 
 		if(formDef != null)
-			fireRules();
+			fireSkipRules();
 
 		updateDynamicOptions();
 
@@ -210,6 +276,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		});
 	}
 
+	/**
+	 * Adds a new tab or page.
+	 * 
+	 * @param name the name of the page to add.
+	 */
 	protected void addNewTab(String name){
 		initPanel();
 		if(name == null)
@@ -229,7 +300,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		});
 	}
 
-	protected void loadPage(NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets){
+	protected void loadPage(NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets,List<QuestionDef> validationQtns,List<RuntimeWidgetWrapper> validationWidgets,HashMap<QuestionDef,RuntimeWidgetWrapper> qtnWidgetMap){
 		HashMap<Integer,RuntimeWidgetWrapper> widgets = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
@@ -239,7 +310,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(node,widgets,externalSourceWidgets);
+				int index = loadWidget(node,widgets,externalSourceWidgets,validationQtns,validationWidgets,qtnWidgetMap);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -259,7 +330,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
-	protected int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets){
+	protected int loadWidget(Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets,List<QuestionDef> validationQtns,List<RuntimeWidgetWrapper> validationWidgets,HashMap<QuestionDef,RuntimeWidgetWrapper> qtnWidgetMap){
 		RuntimeWidgetWrapper parentWrapper = null;
 
 		String left = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
@@ -412,8 +483,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			wrapper.setQuestionDef(questionDef,false);
 			ValidationRule validationRule = formDef.getValidationRule(questionDef);
 			wrapper.setValidationRule(validationRule);
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && validationRule != null)
+			if(validationRule != null && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				questionDef.setAnswer("0");
+			
+			if(validationQtns.contains(questionDef) && isValidationWidget(wrapper)){
+				validationWidgetsMap.put(wrapper, new ArrayList<RuntimeWidgetWrapper>());
+				qtnWidgetMap.put(questionDef, wrapper);
+			}
+			
+			if(validationRule != null && isValidationWidget(wrapper))
+				validationWidgets.add(wrapper);
 		}
 
 		if(binding != null)
@@ -497,6 +576,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 		return tabIndex;
 	}
+	
+	private boolean isValidationWidget(RuntimeWidgetWrapper wrapper){
+		return !((wrapper.getWrappedWidget() instanceof Label)||
+				(wrapper.getWrappedWidget() instanceof HTML) || (wrapper.getWrappedWidget() instanceof Hyperlink) ||
+				(wrapper.getWrappedWidget() instanceof Button));
+	}
 
 	protected RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
 		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
@@ -519,6 +604,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		return parentWrapper;
 	}
 
+	/**
+	 * Submits form data to the server.
+	 */
 	protected void submit(){
 		if(formDef != null)
 			FormUtil.isAuthenticated();
@@ -551,6 +639,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		submitListener.onSubmit(xml);
 	}
 
+	/**
+	 * Checks if form data has validation errors.
+	 * 
+	 * @return true if form has no validation errors, else false.
+	 */
 	protected boolean isValid(){
 		boolean valid = true;
 		int pageNo = -1;
@@ -572,6 +665,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		return valid;
 	}
 
+	/**
+	 * Checks if widgets on a panel or page have validation errors.
+	 * 
+	 * @param panel the panel whose widgets to check.
+	 * @return true if the panel widgets have no errors, else false.
+	 */
 	private boolean isValid(AbsolutePanel panel){
 		boolean valid = true;
 		for(int index=0; index<panel.getWidgetCount(); index++){
@@ -585,18 +684,35 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		return valid;
 	}
 
+	/**
+	 * Saves form answers from widgets, on all pages,
+	 *  to their corresponding model QuestionDef objects.
+	 */
 	protected void saveValues(){
 		for(int index=0; index<tabs.getWidgetCount(); index++)
 			savePageValues((AbsolutePanel)tabs.getWidget(index));
 	}
 
+	/**
+	 * Saves page answers from widgets to their corresponding model QuestionDef objects.
+	 * 
+	 * @param panel the panel whose widgets to save.
+	 */
 	protected void savePageValues(AbsolutePanel panel){
 		for(int index=0; index<panel.getWidgetCount(); index++)
 			((RuntimeWidgetWrapper)panel.getWidget(index)).saveValue(formDef);
 	}
 
-	public void onValueChanged(QuestionDef questionDef) {
-		fireRules();
+	/**
+     * @see org.purc.purcforms.client.widget.EditListener#onValueChanged(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+     */
+	public void onValueChanged(RuntimeWidgetWrapper widget) {
+		onValueChanged(widget.getQuestionDef());
+		fireParentQtnValidationRules(widget);
+	}
+	
+	private void onValueChanged(QuestionDef questionDef){
+		fireSkipRules();
 		updateDynamicOptions(questionDef);
 
 		List<Widget> labels = labelMap.get(questionDef);
@@ -622,14 +738,27 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		moveToFirstWidget();
 	}
 
+	/**
+	 * Sets the listener to form submission events.
+	 * 
+	 * @param submitListener reference to the listener.
+	 */
 	public void setSubmitListener(SubmitListener submitListener){
 		this.submitListener = submitListener;
 	}
 
+	/**
+	 * Checks whether the form is being previewed.
+	 * 
+	 * @return true if yes, else false.
+	 */
 	public boolean isPreviewing(){
 		return tabs.getWidgetCount() > 0;
 	}
 
+	/**
+     * @see org.purc.purcforms.client.widget.EditListener#onMoveToNextWidget(com.google.gwt.user.client.ui.Widget)
+     */
 	public void onMoveToNextWidget(Widget widget) {
 		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
 			if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToNextWidget(widget))
@@ -642,6 +771,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		moveToNextWidget(index);
 	}
 
+	/**
+     * @see org.purc.purcforms.client.widget.EditListener#onMoveToPrevWidget(com.google.gwt.user.client.ui.Widget)
+     */
 	public void onMoveToPrevWidget(Widget widget){
 		boolean moved = false;
 
@@ -665,7 +797,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			tabs.selectTab(--selectedTabIndex);
 	}
 
-	protected void fireRules(){		
+	protected void fireSkipRules(){		
 		Vector rules = formDef.getSkipRules();
 		if(rules != null && rules.size() > 0){
 			for(int i=0; i<rules.size(); i++){
@@ -675,20 +807,12 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
+	/**
+	 * Clears the preview window.
+	 */
 	public void clearPreview(){
 		tabs.clear();
 	}
-
-	/*public void onWindowResized(int width, int height) {
-		height -= (110+embeddedHeightOffset);
-		sHeight = height+"px";
-		super.setHeight(sHeight);
-
-		if(selectedPanel != null)
-			//selectedPanel.setHeight("100%");
-			selectedPanel.setHeight(sHeight);
-	}*/
-
 
 	/**
 	 * This function is called when one switches between forms in the tree view
@@ -698,22 +822,24 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			tabs.clear();
 			addNewTab("Page1");
 		}
-
-		//No need of calling this because we shall eventually call loadForm
-		/*if(formDef == null)
-			this.formDef = null;
-		else{
-			//this.formDef = new FormDef(formDef); //TODO make sure using a copy of the passed object does not introduce bugs.
-
-			//set the document xml which we shall need for updating the model with question answers
-			this.formDef = XformConverter.copyFormDef(formDef);
-		}*/
 	}
 
+	/**
+	 * Sets the height offset to be used for the form when embedded in a GWT application.
+	 * 
+	 * @param offset
+	 */
 	public void setEmbeddedHeightOffset(int offset){
 		embeddedHeightOffset = offset;
 	}
 
+	/**
+	 * Updates the list of options for a question whose list of options depends
+	 * on the select option for a given question.
+	 * 
+	 * @param questionDef the question whose selected value determines the list of
+	 * 					  allowed options for another question.
+	 */
 	private void updateDynamicOptions(QuestionDef questionDef){
 		int type = questionDef.getDataType();
 		if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
@@ -780,24 +906,44 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
+	/**
+	 * Gets the background color of the selected page.
+	 * 
+	 * @return the background color.
+	 */
 	public String getBackgroundColor(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
 	}
 
+	/**
+	 * Gets the widget of the selected page.
+	 * 
+	 * @return the width in pixels.
+	 */
 	public String getWidth(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
 	}
 
+	/**
+	 * Gets the height of the selected page.
+	 * 
+	 * @return the height in pixes.
+	 */
 	public String getHeight(){
 		if(selectedPanel == null)
 			return "";
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
 	}
 
+	/**
+	 * Sets the background color of the selected page.
+	 * 
+	 * @param backgroundColor the background color.
+	 */
 	public void setBackgroundColor(String backgroundColor){
 		try{
 			if(selectedPanel != null)
@@ -805,6 +951,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * Sets the width of the currently selected tab panel.
+	 * 
+	 * @param widget the widget to set in pixels.
+	 */
 	public void setWidth(String width){
 		try{
 			if(selectedPanel != null)
@@ -812,6 +963,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * Sets the height of the selected widget panel.
+	 * 
+	 * @param height the height to set in pixels.
+	 */
 	public void setHeight(String height){
 		try{
 			if(height != null && height.trim().length() > 0 && !height.equals("100%"))
@@ -865,6 +1021,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 	}
 
+	/**
+	 * This method is called from javascript after a user has made an attempt to log on the server.
+	 * 
+	 * @param authenticated true o
+	 */
 	private static void authenticationCallback(boolean authenticated) {		
 		if(authenticated){
 			loginDlg.hide();
@@ -872,5 +1033,113 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 		else
 			loginDlg.center();
+	}
+	
+	/**
+     * @see org.purc.purcforms.client.widget.EditListener#onRowAdded(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+     */
+	public void onRowAdded(RuntimeWidgetWrapper rptWidget, int increment){
+		
+		//Get the current bottom y position of the repeat widget.
+		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
+		
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			RuntimeWidgetWrapper currentWidget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
+			if(currentWidget == rptWidget)
+				continue;
+			
+			int top = currentWidget.getTopInt();
+			if(top >= bottomYpos)
+				currentWidget.setTopInt(top + increment);
+		}
+		
+		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()+increment+"px");	
+	}
+	
+	/**
+     * @see org.purc.purcforms.client.widget.EditListener#onRowRemoved(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+     */
+	public void onRowRemoved(RuntimeWidgetWrapper rptWidget, int decrement){
+		
+		//Get the current bottom y position of the repeat widget.
+		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
+		
+		//Move widgets which are below the bottom of the repeat widget.
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			RuntimeWidgetWrapper currentWidget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
+			if(currentWidget == rptWidget)
+				continue;
+			
+			int top = currentWidget.getTopInt();
+			if(top >= bottomYpos)
+				currentWidget.setTopInt(top - decrement);
+		}
+
+		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()-decrement+"px");
+	}
+	
+	/**
+	 * Gets the height of the currently selected page.
+	 * 
+	 * @return the height.
+	 */
+	private int getHeightInt(){
+		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(selectedPanel.getElement(), "height"));
+	}
+	
+	/**
+	 * Fires all validation rules that are dependant on the value of a certain widget.
+	 * In other wards the value in this widget is referenced in one or more conditions
+	 * or one or more validation rules. These are cross field validation rules. eg Total no
+	 * of kids should be less than those that are born as male.
+	 * 
+	 * @param widget the widget whose value change requires refiring of other rules.
+	 */
+	private void fireParentQtnValidationRules(RuntimeWidgetWrapper widget){
+		List<RuntimeWidgetWrapper> widgets  = validationWidgetsMap.get(widget);
+		if(widgets == null)
+			return;
+		
+		for(RuntimeWidgetWrapper wgt : widgets)
+			wgt.isValid();
+	}
+	
+	/**
+	 * 
+	 * @param validationQtns
+	 */
+	private void initValidationWidgetsMap(List<QuestionDef> parentValidationWidgetQtns){
+		int count = formDef.getValidationRuleCount();
+		for(int index = 0; index < count; index++){
+			ValidationRule rule = formDef.getValidationRuleAt(index);
+			List<QuestionDef> qtns = rule.getQuestions(formDef);
+			for(QuestionDef questionDef : qtns){
+				if(!parentValidationWidgetQtns.contains(questionDef))
+					parentValidationWidgetQtns.add(questionDef);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param validationWidgets a list of widgets with validation rules
+	 * @param qtnWidgetMap
+	 */
+	private void setValidationWidgetsMap(List<RuntimeWidgetWrapper> validationRuleWidgets,HashMap<QuestionDef,RuntimeWidgetWrapper> qtnParentValidationWidgetMap){
+		for(RuntimeWidgetWrapper widget : validationRuleWidgets){
+			ValidationRule rule = widget.getValidationRule();
+			List<QuestionDef> qtns = rule.getQuestions(formDef);
+			for(QuestionDef questionDef : qtns){
+				RuntimeWidgetWrapper wgt = qtnParentValidationWidgetMap.get(questionDef);
+				if(wgt == null)
+					continue;
+				
+				List<RuntimeWidgetWrapper> widgets = validationWidgetsMap.get(wgt);
+				if(widgets == null)
+					continue;
+				
+				widgets.add(widget);
+			}
+		}
 	}
 }

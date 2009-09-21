@@ -12,8 +12,6 @@ import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
 
 
 

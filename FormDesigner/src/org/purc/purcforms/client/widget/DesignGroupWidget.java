@@ -154,6 +154,12 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker(true);}});
 
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupBox")),true,new Command(){
+			public void execute() {popup.hide(); addNewGroupBox(true);}});
+
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("repeatSection")),true,new Command(){
+			public void execute() {popup.hide(); addNewRepeatSection(true);}});
+
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("picture")),true,new Command(){
 			public void execute() {popup.hide(); addNewPicture();}});
 
@@ -189,6 +195,10 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		deleteWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("deleteSelected")),true,new Command(){
 			public void execute() {popup.hide(); deleteWidgets();}});
 		//}
+		
+		groupWidgetsSeparator = menuBar.addSeparator();
+		groupWidgetsMenu = menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupWidgets")),true,new Command(){
+			public void execute() {popup.hide(); groupWidgets();}});
 
 		//if(selectedDragController.isAnyWidgetSelected()){
 		cutCopySeparator = menuBar.addSeparator();

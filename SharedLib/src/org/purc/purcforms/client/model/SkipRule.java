@@ -281,7 +281,10 @@ public class SkipRule implements Serializable{
 	}
 	
 	public void refresh(FormDef dstFormDef, FormDef srcFormDef){
-		SkipRule skipRule = null;
+		SkipRule skipRule = new SkipRule();;
+		skipRule.setConditionsOperator(getConditionsOperator());
+		skipRule.setAction(getAction());
+		skipRule.setId(getId());
 		
 		for(int index = 0; index < this.getConditionCount(); index++){
 			Condition condition = getConditionAt(index);
@@ -291,13 +294,12 @@ public class SkipRule implements Serializable{
 			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
 			if(questionDef == null)
 				continue;
-			if(skipRule == null)
-				skipRule = new SkipRule();
+				
 			condition.setQuestionId(questionDef.getId());
 			skipRule.addCondition(new Condition(condition));
 		}
 		
-		if(skipRule == null)
+		if(skipRule.getConditionCount() == 0)
 			return; //No matching condition found.
 		
 		for(int index = 0; index < this.getActionTargetCount(); index++){

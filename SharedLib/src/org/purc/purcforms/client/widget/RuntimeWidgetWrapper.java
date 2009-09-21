@@ -14,7 +14,6 @@ import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
@@ -157,7 +156,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				public void onChange(Widget sender){
 					questionDef.setAnswer(((ListBox)widget).getValue(((ListBox)widget).getSelectedIndex()));
 					isValid();
-					editListener.onValueChanged(questionDef);
+					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 				}
 			});
 
@@ -185,7 +184,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						else
 							questionDef.setAnswer(null);
 						isValid();
-						editListener.onValueChanged(questionDef);
+						editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 					}
 				}
 			});
@@ -197,7 +196,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					if(questionDef != null){
 						questionDef.setAnswer(getTextBoxAnswer());
 						isValid();
-						editListener.onValueChanged(questionDef);
+						editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 					}
 
 					if(widget instanceof DatePickerWidget)
@@ -211,7 +210,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 					questionDef.setAnswer(getTextBoxAnswer());
 					isValid();
-					editListener.onValueChanged(questionDef);
+					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 				}
 			}
 
@@ -223,20 +222,18 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 
 			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == (char) KeyboardListener.KEY_DELETE || keyCode == (char) KeyboardListener.KEY_BACKSPACE){
-					((TextBox) sender).setText("");
-					while(panel.getWidgetCount() > 1)
-						panel.remove(1);
-
-					if(questionDef != null)
-						questionDef.setAnswer(null);
-
-					return;
-				}
-				else if(externalSource != null && externalSource.trim().length() > 0){
+				if(externalSource != null && externalSource.trim().length() > 0){
 					((TextBox) sender).cancelKey(); 
 					while(panel.getWidgetCount() > 1)
 						panel.remove(1);
+					
+					if(keyCode == (char) KeyboardListener.KEY_DELETE || keyCode == (char) KeyboardListener.KEY_BACKSPACE){
+						((TextBox) sender).setText("");
+						if(questionDef != null)
+							questionDef.setAnswer(null);
+
+						return;
+					}
 
 					Label label = new Label("");
 					label.setVisible(false);
@@ -617,7 +614,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					questionDef.setAnswer(answer);
 				}
 				isValid();
-				editListener.onValueChanged(questionDef);
+				editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 			}
 		});
 	}

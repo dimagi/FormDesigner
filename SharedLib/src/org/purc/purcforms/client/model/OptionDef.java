@@ -47,7 +47,7 @@ public class OptionDef implements Serializable {
 		 setId(optionDef.getId());
 		 setText(optionDef.getText());
 		 setVariableName(optionDef.getVariableName());
-		 setParent(optionDef.getParent());
+		 //setParent(parent /*optionDef.getParent()*/);
 	}
 	
 	/** Constructs a new option answer definition object from the following parameters.

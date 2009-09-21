@@ -996,17 +996,25 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		});
 	}
 
+	/**
+	 * Loads widgets that have not yet been loaded on the design surface. If if they were once
+	 * loaded, have been deleted.
+	 */
 	private void loadNewWidgets(){
+		
+		//Create list of bindings for widgets that are already loaded on the design surface.
 		HashMap<String,String> bindings = new HashMap<String, String>();
 		for(int i=0; i<dragControllers.size(); i++){
 			AbsolutePanel panel = dragControllers.elementAt(i).getBoundaryPanel();
 			fillBindings(panel,bindings);
 		}
 
+		//Create a list of questions that have not yet been loaded on the design surface.
 		List<QuestionDef> newQuestions = new ArrayList<QuestionDef>();
 		for(int index = 0; index < formDef.getPageCount(); index++)
 			fillNewQuestions(formDef.getPageAt(index),newQuestions,bindings);
 
+		//Load the new questions onto the design surface.
 		if(newQuestions.size() > 0){
 			String pageName = LocaleText.get("page")+(tabs.getTabBar().getTabCount()+1);
 			addNewTab(pageName);
@@ -1014,21 +1022,40 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 	}
 
+	/**
+	 * Fills bindings for loaded widgets in a given panel.
+	 * 
+	 * @param panel the panel.
+	 * @param bindings the map of bindings. Made a map instead of list for only easy of search with key.
+	 */
 	private void fillBindings(AbsolutePanel panel,HashMap<String,String> bindings){
 		if(panel.getWidgetIndex(rubberBand) > -1)
 			panel.remove(rubberBand);
 
 		for(int index = 0; index < panel.getWidgetCount(); index++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)panel.getWidget(index);
+			
+			//When a widget is deleted, it is reloaded on refresh even if its label still exists.
+			if(widget.getWrappedWidget() instanceof Label)
+				continue;
+			
 			String binding = widget.getParentBinding();
 			if(binding == null)
 				binding = widget.getBinding();
 			bindings.put(binding, binding); //Could possibly put widget as value.
+			
 			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
 				fillBindings(((DesignGroupWidget)widget.getWrappedWidget()).getPanel(),bindings);
 		}
 	}
 
+	/**
+	 * Fills questions, in a page, that are not loaded on the design surface.
+	 * 
+	 * @param pageDef the page.
+	 * @param newQuestions a list of the new questions.
+	 * @param bindings a map of bindings for questions that are aleady loaded on the design surface.
+	 */
 	private void fillNewQuestions(PageDef pageDef, List<QuestionDef> newQuestions, HashMap<String,String> bindings){
 		for(int index = 0; index < pageDef.getQuestionCount(); index ++){
 			QuestionDef questionDef = pageDef.getQuestionAt(index);

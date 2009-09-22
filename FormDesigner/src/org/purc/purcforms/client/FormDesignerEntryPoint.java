@@ -2,12 +2,10 @@ package org.purc.purcforms.client;
 
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.LoginDialog;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -17,10 +15,13 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
+	/**
+	 * Reference to the form designer widget.
+	 */
 	private FormDesignerWidget designer;
 
 	/**
-	 * This is the entry point method.
+	 * This is the GWT entry point method.
 	 */
 	public void onModuleLoad() {
 		

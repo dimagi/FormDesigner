@@ -36,6 +36,7 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 /**
+ * Controls the interactions betwen the menu, toolbar and various views for the form designer.
  * 
  * @author daniel
  *
@@ -600,14 +601,19 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
-						formDef.refresh(centerPanel.getFormDef());
+						
+						FormDef oldFormDef = centerPanel.getFormDef();
+						formDef.refresh(oldFormDef);
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
 
 						formDef.setXformXml(FormUtil.formatXml(xml));
-						formDef.setLayoutXml(centerPanel.getLayoutXml());
-
+						
+						formDef.setLayoutXml(oldFormDef.getLayoutXml());
+						formDef.setLanguageXml(oldFormDef.getLanguageXml());
+						
 						leftPanel.refresh(formDef);
+						centerPanel.refresh();
 					}
 					FormUtil.dlg.hide();
 				}

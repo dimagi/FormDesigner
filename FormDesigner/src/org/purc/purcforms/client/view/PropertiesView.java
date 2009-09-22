@@ -315,7 +315,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void onChange(Widget sender){
 				updateText();
 
-				if(propertiesObj != null){
+				if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
 					String name = FormDesignerUtil.getXmlTagName(txtText.getText());
 					if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform"))
 						((FormDef)propertiesObj).setVariableName(name);

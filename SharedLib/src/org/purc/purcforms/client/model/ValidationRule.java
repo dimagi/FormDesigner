@@ -256,7 +256,7 @@ public class ValidationRule implements Serializable{
 		
 		QuestionDef qtn = srcFormDef.getQuestion(questionId);
 		if(qtn == null)
-			return; //can this question really dissapear?
+			return; //can this question really disappear?
 		
 		//using variable name instead of id because id could have changed as more questions are
 		//added or some deleted.
@@ -265,6 +265,8 @@ public class ValidationRule implements Serializable{
 			return; //possibly question for the validation rule has been deleted.
 		
 		ValidationRule validationRule = new ValidationRule(questionDef.getId(),dstFormDef);
+		validationRule.setConditionsOperator(getConditionsOperator());
+		validationRule.setErrorMessage(getErrorMessage());
 		
 		for(int index = 0; index < getConditionCount(); index++){
 			Condition condition = getConditionAt(index);

@@ -814,7 +814,7 @@ public class FormDef implements Serializable{
 	}
 
 	/**
-	 * Updates this formDef (as the main) with the parameter one
+	 * Updates this formDef (as the main from the refresh source) with the parameter one
 	 * 
 	 * @param formDef the old formdef to copy from.
 	 */
@@ -827,12 +827,22 @@ public class FormDef implements Serializable{
 		for(int index = 0; index < formDef.getPageCount(); index++)
 			refresh((PageDef)formDef.getPageAt(index));
 
+		//Clear existing skip rules if any. Already existing skip rules will always
+		//overwrite those from the refresh source.
+		skipRules = new Vector();
 		for(int index = 0; index < formDef.getSkipRuleCount(); index++)
 			formDef.getSkipRuleAt(index).refresh(this, formDef);
 		
+		//Clear existing validation rules if any. Already existing validation rules 
+		//will always overwrite those from the refresh source.
+		validationRules = new Vector();
 		for(int index = 0; index < formDef.getValidationRuleCount(); index++)
-			formDef.getSkipRuleAt(index).refresh(this, formDef);
+			formDef.getValidationRuleAt(index).refresh(this, formDef);
 		
+		//If we already had dynamic options, they will always overwrite all 
+		//from the refresh source.
+		//TODO May need to do a smarter refresh by only overwriting those that have
+		//come from the server and then leave the rest.
 		if(formDef.getDynamicOptions() != null){
 			dynamicOptions =  new HashMap<Integer,DynamicOptionDef>();
 

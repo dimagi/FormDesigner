@@ -16,13 +16,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * The XForms designer widget.
+ * The form designer widget.
+ * 
+ * It is composed of a GWT DockPanel as the main widget. This panel contains a 
+ * GWT vertical panel which in turn contains a custom Menu widget, custom Toolbar widget, 
+ * and a GWT HorizontalSplitPanel. The HorizontalSplitPanel contains a custom LeftPanel widget
+ * on the left and a custom CenterPanel widget on the right.
  * 
  * @author daniel
  *
  */
 public class FormDesignerWidget extends Composite{
 
+	/** The main widget for the form designer. */
 	private DockPanel dockPanel;
 
 	/**

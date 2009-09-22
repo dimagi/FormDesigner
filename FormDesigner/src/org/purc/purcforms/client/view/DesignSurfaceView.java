@@ -383,7 +383,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		if(hasWidgets)
 			return FormDesignerUtil.formatXml(doc.toString());
 		else if(formDef != null)
-			formDef.setLayoutXml(null);
+			//TODO This accidentally overwrites form layout after refresh when user has not refreshed the design surface.
+			//When user clears widgets, the setting of formdef layout to null will be done immediately
+			//after the delete.
+			;//formDef.setLayoutXml(null);
 
 		return null;
 	}

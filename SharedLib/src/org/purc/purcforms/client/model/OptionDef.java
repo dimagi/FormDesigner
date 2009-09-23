@@ -17,6 +17,7 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public class OptionDef implements Serializable {
+	
 	/** The numeric unique identifier of an answer option. */
 	private int id = ModelConstants.NULL_ID;
 	
@@ -24,17 +25,24 @@ public class OptionDef implements Serializable {
 	private String text = ModelConstants.EMPTY_STRING;
 	
 	//TODO May not need to serialize this property for smaller pay load. Then we would just rely on the id.
-	/** The unique text ientifier of an answer option. */
+	/** The unique text identifier of an answer option. */
 	private String variableName = ModelConstants.EMPTY_STRING;
 	
 	public static final char SEPARATOR_CHAR = ',';
 	
+	/** The xforms label node for this option. */
 	private Element labelNode;
+	
+	/** The xforms value node for this option. */
 	private Element valueNode;
+	
+	/** The xforms select or select1 node that this option belongs to. */
 	private Element controlNode;
 	
+	/** The question to which this option belongs. */
 	private QuestionDef parent;
 
+	
 	/** Constructs the answer option definition object where
 	 * initialization parameters are not supplied. */
 	public OptionDef(QuestionDef parent) {  
@@ -141,6 +149,12 @@ public class OptionDef implements Serializable {
 		return getText();
 	}
 	
+	/**
+	 * Updates the xforms xml document with the changes in the option.
+	 * 
+	 * @param doc the xml document.
+	 * @param selectNode the select or select1 node that this option belongs to.
+	 */
     public void updateDoc(Document doc, Element selectNode){
     	if(labelNode != null)
     		XformConverter.setTextNodeValue(labelNode,text);
@@ -155,6 +169,13 @@ public class OptionDef implements Serializable {
     		controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
 	}
     
+    /**
+     * Builds the language xpath node for locatization of text for this option.
+     * 
+     * @param parentXpath the parent xpath expression.
+     * @param doc the locale document.
+     * @param parentNode
+     */
     public void buildLanguageNodes(String parentXpath, com.google.gwt.xml.client.Document doc, Element parentNode){
     	if(labelNode != null && controlNode != null){
     		String xpath = parentXpath + "/" + FormUtil.getNodeName(controlNode);

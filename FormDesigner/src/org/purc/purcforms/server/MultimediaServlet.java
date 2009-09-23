@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * Handles server side multimedia (Picture, Audio and Video) requests 
+ * for the form designer and runner.
  * 
  * @author daniel
  *

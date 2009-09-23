@@ -31,15 +31,31 @@ public class PageDef implements Serializable{
 	/** The name of the page. */
 	private String name = ModelConstants.EMPTY_STRING;
 
+	/** The xforms label node for this page. */
 	private Element labelNode;
+	
+	/** The xforms group node for this page. */
 	private Element groupNode;
 
+	/** The form defintion to which this page belongs. */
 	private FormDef parent;
 
+	
+	/**
+	 * Constructs a new page.
+	 * 
+	 * @param parent the form to which the page belongs.
+	 */
 	public PageDef(FormDef parent) {
 		this.parent = parent;
 	}
 
+	/**
+	 * Creates a new copy of a page from an existing one.
+	 * 
+	 * @param pageDef the page to copy.
+	 * @param parent the form to which the page belongs.
+	 */
 	public PageDef(PageDef pageDef,FormDef parent) {
 		this(parent);
 		setPageNo(pageDef.getPageNo());
@@ -47,6 +63,13 @@ public class PageDef implements Serializable{
 		copyQuestions(pageDef.getQuestions());
 	}
 
+	/**
+	 * Constructs a page object with the following parameters.
+	 * 
+	 * @param name the name of the page.
+	 * @param pageNo the number of the page.
+	 * @param parent the form to which the page belongs.
+	 */
 	public PageDef(String name, int pageNo,FormDef parent) {
 		this(parent);
 		setName(name);
@@ -54,6 +77,14 @@ public class PageDef implements Serializable{
 		setQuestions(questions);
 	}
 
+	/**
+	 * Constructs a page with the following parameters.
+	 * 
+	 * @param name the name of the page.
+	 * @param pageNo the number of the page.
+	 * @param questions a list of questions in the page.
+	 * @param parent the form to which the page belongs.
+	 */
 	public PageDef(String name, int pageNo,Vector questions,FormDef parent) {
 		this(parent);
 		setName(name);

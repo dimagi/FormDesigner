@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="/SharedLib/lib/gwt-datepicker-r29.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-dnd-2.5.6.jar"/>
 	<classpathentry kind="lib" path="/SharedLib/lib/gwt-user.jar"/>
-	<classpathentry kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="/SharedLib/lib/gwt-dev-windows.jar"/>
 	<classpathentry kind="output" path="bin"/>

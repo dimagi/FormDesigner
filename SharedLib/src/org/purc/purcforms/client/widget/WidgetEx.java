@@ -22,6 +22,7 @@ import com.google.gwt.xml.client.Element;
 
 
 /**
+ * This is the base class for all widgets supported by the form designer and runner.
  * 
  * @author daniel
  *
@@ -90,18 +91,37 @@ public class WidgetEx extends Composite{
 	
 	protected boolean isRepeated = false;
 	
+	/** 
+	 * The horizontal panel which contains the widget. The widget is contained in a horizontal
+	 * panel such that we can add the error widget when data validation fails.
+	 */
 	protected HorizontalPanel panel = new HorizontalPanel();
+	
+	/** The question to which this widget is attached. */
 	protected QuestionDef questionDef;
 
-
+	
+	/**
+	 * Create a new widget.
+	 */
 	public WidgetEx(){
 		
 	}
 	
+	/**
+	 * Creates a copy of an existing widget.
+	 * 
+	 * @param widget the widget to copy.
+	 */
 	public WidgetEx(WidgetEx widget){
 		copyWidgetProperties(widget);
 	}
 	
+	/**
+	 * Copies properties of a given widget into this instance.
+	 * 
+	 * @param widget the widget to copy from.
+	 */
 	public void copyWidgetProperties(WidgetEx widget){
 		widget.storePosition();
 		

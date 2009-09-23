@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
+ * Servlet that handles saving of files.
  * 
  * @author daniel
  *

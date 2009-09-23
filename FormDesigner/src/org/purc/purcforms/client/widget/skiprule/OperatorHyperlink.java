@@ -57,8 +57,8 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	public void onBrowserEvent(Event event) {
 		  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			  itemSelectionListener.onStartItemSelection(this);
-			  setupPopup();
-		      popup.setPopupPosition(event.getClientX(), event.getClientY());
+			  int height = setupPopup();
+		      popup.setPopupPosition(event.getClientX(), event.getClientY()-height);
 		      popup.show();
 		  }
 	}
@@ -69,7 +69,7 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	      popup.show();
 	}*/
 	
-	private void setupPopup(){
+	private int setupPopup(){
 		popup = new PopupPanel(true,true);
 		
 		int count = 0;
@@ -123,6 +123,8 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		//scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+"px");
 		
 		popup.setWidget(scrollPanel);
+		
+		return height;
 	}
 	
 	public void onItemSelected(Object sender, Object item) {

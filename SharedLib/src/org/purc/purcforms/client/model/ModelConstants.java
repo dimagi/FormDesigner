@@ -3,7 +3,7 @@ package org.purc.purcforms.client.model;
 import java.io.Serializable;
 
 /**
- * EpihandyConstants shared throught classes in the containing package.
+ * EpihandyConstants shared throughout classes in the containing package.
  *
  * @version ,
  */

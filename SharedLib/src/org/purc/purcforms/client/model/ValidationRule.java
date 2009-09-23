@@ -12,6 +12,9 @@ import com.google.gwt.xml.client.Element;
 
 
 /**
+ * This class represents a validation rule which in xforms is a constraint attribute.
+ * An example of such would be constraint=". &gt;= 0 and . &lt;= 150" where a value is 
+ * required to be between 0 and 150.
  * 
  * @author daniel
  *
@@ -33,6 +36,7 @@ public class ValidationRule implements Serializable{
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
 	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
 	
+	/** The form to which the validation rule belongs. */
 	private FormDef formDef;
 	
 	/** Constructs a rule object ready to be initialized. */

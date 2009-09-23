@@ -1,12 +1,7 @@
 package org.purc.purcforms.client.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
-
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -14,7 +9,7 @@ import com.google.gwt.xml.client.Element;
 
 /**
  * Definition for repeat sets of questions. Basically this is just a specialized collection
- * of a set of repeating questions, together with with reference to their parent question.
+ * of a set of repeating questions, together with reference to their parent question.
  * 
  * @author daniel
  *
@@ -27,8 +22,13 @@ public class RepeatQtnsDef implements Serializable {
 	/** Reference to the parent question. */
 	private QuestionDef qtnDef;
 	
+	/** The maximum number of rows that this repeat questions definition can have. */
 	private byte maxRows = -1;
 	
+	
+	/**
+	 * Creates a new repeat questions definition object.
+	 */
 	public RepeatQtnsDef() {
 		 
 	}
@@ -131,50 +131,11 @@ public class RepeatQtnsDef implements Serializable {
 			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),qtnDef));
 	}
 	
-	public void moveQuestionUp(QuestionDef questionDef){
-		/*int index = questions.indexOf(questionDef);
-		
-		questions.remove(questionDef);
-		
-		QuestionDef currentQuestionDef;
-		List list = new ArrayList();
-		
-		while(questions.size() >= index){
-			currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
-			list.add(currentQuestionDef);
-			questions.remove(currentQuestionDef);
-		}
-		
-		questions.add(questionDef);
-		for(int i=0; i<list.size(); i++)
-			questions.add(list.get(i));*/
-		
+	public void moveQuestionUp(QuestionDef questionDef){		
 		PageDef.moveQuestionUp(questions, questionDef);
 	}
 	
-	public void moveQuestionDown(QuestionDef questionDef){
-		/*int index = questions.indexOf(questionDef);	
-		
-		questions.remove(questionDef);
-		
-		QuestionDef currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
-		
-		while(questions.size() > 0 && questions.size() > index){
-			currentItem = (QuestionDef)questions.elementAt(index);
-			list.add(currentItem);
-			questions.remove(currentItem);
-		}
-		
-		for(int i=0; i<list.size(); i++){
-			if(i == 1)
-				questions.add(questionDef); //Add after the first item.
-			questions.add(list.get(i));
-		}
-		
-		if(list.size() == 1)
-			questions.add(questionDef);*/
-		
+	public void moveQuestionDown(QuestionDef questionDef){		
 		PageDef.moveQuestionDown(questions, questionDef);
 	}
 	

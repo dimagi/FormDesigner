@@ -8,8 +8,8 @@ import org.purc.purcforms.client.xforms.XformConverter;
 
 /**
  * A definition for skipping or branching rules. 
- * These could for example be enabling or disabling, hiding or showing, maing mandatory or optional 
- * of questions basing on values of others.
+ * These could for example be enabling or disabling, hiding or showing, making mandatory or optional 
+ * of questions basing on values of others. In xforms, this is a relevant atttribute.
  * 
  * @author Daniel Kayiwa
  *

@@ -21,17 +21,23 @@ import com.google.gwt.xml.client.NodeList;
 
 
 /** 
- * This is the question definition properties.
+ * This is the question definition.
  * 
  * @author Daniel Kayiwa
  *
  */
 public class QuestionDef implements Serializable{
 
+	/** The value to save for boolean questions when one selects the yes option. */
 	public static final String TRUE_VALUE = "true";
+	
+	/** The value to save for the boolean questions when one selects the no option. */
 	public static final String FALSE_VALUE = "false";
 
+	/** The text to display for boolean questions for the yes option. */
 	public static final String TRUE_DISPLAY_VALUE = LocaleText.get("yes");
+	
+	/** The text to display for boolean questions for the no option. */
 	public static final String FALSE_DISPLAY_VALUE = LocaleText.get("no");
 
 	/** The prompt text. The text the user sees. */
@@ -46,6 +52,7 @@ public class QuestionDef implements Serializable{
 	/** The value supplied as answer if the user has not supplied one. */
 	private String defaultValue;
 
+	/** The question answer of value. */
 	private String answer;
 
 	//TODO For a smaller payload, may need to combine (mandatory,visible,enabled,locked) 
@@ -119,23 +126,48 @@ public class QuestionDef implements Serializable{
 	/** Question with image. */
 	public static final int QTN_TYPE_IMAGE = 11;
 
+	/** Question with recorded video. */
 	public static final byte QTN_TYPE_VIDEO = 12;
 
+	/** Question with recoded audio. */
 	public static final byte QTN_TYPE_AUDIO = 13;
 
+	/** Question whose list of options varies basing on the value selected from another question.
+	 * An example of such a question would be countries where the list depends on the continent
+	 * selected in the continent question.
+	 */
 	public static final int QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC = 14;
 
+	/** Question with GPS cordinates. */
 	public static final int QTN_TYPE_GPS = 15;
 	
+	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;
+	
+	/** The xforms label node for this question. */
 	private Element labelNode;
+	
+	/** The xforms hint node for this question. */
 	private Element hintNode;
+	
+	/** The xforms bind node for this question. */
 	private Element bindNode;
+	
+	/** The xforms input,select, or select1 node for the question. */
 	private Element controlNode;
+	
+	/** For select and select1 questions, this is the reference to the node representing
+	 * the first option.
+	 */
 	private Element firstOptionNode;
 
+	
+	/** A list of interested listeners to the question change events. */
 	private List<QuestionChangeListener> changeListeners = new ArrayList<QuestionChangeListener>();
 
+	/** The parent object for this question. It could be a page or
+	 * just another question as for repeat question kids. 
+	 */
 	private Object parent;
 
 

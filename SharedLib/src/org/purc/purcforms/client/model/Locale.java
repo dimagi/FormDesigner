@@ -2,15 +2,26 @@ package org.purc.purcforms.client.model;
 
 
 /**
+ * Represents a locale supported by the form designer and runner.
  * 
  * @author daniel
  *
  */
 public class Locale {
 
+	/** The locale key. */
 	private String key;
+	
+	/** The name of the locale. */
 	private String name;
 	
+	
+	/**
+	 * Constructs a new locale object with a given key and name.
+	 * 
+	 * @param key the locale key.
+	 * @param name the locale name.
+	 */
 	public Locale(String key, String name){
 		this.key = key;
 		this.name = name;

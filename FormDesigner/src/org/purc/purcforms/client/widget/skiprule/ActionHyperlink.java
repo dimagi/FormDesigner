@@ -32,7 +32,7 @@ public class ActionHyperlink extends Hyperlink {
 	public void onBrowserEvent(Event event) {
 		if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			setupPopup();
-			popup.setPopupPosition(event.getClientX(), event.getClientY());
+			popup.setPopupPosition(event.getClientX(), event.getClientY() - 60);
 			popup.show();
 		}
 	}

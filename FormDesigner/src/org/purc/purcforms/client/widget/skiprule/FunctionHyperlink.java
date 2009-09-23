@@ -44,7 +44,7 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 		  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			  itemSelectionListener.onStartItemSelection(this);
 			  setupPopup();
-		      popup.setPopupPosition(event.getClientX(), event.getClientY());
+		      popup.setPopupPosition(event.getClientX(), event.getClientY() - 65);
 		      popup.show();
 		  }
 	}

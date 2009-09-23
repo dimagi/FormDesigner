@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 
 
 /**
+ * This class contains utilities used to manipulate xml documents.
  * 
  * @author daniel
  *
@@ -98,7 +99,14 @@ public class XmlUtil {
 		return null;
 	}
 	
-	public static String getDescriptionTemplate(Element node, String template){
+	/**
+	 * Gets the value of the description template for an xforms xml model.
+	 * 
+	 * @param node the child of the xforms model node.
+	 * @param template the description template.
+	 * @return the description template value.
+	 */
+	public static String getDescriptionTemplateValue(Element node, String template){
 		if(template == null || template.trim().length() == 0)
 			return null;
 		
@@ -153,15 +161,26 @@ public class XmlUtil {
 		return null;
 	}
 	
-	public static String getDescriptionTemplate(String xml) throws Exception{
+	/**
+	 * Gets the value of the description template value in an xml xform model document.
+	 * 
+	 * @param xml the xml for the xforms model.
+	 */
+	public static String getDescriptionTemplateValue(String xml) throws Exception{
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(IOUtils.toInputStream(xml));
 		
 		String descTemplate = doc.getDocumentElement().getAttribute("description-template");
-		return getDescriptionTemplate(doc.getDocumentElement(),descTemplate);
+		return getDescriptionTemplateValue(doc.getDocumentElement(),descTemplate);
 	}
 	
+	/**
+	 * Creates a new xml document.
+	 * 
+	 * @return the new xml document.
+	 * @throws Exception
+	 */
 	public static Document getNewDocument() throws Exception{
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 	}

@@ -37,12 +37,25 @@ import com.google.gwt.xml.client.Element;
  */
 public class CenterPanel extends Composite implements TabListener, IFormSelectionListener, SubmitListener, LayoutChangeListener{
 
+	/** Index for the properties tab. */
 	private static final int SELECTED_INDEX_PROPERTIES = 0;
+	
+	/** Index for xforms source xml tab. */
 	private static final int SELECTED_INDEX_XFORMS_SOURCE = 1;
+	
+	/** Index for the design surface tab. */
 	private static final int SELECTED_INDEX_DESIGN_SURFACE = 2;
+	
+	/** Index for the layout xml tab. */
 	private static final int SELECTED_INDEX_LAYOUT_XML = 3;
+	
+	/** Index for the locale or language xml tab. */
 	private static int SELECTED_INDEX_LANGUAGE_XML = 4;
+	
+	/** Index for the preview tab. */
 	private static int SELECTED_INDEX_PREVIEW = 5;
+	
+	/** Index for the model xml tab. */
 	private static int SELECTED_INDEX_MODEL_XML = 6;
 
 	/**
@@ -65,21 +78,38 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	private DesignSurfaceView designSurfaceView;
 
+	/** The text area which contains layout xml. */
 	private TextArea txtLayoutXml = new TextArea();
+	
+	/** The text area which contains model xml. */
 	private TextArea txtModelXml = new TextArea();
+	
+	/** The text area which contains locale or language xml. */
 	private TextArea txtLanguageXml = new TextArea();
 
 	/**
 	 * View used to display a form as it will look when the user is entering data in non-design mode.
 	 */
 	private PreviewView previewView;
+	
+	/** The form defintion object thats is currently being edited. */
 	private FormDef formDef;
+	
+	/** The index of the selected tab. */
 	private int selectedTabIndex = 0;	
 
+	/** Scroll panel for the design surface. */
 	private ScrollPanel scrollPanelDesign = new ScrollPanel();
+	
+	/** Scroll panel for the preview surface. */
 	private ScrollPanel scrollPanelPreview = new ScrollPanel();
 
 
+	/**
+	 * Constructs a new center panel widget.
+	 * 
+	 * @param images
+	 */
 	public CenterPanel(Images images) {		
 		designSurfaceView = new DesignSurfaceView(images);
 		previewView = new PreviewView((PreviewView.Images)images);
@@ -169,21 +199,33 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		designSurfaceView.setLayoutChangeListener(this);*/
 	}
 
+	/**
+	 * Sets up the xforms source tab.
+	 */
 	private void initXformsSource(){
 		FormDesignerUtil.maximizeWidget(txtXformsSource);
 		tabs.add(txtXformsSource, "XForms Source");
 	}
 
+	/**
+	 * Sets up the layout xml tab.
+	 */
 	private void initLayoutXml(){
 		tabs.add(txtLayoutXml, "Layout XML");
 		FormDesignerUtil.maximizeWidget(txtLayoutXml);
 	}
-
+	
+	/**
+	 * Sets up the language xml tab.
+	 */
 	private void initLanguageXml(){
 		tabs.add(txtLanguageXml, "Language XML");
 		FormDesignerUtil.maximizeWidget(txtLanguageXml);
 	}
 
+	/**
+	 * Sets up the preview surface tab.
+	 */
 	private void initPreview(){
 		tabs.add(scrollPanelPreview, "Preview");
 		//FormDesignerUtil.maximizeWidget(previewView);
@@ -196,11 +238,17 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		scrollPanelPreview.setWidget(previewView);
 	}
 
+	/**
+	 * Sets up the model xml tab.
+	 */
 	private void initModelXml(){
 		tabs.add(txtModelXml, "Model XML");
 		FormDesignerUtil.maximizeWidget(txtModelXml);
 	}
 
+	/**
+	 * Sets up the properties tab.
+	 */
 	private void initProperties(){
 		tabs.add(propertiesView, "Properties");
 	}
@@ -285,42 +333,83 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		tabs.selectTab(SELECTED_INDEX_PROPERTIES);
 	}
 
+	/**
+	 * Gets the xforms source xml.
+	 * 
+	 * @return the xforms xml.
+	 */
 	public String getXformsSource(){
 		if(txtXformsSource.getText().length() == 0)
 			tabs.selectTab(SELECTED_INDEX_XFORMS_SOURCE);
 		return txtXformsSource.getText();
 	}
 
+	/**
+	 * Sets the xforms source xml.
+	 * 
+	 * @param xml the xforms xml.
+	 * @param selectXformsTab set to true to select the xforms source tab, else false.
+	 */
 	public void setXformsSource(String xml, boolean selectXformsTab){
 		txtXformsSource.setText(xml);
 		if(selectXformsTab)
 			tabs.selectTab(SELECTED_INDEX_XFORMS_SOURCE);
 	}
 
+	/**
+	 * Gets the widget layout xml.
+	 * 
+	 * @return the layout xml.
+	 */
 	public String getLayoutXml(){
 		return txtLayoutXml.getText();
 	}
 
+	/**
+	 * Gets the language xml.
+	 * 
+	 * @return the language xml.
+	 */
 	public String getLanguageXml(){
 		return txtLanguageXml.getText();
 	}
 	
+	/**
+	 * Gets the inner html for the selected form page.
+	 * 
+	 * @return the html.
+	 */
 	public String getFormInnerHtml(){
 		return designSurfaceView.getSelectedPageHtml();
 	}
 
+	/** 
+	 * Sets the widget layout xml.
+	 * 
+	 * @param xml the layout xml.
+	 * @param selectTabs set to true to select the layout xml tab, else set to false.
+	 */
 	public void setLayoutXml(String xml, boolean selectTabs){
 		txtLayoutXml.setText(xml);
 		if(selectTabs)
 			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
 	}
 
+	/**
+	 * Sets the language xml.
+	 * 
+	 * @param xml the language xml.
+	 * @param selectTab set to true to select the language xml tab, else set to false.
+	 */
 	public void setLanguageXml(String xml, boolean selectTab){
 		txtLanguageXml.setText(xml);
 		if(selectTab)
 			selectLanguageTab();
 	}
 
+	/**
+	 * Builds the widget layout xml and puts it in the layout xml tab.
+	 */
 	public void buildLayoutXml(){
 		String layout = designSurfaceView.getLayoutXml();
 
@@ -332,6 +421,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		txtLayoutXml.setText(layout);
 	}
 
+	/**
+	 * Builds the language xml and puts it in the language xml tab.
+	 */
 	public void buildLanguageXml(){
 		Document doc = LanguageUtil.createNewLanguageDoc();
 		Element rootNode = doc.getDocumentElement();
@@ -353,6 +445,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			formDef.setLanguageXml(txtLanguageXml.getText());
 	}
 
+	/**
+	 * Loads layout xml and builds the widgets represented on the design surface tab. 
+	 *
+	 * @param xml the layout xml.
+	 * @param selectTabs set to true to select the layout xml tab, else set to false.
+	 */
 	public void loadLayoutXml(String xml, boolean selectTabs){
 		if(xml != null)
 			txtLayoutXml.setText(xml);

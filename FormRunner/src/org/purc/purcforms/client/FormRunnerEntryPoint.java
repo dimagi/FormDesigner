@@ -81,16 +81,18 @@ public class FormRunnerEntryPoint implements EntryPoint{
 		}
 	}
 	
-	/*public static native void okTest(String text) -{
-		$wnd.heyMen(text);
-	}-;
-
-	private static boolean getGWT(String a, String b){
-		return true;
-	}*/
+	/**
+	 * This is just a temporary hack for those who use both the form designer and runner as two
+	 * separate GWT widgets and then the form designer registers the authentication callback
+	 * instead of the form runner. So this method is just a away for them to override the
+	 * form designer's call back with that of the form runner.
+	 */
+	public static void registerAuthenticationCallback(){
+		publishJS();
+	}
 
 	// Set up the JS-callable signature as a global JS function.
-	private native void publishJS() /*-{
+	private static native void publishJS() /*-{
    		$wnd.authenticationCallback = @org.purc.purcforms.client.view.FormRunnerView::authenticationCallback(Z);
 	}-*/;
 }

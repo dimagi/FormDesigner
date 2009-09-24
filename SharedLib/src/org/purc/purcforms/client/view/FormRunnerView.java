@@ -1027,7 +1027,8 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	 * 
 	 * @param authenticated true o
 	 */
-	private static void authenticationCallback(boolean authenticated) {		
+	private static void authenticationCallback(boolean authenticated) {	
+		
 		if(authenticated){
 			loginDlg.hide();
 			formRunnerView.submitData();

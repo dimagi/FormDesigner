@@ -894,7 +894,8 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
-	private static void authenticationCallback(boolean authenticated) {		
+	private static void authenticationCallback(boolean authenticated) {	
+		
 		if(authenticated){	
 			loginDlg.hide();
 

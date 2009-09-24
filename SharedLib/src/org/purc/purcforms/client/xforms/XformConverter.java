@@ -361,8 +361,10 @@ public class XformConverter implements Serializable{
 			List<OptionDef> list = entry.getValue();
 
 			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
-			if(parentOptionDef == null)
+			if(parentOptionDef == null){
+				modelNode.removeChild(instanceNode);
 				return false;//continue;
+			}
 
 			for(int index = 0; index < list.size(); index++){
 				OptionDef optionDef = list.get(index);
@@ -960,15 +962,49 @@ public class XformConverter implements Serializable{
 		HashMap constraints = new HashMap();
 		Vector repeats = new Vector();
 		HashMap rptKidMap = new HashMap();
+		List<QuestionDef> orphanDynOptionQns = new ArrayList<QuestionDef>();
+		
 		currentQuestionId = 1;
 		currentPageNo = 1;
-		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints);
+		
+		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints,orphanDynOptionQns);
 		if(formDef.getName() == null || formDef.getName().length() == 0)
 			formDef.setName(formDef.getVariableName());
 		setDefaultValues(getInstanceDataNode(doc),formDef,id2VarNameMap); //TODO Very slow needs optimisation for very big forms
 		addSkipRules(formDef,id2VarNameMap,relevants);
 		addValidationRules(formDef,id2VarNameMap,constraints);
+		
+		parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
+		
 		return formDef;
+	}
+	
+	/**
+	 * Parses dynamic option lists for questions whose parent questions had not been yet 
+	 * processed during the earlier passes because of question ordering in the xform.
+	 * 
+	 * @param formDef the form definition.
+	 * @param orphanDynOptionQns the list of unprocessed dynamic option child questions.
+	 */
+	private static void parseOrphanDynOptionQns(FormDef formDef, List<QuestionDef> orphanDynOptionQns){
+		int orgSize = orphanDynOptionQns.size();
+		if(orgSize == 0)
+			return;
+		
+		//We are using an array copy because we will modify the orphanDynOptionQns list
+		//as we loop through it and hence do not want concurency modification exceptions.
+		Object[] qtns = orphanDynOptionQns.toArray();
+		for(int index = 0; index < qtns.length; index++){
+			QuestionDef questionDef = (QuestionDef)qtns[index];
+			if(questionDef.getFirstOptionNode() != null)
+				parseDynamicOptionsList(questionDef, questionDef.getFirstOptionNode().getAttribute(ATTRIBUTE_NAME_NODESET), formDef,orphanDynOptionQns);
+		}
+		
+		//If we have more to process and the number has reduced, just continue
+		//Else if number is the same then we 
+		int newSize = orphanDynOptionQns.size();
+		if(newSize > 0 && newSize < orgSize)
+			parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
 	}
 
 	private static String getNodeTextValue(Element dataNode,String name){
@@ -1167,7 +1203,7 @@ public class XformConverter implements Serializable{
 		return null;
 	}
 
-	private static QuestionDef parseElement(FormDef formDef, Element element, HashMap map,QuestionDef questionDef,HashMap relevants,Vector repeats, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints){
+	private static QuestionDef parseElement(FormDef formDef, Element element, HashMap map,QuestionDef questionDef,HashMap relevants,Vector repeats, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
 		String label = "";
 		String hint = "";
 		String value = "";
@@ -1193,9 +1229,9 @@ public class XformConverter implements Serializable{
 				if(tagname.equals(NODE_NAME_SUBMIT) || tagname.equals(NODE_NAME_SUBMIT_MINUS_PREFIX))
 					continue;
 				else if (tagname.equals("head"))
-					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				else if (tagname.equals("body"))
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				else if (tagname.equals("title")){
 					if(child.getChildNodes().getLength() != 0)
 						formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
@@ -1203,7 +1239,7 @@ public class XformConverter implements Serializable{
 				else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 					formDef.setModelNode((Element)child);
 					formDef.setXformsNode((Element)child.getParentNode());
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				}
 				else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
@@ -1212,7 +1248,7 @@ public class XformConverter implements Serializable{
 							formDef.addPage();
 						formDef.setPageGroupNode((Element)child);
 					}
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				}
 				else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
 					if(formDef.getDataNode() != null)
@@ -1343,7 +1379,7 @@ public class XformConverter implements Serializable{
 						}
 
 						questionDef = qtn;
-						parseElement(formDef, child, map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+						parseElement(formDef, child, map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 					}
 				} else if(tagname.equals(NODE_NAME_LABEL)||tagname.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
@@ -1381,7 +1417,7 @@ public class XformConverter implements Serializable{
 					}
 				}
 				else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
 					if(child.getChildNodes().getLength() != 0){
 						value = child.getChildNodes().item(0).getNodeValue().trim();
@@ -1391,10 +1427,10 @@ public class XformConverter implements Serializable{
 				else if(tagname.equals(NODE_NAME_ITEMSET)||tagname.equals(NODE_NAME_ITEMSET_MINUS_PREFIX)){
 					questionDef.setDataType(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC);
 					questionDef.setFirstOptionNode(child);
-					parseDynamicOptionsList(questionDef,child.getAttribute(ATTRIBUTE_NAME_NODESET),formDef);
+					parseDynamicOptionsList(questionDef,child.getAttribute(ATTRIBUTE_NAME_NODESET),formDef,orphanDynOptionQns);
 				}
 				else
-					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints);
+					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				// TODO - how are other elements like html:p or br handled?
 			}
 		}
@@ -1430,7 +1466,7 @@ public class XformConverter implements Serializable{
 		return questionDef;
 	}
 
-	private static void parseDynamicOptionsList(QuestionDef questionDef, String nodeset, FormDef formDef){
+	private static void parseDynamicOptionsList(QuestionDef questionDef, String nodeset, FormDef formDef, List<QuestionDef> orphanDynOptionQns){
 		if(nodeset == null || nodeset.trim().length() == 0)
 			return;
 
@@ -1467,11 +1503,14 @@ public class XformConverter implements Serializable{
 			Node child = nodes.item(index);
 			if(child.getNodeType() == Node.ELEMENT_NODE){
 				dynamicOptionDef.setDataNode((Element)child);
-				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,null,parentOptionIdMap,formDef);
+				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,null,parentOptionIdMap,formDef,orphanDynOptionQns);
 				break;
 			}
 		}
 
+		if(dynamicOptionDef.getParentToChildOptions() != null && orphanDynOptionQns.contains(questionDef))
+			orphanDynOptionQns.remove(questionDef);
+		
 		formDef.setDynamicOptionDef(parentQuestionDef.getId(), dynamicOptionDef);
 	}
 
@@ -1489,13 +1528,13 @@ public class XformConverter implements Serializable{
 		return null;
 	}
 
-	private static void parseDynamicOptions(DynamicOptionDef dynamicOptionDef, QuestionDef questionDef, QuestionDef parentQuestionDef, Node node, OptionDef optionDef, HashMap<String,Integer> parentOptionIdMap, FormDef formDef){
+	private static void parseDynamicOptions(DynamicOptionDef dynamicOptionDef, QuestionDef questionDef, QuestionDef parentQuestionDef, Node node, OptionDef optionDef, HashMap<String,Integer> parentOptionIdMap, FormDef formDef, List<QuestionDef> orphanDynOptionQns){
 		String label = "";
 		String value = "";
 		Element labelNode = null;
 		Element valueNode = null;
 
-		NodeList nodes = node.getChildNodes();
+		NodeList nodes = node.getChildNodes();		
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node child = nodes.item(index);
 			if(child.getNodeType() != Node.ELEMENT_NODE)
@@ -1518,8 +1557,13 @@ public class XformConverter implements Serializable{
 							return;
 						optnDef = dynOptionsDef.getOptionWithValue(parent);
 					}
-					if(optnDef == null)
+					if(optnDef == null){
+						if(!orphanDynOptionQns.contains(questionDef))
+							orphanDynOptionQns.add(questionDef);
+						
 						continue;
+					}
+					
 					optionId = optnDef.getId();
 					parentOptionIdMap.put(parent, optionId);
 				}
@@ -1530,7 +1574,7 @@ public class XformConverter implements Serializable{
 				}
 				optionList.add(optionDef);
 
-				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,optionDef,parentOptionIdMap,formDef);
+				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,optionDef,parentOptionIdMap,formDef,orphanDynOptionQns);
 			}
 			else if(name.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
 				if(child.getChildNodes().getLength() != 0){

@@ -17,7 +17,10 @@ import org.purc.purcforms.client.view.PreviewView;
 import org.purc.purcforms.client.view.PropertiesView;
 
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
@@ -130,7 +133,29 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 		if(!FormUtil.getShowLanguageTab())
 			this.removeLanguageTab();
+		
+		previewEvents();
 	}
+	
+	private void previewEvents(){
+
+		DOM.addEventPreview(new EventPreview() { 
+			public boolean onEventPreview(Event event) 
+			{ 				
+				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
+					byte mode = Context.getCurrentMode();
+					
+					if(mode == Context.MODE_DESIGN)
+						return designSurfaceView.handleKeyBoardEvent(event);
+					else if(mode == Context.MODE_PREVIEW)
+						return previewView.handleKeyBoardEvent(event);
+				}
+				
+				return true;
+			}
+		});
+	}
+
 
 	public void setFormChangeListener(IFormChangeListener formChangeListener){
 		propertiesView.setFormChangeListener(formChangeListener);

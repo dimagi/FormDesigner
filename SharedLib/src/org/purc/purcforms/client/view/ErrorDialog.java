@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -42,6 +43,7 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 
 	public void onClick(Widget sender) {
 		hide();
+		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.
 	}
 
 	public void setBody(String html) {

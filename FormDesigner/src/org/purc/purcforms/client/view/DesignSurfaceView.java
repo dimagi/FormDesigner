@@ -119,29 +119,14 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		//DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 
-		previewEvents();
-
 		currentWidgetSelectionListener = this;
 	}
-
-	private void previewEvents(){
-
-		DOM.addEventPreview(new EventPreview() { 
-			public boolean onEventPreview(Event event) 
-			{ 
-				if(Context.getCurrentMode() != Context.MODE_DESIGN)
-					return true;
-
-				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
-					//DOM.eventPreventDefault(pEvent);
-					if(!childHandleKeyDownEvent(event))
-						handleKeyDownEvent(event);
-					//onBrowserEvent(event);
-					return true;
-				}
-				return true;
-			}
-		});
+	
+	public boolean handleKeyBoardEvent(Event event){
+		if(!childHandleKeyDownEvent(event))
+			handleKeyDownEvent(event);
+		
+		return true;
 	}
 
 	private boolean childHandleKeyDownEvent(Event event){

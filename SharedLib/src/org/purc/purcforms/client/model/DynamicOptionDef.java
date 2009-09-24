@@ -140,7 +140,11 @@ public class DynamicOptionDef  implements Serializable{
 			String nodeset = questionDef.getFirstOptionNode().getAttribute(XformConverter.ATTRIBUTE_NAME_NODESET);
 			if(nodeset == null)
 				return;
+			
+			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
+				questionDef.getFirstOptionNode().setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
 
+			
 			String instanceId = XformConverter.getDynamicOptionChildInstanceId(nodeset);
 			if(!(instanceId == null || instanceId.equals(questionDef.getVariableName()))){
 				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getVariableName()+"'");

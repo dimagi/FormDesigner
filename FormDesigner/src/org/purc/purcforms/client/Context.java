@@ -97,7 +97,7 @@ public class Context {
 	 * 
 	 * @return the form definition object.
 	 */
-	public FormDef getFormDef() {
+	public static FormDef getFormDef() {
 		return formDef;
 	}
 

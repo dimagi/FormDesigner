@@ -31,6 +31,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -1141,5 +1142,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 				widgets.add(widget);
 			}
 		}
+	}
+	
+	public boolean handleKeyBoardEvent(Event event){
+		if(event.getCtrlKey() && event.getKeyCode() == 'S'){
+			onSubmit();
+			
+			//Returning false such that firefox does not try to save the page.
+			return false;
+		}
+		
+		return true;
 	}
 }

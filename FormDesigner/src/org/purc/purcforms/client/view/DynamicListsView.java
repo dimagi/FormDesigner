@@ -189,6 +189,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				return;
 
 			dynamicOptionDef = formDef.getDynamicOptions(parentQuestionDef.getId());
+			
+			//As for now, we do not allow the a parent question to map to more
+			//than once child question.
 			if(dynamicOptionDef != null && dynamicOptionDef.getQuestionId() != questionDef.getId())
 				return;
 

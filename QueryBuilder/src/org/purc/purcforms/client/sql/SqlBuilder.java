@@ -198,6 +198,9 @@ public class SqlBuilder {
 		switch(dataType)
 		{
 		case QuestionDef.QTN_TYPE_TEXT:
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
+		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 		{
 			if(operator == ModelConstants.OPERATOR_STARTS_WITH || operator == ModelConstants.OPERATOR_NOT_START_WITH)
 				return "'" + fieldVal + LIKE_SEPARATOR + "'";

@@ -492,6 +492,8 @@ public class FormUtil {
 	}
 
 	public static void displayException(Throwable ex){
+		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.
+		
 		ex.printStackTrace();
 
 		String text = LocaleText.get("uncaughtException");

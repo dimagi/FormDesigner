@@ -256,8 +256,10 @@ public class PageDef implements Serializable{
 				qtnDef.getBindNode().getParentNode().removeChild(qtnDef.getBindNode());
 		}
 
-		if(formDef != null)
+		if(formDef != null){
 			formDef.removeQtnFromRules(qtnDef);
+			formDef.removeQtnFromDynamicLists(qtnDef);
+		}
 
 		return questions.removeElement(qtnDef);
 	}

@@ -14,10 +14,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * This is the GWT entry point for the form runtime engine.
  */
 public class FormRunnerEntryPoint implements EntryPoint{
 
+	/** The form runtime widget. */
 	private FormRunnerWidget formRunner;
 
 	/**

@@ -121,8 +121,10 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	public void openForm() {
 		if(isOfflineMode()){
-			String xml = null;
-			if(centerPanel.isInLayoutMode()){
+			String xml = centerPanel.getXformsSource();
+			
+			//Only load layout if in layout mode and no xforms source is supplied.
+			if(centerPanel.isInLayoutMode() && (xml == null || xml.trim().length() == 0)){
 				xml = centerPanel.getLayoutXml();
 				if(xml == null || xml.trim().length() == 0){
 					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
@@ -130,7 +132,7 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				}
 			}
 			else{
-				xml = centerPanel.getXformsSource();
+				//Whether in layout mode or not, as long as xforms source is supplied, we load it.
 				if(xml != null && xml.trim().length() > 0){
 					FormDef formDef = leftPanel.getSelectedForm();
 					if(formDef != null)

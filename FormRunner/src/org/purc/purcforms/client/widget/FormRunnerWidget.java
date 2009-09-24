@@ -10,12 +10,16 @@ import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XformConverter;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 
 
 
 /**
+ * This is the widget for the form runtime engine.
  * 
  * @author daniel
  *
@@ -38,6 +42,9 @@ public class FormRunnerWidget extends Composite{
 		
 		controller = new FormRunnerController(this);
 		view.setSubmitListener(controller);
+		
+		//process key board events and pick Ctrl + S for saving.
+		previewEvents();
 	}
 	
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
@@ -64,5 +71,17 @@ public class FormRunnerWidget extends Composite{
 	
 	public void setSubmitListener(SubmitListener submitListener){
 		view.setSubmitListener(submitListener);
+	}
+	
+	private void previewEvents(){
+		DOM.addEventPreview(new EventPreview() { 
+			public boolean onEventPreview(Event event) 
+			{ 				
+				if (DOM.eventGetType(event) == Event.ONKEYDOWN)
+					return view.handleKeyBoardEvent(event);
+				
+				return true;
+			}
+		});
 	}
 }

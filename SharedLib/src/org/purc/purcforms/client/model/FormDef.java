@@ -615,6 +615,11 @@ public class FormDef implements Serializable{
 		return false;
 	}
 
+	/**
+	 * Removes a question for the validation rules list.
+	 * 
+	 * @param questionDef the question to remove.
+	 */
 	private void removeQtnFromValidationRules(QuestionDef questionDef){
 		for(int index = 0; index < this.getValidationRuleCount(); index++){
 			ValidationRule validationRule = getValidationRuleAt(index);
@@ -626,6 +631,11 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Removes a question from skip rules list.
+	 * 
+	 * @param questionDef the question to remove.
+	 */
 	private void removeQtnFromSkipRules(QuestionDef questionDef){
 		for(int index = 0; index < getSkipRuleCount(); index++){
 			SkipRule skipRule = getSkipRuleAt(index);
@@ -640,6 +650,59 @@ public class FormDef implements Serializable{
 	public void removeQtnFromRules(QuestionDef qtnDef){
 		removeQtnFromValidationRules(qtnDef);
 		removeQtnFromSkipRules(qtnDef);
+	}
+	
+	/**
+	 * Check if a question is referenced by any dynamic selection list relationship
+	 * and if so, removes the relationship.
+	 * 
+	 * @param questionDef the question to check.
+	 */
+	public void removeQtnFromDynamicLists(QuestionDef questionDef){
+		if(dynamicOptions != null){
+			
+			Object[] keys = dynamicOptions.keySet().toArray();
+			for(int index = 0; index < keys.length; index++){
+				Integer questionId = (Integer)keys[index];
+				DynamicOptionDef dynamicOptionDef = dynamicOptions.get(questionId);
+				
+				//Check if the deleted question is the parent of a dynamic selection
+				//list relationship. And if so, delete the relationship.
+				if(questionId.intValue() == questionDef.getId()){
+					dynamicOptions.remove(questionId);
+					removeDynamicInstanceNode(dynamicOptionDef);
+					continue;
+				}
+
+				//Check if the deleted question is the child of a dynamic selection
+				//list relationship. And if so, delete the relationship.
+				if(dynamicOptionDef.getQuestionId() == questionDef.getId()){
+					dynamicOptions.remove(questionId);
+					removeDynamicInstanceNode(dynamicOptionDef);
+					continue;
+				}
+				
+				dynamicOptionDef.updateDoc(this,questionDef);
+			}
+		}
+	}
+	
+	/**
+	 * Removes the instance node referenced by a dynamic selection list object.
+	 * 
+	 * @param dynamicOptionDef the dynamic selection list object.
+	 */
+	private static void removeDynamicInstanceNode(DynamicOptionDef dynamicOptionDef){
+		//dataNode points to <dynamiclist>
+		//dataNode.getParentNode() points to <xf:instance id="theid">
+		//dataNode.getParentNode().getParentNode() points to <xf:model>
+		
+		Element dataNode = dynamicOptionDef.getDataNode();
+		if(dataNode != null && dataNode.getParentNode() != null
+				&& dataNode.getParentNode().getParentNode() != null){
+			
+			dataNode.getParentNode().getParentNode().removeChild(dataNode.getParentNode());	
+		}
 	}
 
 	public int getPageCount(){
@@ -755,8 +818,14 @@ public class FormDef implements Serializable{
 	}
 
 	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
+		
+		//The parent or child question may have been deleted.
+		if(getQuestion(questionId) == null || getQuestion(dynamicOptionDef.getQuestionId()) == null)
+			return;
+		
 		if(dynamicOptions == null)
 			dynamicOptions = new HashMap<Integer,DynamicOptionDef>();
+		
 		dynamicOptions.put(questionId, dynamicOptionDef);
 	}
 
@@ -808,9 +877,21 @@ public class FormDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Removes a dynamic selection list relationship referenced by a given question.
+	 * 
+	 * @param questionId the question to check from dynamic selection lists.
+	 */
 	public void removeDynamicOptions(Integer questionId){
-		if(dynamicOptions != null)
+		if(dynamicOptions != null){
+			DynamicOptionDef dynamciOptionDef = dynamicOptions.get(questionId);
+			if(dynamciOptionDef == null)
+				return;
+			
+			removeDynamicInstanceNode(dynamciOptionDef);
+			
 			dynamicOptions.remove(questionId);
+		}
 	}
 
 	/**

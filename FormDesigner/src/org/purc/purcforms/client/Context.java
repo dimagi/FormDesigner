@@ -23,13 +23,19 @@ public class Context {
 	/** State of the form designer being in neither preview or design mode. */
 	public static final byte MODE_NONE = 0;
 	
-	/** State whe the form designer is in design mode. 
+	/** State when setting questions properties in the properties tab. */
+	public static final byte MODE_QUESTION_PROPERTIES = 1;
+	
+	/** State when the form designer is in design mode. 
 	 * As in used dragging around widgets on the design surface.
 	 */
-	public static final byte MODE_DESIGN = 1;
+	public static final byte MODE_DESIGN = 2;
 	
-	/** State when the user in previewing their form designs. */
-	public static final byte MODE_PREVIEW = 2;
+	/** State when the user is previewing their form designs. */
+	public static final byte MODE_PREVIEW = 3;
+	
+	/** State when displaying the xforms source. */
+	public static final byte MODE_XFORMS_SOURCE = 4;
 	
 	/** The default locale key. */
 	private static String defaultLocale = "en";

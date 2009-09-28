@@ -873,6 +873,11 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Checks of this question is a multimedia (Picture,Audio & Video) type.
+	 * 
+	 * @return true if yes, else false.
+	 */
 	private boolean isBinaryType(){
 		return (dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_VIDEO ||
 				dataType == QuestionDef.QTN_TYPE_AUDIO);
@@ -1092,6 +1097,12 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the option with a given display text.
+	 * 
+	 * @param text the option text.
+	 * @return the option definition object.
+	 */
 	public OptionDef getOptionWithText(String text){
 		if(options == null || text == null)
 			return null;
@@ -1105,6 +1116,12 @@ public class QuestionDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Gets the option with a given id.
+	 * 
+	 * @param id the option id
+	 * @return the option definition object.
+	 */
 	public OptionDef getOption(int id){
 		if(options == null)
 			return null;
@@ -1118,6 +1135,12 @@ public class QuestionDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Gets the option with a given variable name or binding.
+	 * 
+	 * @param value the variable name or binding.
+	 * @return the option definition object.
+	 */
 	public OptionDef getOptionWithValue(String value){
 		if(options == null || value == null)
 			return null;
@@ -1183,16 +1206,30 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the number of options for this questions.
+	 * 
+	 * @return the number of options.
+	 */
 	public int getOptionCount(){
 		if(options == null)
 			return 0;
 		return ((List)options).size();
 	}
 	
+	/**
+	 * Gets the option at a given position (zero based).
+	 * 
+	 * @param index the position.
+	 * @return the option definition object.
+	 */
 	public OptionDef getOptionAt(int index){
 		return (OptionDef)((List)options).get(index);
 	}
 
+	/**
+	 * Clears the list of option for a question.
+	 */
 	public void clearOptions(){
 		if(options != null)
 			((List)options).clear();
@@ -1209,6 +1246,11 @@ public class QuestionDef implements Serializable{
 			parentNode.insertBefore(controlNode, refOptionDef.getControlNode());
 	}
 
+	/**
+	 * Sets the list of options for a question.
+	 * 
+	 * @param optionList the option list.
+	 */
 	public void setOptionList(List<OptionDef> optionList){
 		options = optionList;
 
@@ -1232,15 +1274,23 @@ public class QuestionDef implements Serializable{
 			getRepeatQtnsDef().updateDataNodes(dataNode);
 	}
 
-	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+	/**
+	 * Builds the locale xpath xpressions and their text  values for this question.
+	 * 
+	 * @param parentXpath the parent xpath expression we are building onto.
+	 * @param doc the locale document that we are building.
+	 * @param parentXformNode the parent xforms node for this question.
+	 * @param parentLangNode the parent language node we are bulding onto.
+	 */
+	public void buildLanguageNodes(String parentXpath, com.google.gwt.xml.client.Document doc, Element parentXformNode, Element parentLangNode){
 		if(controlNode == null)
 			return;
 
-		String xpath = FormUtil.getNodePath(controlNode);
+		String xpath = parentXpath + FormUtil.getNodePath(controlNode,parentXformNode);
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT){
 			Element parent = (Element)controlNode.getParentNode();
-			xpath = FormUtil.getNodePath(parent);
+			xpath = parentXpath + FormUtil.getNodePath(parent,parentXformNode);
 
 			String id = parent.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
 			if(id != null && id.trim().length() > 0)
@@ -1261,28 +1311,33 @@ public class QuestionDef implements Serializable{
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(labelNode));
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
-			parentNode.appendChild(node);
+			parentLangNode.appendChild(node);
 		}
 
 		if(hintNode != null){
 			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
 			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, helpText);
-			parentNode.appendChild(node);
+			parentLangNode.appendChild(node);
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
-			getRepeatQtnsDef().buildLanguageNodes(doc,parentNode);
+			getRepeatQtnsDef().buildLanguageNodes(parentXpath,doc,parentXformNode,parentLangNode);
 
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			if(options != null){
 				List optionsList = (List)options;
 				for(int index = 0; index < optionsList.size(); index++)
-					((OptionDef)optionsList.get(index)).buildLanguageNodes(xpath, doc, parentNode);
+					((OptionDef)optionsList.get(index)).buildLanguageNodes(xpath, doc, parentLangNode);
 			}
 		}
 	}
 	
+	/**
+	 * Gets the form to which this question belongs.
+	 * 
+	 * @return the form.
+	 */
 	public FormDef getParentFormDef(){
 		return getParentFormDef(this);
 	}

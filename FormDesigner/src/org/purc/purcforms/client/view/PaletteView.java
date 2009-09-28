@@ -16,7 +16,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * Contains the palette.
+ * Contains the palette where the user can pick wdigets and drag drop
+ *  them onto the design surface.
  * 
  * @author daniel
  *

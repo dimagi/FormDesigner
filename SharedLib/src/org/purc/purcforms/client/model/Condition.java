@@ -37,7 +37,10 @@ public class Condition implements Serializable{
 	 * */
 	private QuestionDef valueQtnDef;
 
-
+	/**
+	 * The second value checked to see if the condition is true. This has values or
+	 * for contitions that have the OR operator or AND operator. Eg weight > 0 and weight < 100
+	 */
 	private String secondValue = ModelConstants.EMPTY_STRING;
 
 	/** The unique identifier of a condition. */
@@ -182,6 +185,13 @@ public class Condition implements Serializable{
 		return ret;
 	}
 
+	/**
+	 * Check to see if a condition, attached to a numeric question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if we are dealing with validation logic, else false if skip logic.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isNumericTrue(QuestionDef qtn, boolean validation){
 		//return value.equals(qtn.getAnswer());
 		try{
@@ -497,6 +507,17 @@ public class Condition implements Serializable{
 		return false;
 	}
 	
+	/**
+	 * Gets the question, if any, referenced by a condition value.
+	 * Such values exit for cross field validations where a condition's
+	 * value is not static but dynamic in the sense that it comes from 
+	 * the answer of some other question (The question we are returning)
+	 * An example of such a condtion is "Male number of kids should be
+	 * less than or equal to the Total number of kids."
+	 * 
+	 * @param formDef the form that this condition belongs to.
+	 * @return the question if any is found.
+	 */
 	public QuestionDef getQuestion(FormDef formDef){
 		if(value.startsWith(formDef.getVariableName()+"/"))
 			return formDef.getQuestion(value.substring(value.indexOf('/')+1));

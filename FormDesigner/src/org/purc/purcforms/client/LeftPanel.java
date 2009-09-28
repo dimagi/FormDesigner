@@ -21,6 +21,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * This widget is on the left hand side of the form designer and contains
+ * the Forms, Palette, and Widget Properties panels.
  * 
  * @author daniel
  *

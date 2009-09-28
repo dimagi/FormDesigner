@@ -1,10 +1,9 @@
 package org.purc.purcforms.client.view;
 
-import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
+import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -20,6 +19,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
+ * Used for letting the user browse for a file to open on the local file system.
  * 
  * @author daniel
  *
@@ -28,10 +28,10 @@ public class OpenFileDialog extends DialogBox{
 
 	private FormPanel form = new FormPanel();
 	private FileUpload fileUpload;
-	private IOpenFileDialogEventListener eventListener;
+	private OpenFileDialogEventListener eventListener;
 	private String actionUrl;
 	
-	public OpenFileDialog(IOpenFileDialogEventListener eventListener, String url){
+	public OpenFileDialog(OpenFileDialogEventListener eventListener, String url){
 		this.eventListener = eventListener;
 		initWidgets(url);
 	}

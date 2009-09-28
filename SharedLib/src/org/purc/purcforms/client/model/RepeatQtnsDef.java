@@ -209,11 +209,11 @@ public class RepeatQtnsDef implements Serializable {
 		return maxRows;
 	}
 	
-	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+	public void buildLanguageNodes(String parentXpath,com.google.gwt.xml.client.Document doc, Element parentXformNode, Element parentLangNode){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
+			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(parentXpath,doc,parentXformNode,parentLangNode);
 	}
 }

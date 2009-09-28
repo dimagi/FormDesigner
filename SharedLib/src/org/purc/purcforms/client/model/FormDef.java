@@ -59,14 +59,33 @@ public class FormDef implements Serializable{
 
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
 	private Document doc;
+	
+	/** 
+	 * The data node of the xform that this form represents.
+	 * This is the node immediately under the instace node.
+	 */
 	private Element dataNode;
+	
+	/** The top level node of the xform that this form represents. */
 	private Element xformsNode;
+	
+	/** The model node of the xform that this form represents. */
 	private Element modelNode;
 
+	/** The layout xml for this form. */
 	private String layoutXml;
+	
+	/** The xforms xml for this form. */
 	private String xformXml;
+	
+	/** The language xml for this form. */
 	private String languageXml;
 
+	/** 
+	 * Flag to determine if we can change the form structure.
+	 * For a read only form, we can only change the Text and Help Text.
+	 * 
+	 */
 	private boolean readOnly = false;
 
 
@@ -75,10 +94,22 @@ public class FormDef implements Serializable{
 
 	}
 
+	/**
+	 * Creates a new copy of the form from an existing one.
+	 * 
+	 * @param formDef the form to copy from.
+	 */
 	public FormDef(FormDef formDef) {
 		this(formDef,true);
 	}
 
+	/**
+	 * Creates a new copy of the form from an existing one, with a flag which
+	 * tells whether we should copy the validation rules too.
+	 * 
+	 * @param formDef the form to copy from.
+	 * @param copyValidationRules set to true if you also want to copy the validation rules, else false.
+	 */
 	public FormDef(FormDef formDef, boolean copyValidationRules) {
 		setId(formDef.getId());
 		setName(formDef.getName());
@@ -121,6 +152,11 @@ public class FormDef implements Serializable{
 		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
 	}
 
+	/**
+	 * Adds a new page to the form.
+	 * 
+	 * @param pageDef the page to add.
+	 */
 	public void addPage(PageDef pageDef){
 		if(pages == null)
 			pages = new Vector();
@@ -129,6 +165,9 @@ public class FormDef implements Serializable{
 		pageDef.setParent(this);
 	}
 
+	/**
+	 * Adds a default page to the form.
+	 */
 	public void addPage(){
 		if(pages == null)
 			pages = new Vector();
@@ -136,6 +175,12 @@ public class FormDef implements Serializable{
 		pages.add(new PageDef("Page"+pages.size(),(int)pages.size(),this));
 	}
 
+	/**
+	 * Sets the name of the last page in the form.
+	 * 
+	 * @param name the name to set.
+	 * @return the last page in the form whose name has been set.
+	 */
 	public PageDef setPageName(String name){
 		PageDef pageDef = ((PageDef)pages.elementAt(pages.size()-1));
 		pageDef.setName(name);
@@ -150,6 +195,11 @@ public class FormDef implements Serializable{
 		((PageDef)pages.elementAt(pages.size()-1)).setGroupNode(groupNode);
 	}
 
+	/**
+	 * Gets the list of pages that the form has.
+	 * 
+	 * @return the page list
+	 */
 	public Vector getPages() {
 		return pages;
 	}
@@ -265,6 +315,12 @@ public class FormDef implements Serializable{
 		this.readOnly = readOnly;
 	}
 
+	/**
+	 * Gets the first skip rule which has a given question as one of its targets.
+	 * 
+	 * @param questionDef the question.
+	 * @return the skip rule.
+	 */
 	public SkipRule getSkipRule(QuestionDef questionDef){
 		if(skipRules == null)
 			return null;
@@ -281,6 +337,12 @@ public class FormDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Gets the validation rule for a given question.
+	 * 
+	 * @param questionDef the question.
+	 * @return the validation rule.
+	 */
 	public ValidationRule getValidationRule(QuestionDef questionDef){
 		if(validationRules == null)
 			return null;
@@ -294,6 +356,11 @@ public class FormDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Updates the xforms document with the current changes in the form.
+	 * 
+	 * @param withData
+	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
 
@@ -313,6 +380,7 @@ public class FormDef implements Serializable{
 		if(!orgVarName.equalsIgnoreCase(variableName)){
 			dataNode = XformConverter.renameNode(dataNode,variableName);
 			updateDataNodes();
+			((Element)dataNode.getParentNode()).setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
 		}
 
 		if(dataNode != null){
@@ -421,6 +489,11 @@ public class FormDef implements Serializable{
 		return ModelConstants.NULL_ID;
 	}
 
+	/**
+	 * Adds a new question to the form.
+	 * 
+	 * @param qtn the new question to add.
+	 */
 	public void addQuestion(QuestionDef qtn){
 		if(pages == null){
 			pages = new Vector();
@@ -433,6 +506,11 @@ public class FormDef implements Serializable{
 		qtn.setParent(pages.elementAt(pages.size()-1));
 	}
 
+	/**
+	 * Copies a given list of pages into this form.
+	 * 
+	 * @param pages the pages to copy.
+	 */
 	private void copyPages(Vector pages){
 		if(pages != null){
 			this.pages =  new Vector();
@@ -441,6 +519,11 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Copies a given list of skip rules into this form.
+	 * 
+	 * @param rules the skip rules.
+	 */
 	private void copySkipRules(Vector rules){
 		if(rules != null)
 		{
@@ -450,6 +533,11 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Copies a given list of validation rules into this form.
+	 * 
+	 * @param rules the validation rules.
+	 */
 	private void copyValidationRules(Vector rules){
 		if(rules != null)
 		{
@@ -480,6 +568,11 @@ public class FormDef implements Serializable{
 
 	}*/
 
+	/**
+	 * Removes a page from the form.
+	 * 
+	 * @param pageFef the page to remove.
+	 */
 	public void removePage(PageDef pageDef){
 		/*for(int i=0; i<pages.size(); i++){
 			((PageDef)pages.elementAt(i)).removeAllQuestions();
@@ -493,10 +586,18 @@ public class FormDef implements Serializable{
 		pages.removeElement(pageDef);
 	}
 
+	/**
+	 * Sets the xforms document represented by this form.
+	 * @param doc
+	 */
 	public void setDoc(Document doc){
 		this.doc = doc;
 	}
 
+	/**
+	 * Gets the xforms document represented by this form.
+	 * @return
+	 */
 	public Document getDoc(){
 		return doc;
 	}
@@ -543,6 +644,12 @@ public class FormDef implements Serializable{
 		this.modelNode = modelNode;
 	}
 
+	
+	/**
+	 * Moves a page one position up in the form.
+	 * 
+	 * @param pageDef the page to move.
+	 */
 	public void movePageUp(PageDef pageDef){
 		int index = pages.indexOf(pageDef);
 
@@ -571,6 +678,11 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Moves a page one position down in the form.
+	 * 
+	 * @param pageDef the page to move.
+	 */
 	public void movePageDown(PageDef pageDef){
 		int index = pages.indexOf(pageDef);	
 
@@ -607,6 +719,12 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Removes a question from the form.
+	 * 
+	 * @param qtnDef the question to remove.
+	 * @return true if the question has been found and removed, else false.
+	 */
 	public boolean removeQuestion(QuestionDef qtnDef){
 		for(int i=0; i<pages.size(); i++){
 			if(((PageDef)pages.elementAt(i)).removeQuestion(qtnDef,this))
@@ -647,6 +765,11 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Removes a question from the validation rules which are referencing it.
+	 * 
+	 * @param qtnDef the question to remove.
+	 */
 	public void removeQtnFromRules(QuestionDef qtnDef){
 		removeQtnFromValidationRules(qtnDef);
 		removeQtnFromSkipRules(qtnDef);
@@ -705,24 +828,45 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the number of pages in the form.
+	 * 
+	 * @return the number of pages.
+	 */
 	public int getPageCount(){
 		if(pages == null)
 			return 0;
 		return pages.size();
 	}
 
+	/**
+	 * Gets the number of skip rules in the form.
+	 * 
+	 * @return the number of skip rules.
+	 */
 	public int getSkipRuleCount(){
 		if(skipRules == null)
 			return 0;
 		return skipRules.size();
 	}
 
+	/**
+	 * Gets the number of validation rules in the form.
+	 * 
+	 * @return the number of validation rules.
+	 */
 	public int getValidationRuleCount(){
 		if(validationRules == null)
 			return 0;
 		return validationRules.size();
 	}
 
+	/**
+	 * Removes a question from its page to some other page.
+	 * 
+	 * @param qtn the question to move.
+	 * @param pageNo the new page number where to take the question.
+	 */
 	public void moveQuestion2Page(QuestionDef qtn, int pageNo){
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
@@ -736,6 +880,12 @@ public class FormDef implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets questions with given display text.
+	 * 
+	 * @param text the display text to look for.
+	 * @return the question of found, else null.
+	 */
 	public QuestionDef getQuestionWithText(String text){
 		for(int i=0; i<pages.size(); i++){
 			QuestionDef questionDef = ((PageDef)pages.elementAt(i)).getQuestionWithText(text);
@@ -761,30 +911,59 @@ public class FormDef implements Serializable{
 		return binding;
 	}
 
+	/**
+	 * Checks if the form has a particular skip rule.
+	 * 
+	 * @param skipRule the skip rule to check.
+	 * @return true if the skip rule has been found, else false.
+	 */
 	public boolean containsSkipRule(SkipRule skipRule){
 		if(skipRules == null)
 			return false;
 		return skipRules.contains(skipRule);
 	}
 
+	
+	/**
+	 * Checks if a form has a particular validation rule.
+	 * 
+	 * @param validationRule the validation rule to check.
+	 * @return true if the validation rule has been found, else false.
+	 */
 	public boolean containsValidationRule(ValidationRule validationRule){
 		if(validationRules == null)
 			return false;
 		return validationRules.contains(validationRule);
 	}
 
+	/**
+	 * Adds a new skip rule to the form.
+	 * 
+	 * @param skipRule the new skip rule to add.
+	 */
 	public void addSkipRule(SkipRule skipRule){
 		if(skipRules == null)
 			skipRules = new Vector();
 		skipRules.addElement(skipRule);
 	}
 
+	/**
+	 * Adds a new validation rule to the form.
+	 * 
+	 * @param validationRule the new validation rule to add.
+	 */
 	public void addValidationRule(ValidationRule validationRule){
 		if(validationRules == null)
 			validationRules = new Vector();
 		validationRules.addElement(validationRule);
 	}
 
+	/**
+	 * Removes a skip rule from the form.
+	 * 
+	 * @param skipRule the skip rule to remove.
+	 * @return true if the skip rule has been found and removed, else false.
+	 */
 	public boolean removeSkipRule(SkipRule skipRule){
 		if(skipRules == null)
 			return false;
@@ -802,6 +981,12 @@ public class FormDef implements Serializable{
 		return ret;
 	}
 
+	/**
+	 * Removes a validation rule from the form.
+	 * 
+	 * @param validationRule the validation rule to remove.
+	 * @return true if the validation rule has been found and removed.
+	 */
 	public boolean removeValidationRule(ValidationRule validationRule){
 		if(validationRules == null)
 			return false;
@@ -961,6 +1146,11 @@ public class FormDef implements Serializable{
 			((PageDef)pages.get(index)).refresh(pageDef);
 	}
 
+	/**
+	 * Gets the total number of questions contained in the form.
+	 * 
+	 * @return the number of questions.
+	 */
 	public int getQuestionCount(){
 		if(pages == null)
 			return 0;
@@ -1017,6 +1207,12 @@ public class FormDef implements Serializable{
 		return rootNode;
 	}
 
+	/**
+	 * Gets the form to which a particular item (PageDef,QuestionDef,OptionDef) belongs.
+	 * 
+	 * @param formItem the item.
+	 * @return the form.
+	 */
 	public static FormDef getFormDef(Object formItem){
 		if(formItem instanceof FormDef)
 			return (FormDef)formItem;
@@ -1034,6 +1230,9 @@ public class FormDef implements Serializable{
 		return null;
 	}
 
+	/**
+	 * Removes all quetions change listeners.
+	 */
 	public void clearChangeListeners(){
 		if(pages == null)
 			return;

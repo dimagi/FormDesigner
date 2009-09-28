@@ -23,18 +23,32 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 
 
+//TODO May need to separate form designer specific utilities from those used by the form runner.
+
 /**
- * 
+ * Utilities used by the form designer and runtime engine.
+ *
  * @author daniel
  *
  */
 public class FormUtil {
 
+	/** The date time format used in the xforms model xml. */
 	private static DateTimeFormat dateTimeSubmitFormat;
+	
+	/** The date time format used for display purposes. */
 	private static DateTimeFormat dateTimeDisplayFormat;
+	
+	/** The date format used in the xforms model xml. */
 	private static DateTimeFormat dateSubmitFormat;
+	
+	/** The date format used for display purposes. */
 	private static DateTimeFormat dateDisplayFormat;
+	
+	/** The time format used in the xforms model xml. */
 	private static DateTimeFormat timeSubmitFormat;
+	
+	/** The time format used for display purposes. */
 	private static DateTimeFormat timeDisplayFormat;
 
 	private static String formDefDownloadUrlSuffix;
@@ -45,6 +59,11 @@ public class FormUtil {
 	private static String formDefRefreshUrlSuffix;
 	private static String externalSourceUrlSuffix;
 	private static String multimediaUrlSuffix;
+	
+	/** 
+	 * The url to navigate to when one closes the form designer by selecting
+	 * Close from the file menu. 
+	 */
 	private static String closeUrl;
 
 	private static String formIdName;
@@ -53,14 +72,22 @@ public class FormUtil {
 	private static String formId;
 	private static String entityId;
 
+	/** The default fornt family used by the form designer. */
 	private static String defaultFontFamily;
 
 	private static boolean appendEntityIdAfterSubmit;
 
+	/** 
+	 * Flag determining whether to display the language xml tab or not.
+	 */
 	private static boolean showLanguageTab = false;
 
+	/**
+	 * Flag determining whether to display the form submitted successfully message or not.
+	 */
 	private static boolean showSubmitSuccessMsg = false;
 
+	/** The dialog used to show all progress messages. */
 	public static ProgressDialog dlg = new ProgressDialog();
 
 	/**
@@ -262,7 +289,7 @@ public class FormUtil {
 	}
 
 	/**
-	 * Sets up the uncaught exception handler.
+	 * Sets up the GWT uncaught exception handler.
 	 *
 	 */
 	public static void setupUncaughtExceptionHandler(){
@@ -274,6 +301,10 @@ public class FormUtil {
 		});
 	}
 
+	/**
+	 * Gets the parameters passed in the host html file as divs (preferably hidden divs).
+	 * For now this is the way of passing parameters to the form designer and runtime widget.
+	 */
 	public static void retrieveUserDivParameters(){
 		formDefDownloadUrlSuffix = getDivValue("formDefDownloadUrlSuffix");
 		formDefUploadUrlSuffix = getDivValue("formDefUploadUrlSuffix");
@@ -517,7 +548,7 @@ public class FormUtil {
 		if(!(s != null && s.contains("(NS_ERROR_DOM_NOT_SUPPORTED_ERR):"))){
 			ErrorDialog dialogBox = new ErrorDialog();
 			dialogBox.setText(LocaleText.get("unexpectedFailure"));
-			dialogBox.setBody(s);
+			dialogBox.setErrorMessage(s);
 			dialogBox.setCallStack(text);
 			dialogBox.center();
 		}
@@ -549,6 +580,20 @@ public class FormUtil {
 
 		return path;
 	}
+	
+	public static String getNodePath(com.google.gwt.xml.client.Node node, com.google.gwt.xml.client.Node parentNode){
+		String path = removePrefix(node.getNodeName());
+
+		if(node.getNodeType() == Node.ELEMENT_NODE){
+			com.google.gwt.xml.client.Node parent = node.getParentNode();
+			while(parent != null && !parent.getNodeName().equals(parentNode.getNodeName()) && !(parent instanceof Document)){
+				path = removePrefix(parent.getNodeName()) + "/" + path;
+				parent = parent.getParentNode();
+			}
+		}
+
+		return path;
+	}
 
 	private static String removePrefix(String name){
 		int pos = name.indexOf(':');
@@ -569,6 +614,12 @@ public class FormUtil {
 		return $wnd.searchExternal(key,value,parentElement.parentNode.parentNode,textElement,valueElement);
 	}-*/;
 	
+	/**
+	 * Checks if the current used is authenticated by the server.
+	 * This method is called every time a user tries to submit form data in non preview mode.
+	 * 
+	 * @return
+	 */
 	public static native boolean isAuthenticated() /*-{
 		return $wnd.isUserAuthenticated();
 	}-*/;

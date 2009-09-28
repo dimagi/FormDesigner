@@ -20,18 +20,24 @@ import com.google.gwt.xml.client.Element;
  */
 public class DynamicOptionDef  implements Serializable{
 
-	/** The question whose values are determined by or dependent on the answer of another question. **/
+	/** The question whose values are determined by or dependent on the answer of another (parent) question. **/
 	private int questionId;
 
-	/** A map between each parent option and a list of possible options for the dependant question. */
+	/** A map between each parent option and a list of possible options for the dependent question above. */
 	private HashMap<Integer,List<OptionDef>> parentToChildOptions;
 
-	/** This is not persisted but rather used only during design mode. **/
+	/** 
+	 * This is not persisted but rather used only during design mode
+	 * to ensure that we have unique option ids.
+	 */
 	private static int nextOptionId = 1;
 
 	private Element dataNode;
 
 
+	/**
+	 * Creates a new instance of the dynamic option definition.
+	 */
 	public DynamicOptionDef(){
 
 	}

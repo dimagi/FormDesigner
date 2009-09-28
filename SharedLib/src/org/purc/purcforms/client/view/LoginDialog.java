@@ -23,22 +23,29 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 
 /**
+ * This dialog box is used to let the user supply a user name and password when
+ * attempting to submit data to the server. This dialog box is only displayed when
+ * a user opens the data entry form for such a long time that the server session
+ * expires and require them to relogin.
  * 
  * @author daniel
  *
  */
-public class LoginDialog extends DialogBox implements ClickListener {
+public class LoginDialog extends DialogBox {
 
+	/** For capturing the user name. */
 	private TextBox txtUserName;
+	
+	/** For capturing the user password. */
 	private PasswordTextBox txtPassword;
 	private FlexTable table = new FlexTable();
 	
+	
+	/**
+	 * Creates a new instance of the login dialog box.
+	 */
 	public LoginDialog(){
 		setup();
-	}
-	
-	public void onClick(Widget sender) {
-		hide();
 	}
 	
 	private void setup(){
@@ -118,6 +125,9 @@ public class LoginDialog extends DialogBox implements ClickListener {
 		});
 	}
 	
+	/**
+	 * Called when one selects the OK button.
+	 */
 	private void login(){
 		if(!FormUtil.authenticate(txtUserName.getText(), txtPassword.getText())){
 			clearUserInfo();
@@ -130,20 +140,34 @@ public class LoginDialog extends DialogBox implements ClickListener {
 		}
 	}
 	
+	/**
+	 * Called when the user selects the CANCEL button.
+	 */
 	private void cancel(){
 		hide();
 	}
 	
+	/**
+	 * Clears previously entered user name and password.
+	 */
 	public void clearUserInfo(){
 		txtUserName.setText(null);
 		txtPassword.setText(null);
 	}
 	
+	/**
+	 * Displays the dialog box at the center of the browser window.
+	 */
 	public void center(){
+		
+		//If there is any progress dialog box, close it.
 		FormUtil.dlg.hide();
 		
+		//Let the base GWT implementation of centering take control.
 		super.center();
 		
+		//Some how focus will not get to the user name unless when called within
+		//a deffered command.
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				txtUserName.setFocus(true);

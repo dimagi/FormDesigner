@@ -11,19 +11,35 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+
+/**
+ * This modal dialog box is used to display exceptions to the user.
+ * 
+ * @author daniel
+ *
+ */
 public class ErrorDialog extends DialogBox implements ClickListener {
-	private TextArea body = new TextArea();
+	
+	/** This displays the error message of the exception. */
+	private TextArea txtErrorMsg = new TextArea();
+	
+	/** This displays the call stack at the time of the exception. */
 	private TextArea callStack = new TextArea();
 
+	
+	/**
+	 * Creates a new instance of the error dialog box.
+	 */
 	public ErrorDialog() {
-		//setStylePrimaryName("FormDesigner-ErrorDialog");
+		
 		Button closeButton = new Button(LocaleText.get("close"), this);
 		VerticalPanel panel = new VerticalPanel();
 		panel.setSpacing(4);
-		panel.add(body);
+		panel.add(txtErrorMsg);
 		panel.add(closeButton);
 		panel.setCellHorizontalAlignment(closeButton, VerticalPanel.ALIGN_CENTER);
 
+		//Setup the disclosure panel to display the call stack.
 		DisclosurePanel advanced = new DisclosurePanel(LocaleText.get("more"));
 		advanced.setAnimationEnabled(true);
 		advanced.setContent(callStack);
@@ -31,25 +47,36 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 
 		setWidget(panel);
 		
-		body.setWidth("500px");
-		body.setHeight("200px");
+		txtErrorMsg.setWidth("500px");
+		txtErrorMsg.setHeight("200px");
 		callStack.setWidth("500px");
 		callStack.setHeight("200px");
 	}
 
-	public String getBody() {
-		return body.getText();
-	}
-
+	/**
+	 * Called when one clicks the close button.
+	 */
 	public void onClick(Widget sender) {
 		hide();
-		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.
+		
+		//TODO Some how when an exception is thrown, the progress dialog may stay on. So needs a fix.
+		FormUtil.dlg.hide(); 
 	}
 
-	public void setBody(String html) {
-		body.setText(html);
+	/**
+	 * Sets the exception error message.
+	 * 
+	 * @param errorMsg the error message.
+	 */
+	public void setErrorMessage(String errorMsg) {
+		txtErrorMsg.setText(errorMsg);
 	}
 	
+	/**
+	 * Sets the call stack at the time of the exception.
+	 * 
+	 * @param stack the call stack
+	 */
 	public void setCallStack(String stack){
 		callStack.setText(stack);
 	}

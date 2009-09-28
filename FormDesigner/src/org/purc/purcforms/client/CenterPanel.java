@@ -3,6 +3,7 @@ package org.purc.purcforms.client;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
+import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.LayoutChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
@@ -107,7 +108,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	/** Scroll panel for the preview surface. */
 	private ScrollPanel scrollPanelPreview = new ScrollPanel();
 
-
+	/** Listener to form designer global events. */
+	private IFormDesignerListener formDesignerListener;
+	
+	
 	/**
 	 * Constructs a new center panel widget.
 	 * 
@@ -134,6 +138,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		if(!FormUtil.getShowLanguageTab())
 			this.removeLanguageTab();
 		
+		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
+		
 		previewEvents();
 	}
 	
@@ -149,6 +155,8 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 						return designSurfaceView.handleKeyBoardEvent(event);
 					else if(mode == Context.MODE_PREVIEW)
 						return previewView.handleKeyBoardEvent(event);
+					else if(mode == Context.MODE_QUESTION_PROPERTIES || mode == Context.MODE_XFORMS_SOURCE)
+						return formDesignerListener.handleKeyBoardEvent(event);
 				}
 				
 				return true;
@@ -166,8 +174,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			Context.setCurrentMode(Context.MODE_DESIGN);
 		else if(tabIndex == SELECTED_INDEX_PREVIEW)
 			Context.setCurrentMode(Context.MODE_PREVIEW);
+		else if(tabIndex == SELECTED_INDEX_PROPERTIES)
+			Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
+		else if(tabIndex == SELECTED_INDEX_XFORMS_SOURCE)
+			Context.setCurrentMode(Context.MODE_XFORMS_SOURCE);
 		else
-			Context.setCurrentMode(Context.MODE_NONE);;
+			Context.setCurrentMode(Context.MODE_NONE);
 			
 			
 		selectedTabIndex = tabIndex;
@@ -625,7 +637,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -633,28 +645,40 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.alignBottom();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 */
 	public void makeSameHeight() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.makeSameHeight();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 */
 	public void makeSameSize() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.makeSameSize();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 */
 	public void makeSameWidth() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.makeSameWidth();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#refresh()
+	 */
 	public void refresh(){
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
 			previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
@@ -713,5 +737,14 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			--SELECTED_INDEX_PREVIEW;
 			--SELECTED_INDEX_MODEL_XML;
 		}
+	}
+	
+	/**
+	 * Sets listener to form designer global events.
+	 * 
+	 * @param formDesignerListener the listener.
+	 */
+	public void setFormDesignerListener(IFormDesignerListener formDesignerListener){
+		this.formDesignerListener = formDesignerListener;
 	}
 }

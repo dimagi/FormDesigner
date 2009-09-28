@@ -30,6 +30,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
@@ -41,12 +42,22 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class FormDesignerController implements IFormDesignerListener, IOpenFileDialogEventListener{
+public class FormDesignerController implements IFormDesignerListener, OpenFileDialogEventListener{
 
 	private CenterPanel centerPanel;
 	private LeftPanel leftPanel;
+	
+	/**
+	 * The identifier of the loaded or opened form.
+	 */
 	private Integer formId;	
+	
+	/**
+	 * The listener to form save events.
+	 */
 	private IFormSaveListener formSaveListener;
+	
+	
 	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
 	private static final byte CA_NONE = 0;
@@ -57,25 +68,41 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 	private static byte currentAction = CA_NONE;
 
+	/**
+	 * The dialog box used to logon the server when the user's session expires on the server.
+	 */
 	private static LoginDialog loginDlg = new LoginDialog();
+	
+	
 	private static FormDesignerController controller;
 	private Object refreshObject;
 
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
 		this.centerPanel = centerPanel;
+		
+		this.centerPanel.setFormDesignerListener(this);
 
 		controller = this;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
+	 */
 	public void addNewItem() {
 		leftPanel.addNewItem();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 */
 	public void addNewChildItem() {
 		leftPanel.addNewChildItem();
 	}
 	
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#printForm()
+	 */
 	public void printForm(){
 		FormDef formDef = centerPanel.getFormDef();
 		if(formDef != null)
@@ -89,36 +116,48 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		 win.document.close();
 	}-*/;
 
-	public static native void back() /*-{
-		window.history.go(-1);
-	}-*/;
-
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#closeForm()
+	 */
 	public void closeForm() {
-		//back();
-
 		String url = FormUtil.getCloseUrl();
 		if(url != null && url.trim().length() > 0)
 			Window.Location.replace(url);
 	} 
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
+	 */
 	public void deleteSelectedItem() {
 		leftPanel.deleteSelectedItem();	
 		centerPanel.deleteSelectedItem();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 */
 	public void moveItemDown() {
 		leftPanel.moveItemDown();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 */
 	public void moveItemUp() {
 		leftPanel.moveItemUp();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#newForm()
+	 */
 	public void newForm() {
 		if(isOfflineMode())
 			leftPanel.addNewForm();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#showAboutInfo()
+	 */
 	public void openForm() {
 		if(isOfflineMode()){
 			String xml = centerPanel.getXformsSource();
@@ -182,6 +221,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#openFormLayout()
+	 */
 	public void openFormLayout() {
 		openFormLayout(true);
 	}
@@ -211,6 +253,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveForm()
+	 */
 	public void saveForm(){
 		if(isOfflineMode())
 			saveTheForm();
@@ -286,6 +331,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveFormAs()
+	 */
 	public void saveFormAs() {
 		if(isOfflineMode()){
 			final Object obj = leftPanel.getSelectedForm();
@@ -315,6 +363,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveFormLayout()
+	 */
 	public void saveFormLayout() {
 		FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
 		FormUtil.dlg.center();
@@ -333,27 +384,42 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showAboutInfo()
+	 */
 	public void showAboutInfo() {
 		AboutDialog dlg = new AboutDialog();
 		dlg.setAnimationEnabled(true);
 		dlg.center();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 */
 	public void showHelpContents() {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showLanguages()
+	 */
 	public void showLanguages() {
 		LocalesDialog dlg = new LocalesDialog();
 		dlg.center();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showOptions()
+	 */
 	public void showOptions() {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#viewToolbar()
+	 */
 	public void viewToolbar() {
 		// TODO Auto-generated method stub
 
@@ -374,31 +440,43 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop() {
 		centerPanel.alignTop();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom() {
 		centerPanel.alignBottom();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 */
 	public void makeSameHeight() {
 		centerPanel.makeSameHeight();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 */
 	public void makeSameSize() {
 		centerPanel.makeSameSize();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 */
 	public void makeSameWidth() {
 		centerPanel.makeSameWidth();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 */
 	public void copyItem() {
 		if(!Context.isStructureReadOnly()){
 			leftPanel.copyItem();
@@ -406,6 +484,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 */
 	public void cutItem() {
 		if(!Context.isStructureReadOnly()){
 			leftPanel.cutItem();
@@ -413,6 +494,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 */
 	public void pasteItem() {
 		if(!Context.isStructureReadOnly()){
 			leftPanel.pasteItem();
@@ -420,11 +504,17 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#refreshItem()
+	 */
 	public void refreshItem(){
 		if(!Context.isStructureReadOnly())
 			leftPanel.refreshItem();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#format()
+	 */
 	public void format() {
 		centerPanel.format();
 	}
@@ -473,8 +563,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 				url += FormUtil.getFormDefDownloadUrlSuffix();
 				url += FormUtil.getFormIdName()+"="+formId;
 
-				//url += "&uname=Guyzb&pw=daniel123";
-
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
 
 				try{
@@ -518,6 +606,11 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * Loads or opens a form with a given id.
+	 * 
+	 * @param frmId the form id.
+	 */
 	public void loadForm(int frmId){
 		this.formId = frmId;
 
@@ -557,6 +650,11 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * Checks if the form designer is in offline mode.
+	 * 
+	 * @return true if in offline mode, else false.
+	 */
 	public boolean isOfflineMode(){
 		return formId == null;
 	}
@@ -593,6 +691,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * Refreshes the selected from in a deferred command.
+	 */
 	private void refreshFormDeffered(){
 		FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 		FormUtil.dlg.center();
@@ -605,7 +706,12 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
 						
 						FormDef oldFormDef = centerPanel.getFormDef();
-						formDef.refresh(oldFormDef);
+						
+						//If we are in offline mode, we completely overwrite the form 
+						//with the contents of the xforms source tab.
+						if(!isOfflineMode())
+							formDef.refresh(oldFormDef);
+						
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
 
@@ -627,26 +733,46 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		});
 	}
 
+	/**
+	 * Sets the listener to form save events.
+	 * 
+	 * @param formSaveListener the listener.
+	 */
 	public void setFormSaveListener(IFormSaveListener formSaveListener){
 		this.formSaveListener = formSaveListener;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveUp()
+	 */
 	public void moveUp(){
 		leftPanel.getFormActionListener().moveUp();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveDown()
+	 */
 	public void moveDown(){
 		leftPanel.getFormActionListener().moveUp();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveToParent()
+	 */
 	public void moveToParent(){
 		leftPanel.getFormActionListener().moveToParent();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveToChild()
+	 */
 	public void moveToChild(){
 		leftPanel.getFormActionListener().moveToChild();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.OpenFileDialogEventListener#onSetFileContents()
+	 */
 	public void onSetFileContents(String contents) {
 		if(isOfflineMode())
 			setFileContents();
@@ -706,6 +832,9 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#openLanguageText()
+	 */
 	public void openLanguageText(){
 
 		FormUtil.dlg.setText(LocaleText.get("translatingFormLanguage"));
@@ -744,26 +873,6 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 
 						leftPanel.loadForms(newForms, formDef.getId());
 					}
-
-					//centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
-					//centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
-
-					/*centerPanel.openLanguageXml();
-
-					xml = centerPanel.getXformsSource();
-					if(xml != null && xml.trim().length() > 0){
-						formDef = XformConverter.fromXform2FormDef(xml);
-						formDef.setXformXml(xml);
-						//formDef.setLayoutXml(orgFormDef.getLayoutXml()); 
-						//formDef.setLanguageXml(orgFormDef.getLanguageXml());
-						formDef.setLayoutXml(centerPanel.getLayoutXml()); 
-						formDef.setLanguageXml(centerPanel.getLanguageXml());
-
-						leftPanel.refresh(formDef);
-
-						//languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
-						setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
-					}*/
 
 					FormUtil.dlg.hide();
 
@@ -859,10 +968,18 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		//languageText.put(locale, LanguageUtil.getLocaleText(xform, layout));
 	}
 
+	/**
+	 * Sets the default locale used by the form designer.
+	 * 
+	 * @param locale the locale key.
+	 */
 	public void setDefaultLocale(String locale){
 		Context.setDefaultLocale(locale);
 	}
 
+	/**
+	 * Embeds the selected xform into xhtml.
+	 */
 	public void saveAsXhtml(){
 		if(isOfflineMode()){
 			final Object obj = leftPanel.getSelectedForm();
@@ -894,8 +1011,17 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 	}
 
+	/**
+	 * This is called from the server after an attempt to authenticate the current
+	 * user before they can submit form data.
+	 * 
+	 * @param authenticated has a value of true if the server has successfully authenticated the user, else false.
+	 */
 	private static void authenticationCallback(boolean authenticated) {	
 		
+		//If user has passed authentication, just go on with whatever they wanted to do
+		//else just redisplay the login dialog and let them enter correct
+		//user name and password.
 		if(authenticated){	
 			loginDlg.hide();
 
@@ -912,5 +1038,25 @@ public class FormDesignerController implements IFormDesignerListener, IOpenFileD
 		}
 		else
 			loginDlg.center();
+	}
+	
+	/**
+	 * Called to handle form designer global keyboard short cuts.
+	 */
+	public boolean handleKeyBoardEvent(Event event){
+		if(event.getCtrlKey()){
+			
+			if(event.getKeyCode() == 'S'){
+				saveForm();
+				//Returning false such that firefox does not try to save the page.
+				return false;
+			}
+			else if(event.getKeyCode() == 'O'){
+				openForm();
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

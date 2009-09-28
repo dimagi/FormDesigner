@@ -662,7 +662,7 @@ public class PageDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
 	}
 
-	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentNode){
+	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
 		if(labelNode == null || groupNode == null)
 			return;
 
@@ -674,13 +674,13 @@ public class PageDef implements Serializable{
 		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
-		parentNode.appendChild(node);
+		parentLangNode.appendChild(node);
 
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(doc,parentNode);
+			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
 	}
 
 	public void clearChangeListeners(){

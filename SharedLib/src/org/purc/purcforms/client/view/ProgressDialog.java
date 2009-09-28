@@ -1,19 +1,50 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.locale.LocaleText;
+
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
 
+/**
+ * Used to show a progress window to the user for slow processing operations.
+ * 
+ * @author daniel
+ *
+ */
 public class ProgressDialog extends DialogBox{
 
-	private Label label = new Label("Please wait while processing...");
+	/** The label to show the progress or processing message. */
+	private Label label = new Label(LocaleText.get("processingMsg"));
 	
+	/**
+	 * Creates a new instance of the progress dialog.
+	 */
 	public ProgressDialog(){
 		super(false,true);
 		
 		setWidget(label);
 	}
 	
-	public void setProgressMsg(String message){
-		//label.setText(message); TODO turned off for now because it is statically shared
+	/**
+	 * Displays the progress dialog box at the center of the browser window
+	 * with the default progress message which is "Please wait while processing..."
+	 */
+	public void center(){
+		
+		//Reset the progress message to the default because it may have been
+		//been changed with a custom one.
+		label.setText(LocaleText.get("processingMsg"));
+		
+		super.center();
+	}
+	
+	/**
+	 * Displays the progress dialog box at the center of the browser window
+	 * and with a custom progress message.
+	 * 
+	 * @param progressMsg the custom progress message.
+	 */
+	public void center(String progressMsg){
+		label.setText(progressMsg);
 	}
 }

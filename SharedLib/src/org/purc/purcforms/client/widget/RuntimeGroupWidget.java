@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.purc.purcforms.client.controller.IOpenFileDialogEventListener;
+import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
@@ -47,7 +47,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class RuntimeGroupWidget extends Composite implements IOpenFileDialogEventListener,QuestionChangeListener{
+public class RuntimeGroupWidget extends Composite implements OpenFileDialogEventListener,QuestionChangeListener{
 
 	private final Images images;
 	private RepeatQtnsDef repeatQtnsDef;

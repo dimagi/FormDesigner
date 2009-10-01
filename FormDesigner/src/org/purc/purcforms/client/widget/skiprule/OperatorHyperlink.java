@@ -15,45 +15,96 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 
 
 /**
+ * Widget used to display the condition operators (eg equal to, less than, greater than, etc)
+ * for skip and validation rules.
  * 
  * @author daniel
  *
  */
 public class OperatorHyperlink extends Hyperlink implements ItemSelectionListener {
 	
+	/** The operator text: is equal to */
 	public static final String OP_TEXT_EQUAL = LocaleText.get("isEqualTo");
+	
+	/** The operator text: is not equal to */
 	public static final String OP_TEXT_NOT_EQUAL = LocaleText.get("isNotEqual");
+	
+	/** The operator text: is less than */
 	public static final String OP_TEXT_LESS_THAN = LocaleText.get("isLessThan");
+	
+	/** The operator text: is less than or equal to */
 	public static final String OP_TEXT_LESS_THAN_EQUAL = LocaleText.get("isLessThanOrEqual");
+	
+	/** The operator text: is greater than */
 	public static final String OP_TEXT_GREATER_THAN = LocaleText.get("isGreaterThan");
+	
+	/** The operator text: is greater than or equal to */
 	public static final String OP_TEXT_GREATER_THAN_EQUAL = LocaleText.get("isGreaterThanOrEqual");
+	
+	/** The operator text: is null */
 	public static final String OP_TEXT_NULL = LocaleText.get("isNull");
+	
+	/** The operator text: is in list */
 	public static final String OP_TEXT_IN_LIST = LocaleText.get("isInList");
+	
+	/** The operator text: is not in list */
 	public static final String OP_TEXT_NOT_IN_LIST = LocaleText.get("isNotInList");
+	
+	/** The operator text: starts with */
 	public static final String OP_TEXT_STARTS_WITH = LocaleText.get("startsWith");
+	
+	/** The operator text: does not start with */
 	public static final String OP_TEXT_NOT_START_WITH = LocaleText.get("doesNotStartWith");
+	
+	/** The operator text: contains */
 	public static final String OP_TEXT_CONTAINS = LocaleText.get("contains");
+	
+	/** The operator text: does not contain */
 	public static final String OP_TEXT_NOT_CONTAIN = LocaleText.get("doesNotContain");
+	
+	/** The operator text: is between */
 	public static final String OP_TEXT_BETWEEN = LocaleText.get("isBetween");
+	
+	/** The operator text: is not between */
 	public static final String OP_TEXT_NOT_BETWEEN = LocaleText.get("isNotBetween");
 
+	/** The popup to display the allowed operators for the current question data type. */
 	private PopupPanel popup;
+	
+	/** The current question data type. */
 	private int dataType =  QuestionDef.QTN_TYPE_TEXT;
+	
+	/** The selection change listener. */
 	private ItemSelectionListener itemSelectionListener;
 	
+	
+	/**
+	 * Creates a new instance of the operator hyperlink.
+	 * 
+	 * @param text the default display text.
+	 * @param targetHistoryToken the history token to which it will link.
+	 * @param itemSelectionListener the listener to selection change events.
+	 */
 	public OperatorHyperlink(String text, String targetHistoryToken,ItemSelectionListener itemSelectionListener){
 		super(text,targetHistoryToken);
 		this.itemSelectionListener = itemSelectionListener;
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
 	
+	/**
+	 * Sets the data type of the question to which the operator is being applied.
+	 * 
+	 * @param dataType the data type.
+	 */
 	public void setDataType(int dataType){
 		this.dataType = dataType;
 		
-		//We set the universal operator which is valid for all questions.
+		//We set the universal operator which is valid for all questions,
+		//as the one to start with or display by default.
 		setText(OP_TEXT_EQUAL);
 	}
 	  
+	@Override
 	public void onBrowserEvent(Event event) {
 		  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			  itemSelectionListener.onStartItemSelection(this);
@@ -63,12 +114,11 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		  }
 	}
 	
-	/*public void startSelection(){
-		  setupPopup();
-	      popup.setPopupPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
-	      popup.show();
-	}*/
-	
+	/**
+	 * Creates the operator popup for the currently selected question.
+	 * 
+	 * @return the height of the popup.
+	 */
 	private int setupPopup(){
 		popup = new PopupPanel(true,true);
 		
@@ -127,6 +177,9 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		return height;
 	}
 	
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof SelectItemCommand){
 			popup.hide();
@@ -135,7 +188,13 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		}
 	}
 	
-	private Byte fromOperatorText2Value(String text){
+	/**
+	 * Converts operator text to its int representation.
+	 * 
+	 * @param text the operator text.
+	 * @return the operator int value.
+	 */
+	private int fromOperatorText2Value(String text){
 		if(text.equals(OP_TEXT_EQUAL))
 			return ModelConstants.OPERATOR_EQUAL;
 		else if(text.equals(OP_TEXT_NOT_EQUAL))
@@ -169,10 +228,18 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		return ModelConstants.OPERATOR_NULL;
 	}
 	
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 */
 	public void onStartItemSelection(Object sender){
 		
 	}
 	
+	/**
+	 * Converts the operator int value to its text representation.
+	 * 
+	 * @param operator the operator int value.
+	 */
 	public void setOperator(int operator){
 		String operatorText = null;
 		

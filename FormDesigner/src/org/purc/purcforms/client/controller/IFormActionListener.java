@@ -41,7 +41,7 @@ public interface IFormActionListener {
 	public void moveItemUp();
 	
 	/**
-	 * Moves the selected item one pisition below.
+	 * Moves the selected item one position below.
 	 */
 	public void moveItemDown();
 	

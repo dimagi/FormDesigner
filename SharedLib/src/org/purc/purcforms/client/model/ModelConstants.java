@@ -82,6 +82,8 @@ public class ModelConstants implements Serializable{
 	public static final int OPERATOR_NOT_END_WITH = 18;
 	
 	public static final int FUNCTION_VALUE = 1;
+	
+	/** The Length function. */
 	public static final int FUNCTION_LENGTH = 2;
 	
 	/** No rule action specified */

@@ -15,31 +15,55 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 
 
 /**
+ * This widget is used to display a list of function which can be used in a
+ * validation rule conditions question value. eg Length
  * 
  * @author daniel
  *
  */
 public class FunctionHyperlink extends Hyperlink implements ItemSelectionListener {
 	
-	public static final String FUNCTION_TEXT_LENGTH = "Length";
+	/** The length function text: Length */
+	public static final String FUNCTION_TEXT_LENGTH = LocaleText.get("length");
+	
+	/** The value function text: Length */
 	public static final String FUNCTION_TEXT_VALUE = LocaleText.get("value");
 	
+	/** The popup to display functions. */
 	private PopupPanel popup;
+	
+	/** The data type of the currently selected question. */
 	private int dataType =  QuestionDef.QTN_TYPE_TEXT;
+	
+	/** The listener to item selection events. */
 	private ItemSelectionListener itemSelectionListener;
 	
+	
+	/**
+	 * Creates a new instance of the question value widget.
+	 * 
+	 * @param text the display text.
+	 * @param targetHistoryToken the history token to which it will link.
+	 * @param itemSelectionListener the listener to item selection events.
+	 */
 	public FunctionHyperlink(String text, String targetHistoryToken,ItemSelectionListener itemSelectionListener){
 		super(text,targetHistoryToken);
 		this.itemSelectionListener = itemSelectionListener;
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
 	
+	/** 
+	 * Sets the data type for the currently selected question.
+	 * 
+	 * @param dataType the data type.
+	 */
 	public void setDataType(int dataType){
 		this.dataType = dataType;
 		
 		setText((dataType == QuestionDef.QTN_TYPE_REPEAT) ? FUNCTION_TEXT_LENGTH : FUNCTION_TEXT_VALUE);
 	}
 	  
+	@Override
 	public void onBrowserEvent(Event event) {
 		  if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			  itemSelectionListener.onStartItemSelection(this);
@@ -49,12 +73,9 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 		  }
 	}
 	
-	/*public void startSelection(){
-		  setupPopup();
-	      popup.setPopupPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
-	      popup.show();
-	}*/
-	
+	/**
+	 * Creates the popup of the question value functions.
+	 */
 	private void setupPopup(){
 		popup = new PopupPanel(true,true);
 		
@@ -85,6 +106,21 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 		popup.setWidget(scrollPanel);
 	}
 	
+	/**
+	 * Converts the function text to its int value.
+	 * 
+	 * @param text the function text.
+	 * @return the function int value.
+	 */
+	private int fromFunctionText2Value(String text){
+		if(text.equals(FUNCTION_TEXT_LENGTH))
+			return ModelConstants.FUNCTION_LENGTH;
+		return ModelConstants.FUNCTION_VALUE;
+	}
+	
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof SelectItemCommand){
 			popup.hide();
@@ -93,16 +129,19 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 		}
 	}
 	
-	private Byte fromFunctionText2Value(String text){
-		if(text.equals(FUNCTION_TEXT_LENGTH))
-			return ModelConstants.FUNCTION_LENGTH;
-		return ModelConstants.FUNCTION_VALUE;
-	}
-	
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 */
 	public void onStartItemSelection(Object sender){
 		
 	}
 	
+	/**
+	 * Sets the selected function.
+	 * 
+	 * @param function the selected function. Can only be ModelConstants.FUNCTION_LENGTH
+	 * 		  or ModelConstants.FUNCTION_VALUE
+	 */
 	public void setFunction(int function){
 		String functionText = FUNCTION_TEXT_VALUE;
 		

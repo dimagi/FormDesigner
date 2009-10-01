@@ -12,16 +12,36 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
+ * Widgets used to display the list of possible actions for a skip or validation
+ * rule condition. For now, these actions are "Add Condition" and "Delete Condition"
+ * This widget is displayed on the left hand side of each condition and its text is "<>"
+ * which on being clicked displays the list of possible actions for the condition.
  * 
  * @author daniel
  *
  */
 public class ActionHyperlink extends Hyperlink {
 
+	/** The popup to display the condition actions. */
 	private PopupPanel popup;
+	
+	/** The condition to apply this action to. */
 	private ConditionWidget condWidget;
+	
+	/** Flag determining whether to allow conditions grouping or nested conditions
+	 *  using add bracket.
+	 */
 	private boolean allowBrackets;
 
+	
+	/**
+	 * Creates a new instance of the condition actions widget.
+	 * 
+	 * @param text the display text.
+	 * @param targetHistoryToken the history token to which it will link.
+	 * @param condWidget the condition widget.
+	 * @param allowBrackets flag determining whether we allow conditions grouping or not.
+	 */
 	public ActionHyperlink(String text, String targetHistoryToken,ConditionWidget condWidget, boolean allowBrackets){
 		super(text,targetHistoryToken);
 		this.condWidget = condWidget;
@@ -29,6 +49,7 @@ public class ActionHyperlink extends Hyperlink {
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			setupPopup();
@@ -37,6 +58,9 @@ public class ActionHyperlink extends Hyperlink {
 		}
 	}
 
+	/**
+	 * Creates the condition actions widget popup.
+	 */
 	private void setupPopup(){
 		popup = new PopupPanel(true,true);
 

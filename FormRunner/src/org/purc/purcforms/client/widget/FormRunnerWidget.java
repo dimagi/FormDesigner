@@ -27,9 +27,19 @@ import com.google.gwt.user.client.ui.DockPanel;
 public class FormRunnerWidget extends Composite{
 
 	private DockPanel dockPanel = new DockPanel();
+	
+	/** The form runner controller. */
 	private FormRunnerController controller;
+	
+	/** The form runtime view. */
 	private FormRunnerView view;
 	
+	
+	/**
+	 * Creates a new instance of the form runner widget.
+	 * 
+	 * @param images the images to load icons.
+	 */
 	public FormRunnerWidget(Images images){
 		
 		view = new FormRunnerView(images);
@@ -51,10 +61,22 @@ public class FormRunnerWidget extends Composite{
 		view.loadForm(formDef, layoutXml,externalSourceWidgets);
 	}
 	
+	/**
+	 * Loads a form with a given id and for a certain entity id.
+	 * 
+	 * @param formId the form id.
+	 * @param entityId the entity id.
+	 */
 	public void loadForm(int formId, int entityId){
 		controller.loadForm(formId,entityId);
 	}
 	
+	/**
+	 * Loads an xforms document with its layout.
+	 * 
+	 * @param xformXml the xforms xml.
+	 * @param layoutXml the layout xml.
+	 */
 	public void loadForm(String xformXml, String layoutXml){
 		view.loadForm(XformConverter.fromXform2FormDef(xformXml), layoutXml, null);
 	}

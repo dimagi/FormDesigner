@@ -12,31 +12,70 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 
 /**
+ * This widget is used to display a skip or validation rule widget.
  * 
  * @author daniel
  *
  */
 public class ConditionWidget extends Composite implements ItemSelectionListener{
 
+	/** Value for horizontal panel spacing. */
 	private static final int HORIZONTAL_SPACING = 5;
 
+	/** The form that this condition belongs to. */
 	private FormDef formDef;
+	
+	/** The field selection widget. */
 	private FieldWidget fieldWidget;
+	
+	/** The operator selection widget. */
 	private OperatorHyperlink operatorHyperlink;
+	
+	/** The value selection or entry widget. */
 	private ValueWidget valueWidget = new ValueWidget();
+	
 	private HorizontalPanel horizontalPanel;
+	
+	/** The condition action widget. */
 	private ActionHyperlink actionHyperlink;
 
+	/** The question that this widget condition references. */
 	private QuestionDef questionDef;
+	
+	/** The selected operator for the condition. */
 	private int operator;
+	
+	/** Listener to condition events. */
 	private IConditionController view;
+	
+	/** The condition that this widget references. */
 	private Condition condition;
+	
 	//private Label lbLabel = new Label(LocaleText.get("value"));
+	
+	/** The function selection widget for condition. */
 	FunctionHyperlink funcHyperlink;
+	
+	/** The selected validation function. Could be Length or just Value. */
 	private int function = ModelConstants.FUNCTION_VALUE;
 
+	/** Flag determining whether we should allow field selection for the condition.
+	 *  Skip rule conditions have filed selection while validation rules normally
+	 *  just have values. eg skip rule may be Current Pregnancy question is skipped 
+	 *  when Sex field = Male, while validation for the current say Weight question
+	 *  is valid when Value > 0
+	 */
 	private boolean allowFieldSelection = false;
 
+	
+	/**
+	 * Creates a new instance of the condition widget.
+	 * 
+	 * @param formDef the form whose condition this widget represents.
+	 * @param view listener to condition events.
+	 * @param allowFieldSelection a flag to determine if we should allow selection for the condition.
+	 * @param questionDef the question that this condition references.
+	 */
 	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef){
 		this.formDef = formDef;
 		this.view = view;
@@ -45,6 +84,9 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		setupWidgets();
 	}
 
+	/**
+	 * Creates the condition widgets.
+	 */
 	private void setupWidgets(){
 		actionHyperlink = new ActionHyperlink("<>",null,this,allowFieldSelection);
 
@@ -60,13 +102,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		if(allowFieldSelection)
 			horizontalPanel.add(fieldWidget);
-		else{
-			/*if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				lbLabel.setText(LocaleText.get("count"));
-			horizontalPanel.add(lbLabel);*/
-			
+		else
 			horizontalPanel.add(funcHyperlink);
-		}
 
 		horizontalPanel.add(operatorHyperlink);
 		horizontalPanel.add(valueWidget);
@@ -82,7 +119,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#ontemSelected(java.lang.Object, java.lang.Object)
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(java.lang.Object, java.lang.Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender == fieldWidget /*fieldHyperlink*/){
@@ -107,30 +144,43 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 */
 	public void onStartItemSelection(Object sender){
 		if(sender != valueWidget)
 			valueWidget.stopEdit(false); //Temporary hack to turn off edits when focus goes off the edit widget
 
 		if(allowFieldSelection && sender != fieldWidget)
 			fieldWidget.stopSelection();
-		/*if(sender == operatorHyperlink){
-			fieldWidget.stopSelection();
-			//operatorHyperlink.startSelection();
-		}*/
 	}
 
+	/**
+	 * Adds a new condition.
+	 */
 	public void addCondition(){
 		view.addCondition();
 	}
 
+	/**
+	 * Adds a new bracket or condition grouping.
+	 */
 	public void addBracket(){
 		view.addBracket();
 	}
 
+	/**
+	 * Deletes this condition.
+	 */
 	public void deleteCurrentRow(){
 		view.deleteCondition(this);
 	}
 
+	/**
+	 * Gets the condition for this widget.
+	 * 
+	 * @return the condition object.
+	 */
 	public Condition getCondition(){
 		if(condition == null)
 			condition = new Condition();
@@ -147,6 +197,12 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		return condition;
 	}
 
+	/**
+	 * Sets the condition for this widget.
+	 * 
+	 * @param condition the condition object.
+	 * @return true if the question referenced by the condition exists, else false.
+	 */
 	public boolean setCondition(Condition condition){
 		this.condition = condition;
 		questionDef = formDef.getQuestion(condition.getQuestionId());
@@ -158,6 +214,11 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		return true;
 	}
 
+	/**
+	 * Sets the question for this widget.
+	 * 
+	 * @param questionDef the question id definition object.
+	 */
 	public void setQuestionDef(QuestionDef questionDef){
 		this.questionDef = questionDef;
 		

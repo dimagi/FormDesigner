@@ -66,15 +66,24 @@ public class FormUtil {
 	 */
 	private static String closeUrl;
 
+	/** The name for the formId field. */
 	private static String formIdName;
+	
+	/** The name for the entityId field. */
 	private static String entityIdName;
 
+	/** The form identifier. */
 	private static String formId;
+	
+	/** The entity identifier. eg patientId, individualId. */
 	private static String entityId;
 
-	/** The default fornt family used by the form designer. */
+	/** The default font family used by the form designer. */
 	private static String defaultFontFamily;
 
+	/** Flag determining whether to append the entity id to the url 
+	 * we go to after a form submission. eg ........?patientId=13
+	 */
 	private static boolean appendEntityIdAfterSubmit;
 
 	/** 
@@ -522,6 +531,11 @@ public class FormUtil {
 		return showSubmitSuccessMsg;
 	}
 
+	/**
+	 * Displays an exception to the user.
+	 * 
+	 * @param ex
+	 */
 	public static void displayException(Throwable ex){
 		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.
 		
@@ -556,6 +570,12 @@ public class FormUtil {
 		//	Window.alert("Trapped");
 	}
 
+	/**
+	 * Converts string dimension in say pixels to integer.
+	 * 
+	 * @param dimension the dimension text.
+	 * @return the integer value.
+	 */
 	public static int convertDimensionToInt(String dimension){
 		if(dimension == null || dimension.trim().length() == 0)
 			return 0;
@@ -581,6 +601,13 @@ public class FormUtil {
 		return path;
 	}
 	
+	/**
+	 * Gets the xpath expression pointing to a node starting from a given parent node.
+	 * 
+	 * @param node the node whose xpath expression to get.
+	 * @param parentNode the parent node.
+	 * @return the xpath expression.
+	 */
 	public static String getNodePath(com.google.gwt.xml.client.Node node, com.google.gwt.xml.client.Node parentNode){
 		String path = removePrefix(node.getNodeName());
 
@@ -595,6 +622,12 @@ public class FormUtil {
 		return path;
 	}
 
+	/**
+	 * Removes a namespace prefix from a name.
+	 * 
+	 * @param name the name. eg xf:instance
+	 * @return the new name without the prefix. For the above the value would be instance.
+	 */
 	private static String removePrefix(String name){
 		int pos = name.indexOf(':');
 		if(pos >= 0)
@@ -602,10 +635,20 @@ public class FormUtil {
 		return name;
 	}
 
+	/**
+	 * Gets the name of a node.
+	 * 
+	 * @param node the node whose name to get.
+	 * @return the node name.
+	 */
 	public static String getNodeName(Element node){
 		return removePrefix(node.getNodeName());
 	}
 	
+	/**
+	 * Tells form runner or designer widget user that we are done displaying the widgets
+	 * and hence they can do initialization stuff if they have any.
+	 */
 	public static native void initialize() /*-{
 		return $wnd.initialize();
 	}-*/;
@@ -624,6 +667,14 @@ public class FormUtil {
 		return $wnd.isUserAuthenticated();
 	}-*/;
 
+	/**
+	 * Checks if a user is logged on the server.
+	 * 
+	 * @param username the user name.
+	 * @param password the password.
+	 * @return This return value if value is not used because we are getting the result via a
+	 *         callback due to the asyncrounous nature of this call.
+	 */
 	public static native boolean authenticate(String username, String password) /*-{
 		return $wnd.authenticateUser(username,password);
 	}-*/;

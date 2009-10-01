@@ -61,15 +61,25 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected static final int MOVE_UP = 3;
 	protected static final int MOVE_DOWN = 4;
 
+	/** The popup panel for the design surface context menu. */
 	protected PopupPanel popup;
+	
+	/** The popup panel for the widget context menu. */
 	protected PopupPanel widgetPopup;
 
+	/** The cursor position x cordinate. */
 	protected int x;
+	
+	/** The cursor position y cordinate. */
 	protected int y;
 
 	protected int clipboardLeftMostPos;
 	protected int clipboardTopMostPos;
+	
+	/** The copy menu item for the design surface context menu. */
 	protected MenuItem copyMenu;
+	
+	/** The cut menu item. */
 	protected MenuItem cutMenu;
 	protected MenuItem pasteMenu;
 	protected MenuItem deleteWidgetsMenu;
@@ -87,22 +97,37 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected FormDesignerDragController selectedDragController;
 	protected WidgetSelectionListener widgetSelectionListener;
 
+	/** The rubber band widget for multiple widget selection. */
 	protected Label rubberBand = new Label(""); //HTML("<DIV ID='rubberBand'></DIV>");
 
 	protected final Images images;
 
 	//These three do not belong here (should be only for DesignSurfaceView)
+	/** Tabs for displaying pages. */
 	protected DecoratedTabPanel tabs = new DecoratedTabPanel();
 	protected HashMap<Integer,DesignWidgetWrapper> pageWidgets = new HashMap<Integer,DesignWidgetWrapper>();
+	
+	/** The index of the selected page tab. */
 	protected int selectedTabIndex = 0;
 
 	protected WidgetSelectionListener currentWidgetSelectionListener;
 
+	/** The text box widget for inline label editing. */
 	protected TextBox txtEdit = new TextBox();
 	protected DesignWidgetWrapper editWidget;
+	
+	/** The selection rubber band height in pixels. */
 	protected String rubberBandHeight;
+	
+	/** The selection rubber band width in pixels. */
 	protected String rubberBandWidth;
 
+	
+	/**
+	 * Creates a new instance of the design surface.
+	 * 
+	 * @param images
+	 */
 	public DesignGroupView(Images images){
 		this.images = images;
 	}
@@ -181,6 +206,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		copyWidgets(true);
 	}
 
+	/**
+	 * Adds the selected widgets to a group box.
+	 */
 	protected void groupWidgets(){
 		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			if(((DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i)).getWrappedWidget() instanceof DesignGroupWidget)
@@ -398,11 +426,20 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	/**
+	 * Deletes the selected widgets.
+	 */
 	public void deleteSelectedItem() {
 		if(selectedDragController.isAnyWidgetSelected())
 			deleteWidgets();
 	}
 
+	/**
+	 * Aligns all labels to the right and all non labels to their left.
+	 * This is excecuted after pressing Ctrl + F
+	 * 
+	 * @param panel the panel holding the widgets.
+	 */
 	private void rightAlignLabels(AbsolutePanel panel){
 		List<DesignWidgetWrapper> labels = new ArrayList<DesignWidgetWrapper>();
 		List<DesignWidgetWrapper> inputs = new ArrayList<DesignWidgetWrapper>();
@@ -550,6 +587,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return true;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 */
 	public boolean makeSameHeight() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets == null || widgets.size() < 2){
@@ -571,6 +611,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return true;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 */
 	public boolean makeSameWidth() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets == null || widgets.size() < 2){
@@ -592,6 +635,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return true;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 */
 	public boolean makeSameSize() {
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets == null || widgets.size() < 2){
@@ -616,6 +662,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return true;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#format()
+	 */
 	public boolean format(){
 		if(selectedDragController.getSelectedWidgetCount() < 2){
 			for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
@@ -632,6 +681,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return true;
 	}
 
+	/**
+	 * Selects all widgets on the selected page.
+	 */
 	protected void selectAll(){
 		if(editWidget != null){
 			txtEdit.selectAll();
@@ -802,6 +854,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	/**
+	 * Moves widgets in a given dirrection due to movement of the keyboard arrow keys.
+	 * 
+	 * @param dirrection the move
+	 * @return
+	 */
 	protected boolean moveWidgets(int dirrection){
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets == null)
@@ -832,6 +890,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widgets.size() > 0;
 	}
 
+	/**
+	 * Selects widgets wrapped by the rubber band.
+	 * 
+	 * @param event the event object.
+	 */
 	protected void selectWidgets(Event event){
 		int endX = event.getClientX() - selectedPanel.getAbsoluteLeft();
 		int endY = event.getClientY() - selectedPanel.getAbsoluteTop();
@@ -869,6 +932,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	/**
+	 * Updates the design surface context menu basing on the selected widgets.
+	 */
 	protected void updatePopup(){
 		boolean visible = false;
 		if(selectedDragController.isAnyWidgetSelected())
@@ -893,15 +959,35 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		pasteMenu.setVisible(visible); 
 	}
 
+	/**
+	 * Gets the design widget wrapper representing the selected page.
+	 * 
+	 * @return the design widget wrapper for the selected page.
+	 */
 	protected DesignWidgetWrapper getSelPageDesignWidget(){
 		return pageWidgets.get(selectedTabIndex);
 	}
 
+	/**
+	 * Adds a new widget with a widget selection listener to the selected page.
+	 * 
+	 * @param widget the widget.
+	 * @param select set to true to automatically select the new widget.
+	 * @param widgetSelectionListener the widget selection listener.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewWidget(Widget widget, boolean select, WidgetSelectionListener widgetSelectionListener){
 		currentWidgetSelectionListener = widgetSelectionListener;
 		return addNewWidget(widget,select);
 	}
 
+	/**
+	 * Adds a new widget to the currently selected page.
+	 * 
+	 * @param widget the widget to add.
+	 * @param select set to true to automatically select the widget.
+	 * @return the new widget.
+	 */
 	protected DesignWidgetWrapper addNewWidget(Widget widget, boolean select){
 		stopLabelEdit(false);
 
@@ -924,6 +1010,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 
+	/**
+	 * Adds a new label widget to the selected page.
+	 * 
+	 * @param text the label text.
+	 * @param select set to true if you want to automatically select the widget.
+	 * @return the new label widget.
+	 */
 	protected DesignWidgetWrapper addNewLabel(String text, boolean select){
 		if(text == null)
 			text = LocaleText.get("label");
@@ -934,49 +1027,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 	
-	/*protected DesignWidgetWrapper addNewCustomWiget(boolean select){
-		//HTML html = new HTML("<div dojoType=\"ConceptSearch\" widgetId=\"conceptId_search\" conceptId=\"\" showVerboseListing=\"true\"></div> <span style='white-space:nowrap'>HTML</span> " +
-		//"<div dojoType=\"OpenmrsPopup\" widgetId=\"conceptId_selection\" hiddenInputName=\"conceptId\" searchWidget=\"conceptId_search\" searchTitle=\"\" otherValue=\"\"></div>");
-
-		HTML html = new HTML(getStuff());
-		DesignWidgetWrapper wrapper = addNewWidget(html,select);		
-		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
-		//Window.alert(this.getElement().getInnerHTML());
-		return wrapper;
-	}*/
-	
-	/*private String getStuff(){
-		return "<script src=\"/openmrs/scripts/dojoConfig.js?v=1.6.0.9619\" type=\"text/javascript\" ></script> "+
-"<script src=\"/openmrs/scripts/dojo/dojo.js?v=1.6.0.9619\" type=\"text/javascript\" ></script> "+
-" "+
-"<script type=\"text/javascript\"> "+
-" "+
-"	dojo.require(\"dojo.widget.openmrs.ConceptSearch\"); "+
-"	dojo.require(\"dojo.widget.openmrs.OpenmrsPopup\"); "+
-"	 "+
-"	dojo.addOnLoad( function() { "+
-"		dojo.event.topic.subscribe(\"conceptId_search/select\",  "+
-"			function(msg) { "+
-"				if (msg) { "+
-"					var concept = msg.objs[0]; "+
-"					var conceptPopup = dojo.widget.manager.getWidgetById(\"conceptId_selection\"); "+
-"					conceptPopup.displayNode.innerHTML = concept.name; "+
-"					conceptPopup.hiddenInputNode.value = concept.conceptId; "+
-"					dojo.debug(\"Before adding if statement\"); "+
-"					 "+
-"					 "+
-"				} "+
-"			} "+
-"		); "+
-"	})	 "+
-" "+
-"</script> "+
-" "+
-"<div dojoType=\"ConceptSearch\" widgetId=\"conceptId_search\" conceptId=\"\" showVerboseListing=\"true\"></div> "+
-" "+
-"<div dojoType=\"OpenmrsPopup\" widgetId=\"conceptId_selection\" hiddenInputName=\"conceptId\" searchWidget=\"conceptId_search\" searchTitle=\"\" otherValue=\"\"></div> <span style='white-space:nowrap'>HTML</span> ";
-	}*/
-
+	/**
+	 * Adds a new audio or video widget.
+	 * 
+	 * @param text the display text for the widget.
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewVideoAudio(String text, boolean select){
 		if(text == null)
 			text = LocaleText.get("clickToPlay");
@@ -987,6 +1044,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 	
+	/**
+	 * Adds a new server search widget to the selected page.
+	 * 
+	 * @param text the display text for the widget.
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewServerSearch(String text, boolean select){
 		if(text == null)
 			text = LocaleText.get("noSelection");
@@ -997,6 +1061,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 
+	/**
+	 * Adds a new picture widget to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.s
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewPicture(boolean select){
 		Image image = images.picture().createImage();
 		DOM.setStyleAttribute(image.getElement(), "height","155px");
@@ -1004,6 +1074,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return addNewWidget(image,select);
 	}
 
+	/**
+	 * Adds a new TextBox to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.s
+	 */
 	protected DesignWidgetWrapper addNewTextBox(boolean select){
 		TextBox tb = new TextBox();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
@@ -1011,6 +1087,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return addNewWidget(tb,select);
 	}
 
+	/**
+	 * Adds a new date picker to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewDatePicker(boolean select){
 		DatePicker tb = new DatePickerWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
@@ -1018,14 +1100,32 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return addNewWidget(tb,select);
 	}
 
+	/**
+	 * Adds a new CheckBox to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewCheckBox(boolean select){
 		return addNewWidget(new CheckBox(LocaleText.get("checkBox")),select);
 	}
 
+	/**
+	 * Adds a new radio button to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewRadioButton(boolean select){
 		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
 	}
 
+	/**
+	 * Adds a new drop downlist box to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewDropdownList(boolean select){
 		ListBox lb = new ListBox(false);
 		DOM.setStyleAttribute(lb.getElement(), "height","25px");
@@ -1034,6 +1134,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 
+	/**
+	 * Adds a new text area to the selected page.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewTextArea(boolean select){
 		TextArea ta = new TextArea();
 		DOM.setStyleAttribute(ta.getElement(), "height","60px");
@@ -1041,6 +1147,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return addNewWidget(ta,select);
 	}
 
+	/**
+	 * Adds a new button.
+	 * 
+	 * @param label the button label or text.
+	 * @param binding the widget binding.
+	 * @param select set to true to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewButton(String label, String binding, boolean select){
 		DesignWidgetWrapper wrapper = addNewWidget(new Button(label),select);
 		wrapper.setWidthInt(70);
@@ -1050,10 +1164,22 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return wrapper;
 	}
 
+	/**
+	 * Adds a new submit button.
+	 * 
+	 * @param select set to true to automatically select the new button.s
+	 * @return the new button widget.
+	 */
 	protected DesignWidgetWrapper addSubmitButton(boolean select){
 		return addNewButton(LocaleText.get("submit"),"submit",select);
 	}
 
+	/**
+	 * Adds a new cancel button.
+	 * 
+	 * @param select set to true to automatically select the new widget.
+	 * @return the new button.
+	 */
 	protected DesignWidgetWrapper addCancelButton(boolean select){
 		return addNewButton(LocaleText.get("cancel"),"cancel",select);
 	}
@@ -1074,10 +1200,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		selectedDragController.clearSelection();
 		selectedDragController.selectWidget(sender.getParent().getParent());
 		deleteWidgets();
-	}
-
-	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName){
-		return null;
 	}
 
 	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
@@ -1136,6 +1258,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return retWidget;
 	}
 
+	/**
+	 * Sets up the current page.
+	 */
 	protected void initPanel(){
 
 		//Create a DragController for each logical area where a set of draggable
@@ -1162,6 +1287,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		initEditWidget();
 	}
 
+	/**
+	 * Sets up the inline label editing widget.
+	 */
 	private void initEditWidget(){
 		DOM.setStyleAttribute(txtEdit.getElement(), "borderStyle", "none");
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontFamily", FormUtil.getDefaultFontFamily());
@@ -1228,6 +1356,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		switch (DOM.eventGetType(event)) {
 		case Event.ONMOUSEDOWN:  
@@ -1299,6 +1428,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	/**
+	 * Un selects all selected widgets, if any, in all group boxes on the current page.
+	 */
 	protected void clearGroupBoxSelection(){
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			Widget wid = selectedPanel.getWidget(index);
@@ -1313,10 +1445,19 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 	}
 
+	/**
+	 * Un selects all selected widgets, if any.
+	 */
 	protected void clearSelection(){
 		selectedDragController.clearSelection();
 	}
 
+	/**
+	 * Processes key down events for the selected page.
+	 * 
+	 * @param event the event object.
+	 * @return true if the event has been handled, else false.
+	 */
 	protected boolean handleKeyDownEvent(Event event){
 		/*if(isTextBoxFocus(event)){
 			if("none".equalsIgnoreCase(event.getTarget().getStyle().getProperty("borderStyle")));
@@ -1405,36 +1546,69 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return ret;
 	}
 
+	/**
+	 * Gets the background color for the selected page.
+	 * 
+	 * @return the html color value.
+	 */
 	public String getBackgroundColor(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "backgroundColor");
 	}
 
+	/**
+	 * Gets the widgth for the selected page.
+	 * 
+	 * @return the widget in pixels.
+	 */
 	public String getWidth(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "width");
 	}
 
+	/**
+	 * Gets the height for the selected page.
+	 * 
+	 * @return the height in pixels.
+	 */
 	public String getHeight(){
 		return DOM.getStyleAttribute(selectedPanel.getElement(), "height");
 	}
 
+	/**
+	 * Sets the background color of the selected page.
+	 * 
+	 * @param backgroundColor the background color. This can be any valid html color value.
+	 */
 	public void setBackgroundColor(String backgroundColor){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", backgroundColor);
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * Sets the width in pixels of the selected page.
+	 */
 	public void setWidth(String width){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "width", width);
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * Sets the height in pixels of the selected page.
+	 */
 	public void setHeight(String height){
 		try{
 			DOM.setStyleAttribute(selectedPanel.getElement(), "height", height);
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * Adds a new set of radio buttons.
+	 * 
+	 * @param questionDef the question that we are to add the radio buttons for.
+	 * @param vertically set to true to add the radio buttons slopping vertically downwards instead of horizontally.
+	 * @return this will always be null.
+	 */
 	protected DesignWidgetWrapper addNewRadioButtonSet(QuestionDef questionDef, boolean vertically){
 		List<OptionDef> options = questionDef.getOptions();
 
@@ -1474,6 +1648,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return null;
 	}
 
+	/**
+	 * Changes a widget to a different type. For instance single select question types
+	 * can have their drop down widget changed to radio buttons.
+	 * 
+	 * @param vertically set to true to have the widgets vertically, else false to have them horizontally.
+	 */
 	protected void changeWidget(boolean vertically){
 		if(selectedDragController.getSelectedWidgetCount() != 1)
 			return;
@@ -1500,6 +1680,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
 	}
 	
+	/**
+	 * Adds a new serach server widget.
+	 * 
+	 * @param parentBinding the binding of the question for this widget.
+	 * @param text the widget display text.
+	 * @param select set to true to automatically select the added widget.,
+	 * @return the added widget.
+	 */
 	protected DesignWidgetWrapper addNewSearchServerWidget(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
@@ -1592,6 +1780,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 	
+	/**
+	 * Adds a new group box widget.
+	 * 
+	 * @param select set to true to automatically selecte the newly added widget.
+	 * @return the new widget.
+	 */
 	protected DesignWidgetWrapper addNewGroupBox(boolean select){
 		DesignGroupWidget group = new DesignGroupWidget(images,this);
 		group.addStyleName("getting-started-label2");
@@ -1635,6 +1829,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 	
+	/**
+	 * Adds a new repeat section widget.
+	 * 
+	 * @param select set to true to automatically select the newly added widget.
+	 * @return the new widget.
+	 */
 	protected DesignWidgetWrapper addNewRepeatSection(boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
@@ -1709,6 +1909,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 	
+	/**
+	 * Adds a new picture section widget.
+	 * 
+	 * @param parentBinding the binding of the question for this widget.
+	 * @param text the display text for the widget.
+	 * @param select set to true if you want to automatically select the new widget.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewPictureSection(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
@@ -1793,6 +2001,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
+	/**
+	 * Adds a new Audio or Video section widget.
+	 * 
+	 * @param parentBinding the binding of the question for this widget.
+	 * @param text the widget text.
+	 * @param select set to true if you want the widget to be automatically selected.
+	 * @return the newly added widget.
+	 */
 	protected DesignWidgetWrapper addNewVideoAudioSection(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");

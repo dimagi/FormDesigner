@@ -508,7 +508,9 @@ public class PageDef implements Serializable{
 
 		for(int k = 0; k < newQuestions.size(); k++){
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
-			if(questionDef.getDataNode() == null){
+			
+			//We do not update data nodes which deal with attributes.
+			if(questionDef.getDataNode() == null && !questionDef.getVariableName().contains("@")){
 				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
 				continue; //TODO This is a bug which should be resolved
 			}

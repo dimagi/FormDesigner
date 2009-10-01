@@ -21,6 +21,7 @@ public class FormSaveServlet extends HttpServlet{
 	private String filecontents;
 	private String filename;
 	
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/*try{
 			filecontents = null;
@@ -41,6 +42,7 @@ public class FormSaveServlet extends HttpServlet{
 		}*/
 	}
 	
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 		response.setContentType("text/xml; charset=utf-8"); 

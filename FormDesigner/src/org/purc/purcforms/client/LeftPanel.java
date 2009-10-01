@@ -40,11 +40,12 @@ public class LeftPanel extends Composite {
 		AbstractImagePrototype filtersgroup();
 	}
 
-
 	private DecoratedStackPanel stackPanel = new DecoratedStackPanel();
 	private IFormSelectionListener formSelectionListener;
 	private FormsTreeView formsTreeView;
 	private WidgetPropertiesView widgetPropertiesView;
+	
+	/** The palette widget. */
 	private PaletteView paletteView;
 
 	/**

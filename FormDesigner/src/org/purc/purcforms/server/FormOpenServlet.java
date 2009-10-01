@@ -26,6 +26,7 @@ public class FormOpenServlet extends HttpServlet{
 
 	private String fileContents = "";
 	
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
@@ -36,6 +37,7 @@ public class FormOpenServlet extends HttpServlet{
 		response.getOutputStream().print(fileContents);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		/*try{
 			CommonsMultipartResolver multipartResover = new CommonsMultipartResolver();

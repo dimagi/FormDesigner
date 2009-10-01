@@ -20,22 +20,43 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * This widget is used to let one select a field or question for a skip or validation
+ * rule condition. For validation rules, this can be used for the condition value. eg
+ * Weight less than Height. For skip rules, this can be used for both the condition
+ * question and value.
  * 
  * @author daniel
  *
  */
 public class FieldWidget extends Composite{
 
-	//private static final int HORIZONTAL_SPACING = 5;
+	/** The text to display when no value is specified for a condition. */
 	private static final String EMPTY_VALUE = "_____";
 	
+	/** The form to which the question, represented by this widget, belongs. */
 	private FormDef formDef;
+	
+	/** The main widget. */
 	private HorizontalPanel horizontalPanel;
+	
+	/** The widget to do auto suggest for form questions as the user types. */
 	private SuggestBox sgstField = new SuggestBox();
+	
+	/** The text field where to type the question name. */
 	private TextBox txtField = new TextBox();
+	
+	/** The widget to display the selected question text when not in selection mode. */
 	private Hyperlink fieldHyperlink;
+	
+	/** The listener for item selection events. */
 	private ItemSelectionListener itemSelectionListener;
+	
+	/** A flag determining if the current field selection is for a single select dynamic.
+	 * type of question.
+	 */
 	private boolean forDynamicOptions = false;
+	
+	/** The single select dynamic question. */
 	private QuestionDef dynamicQuestionDef;
 
 	
@@ -44,6 +65,11 @@ public class FieldWidget extends Composite{
 		setupWidgets();
 	}
 	
+	/**
+	 * Sets the form to which the referenced question belongs.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){
 		this.formDef = formDef;
 		setupPopup();
@@ -150,6 +176,12 @@ public class FieldWidget extends Composite{
 		return false;
 	}
 	
+	
+	/**
+	 * Sets the question for this widget.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	public void setQuestion(QuestionDef questionDef){
 		if(questionDef != null)
 			fieldHyperlink.setText(questionDef.getText());

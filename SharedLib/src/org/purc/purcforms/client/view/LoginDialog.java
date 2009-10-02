@@ -38,6 +38,8 @@ public class LoginDialog extends DialogBox {
 	
 	/** For capturing the user password. */
 	private PasswordTextBox txtPassword;
+	
+	/** The widget for organising widgets in a table format. */
 	private FlexTable table = new FlexTable();
 	
 	
@@ -48,6 +50,9 @@ public class LoginDialog extends DialogBox {
 		setup();
 	}
 	
+	/**
+	 * Sets up the login widget.
+	 */
 	private void setup(){
 		
 		setText(LocaleText.get("authenticationPrompt"));

@@ -38,24 +38,35 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * Wraps a widget and gives it capability to be used at run time for data collection.
  * 
  * @author daniel
  *
  */
 public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeListener{
 
+	/** Widget to display error message icon when the widget's validation fails. */
 	protected Image errorImage;
+
+	/** Collection of RadioButton and CheckBox wrapped widgets for a given question. */
 	protected List<RuntimeWidgetWrapper> childWidgets;
+
+	/** Listener to edit events. */
 	protected EditListener editListener;
+
 	private AbstractImagePrototype errorImageProto;
+	
+	/** Flag that tells whether this widget is locked and hence doesn't allow editing. */
 	private boolean locked = false;
 
+	/** The widget's validation rule. */
 	private ValidationRule validationRule;
 
-	public RuntimeWidgetWrapper(){
-
-	}
-
+	/**
+	 * Creates a copy of the widget.
+	 * 
+	 * @param widget the widget to copy.
+	 */
 	public RuntimeWidgetWrapper(RuntimeWidgetWrapper widget){
 		super(widget);
 
@@ -91,7 +102,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		initWidget(panel);
 		setupEventListeners();
 		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
-		
+
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS /*| Event.ONCONTEXTMENU | Event.KEYEVENTS*/);
 	}
 
@@ -99,14 +110,20 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return errorImageProto;
 	}
 
+	/**
+	 * Gets the question edit listener.
+	 * 
+	 * @return the edit listener.
+	 */
 	public EditListener getEditListener(){
 		return editListener;
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		if(locked)
 			event.preventDefault();
-		
+
 		int type = DOM.eventGetType(event);
 		if(type == Event.ONMOUSEUP && widget instanceof CheckBox && questionDef != null){
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
@@ -116,6 +133,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 	}
 
+	/**
+	 * Sets up events listeners.
+	 */
 	private void setupEventListeners(){
 		if(widget instanceof DatePicker){
 			((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
@@ -173,6 +193,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
 	}
 
+	/**
+	 * Sets up text box event listeners.
+	 */
 	private void setupTextBoxEventListeners(){
 		if(widget.getParent() instanceof SuggestBox){
 			((SuggestBox)widget.getParent()).addEventHandler(new SuggestionHandler(){
@@ -226,7 +249,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					((TextBox) sender).cancelKey(); 
 					while(panel.getWidgetCount() > 1)
 						panel.remove(1);
-					
+
 					if(keyCode == (char) KeyboardListener.KEY_DELETE || keyCode == (char) KeyboardListener.KEY_BACKSPACE){
 						((TextBox) sender).setText("");
 						if(questionDef != null)
@@ -244,6 +267,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
+	/**
+	 * Sets the question for the widget.
+	 * 
+	 * @param questionDef the question definition object.
+	 * @param loadWidget set to true to load widget values, else false.
+	 */
 	public void setQuestionDef(QuestionDef questionDef ,boolean loadWidget){
 		this.questionDef = questionDef;
 
@@ -251,6 +280,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			loadQuestion();
 	}
 
+	/**
+	 * Loads values for the widget.
+	 */
 	public void loadQuestion(){
 		if(questionDef == null)
 			return;
@@ -353,6 +385,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			setLocked(true);
 	}
 
+	/**
+	 * Converts a date,time or dateTime from its xml submit format to display format.
+	 * 
+	 * @param value the text value in submit format.
+	 * @return the value in its display format.
+	 */
 	private String fromSubmit2DisplayDate(String value){
 		try{
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME)
@@ -365,6 +403,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return null;
 	}
 
+	/**
+	 * Sets whether this widget is enabled.
+	 * 
+	 * @param enabled <code>true</code> to enable the widget, <code>false</code>
+	 *        to disable it.
+	 */
 	public void setEnabled(boolean enabled){
 		if(widget instanceof RadioButton){
 			((RadioButton)widget).setEnabled(enabled);
@@ -397,41 +441,23 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((RuntimeGroupWidget)widget).setEnabled(enabled);
 	}
 
+	/**
+	 * Determines if to allow editing of the widget value.
+	 * 
+	 * @param locked set to true to prevent editing of the widget value.
+	 */
 	public void setLocked(boolean locked){
-
 		this.locked = locked;
 
-		/*if(widget instanceof RadioButton){
-			((RadioButton)widget).setEnabled(locked);
-			if(!locked)
-				((RadioButton)widget).setChecked(false);
-		}
-		else if(widget instanceof CheckBox){
-			((CheckBox)widget).setEnabled(locked);
-			if(!locked)
-				((CheckBox)widget).setChecked(false);
-		}
-		else if(widget instanceof Button)
-			((Button)widget).setEnabled(locked);
-		else if(widget instanceof ListBox){
-			((ListBox)widget).setEnabled(locked);
-			if(!locked)
-				((ListBox)widget).setSelectedIndex(0);
-		}
-		else if(widget instanceof TextArea){
-			((TextArea)widget).setEnabled(locked);
-			if(!locked)
-				((TextArea)widget).setText(null);
-		}
-		else if(widget instanceof TextBox){
-			((TextBox)widget).setEnabled(locked);
-			if(!locked)
-				((TextBox)widget).setText(null);
-		}
-		else*/ if(widget instanceof RuntimeGroupWidget)
+		if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).setLocked(locked);
 	}
 
+	/**
+	 * Gets the user answer from a TextBox widget.
+	 * 
+	 * @return the text answer.
+	 */
 	private String getTextBoxAnswer(){
 		String value = ((TextBox)widget).getText();
 
@@ -446,12 +472,18 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 		catch(Exception ex){
+			//If we get a problem parsing date, just return null.
 			value = null;
 		}
 
 		return value;
 	}
 
+	/**
+	 * Retrieves the value from the widget to the question definition object for this widget.
+	 * 
+	 * @param formDef the form to which this widget's question belongs.
+	 */
 	public void saveValue(FormDef formDef){
 		if(questionDef == null){
 			if(widget instanceof RuntimeGroupWidget)
@@ -491,9 +523,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						answer = ((Label)wid).getText();
 				}
 			}
-			
+
 			questionDef.setAnswer(answer);
-			
+
 			//Fire fox clears default values when the widget is disabled. So put it as the answer manually.
 			if(defaultValue != null && defaultValue.trim().length() > 0 && !((TextBox)widget).isEnabled()){
 				if(questionDef.getAnswer() == null || questionDef.getAnswer().trim().length() == 0)
@@ -572,6 +604,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			questionDef.updateNodeValue(formDef);
 	}
 
+	/**
+	 * Adds a CheckBox or RadioButton widget for the question of this widget.
+	 * 
+	 * @param childWidget the CheckBox or RadioButton widget.
+	 */
 	public void addChildWidget(RuntimeWidgetWrapper childWidget){
 		if(childWidgets == null)
 			childWidgets = new ArrayList<RuntimeWidgetWrapper>();
@@ -619,6 +656,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
+	/**
+	 * Get's the widget that is wrapped by this widget.
+	 */
 	public Widget getWrappedWidget(){
 		return widget;
 	}
@@ -675,10 +715,20 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return true;
 	}
 
+	/**
+	 * Check if the question represented by this widget has been answered.
+	 * 
+	 * @return true if answered, else false.
+	 */
 	public boolean isAnswered(){
 		return getAnswer() != null && getAnswer().toString().trim().length() > 0;
 	}
 
+	/**
+	 * Gets the answer for the question wrapped by the widget.
+	 * 
+	 * @return the answer.
+	 */
 	private Object getAnswer() {
 		if(questionDef == null)
 			return null;
@@ -686,6 +736,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return questionDef.getAnswer();
 	}
 
+	/**
+	 * Sets input focus to the widget.
+	 * 
+	 * @return true if the widget accepts input focus.
+	 */
 	public boolean setFocus(){
 		if(questionDef != null && (!questionDef.isVisible() || !questionDef.isEnabled() || questionDef.isLocked()))
 			return false;
@@ -713,6 +768,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return true;
 	}
 
+	/**
+	 * Clears the value or answer entered for this widget.
+	 */
 	public void clearValue(){
 		if(widget instanceof RadioButton)
 			((RadioButton)widget).setChecked(false);
@@ -735,6 +793,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			questionDef.setAnswer(null);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onEnabledChanged(QuestionDef, boolean)
+	 */
 	public void onEnabledChanged(QuestionDef sender,boolean enabled) {
 		if(!enabled)
 			clearValue();
@@ -742,6 +803,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		setEnabled(enabled);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onLockedChanged(QuestionDef, boolean)
+	 */
 	public void onLockedChanged(QuestionDef sender,boolean locked) {
 		if(locked)
 			clearValue();
@@ -749,6 +813,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		setLocked(locked);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onRequiredChanged(QuestionDef, boolean)
+	 */
 	public void onRequiredChanged(QuestionDef sender,boolean required) {
 		//As for now we do not set error messages on labels.
 		if(!(widget instanceof Label)){
@@ -759,6 +826,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onVisibleChanged(QuestionDef, boolean)
+	 */
 	public void onVisibleChanged(QuestionDef sender,boolean visible) {
 		if(!visible)
 			clearValue();
@@ -766,38 +836,53 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		setVisible(visible);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onBindingChanged(QuestionDef, String)
+	 */
 	public void onBindingChanged(QuestionDef sender,String newValue){
 		if(newValue != null && newValue.trim().length() > 0)
 			binding = newValue;
 	}
 
+	/**
+	 * Gets the question wrapped by this widget.
+	 * 
+	 * @return the question definition object.
+	 */
 	public QuestionDef getQuestionDef(){
 		return questionDef;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onDataTypeChanged(QuestionDef, int)
+	 */
 	public void onDataTypeChanged(QuestionDef sender,int dataType){
 
 	}
 
+	/**
+	 * Gets this widget's validation rule.
+	 *
+	 * @return the widget's validation rule.
+	 */
 	public ValidationRule getValidationRule() {
 		return validationRule;
 	}
 
+	/**
+	 * Sets the widget's validation rule.
+	 * 
+	 * @param validationRule the validation rule.
+	 */
 	public void setValidationRule(ValidationRule validationRule) {
 		this.validationRule = validationRule;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onOptionsChanged(QuestionDef, List)
+	 */
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 		loadQuestion();
-
-		/*if(questionDef == null)
-			return;
-
-		questionDef.setAnswer(null);
-		if(widget instanceof TextBox)
-			((TextBox)widget).setText(null);
-		else if(widget instanceof ListBox)
-			((ListBox)widget).setSelectedIndex(-1);*/
 	}
 
 	public RuntimeWidgetWrapper getInvalidWidget(){
@@ -806,6 +891,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		return this;
 	}
 
+	/**
+	 * Checks if this widget accepts input focus.
+	 * 
+	 * @return true if the widget accepts input focus, else false.
+	 */
 	public boolean isFocusable(){
 		Widget wg = getWrappedWidget();
 		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||

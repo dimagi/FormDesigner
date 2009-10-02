@@ -141,21 +141,45 @@ public class XformConverter implements Serializable{
 	private static final String CONDITIONS_OPERATOR_TEXT_AND = " and ";
 	private static final String CONDITIONS_OPERATOR_TEXT_OR = " or ";
 
+	/** The current question id. */
 	private static int currentQuestionId = 1;
+	
+	/** The current page number. */
 	private static int currentPageNo = 1;
 
-	public XformConverter(){
+	/**
+	 * All methods in this class are static and hence we expect to external
+	 * instanciation of this class.
+	 */
+	private XformConverter(){
 
 	}
 
+	/**
+	 * Gets a new question id.
+	 * 
+	 * @return the new question id
+	 */
 	private static int getNextQuestionId(){
 		return currentQuestionId++;
 	}
 
+	/**
+	 * Gets a new page number.
+	 * 
+	 * @return the new page number.
+	 */
 	private static int getNextPageNo(){
 		return currentPageNo++;
 	}
 
+	/**
+	 * Converts from a question definition object type to its xsd type.
+	 * 
+	 * @param type the QuestionDef data type.
+	 * @param node the node having the type attribute.
+	 * @return the xsd type.
+	 */
 	public static String getXmlType(int type, Element node){
 		if(node != null){
 			if(type == QuestionDef.QTN_TYPE_VIDEO)
@@ -199,8 +223,8 @@ public class XformConverter implements Serializable{
 	/**
 	 * Creates a copy of a formDef together with its xform xml.
 	 * 
-	 * @param formDef
-	 * @return
+	 * @param formDef the form to copy.
+	 * @return the new copy of the form.
 	 */
 	public static FormDef copyFormDef(FormDef formDef){
 		if(formDef.getDoc() == null)
@@ -211,6 +235,12 @@ public class XformConverter implements Serializable{
 		return fromXform2FormDef(fromDoc2String(formDef.getDoc()));
 	}
 
+	/**
+	 * Converts a form definition object to its xforms xml.
+	 * 
+	 * @param formDef the form definition object.
+	 * @return the xforms xml.
+	 */
 	public static String fromFormDef2Xform(FormDef formDef){
 		Document doc = XMLParser.createDocument();
 		formDef.setDoc(doc);
@@ -307,6 +337,15 @@ public class XformConverter implements Serializable{
 			updateDynamicOptions(dynamicOptions,newDynQtns,formDef,doc);
 	}
 
+	/**
+	 * Converts a validation rule to its xforms representation.
+	 * The question definition object referenced by the validation rule
+	 * is expected to already have reference to the xforms document nodes
+	 * that we need to manipulate for the validation rule's xforms contents.
+	 * 
+	 * @param rule the validation rule.
+	 * @param formDef the form definition object.
+	 */
 	public static void fromValidationRule2Xform(ValidationRule rule, FormDef formDef){
 		QuestionDef questionDef = formDef.getQuestion(rule.getQuestionId());
 
@@ -1330,9 +1369,6 @@ public class XformConverter implements Serializable{
 							map.put(ref, ref);
 					}
 
-					if(isNumQuestionsBiggerThanMax(formDef))
-						break;
-
 					if(varName != null){
 						QuestionDef qtn = formDef.getQuestion(varName);
 						if(qtn == null)
@@ -2124,11 +2160,6 @@ public class XformConverter implements Serializable{
 		return ModelConstants.CONDITIONS_OPERATOR_NULL;
 	}
 
-
-	private static boolean isNumQuestionsBiggerThanMax(FormDef formDef){
-		return false; //((PageDef)formDef.getPages().elementAt(0)).getQuestions().size() > 126;
-	}
-
 	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind,HashMap constraints){
 		QuestionDef qtn = new QuestionDef(null);
 		/*if(formDef.getPages() == null)
@@ -2167,6 +2198,12 @@ public class XformConverter implements Serializable{
 		return qtn.getVariableName();
 	}
 
+	/**
+	 * Gets a node name without the namespace prefix.
+	 * 
+	 * @param element the node.
+	 * @return the name.
+	 */
 	private static String getNodeName(Element element){
 		String name = element.getNodeName();
 		String prefix = element.getPrefix();
@@ -2177,6 +2214,12 @@ public class XformConverter implements Serializable{
 		return name;
 	}
 
+	/**
+	 * Creates a node from an xml fragment.
+	 * 
+	 * @param xml the xml fragment.
+	 * @return the node.
+	 */
 	public static Element getNode(String xml){
 		xml = "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + xml;
 		xml = xml + "</xf:xforms>";
@@ -2187,6 +2230,13 @@ public class XformConverter implements Serializable{
 		return node;
 	}
 
+	/**
+	 * Renames a node.
+	 * 
+	 * @param node the node to rename.
+	 * @param newName the new node name.
+	 * @return the new renamed node.
+	 */
 	public static Element renameNode(Element node, String newName){
 		String xml = node.toString();
 		xml = xml.replace(node.getNodeName(), newName);
@@ -2242,6 +2292,12 @@ public class XformConverter implements Serializable{
 		return nodeset.substring(pos1+token.length(), pos2);
 	}
 
+	/**
+	 * Converts a form definition object to XHTML.
+	 * 
+	 * @param formDef the form definition object.
+	 * @return the xhtml.
+	 */
 	public static String fromFormDef2Xhtml(FormDef formDef){
 		Document prevdoc = formDef.getDoc();
 

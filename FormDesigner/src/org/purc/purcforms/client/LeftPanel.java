@@ -34,9 +34,7 @@ public class LeftPanel extends Composite {
 	 * images needed in child widgets.
 	 */
 	public interface Images extends FormsTreeView.Images,FormDesignerImages{
-
 		AbstractImagePrototype tasksgroup();
-
 		AbstractImagePrototype filtersgroup();
 	}
 

@@ -26,6 +26,8 @@ import com.google.gwt.user.client.Window;
 
 
 /**
+ * Controls the interactions between the views for the form runner
+ * and also handles server side communication on behalf of this view.
  * 
  * @author daniel
  *

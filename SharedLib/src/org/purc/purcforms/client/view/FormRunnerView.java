@@ -729,10 +729,16 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 */
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
 		return true;
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 */
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
 		selectedTabIndex = tabIndex;
 		selectedPanel = (AbsolutePanel)tabs.getWidget(tabIndex);
@@ -798,6 +804,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			tabs.selectTab(--selectedTabIndex);
 	}
 
+	/**
+	 * Checks all skip logic and does the appropriate action for the affected widgets.
+	 */
 	protected void fireSkipRules(){		
 		Vector rules = formDef.getSkipRules();
 		if(rules != null && rules.size() > 0){
@@ -978,6 +987,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}catch(Exception ex){}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onEnabledChanged(QuestionDef, boolean)
+	 */
 	public void onEnabledChanged(QuestionDef sender,boolean enabled){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
@@ -990,6 +1002,9 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onVisibleChanged(QuestionDef, boolean)
+	 */
 	public void onVisibleChanged(QuestionDef sender,boolean visible){
 		List<CheckBox> list = checkBoxGroupMap.get(sender);
 		if(list == null)
@@ -1002,22 +1017,37 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onRequiredChanged(QuestionDef, boolean)
+	 */
 	public void onRequiredChanged(QuestionDef sender,boolean required){
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onLockedChanged(QuestionDef, boolean)
+	 */
 	public void onLockedChanged(QuestionDef sender,boolean locked){
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onBindingChanged(QuestionDef, String)
+	 */
 	public void onBindingChanged(QuestionDef sender,String newValue){
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onDataTypeChanged(QuestionDef, int)
+	 */
 	public void onDataTypeChanged(QuestionDef sender,int dataType){
 
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionChangeListener#onOptionsChanged(QuestionDef, List)
+	 */
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 
 	}

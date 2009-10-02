@@ -20,7 +20,6 @@ import org.purc.purcforms.client.xforms.XformConverter;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;

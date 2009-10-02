@@ -94,6 +94,9 @@ public class FormDesignerWidget extends Composite{
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
+	 */
 	public void onWindowResized(int width, int height){		
 		int shortcutHeight = height - leftPanel.getAbsoluteTop() - 0;//8;
 		if (shortcutHeight < 1) 
@@ -108,6 +111,7 @@ public class FormDesignerWidget extends Composite{
 		//hsplitClient.setSize(width+"px", shortcutHeight+"px");
 	}
 	
+	@Override
 	public void onBrowserEvent(Event event) {
 		//TODO Firefox doesn't seem to give us mouse events when resizing.
 		if(isResizing)

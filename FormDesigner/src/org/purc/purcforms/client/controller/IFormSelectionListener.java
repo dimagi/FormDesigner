@@ -2,7 +2,7 @@ package org.purc.purcforms.client.controller;
 
 
 /**
- * Interface for listening to form events during form design.
+ * Interface for listening to form item selection events during form design.
  * 
  * @author daniel
  *

@@ -38,56 +38,135 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 
 /**
- * Contains the model of the displayed XForms document.
+ * View responsible for displaying and hence allow editing of properties of the 
+ * selected widget on the design surface.
  * 
  * @author daniel
  *
  */
 public class WidgetPropertiesView extends Composite implements WidgetSelectionListener, IFormSelectionListener{
 
-	private FlexTable table = new FlexTable(); //Grid(7,2);
+	/** Widget for organising widgets in a tabular format. */
+	private FlexTable table = new FlexTable();
+
+	/** Panel for scrolling when the the loaded widgets can't fit in the visible region. */
 	private ScrollPanel scrollPanel = new ScrollPanel();
+
+	/** The currently selected widget which derives from DesignGroupView */
 	private DesignGroupView viewWidget;
+
+	/** The currently selected widget whose properties we are displaying. */
 	private DesignWidgetWrapper widget;
+
+	/** The previously selected widget whose properties we had displayed before the current. */
 	private DesignWidgetWrapper prevWidget;
+
+	/** The binding for the previous widget. */
 	private String prevBinding;
 
+	/** Widget for setting the text property. */
 	private TextBox txtText = new TextBox();
+
+	/** Widget for setting the binding property. */
 	private TextBox txtBinding = new TextBox();
+
+	/** Widget for setting the child binding property. */
 	private TextBox txtChildBinding = new TextBox();
+
+	/** Widget for setting the enabled property. */
 	private CheckBox chkEnabled = new CheckBox();
+
+	/** Widget for setting the visible property. */
 	private CheckBox chkVisible = new CheckBox();
+
+	/** Widget for setting the width property. */
 	private TextBox txtWidth = new TextBox();
+
+	/** Widget for setting the height property. */
 	private TextBox txtHeight = new TextBox();
+
+	/** Widget for setting the left property. */
 	private TextBox txtLeft = new TextBox();
+
+	/** Widget for setting the top property. */
 	private TextBox txtTop = new TextBox();
+
+	/** Widget for setting the help text property. */
 	private TextBox txtHelpText = new TextBox();
+
+	/** Widget for setting the binding property. */
 	private SuggestBox sgstBinding = new SuggestBox(new MultiWordSuggestOracle(),txtBinding);
+
+	/** Widget for setting the child binding property. */
 	private SuggestBox sgstChildBinding = new SuggestBox(new MultiWordSuggestOracle(),txtChildBinding);
+
+	/** Widget for setting the tab index property. */
 	private TextBox txtTabIndex = new TextBox();
 
+	/** Widget for setting the fore colour property. */
 	private TextBox txtForeColor  = new TextBox();
+
+	/** Widget for setting the back ground colour property. */
 	private TextBox txtBackgroundColor  = new TextBox();
+
+	/** Widget for setting the border colour property. */
 	private TextBox txtBorderColor  = new TextBox();
+
+	/** Widget for setting the fore colour property. */
 	private SuggestBox sgstForeColor = new SuggestBox(new MultiWordSuggestOracle(),txtForeColor);
+
+	/** Widget for setting the background colour property. */
 	private SuggestBox sgstBackgroundColor;
+
+	/** Widget for setting the border colour property. */
 	private SuggestBox sgstBorderColor;
+
+	/** Widget for setting the font weight property. */
 	private ListBox lbFontWeight = new ListBox(false);
+
+	/** Widget for setting the font style property. */
 	private ListBox lbFontStyle = new ListBox(false);
+
+	/** Widget for setting the font size property. */
 	private TextBox txtFontSize= new TextBox();
+
+	/** Widget for setting the font family property. */
 	private TextBox txtFontFamily= new TextBox();
+
+	/** Widget for setting the text decoration property. */
 	private ListBox lbTextDecoration = new ListBox(false);
+
+	/** Widget for setting the text align property. */
 	private ListBox lbTextAlign = new ListBox(false);
+
+	/** Widget for setting the border style property. */
 	private ListBox lbBorderStyle = new ListBox(false);
+
+	/** Widget for setting the border width property. */
 	private TextBox txtBorderWidth = new TextBox();
+
+	/** Widget for setting the is repeat property. */
 	private ListBox cbRepeat = new ListBox(false);
+
+	/** Widget for setting the external source property. */
 	private TextBox txtExternalSource = new TextBox();
+
+	/** Widget for setting the display property. */
 	private TextBox txtDisplayField = new TextBox();
+
+	/** Widget for setting the value field property. */
 	private TextBox txtValueField = new TextBox();
 
+	/** The current form definition object. */
 	private FormDef formDef;
+
+	/** The question definition object for the currently selected widget. */
 	QuestionDef questionDef;
 
+
+	/**
+	 * Creates a new instance of the widget properties view.
+	 */
 	public WidgetPropertiesView() {
 
 		initStyles();
@@ -205,6 +284,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		cbRepeat.addItem("false");
 	}
 
+	/**
+	 * Initialises style property widgets.
+	 */
 	private void initStyles(){
 		StyleUtil.loadColorNames((MultiWordSuggestOracle)sgstForeColor.getSuggestOracle());
 		sgstBackgroundColor = new SuggestBox(sgstForeColor.getSuggestOracle(),txtBackgroundColor);
@@ -217,6 +299,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		StyleUtil.loadBorderStyles(lbBorderStyle);
 	}
 
+	/**
+	 * Sets up event listeners.
+	 */
 	private void setupEvents(){
 		txtText.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
@@ -498,6 +583,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		});
 	}
 
+	/**
+	 * 
+	 * @param widget
+	 * @param binding
+	 */
 	private void updateBinding(DesignWidgetWrapper widget,String binding){
 		if(widget != null){
 			Widget wdgt = widget.getWrappedWidget();
@@ -508,44 +598,63 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}	
 	}
 
+	/**
+	 * Updates the selected widget with the new text as typed by the user.
+	 */
 	private void updateText(){
 		//if(widget != null && txtText.getText().trim().length() > 0) //No setting of empty strings as text.
 		if(widget != null /*&& txtText.getText().length() > 0*/) //We now allow setting of empty strings as text.
 			widget.setText(txtText.getText());
 	}
 
+	/**
+	 * Updates the selected widget with the new help text as typed by the user.
+	 */
 	private void updateHelpText(){
 		if(widget != null)
 			widget.setTitle(txtHelpText.getText());
 	}
 
+	/**
+	 * Updates the selected widget with the new external source value as typed by the user.
+	 */
 	private void updateExternalSource(){
 		if(widget != null)
 			widget.setExternalSource(txtExternalSource.getText());
 	}
 
+	/**
+	 * Updates the selected widget with the new display field as typed by the user.
+	 */
 	private void updateDisplayField(){
 		if(widget != null)
 			widget.setDisplayField(txtDisplayField.getText());
 	}
 
+	/**
+	 * Updates the selected widget with the new value field as typed by the user.
+	 */
 	private void updateValueField(){
 		if(widget != null)
 			widget.setValueField(txtValueField.getText());
 	}
 
+	/**
+	 * Updates the selected widget with the new isRepeat value as ticked by the user.
+	 */
 	private void updateIsRepeat(){
 		if(widget != null)
 			widget.setRepeated(cbRepeat.getSelectedIndex() == 0);
 	}
 
+	/**
+	 * Updates the selected widget with the new child binding as typed by the user.
+	 */
 	private void updateChildBinding(){
 		if(widget != null){
 			OptionDef optionDef = questionDef.getOptionWithText(txtChildBinding.getText());
 			if(optionDef == null){
-				String text = txtChildBinding.getText();
-				//if("browse".equalsIgnoreCase(text) || "clear".equalsIgnoreCase(text))
-				widget.setBinding(text);
+				widget.setBinding(txtChildBinding.getText());
 				return;
 			}
 
@@ -560,31 +669,21 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				txtHelpText.setText(txtChildBinding.getText());
 				updateHelpText();
 			}
-			/*String binding = null;
-			if(hasParentBinding()){
-				OptionDef optionDef = questionDef.getOptionWithText(txtBinding.getText());
-				if(optionDef == null)
-					return;
-				binding = optionDef.getText();
-			}
-			else{*/			
 		}
 	}
 
+	/**
+	 * Updates the selected widget with the new binding as typed by the user.
+	 */
 	private void updateBinding(){
 		txtChildBinding.setEnabled(false);
 		if(widget != null && formDef != null){
 			questionDef = formDef.getQuestionWithText(txtBinding.getText());
 			if(questionDef == null){
 				String text = txtBinding.getText();
-				//if(text.equals("submit")||text.equals("addnew")||text.equals("remove")
-				//		||text.equals("browse")||text.equals("clear"))
 				widget.setBinding(text);
 				return;
 			}
-
-			//widget.setBinding(formDef.getQuestionBinding(questionDef));
-
 
 			if(hasParentBinding()){
 				widget.setParentBinding(questionDef.getVariableName());
@@ -606,6 +705,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Updates the selected widget with the new width as typed by the user.
+	 */
 	private void updateWidth(){
 		if(txtWidth.getText().trim().length() > 0){
 			if(widget != null)
@@ -619,6 +721,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Updates the selected widget with the new height as typed by the user.
+	 */
 	private void updateHeight(){
 		if(txtHeight.getText().trim().length() > 0){
 			if(widget != null)
@@ -632,16 +737,25 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Updates the selected widget with the new left as typed by the user.
+	 */
 	private void updateLeft(){
 		if(widget != null && txtLeft.getText().trim().length() > 0)
 			widget.setLeft(txtLeft.getText()+"px");
 	}
 
+	/**
+	 * Updates the selected widget with the new top as typed by the user.
+	 */
 	private void updateTop(){
 		if(widget != null && txtTop.getText().trim().length() > 0)
 			widget.setTop(txtTop.getText()+"px");
 	}
 
+	/**
+	 * Updates the selected widget with the new tab index as typed by the user.
+	 */
 	private void updateTabIndex(){
 		if(widget != null && txtTabIndex.getText().trim().length() > 0)
 			widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
@@ -649,6 +763,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			((DesignWidgetWrapper)viewWidget.getParent().getParent()).setTabIndex(Integer.parseInt(txtTabIndex.getText()));
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.WidgetSelectionListener#onWidgetSelected(Widget, boolean)
+	 */
 	public void onWidgetSelected(Widget widget, boolean multipleSel) {
 
 		if(widget instanceof DesignWidgetWrapper){
@@ -663,7 +780,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			this.widget = null;
 		}
 
-		//Removed from here for smooth updateing where value has not changed
+		//Removed from here for smooth updating where value has not changed
 		/*txtText.setText(null);
 		txtHelpText.setText(null);
 		txtBinding.setText(null);
@@ -800,15 +917,18 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Sets properties that makes sense only for DesignGroupView widgets.
+	 */
 	private void setViewProperties(){
 		if(viewWidget != null){
 			txtWidth.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getWidth())));
 			txtHeight.setText(String.valueOf(FormUtil.convertDimensionToInt(viewWidget.getHeight())));
 			txtBackgroundColor.setText(viewWidget.getBackgroundColor());
-			
+
 			if(viewWidget instanceof DesignGroupWidget){
 				DesignWidgetWrapper designWidgetWrapper = (DesignWidgetWrapper)viewWidget.getParent().getParent();
-				
+
 				StyleUtil.setBorderStyleIndex(designWidgetWrapper.getBorderStyle(), lbBorderStyle);
 				txtBorderColor.setText(designWidgetWrapper.getBorderColor());
 				txtBorderWidth.setText(FormUtil.convertDimensionToInt(designWidgetWrapper.getBorderWidth())+"");
@@ -817,6 +937,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Clears all widget values.
+	 */
 	private void clearProperties(){
 		txtText.setText(null);
 		txtHelpText.setText(null);
@@ -837,11 +960,20 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		enableLabelProperties(false);
 	}
 
+	/**
+	 * Checks if the selected widget should have a parent binding property.
+	 * 
+	 * @return true if yes, else false.
+	 */
 	private boolean hasParentBinding(){
 		return (widget.getWrappedWidget() instanceof RadioButton) || (widget.getWrappedWidget() instanceof CheckBox)
 		|| (widget.getWrappedWidget() instanceof Button);
 	}
 
+	/**
+	 * Loads the child binding widget with a list of bindings based on the
+	 * selected parent binding.
+	 */
 	private void updateQuestionOptionsOracle(){
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)sgstChildBinding.getSuggestOracle();
 		oracle.clear();
@@ -860,6 +992,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 	}
 
+	/**
+	 * Sets the current form definition object.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setupFormDef(FormDef formDef){
 		this.formDef = formDef;
 
@@ -874,45 +1011,32 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		oracle.add("clear");
 		oracle.add("cancel");
 		oracle.add("search");
-
-		//sgstBinding.
-		//table.remove(sgstBinding);
-		//sgstBinding.r
-		//sgstBinding = new SuggestBox(oracle,txtBinding);
-		//table.setWidget(2, 1, sgstBinding);
-		//selectFirstQuestion();
-
-
-
-		/*sgstField.addFocusListener(new FocusListenerAdapter(){
-			public void onLostFocus(Widget sender){
-				stopSelection();
-			}
-		});*/
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormSelectionListener#onFormItemSelected(Object)
+	 */
 	public void onFormItemSelected(Object formItem) {
-		if(formItem == null){
-			//enableQuestionOnlyProperties(false);
-			//txtText.setEnabled(false);
-			//txtDescTemplate.setEnabled(false);
+		if(formItem == null)
 			return;
-		}
 
 		if(formItem instanceof FormDef)
 			setupFormDef((FormDef)formItem);
-		/*else if(formItem instanceof PageDef)
-			setPageProperties((PageDef)formItem);
-		else if(formItem instanceof QuestionDef)
-			setQuestionProperties((QuestionDef)formItem);
-		else if(formItem instanceof OptionDef)
-			setQuestionOptionProperties((OptionDef)formItem);*/
 	}
 
+	/**
+	 * Reloads the list of bindings basing on the curent form definition object.
+	 */
 	public void refresh(){
 		setupFormDef(formDef);
 	}
 
+	/**
+	 * Sets whether to enabled label widget properties. These are properties that 
+	 * make sense only when the selected design widget is a wrapping a Label.
+	 * 
+	 * @param enable true to enable, else false to disable.
+	 */
 	private void enableLabelProperties(boolean enable){
 		enable = true;
 

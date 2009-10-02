@@ -115,7 +115,9 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 		}
 	}
 
-
+	/**
+	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
+	 */
 	public void onWindowResized(int width, int height) {
 		designer.onWindowResized(width, height);
 	}

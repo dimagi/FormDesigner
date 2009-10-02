@@ -38,51 +38,121 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 
 /**
- * View responsible for displaying and hence allowing editing of form properties.
+ * View responsible for displaying and hence allow editing of 
+ * form, page, question, or question option properties.
  * 
  * @author daniel
  *
  */
 public class PropertiesView extends Composite implements IFormSelectionListener,ItemSelectionListener{
 
-	private static final byte DT_NONE = -1;
-	private static final byte DT_TEXT = 0;
-	private static final byte DT_NUMBER = 1;
-	private static final byte DT_DECIMAL = 2;
-	private static final byte DT_DATE = 3;
-	private static final byte DT_TIME = 4;
-	private static final byte DT_DATE_TIME = 5;
-	private static final byte DT_BOOLEAN = 6;
-	private static final byte DT_SINGLE_SELECT = 7;
-	private static final byte DT_MULTIPLE_SELECT = 8;
-	private static final byte DT_REPEAT = 9;
-	private static final byte DT_IMAGE = 10;
-	private static final byte DT_VIDEO = 11;
-	private static final byte DT_AUDIO = 12;
-	private static final byte DT_SINGLE_SELECT_DYNAMIC = 13;
-	private static final byte DT_GPS = 14;
+	/** List box index for no selected data type. */
+	private static final byte DT_INDEX_NONE = -1;
+	
+	/** List box index for text data type. */
+	private static final byte DT_INDEX_TEXT = 0;
+	
+	/** List box index for number data type. */
+	private static final byte DT_INDEX_NUMBER = 1;
+	
+	/** List box index for decimal data type. */
+	private static final byte DT_INDEX_DECIMAL = 2;
+	
+	/** List box index for date data type. */
+	private static final byte DT_INDEX_DATE = 3;
+	
+	/** List box index for time data type. */
+	private static final byte DT_INDEX_TIME = 4;
+	
+	/** List box index for dateTime data type. */
+	private static final byte DT_INDEX_DATE_TIME = 5;
+	
+	/** List box index for boolean data type. */
+	private static final byte DT_INDEX_BOOLEAN = 6;
+	
+	/** List box index for single select data type. */
+	private static final byte DT_INDEX_SINGLE_SELECT = 7;
+	
+	/** List box index for multiple select data type. */
+	private static final byte DT_INDEX_MULTIPLE_SELECT = 8;
+	
+	/** List box index for repeat data type. */
+	private static final byte DT_INDEX_REPEAT = 9;
+	
+	/** List box index for image data type. */
+	private static final byte DT_INDEX_IMAGE = 10;
+	
+	/** List box index for video data type. */
+	private static final byte DT_INDEX_VIDEO = 11;
+	
+	/** List box index for audio data type. */
+	private static final byte DT_INDEX_AUDIO = 12;
+	
+	/** List box index for single select dynamic data type. */
+	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 13;
+	
+	/** List box index for gps data type. */
+	private static final byte DT_INDEX_GPS = 14;
 
+	/** Table used for organising widgets in a table format. */
 	private FlexTable table = new FlexTable();
+	
+	/** Widget for displaying the list of data types. */
 	private ListBox cbDataType = new ListBox(false);
+	
+	/** Widget for setting the visibility property. */
 	private CheckBox chkVisible = new CheckBox();
+	
+	/** Widget for setting the enabled property. */
 	private CheckBox chkEnabled = new CheckBox();
+	
+	/** Widget for setting the locked property. */
 	private CheckBox chkLocked = new CheckBox();
+	
+	/** Widget for setting the required property. */
 	private CheckBox chkRequired = new CheckBox();
+	
+	/** Widget for setting the text property. */
 	private TextBox txtText = new TextBox();
+	
+	/** Widget for setting the help text property. */
 	private TextBox txtHelpText = new TextBox();
+	
+	/** Widget for setting the binding property. */
 	private TextBox txtBinding = new TextBox();
+	
+	/** Widget for setting the default value property. */
 	private TextBox txtDefaultValue = new TextBox();
 	//private ListBox cbControlType = new ListBox(false);
+	
+	/** Widget for setting the description template property. */
 	private TextBox txtDescTemplate = new TextBox();
+	
+	/** Widget for selecting fields which define the description template. */
 	private DescTemplateWidget btnDescTemplate; // = new Button("Create/Edit");
 
+	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private Object propertiesObj;
+	
+	/** Listener to form change events. */
 	private IFormChangeListener formChangeListener;
+	
+	/** Widget for defining skip rules. */
 	private SkipRulesView skipRulesView = new SkipRulesView();
+	
+	/** Widget for defining validation rules. */
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
+	
+	/** Widget for defining dynamic selection lists. */
 	private DynamicListsView dynamicListsView = new DynamicListsView();
+	
+	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
 
+	
+	/**
+	 * Creates a new instance of the properties view widget.
+	 */
 	public PropertiesView(){
 
 		btnDescTemplate = new DescTemplateWidget(this);
@@ -186,6 +256,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 	}
 
+	/**
+	 * Sets up event listeners.
+	 */
 	private void setupEventListeners(){
 		//Check boxes.
 		chkVisible.addClickListener(new ClickListener(){
@@ -255,14 +328,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
 				String s = txtBinding.getText();
-
-				/*String s = String.valueOf(keyCode);
-				if(s.equalsIgnoreCase("%") || s.equalsIgnoreCase("\b") || s.equalsIgnoreCase("(") ||
-						s.equalsIgnoreCase("\r") || s.equalsIgnoreCase("!") || s.equalsIgnoreCase("&") ||
-						s.equalsIgnoreCase("\t") || s.equalsIgnoreCase("'") || s.equalsIgnoreCase(".") ||
-						s.equalsIgnoreCase("\"")){
-					return true;
-				}*/
 
 				s = s.replace("%", "");
 				s = s.replace("(", "");
@@ -378,23 +443,34 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		});
 	}
 
+	/**
+	 * Checks if a given character is allowed to begin an xml node name.
+	 * 
+	 * @param keyCode the character code.
+	 * @return true if is allowed, else false.
+	 */
 	private boolean isAllowedXmlNodeNameStartChar(char keyCode){
 		return ((keyCode >= 'a' && keyCode <= 'z') || (keyCode >= 'A' && keyCode <= 'Z') || isControlChar(keyCode));
 	}
 
+	/**
+	 * Checks if a character is allowed in an xml node name.
+	 * 
+	 * @param keyCode the character code.
+	 * @return true if allowed, else false.
+	 */
 	private boolean isAllowedXmlNodeNameChar(char keyCode){
 		return isAllowedXmlNodeNameStartChar(keyCode) || Character.isDigit(keyCode) || keyCode == '-' || keyCode == '_' || keyCode == '.';
 	}
 
+	/**
+	 * Check if a character is a control character. Examples of control characters are
+	 * ALT, CTRL, ESCAPE, DELETE, SHIFT, HOME, PAGE_UP, BACKSPACE, ENTER, TAB, LEFT, and more.
+	 * 
+	 * @param keyCode the character code.
+	 * @return true if yes, else false.
+	 */
 	private boolean isControlChar(char keyCode){
-		/*String s = String.valueOf(keyCode);
-		if(s.equalsIgnoreCase("%") || s.equalsIgnoreCase("\b") || s.equalsIgnoreCase("(") ||
-				s.equalsIgnoreCase("\r") || s.equalsIgnoreCase("!") || s.equalsIgnoreCase("&") ||
-				s.equalsIgnoreCase("\t") || s.equalsIgnoreCase("'") || s.equalsIgnoreCase(".") ||
-				s.equalsIgnoreCase("\"")){
-			return true;
-		}*/
-
 		int code = keyCode;
 		return (code == KeyboardListener.KEY_ALT || code == KeyboardListener.KEY_BACKSPACE ||
 				code == KeyboardListener.KEY_CTRL || code == KeyboardListener.KEY_DELETE ||
@@ -406,6 +482,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				code == KeyboardListener.KEY_TAB || code == KeyboardListener.KEY_UP);
 	}
 
+	/**
+	 * Updates the selected object with the new text as typed by the user.
+	 */
 	private void updateText(){
 		if(propertiesObj == null)
 			return;
@@ -422,6 +501,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
+	/**
+	 * Updates the selected object with the new description template as typed by the user.
+	 */
 	private void updateDescTemplate(){
 		if(propertiesObj == null)
 			return;
@@ -432,6 +514,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 	}
 
+	/**
+	 * Updates the selected object with the new binding as typed by the user.
+	 */
 	private void updateBinding(){
 		if(propertiesObj == null)
 			return;
@@ -456,6 +541,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
+	/**
+	 * Updates the selected object with the new help text as typed by the user.
+	 */
 	private void updateHelpText(){
 		if(propertiesObj == null)
 			return;
@@ -464,6 +552,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
+	/**
+	 * Updates the selected object with the new default value as typed by the user.
+	 */
 	private void updateDefaultValue(){
 		if(propertiesObj == null)
 			return;
@@ -472,6 +563,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
+	/**
+	 * Updates the selected object with the new data type as typed by the user.
+	 */
 	private void updateDataType(){
 		if(propertiesObj == null)
 			return;
@@ -481,18 +575,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		QuestionDef questionDef = (QuestionDef)propertiesObj;
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-				!(index == DT_SINGLE_SELECT || index == DT_MULTIPLE_SELECT)){
+				!(index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT)){
 			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
-				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_SINGLE_SELECT : DT_MULTIPLE_SELECT;
+				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_INDEX_SINGLE_SELECT : DT_INDEX_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
 				return;
 			}
 			deleteKids = true;
 		}
 		else if((questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT) &&
-				!(index == DT_REPEAT)){
+				!(index == DT_INDEX_REPEAT)){
 			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
-				index = DT_REPEAT;
+				index = DT_INDEX_REPEAT;
 				cbDataType.setSelectedIndex(index);
 				return;
 			}
@@ -506,50 +600,56 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			formChangeListener.onDeleteChildren(propertiesObj);
 	}
 
+	/**
+	 * Sets the data type of a question definition object basing on selection
+	 * in the type selection list box widget.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	private void setQuestionDataType(QuestionDef questionDef){
 		int dataType = QuestionDef.QTN_TYPE_TEXT;
 
 		switch(cbDataType.getSelectedIndex()){
-		case DT_NUMBER:
+		case DT_INDEX_NUMBER:
 			dataType = QuestionDef.QTN_TYPE_NUMERIC;
 			break;
-		case DT_DECIMAL:
+		case DT_INDEX_DECIMAL:
 			dataType = QuestionDef.QTN_TYPE_DECIMAL;
 			break;
-		case DT_DATE:
+		case DT_INDEX_DATE:
 			dataType = QuestionDef.QTN_TYPE_DATE;
 			break;
-		case DT_TIME:
+		case DT_INDEX_TIME:
 			dataType = QuestionDef.QTN_TYPE_TIME;
 			break;
-		case DT_DATE_TIME:
+		case DT_INDEX_DATE_TIME:
 			dataType = QuestionDef.QTN_TYPE_DATE_TIME;
 			break;
-		case DT_BOOLEAN:
+		case DT_INDEX_BOOLEAN:
 			dataType = QuestionDef.QTN_TYPE_BOOLEAN;
 			break;
-		case DT_SINGLE_SELECT:
+		case DT_INDEX_SINGLE_SELECT:
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE;
 			break;
-		case DT_MULTIPLE_SELECT:
+		case DT_INDEX_MULTIPLE_SELECT:
 			dataType = QuestionDef.QTN_TYPE_LIST_MULTIPLE;
 			break;
-		case DT_REPEAT:
+		case DT_INDEX_REPEAT:
 			dataType = QuestionDef.QTN_TYPE_REPEAT;
 			break;
-		case DT_IMAGE:
+		case DT_INDEX_IMAGE:
 			dataType = QuestionDef.QTN_TYPE_IMAGE;
 			break;
-		case DT_VIDEO:
+		case DT_INDEX_VIDEO:
 			dataType = QuestionDef.QTN_TYPE_VIDEO;
 			break;
-		case DT_AUDIO:
+		case DT_INDEX_AUDIO:
 			dataType = QuestionDef.QTN_TYPE_AUDIO;
 			break;
-		case DT_SINGLE_SELECT_DYNAMIC:
+		case DT_INDEX_SINGLE_SELECT_DYNAMIC:
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
 			break;
-		case DT_GPS:
+		case DT_INDEX_GPS:
 			dataType = QuestionDef.QTN_TYPE_GPS;
 			break;
 		}
@@ -566,10 +666,20 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			dynamicListsView.setQuestionDef(questionDef);
 	}
 
+	/**
+	 * Sets the listener for form change events.
+	 * 
+	 * @param formChangeListener the listener.
+	 */
 	public void setFormChangeListener(IFormChangeListener formChangeListener){
 		this.formChangeListener = formChangeListener;
 	}
 
+	/**
+	 * Sets values for widgets which deal with form definition properties.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	private void setFormProperties(FormDef formDef){
 		enableQuestionOnlyProperties(false);
 
@@ -586,6 +696,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		btnDescTemplate.setFormDef(formDef);
 	}
 
+	/**
+	 * Sets values for widgets which deal with page definition properties.
+	 * 
+	 * @param pageDef the page definition object.
+	 */
 	private void setPageProperties(PageDef pageDef){
 		enableQuestionOnlyProperties(false);
 
@@ -598,6 +713,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//skipRulesView.updateSkipRule();
 	}
 
+	/**
+	 * Sets values for widgets which deal with question definition properties.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	private void setQuestionProperties(QuestionDef questionDef){
 		enableQuestionOnlyProperties(true);
 		txtDescTemplate.setEnabled(false);
@@ -626,6 +746,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		});
 	}
 
+	/**
+	 * Sets values for widgets which deal with question option definition properties.
+	 * 
+	 * @param optionDef the option definition object.
+	 */
 	private void setQuestionOptionProperties(OptionDef optionDef){
 		enableQuestionOnlyProperties(false);
 		txtDescTemplate.setEnabled(false);
@@ -636,6 +761,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//skipRulesView.updateSkipRule();
 	}
 
+	/**
+	 * Sets whether to enable question property widgets.
+	 * 
+	 * @param enabled true to enable them, false to disable them.
+	 */
 	private void enableQuestionOnlyProperties(boolean enabled){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
 		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
@@ -655,62 +785,70 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		clearProperties();
 	}
 
+	/**
+	 * Selects the current question's data type in the data types drop down listbox.
+	 * 
+	 * @param type the current question's data type.
+	 */
 	private void setDataType(int type){
-		int index = DT_NONE;
+		int index = DT_INDEX_NONE;
 
 		switch(type){
 		case QuestionDef.QTN_TYPE_DATE:
-			index = DT_DATE;
+			index = DT_INDEX_DATE;
 			break;
 		case QuestionDef.QTN_TYPE_BOOLEAN:
-			index = DT_BOOLEAN;
+			index = DT_INDEX_BOOLEAN;
 			break;
 		case QuestionDef.QTN_TYPE_DATE_TIME:
-			index = DT_DATE_TIME;
+			index = DT_INDEX_DATE_TIME;
 			break;
 		case QuestionDef.QTN_TYPE_DECIMAL:
-			index = DT_DECIMAL;
+			index = DT_INDEX_DECIMAL;
 			break;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
-			index = DT_SINGLE_SELECT;
+			index = DT_INDEX_SINGLE_SELECT;
 			break;
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
-			index = DT_MULTIPLE_SELECT;
+			index = DT_INDEX_MULTIPLE_SELECT;
 			break;
 		case QuestionDef.QTN_TYPE_NUMERIC:
-			index = DT_NUMBER;
+			index = DT_INDEX_NUMBER;
 			break;
 		case QuestionDef.QTN_TYPE_REPEAT:
-			index = DT_REPEAT;
+			index = DT_INDEX_REPEAT;
 			break;
 		case QuestionDef.QTN_TYPE_TEXT:
-			index = DT_TEXT;
+			index = DT_INDEX_TEXT;
 			break;
 		case QuestionDef.QTN_TYPE_TIME:
-			index = DT_TIME;
+			index = DT_INDEX_TIME;
 			break;
 		case QuestionDef.QTN_TYPE_IMAGE:
-			index = DT_IMAGE;
+			index = DT_INDEX_IMAGE;
 			break;
 		case QuestionDef.QTN_TYPE_VIDEO:
-			index = DT_VIDEO;
+			index = DT_INDEX_VIDEO;
 			break;
 		case QuestionDef.QTN_TYPE_AUDIO:
-			index = DT_AUDIO;
+			index = DT_INDEX_AUDIO;
 			break;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
-			index = DT_SINGLE_SELECT_DYNAMIC;
+			index = DT_INDEX_SINGLE_SELECT_DYNAMIC;
 			break;
 		case QuestionDef.QTN_TYPE_GPS:
-			index = DT_GPS;
+			index = DT_INDEX_GPS;
 			break;
 		}
 
 		cbDataType.setSelectedIndex(index);
 	}
 
+	/**
+	 * Clears values from all widgets.
+	 */
 	public void clearProperties(){
-		cbDataType.setSelectedIndex(DT_NONE);
+		cbDataType.setSelectedIndex(DT_INDEX_NONE);
 		//cbControlType.setSelectedIndex(DT_NONE);
 		chkVisible.setChecked(false);
 		chkEnabled.setChecked(false);
@@ -752,23 +890,35 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			setQuestionOptionProperties((OptionDef)formItem);
 	}
 
+	/**
+	 * Sets focus to the first input widget.
+	 */
 	public void setFocus(){
 		txtText.setFocus(true);
 		txtText.selectAll();
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
+	 */
 	public void onWindowResized(int width, int height){
 		setWidth("100%");
 		setHeight("100%");
 		validationRulesView.onWindowResized(width, height);
 	}
 
+	/**
+	 * Retrieves changes from all widgets and updates the selected object.
+	 */
 	public void commitChanges(){
 		skipRulesView.updateSkipRule();
 		validationRulesView.updateValidationRule();
 		dynamicListsView.updateDynamicLists();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof DescTemplateWidget){
 			txtDescTemplate.setText(txtDescTemplate.getText() + item);
@@ -777,14 +927,23 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 */
 	public void onStartItemSelection(Object sender) {
 
 	}
 
+	/**
+	 * Sets the listener to form action events.
+	 * 
+	 * @param formActionListener the listener.
+	 */
 	public void setFormActionListener(IFormActionListener formActionListener){
 		this.formActionListener = formActionListener;
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		switch (DOM.eventGetType(event)) {
 		case Event.ONKEYDOWN:

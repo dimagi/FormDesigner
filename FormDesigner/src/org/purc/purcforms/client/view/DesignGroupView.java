@@ -1209,7 +1209,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		this.x = x;
 		this.y = y;
 
-		String text = ((PaletteWidget)widget).getText();
+		String text = ((PaletteWidget)widget).getName();
 
 		DesignWidgetWrapper retWidget = null;
 		

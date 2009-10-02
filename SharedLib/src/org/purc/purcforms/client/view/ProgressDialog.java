@@ -15,29 +15,29 @@ public class ProgressDialog extends DialogBox{
 
 	/** The label to show the progress or processing message. */
 	private Label label = new Label(LocaleText.get("processingMsg"));
-	
+
 	/**
 	 * Creates a new instance of the progress dialog.
 	 */
 	public ProgressDialog(){
 		super(false,true);
-		
+
 		setWidget(label);
 	}
-	
+
 	/**
 	 * Displays the progress dialog box at the center of the browser window
 	 * with the default progress message which is "Please wait while processing..."
 	 */
 	public void center(){
-		
+
 		//Reset the progress message to the default because it may have been
 		//been changed with a custom one.
 		label.setText(LocaleText.get("processingMsg"));
-		
+
 		super.center();
 	}
-	
+
 	/**
 	 * Displays the progress dialog box at the center of the browser window
 	 * and with a custom progress message.
@@ -45,6 +45,9 @@ public class ProgressDialog extends DialogBox{
 	 * @param progressMsg the custom progress message.
 	 */
 	public void center(String progressMsg){
-		label.setText(progressMsg);
+		if(progressMsg == null)
+			center();
+		else
+			label.setText(progressMsg);
 	}
 }

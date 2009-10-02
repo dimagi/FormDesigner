@@ -13,18 +13,29 @@ import com.google.gwt.user.client.ui.SourcesMouseEvents;
 
 
 /**
+ * This is a widget which can be put on the palette for users to drag and drop
+ * on the design surface.
  * 
  * @author daniel
  *
  */
 public class PaletteWidget extends Composite implements SourcesMouseEvents{
 
-	private String text;
+	/** The name of the widget. e.g TextBox, CheckBox, Label,Button etc */
+	private String name;
+	
+	/** List of mouse listeners. */
 	private MouseListenerCollection mouseListeners;
 
 
+	/**
+	 * Creates a new instance of the palette.
+	 * 
+	 * @param images the palette images.
+	 * @param html the name of the widget
+	 */
 	public PaletteWidget(Images images, HTML html){
-		text = html.getText();
+		name = html.getText();
 		
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.setSpacing(5);
@@ -37,6 +48,7 @@ public class PaletteWidget extends Composite implements SourcesMouseEvents{
 		DOM.setStyleAttribute(getElement(), "cursor", "pointer");
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		int type = DOM.eventGetType(event);
 
@@ -64,7 +76,12 @@ public class PaletteWidget extends Composite implements SourcesMouseEvents{
 		}
 	}
 	
-	public String getText(){
-		return text;
+	/**
+	 * Gets the name of the widget.
+	 * 
+	 * @return the name
+	 */
+	public String getName(){
+		return name;
 	}
 }

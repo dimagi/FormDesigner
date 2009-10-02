@@ -36,6 +36,7 @@ import com.google.gwt.xml.client.Node;
 
 
 /**
+ * This widget enables creation of dynamic lists.
  * 
  * @author daniel
  *

@@ -157,7 +157,12 @@ public class FormDesignerUtil {
 		     elem.style.visibility = 'visible';
 	}-*/;
 
-
+	/**
+	 * Removes the widget selection rubber band.
+	 * 
+	 * @param event
+	 * @param elem
+	 */
 	public static native void stopRubber(Event event,Element elem) /*-{
 		   elem.style.visibility = 'hidden';
      }-*/;

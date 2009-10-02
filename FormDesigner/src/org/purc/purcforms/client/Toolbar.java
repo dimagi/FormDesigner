@@ -17,13 +17,16 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Creates the main toolbar for the form designer.
+ * This widget is the main tool bar for the form designer.
  * 
  * @author daniel
  *
  */
 public class Toolbar extends Composite{
 
+	/**
+	 * Tool bar images.
+	 */
 	public interface Images extends ImageBundle {
 		AbstractImagePrototype newform();
 		AbstractImagePrototype open();
@@ -45,9 +48,11 @@ public class Toolbar extends Composite{
 		AbstractImagePrototype sameheight();
 		AbstractImagePrototype samesize();
 	}
-	    
+	 
+	/** Main widget for this tool bar. */
 	private HorizontalPanel panel = new HorizontalPanel();
 	
+	/** The tool bar buttons. */
 	private PushButton btnAddNewItem;
 	private PushButton btnAddNewChildItem;
 	private PushButton btnDeleteItem;
@@ -63,22 +68,30 @@ public class Toolbar extends Composite{
 	private PushButton btnSameWidth;
 	private PushButton btnSameHeight;
 	private PushButton btnSameSize;
-	private PushButton btnOptions;
-	private PushButton btnLanguages;
-	private PushButton btnAboutInfo;
-	private PushButton btnHelpContents;
 	private PushButton btnCut;
 	private PushButton btnCopy;
 	private PushButton btnPaste;
 	private PushButton btnRefresh;
 	
-	private String separatorText = "  ";
+	/** Widget for separating tool bar buttons from each other. */
+	private Label separatorWidget = new Label("  ");
 	
-	private ListBox cbLanguanges = new ListBox(false);
+	/** Widget to display the list of languages or locales. */
+	private ListBox cbLanguages = new ListBox(false);
 	
+	/** The images for the tool bar icons. */
 	private final Images images;
+	
+	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
 	
+	
+	/**
+	 * Creates a new instance of the tool bar.
+	 * 
+	 * @param images the images for tool bar icons.
+	 * @param controller listener to the tool bar button click events.
+	 */
 	public Toolbar(Images images,IFormDesignerListener controller){
 		this.images = images;
 		this.controller = controller;
@@ -87,6 +100,9 @@ public class Toolbar extends Composite{
 		initWidget(panel);
 	}
 	
+	/**
+	 * Sets up the tool bar.
+	 */
 	private void setupToolbar(){
 		btnNewForm = new PushButton(images.newform().createImage());
 		btnOpenForm = new PushButton(images.open().createImage());
@@ -112,7 +128,6 @@ public class Toolbar extends Composite{
 		btnRefresh = new PushButton(images.loading().createImage());
 		
 		btnNewForm.setTitle(LocaleText.get("newForm"));
-		//btnOpenForm.setTitle(LocaleText.get("Open form from Xforms Source Tab"));
 		btnSaveForm.setTitle(LocaleText.get("save"));
 		
 		btnAddNewItem.setTitle(LocaleText.get("addNew"));
@@ -138,63 +153,65 @@ public class Toolbar extends Composite{
 		panel.add(btnOpenForm);
 		panel.add(btnSaveForm);
 		
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		
 		panel.add(btnAddNewItem);
 		panel.add(btnAddNewChildItem);
 		panel.add(btnDeleteItem);
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		panel.add(btnMoveItemUp);
 		panel.add(btnMoveItemDown);
 		
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		panel.add(btnCut);
 		panel.add(btnCopy);
 		panel.add(btnPaste);
 		
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		panel.add(btnRefresh);
 		
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		panel.add(btnAlignLeft);
 		panel.add(btnAlignRight);
 		panel.add(btnAlignTop);
 		panel.add(btnAlignBottom);
 		
-		panel.add(new Label(separatorText));
+		panel.add(separatorWidget);
 		panel.add(btnSameWidth);
 		panel.add(btnSameHeight);
 		panel.add(btnSameSize);
 		
-		//panel.add(new PushButton(images.loading().createImage()));
+		Label label = new Label(FormDesignerUtil.getTitle());
+		panel.add(label);
+		panel.setCellWidth(label,"100%");
+		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_CENTER);
 		
-		//Just to push the languages list to the extreme right
-		Label l = new Label(FormDesignerUtil.getTitle());
-		panel.add(l);
-		panel.setCellWidth(l,"100%");
-		panel.setCellHorizontalAlignment(l,HasHorizontalAlignment.ALIGN_CENTER);
-		
-		Label label = new Label(LocaleText.get("language"));
+		label = new Label(LocaleText.get("language"));
 		panel.add(label);
 		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_RIGHT);
 		
-		cbLanguanges.addItem("English","en");
-		cbLanguanges.addItem("Luganda","lug");
-		cbLanguanges.addItem("Swahili","swa");
-		cbLanguanges.addItem("Lusoga","lus");
-		cbLanguanges.addItem("Runyankole","rny");
-		cbLanguanges.addChangeListener(new ChangeListener(){
+		//TODO These need not be hard coded. They could come from the html host file.
+		cbLanguages.addItem("English","en");
+		cbLanguages.addItem("Luganda","lug");
+		cbLanguages.addItem("Swahili","swa");
+		cbLanguages.addItem("Lusoga","lus");
+		cbLanguages.addItem("Runyankole","rny");
+		cbLanguages.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				controller.changeLocale(((ListBox)sender).getValue(((ListBox)sender).getSelectedIndex()));
 			}
 		});
 		
-		panel.add(cbLanguanges);
-		panel.setCellHorizontalAlignment(cbLanguanges,HasHorizontalAlignment.ALIGN_RIGHT);
+		panel.add(cbLanguages);
+		panel.setCellHorizontalAlignment(cbLanguages,HasHorizontalAlignment.ALIGN_RIGHT);
 		
+		//Set a 3 pixels spacing between tool bar buttons.
 		panel.setSpacing(3);
 	}
 	
+	/**
+	 * Setup button click event handlers.
+	 */
 	private void setupClickListeners(){
 		btnNewForm.addClickListener(new ClickListener(){
 			public void onClick(Widget widget){controller.newForm();}});
@@ -249,8 +266,5 @@ public class Toolbar extends Composite{
 		
 		btnSameSize.addClickListener(new ClickListener(){
 			public void onClick(Widget widget){controller.makeSameSize();}});
-		
-		/*btnHelpContents.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.showHelpContents();}});*/
 	}
 }

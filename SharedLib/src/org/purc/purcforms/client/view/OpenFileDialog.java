@@ -26,16 +26,35 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class OpenFileDialog extends DialogBox{
 
+	/** The form used for posting the selected file to. */
 	private FormPanel form = new FormPanel();
+	
+	/** The file upload widget. */
 	private FileUpload fileUpload;
+	
+	/** Listener to the file dialog events. */
 	private OpenFileDialogEventListener eventListener;
+	
+	/** The url to post the file selection to. */
 	private String actionUrl;
 	
+	
+	/**
+	 * Creates a new instance of the open file dialog box.
+	 * 
+	 * @param eventListener the listener to the file dialog events.
+	 * @param url the url to post the file to.
+	 */
 	public OpenFileDialog(OpenFileDialogEventListener eventListener, String url){
 		this.eventListener = eventListener;
 		initWidgets(url);
 	}
 	
+	/**
+	 * Sets up the widgets.
+	 * 
+	 * @param url the url to post to.
+	 */
 	public void initWidgets(String url){
 		actionUrl = url;
 		form.setAction(actionUrl);

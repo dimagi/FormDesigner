@@ -3,7 +3,8 @@ package org.purc.purcforms.client.controller;
 
 /**
  * This interface is implemented by those classes that want to listen to events which
- * happens on a form in the forms panel.
+ * happens on a form in the forms panel. Examples of such events are Add New, Add Child,
+ * Delete Selected, Move Up, Move Down, Refresh, Cut, Copy, Paste, and more.
  * 
  * @author daniel
  *

@@ -6,7 +6,6 @@ import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * This widget enables creation of validation rules.
  * 
  * @author daniel
  *

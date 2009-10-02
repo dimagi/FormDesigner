@@ -12,12 +12,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * Widget for editing locales.
  * 
  * @author daniel
  *
  */
 public class LocalesDialog  extends DialogBox {
 
+	/**
+	 * Creates a new instance of the locale dialog box.
+	 */
 	public LocalesDialog(){
 		VerticalPanel panel = new VerticalPanel();
 		setWidget(panel);

@@ -7,7 +7,6 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.widget.skiprule.ConditionWidget;
@@ -25,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * This widget enables creation of skip rules.
  * 
  * @author daniel
  *
@@ -289,39 +289,4 @@ public class SkipRulesView extends Composite implements IConditionController{
 		if(!enabled)
 			clearConditions();
 	}
-
-	/*private int getInvertedOperator(int operator){
-		if(operator == ModelConstants.OPERATOR_EQUAL)
-			return ModelConstants.OPERATOR_NOT_EQUAL;
-		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
-			return ModelConstants.OPERATOR_EQUAL;
-		else if(operator == ModelConstants.OPERATOR_LESS)
-			return ModelConstants.OPERATOR_GREATER;
-		else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
-			return ModelConstants.OPERATOR_GREATER_EQUAL;
-		else if(operator == ModelConstants.OPERATOR_GREATER)
-			return ModelConstants.OPERATOR_LESS;
-		else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-			return ModelConstants.OPERATOR_LESS_EQUAL;
-		else if(operator == ModelConstants.OPERATOR_IS_NULL)
-			return ModelConstants.OPERATOR_IS_NOT_NULL;
-		else if(operator == ModelConstants.OPERATOR_IN_LIST)
-			return ModelConstants.OPERATOR_NOT_IN_LIST;
-		else if(operator == ModelConstants.OPERATOR_NOT_IN_LIST)
-			return ModelConstants.OPERATOR_IN_LIST;
-		else if(operator == ModelConstants.OPERATOR_STARTS_WITH)
-			return ModelConstants.OPERATOR_NOT_START_WITH;
-		else if(operator == ModelConstants.OPERATOR_NOT_START_WITH)
-			return ModelConstants.OPERATOR_STARTS_WITH;
-		else if(operator == ModelConstants.OPERATOR_CONTAINS)
-			return ModelConstants.OPERATOR_NOT_CONTAIN;
-		else if(operator == ModelConstants.OPERATOR_NOT_CONTAIN)
-			return ModelConstants.OPERATOR_CONTAINS;
-		else if(operator == ModelConstants.OPERATOR_BETWEEN)
-			return ModelConstants.OPERATOR_NOT_BETWEEN;
-		else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-			return ModelConstants.OPERATOR_BETWEEN;
-
-		return ModelConstants.OPERATOR_NOT_EQUAL;
-	}*/
 }

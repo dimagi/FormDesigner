@@ -327,6 +327,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		}
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
+	 */
 	public void onWindowResized(int width, int height){
 		propertiesView.onWindowResized(width, height);
 		//designSurfaceView.onWindowResized(width, height);

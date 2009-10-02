@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * The date picker widget.
  * 
  * @author daniel
  *
@@ -32,7 +33,6 @@ public class DatePickerWidget extends DatePicker{
 	private DateTimeFormat dateFormatter;
 
 	private ChangeListenerCollection changeListeners;
-
 	{
 		DateTimeFormat dateTimeFormat = FormUtil.getDateDisplayFormat();
 		if(dateTimeFormat == null)

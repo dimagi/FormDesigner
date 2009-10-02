@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
- * Preview a form.
+ * This widget is used to preview a form in the form designer.
  * 
  * @author daniel
  *
@@ -30,10 +30,21 @@ public class PreviewView extends FormRunnerView {
 		AbstractImagePrototype error();
 	}
 
+	/** Popup for displaying the context menu for the preview. */
 	private PopupPanel popup;
+	
+	/** Reference to the design surface for getting layout xml during refresh. */
 	private DesignSurfaceView designSurfaceView;
+	
+	/** Reference to the center panel for commiting edit changes and getting the current form. */
 	private CenterPanel centerPanel;
 
+	
+	/**
+	 * Creates a new instance of the preview widget.
+	 * 
+	 * @param images the images for the preview context menu.
+	 */
 	public PreviewView(Images images){
 		super(images);
 
@@ -52,12 +63,9 @@ public class PreviewView extends FormRunnerView {
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN);
 
-		//Window.addWindowResizeListener(this);
-
-		//		This is needed for IE
+		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 				setHeight(getHeight());
 			}
 		});
@@ -72,6 +80,9 @@ public class PreviewView extends FormRunnerView {
 		this.centerPanel = centerPanel;
 	}
 
+	/**
+	 * Sets up the preview widget.
+	 */
 	protected void initPanel(){
 		AbsolutePanel panel = new AbsolutePanel();
 		//FormDesignerUtil.maximizeWidget(panel);
@@ -86,6 +97,7 @@ public class PreviewView extends FormRunnerView {
 		});
 	}
 
+	@Override
 	protected void submit(){
 		if(formDef != null){
 			if(formDef.getDoc() == null)
@@ -102,24 +114,25 @@ public class PreviewView extends FormRunnerView {
 		}
 	}
 
-	/*public void onWindowResized(int width, int height) {
-		//height -= 160;
-		height -= (160+embeddedHeightOffset);
-		sHeight = height+"px";
-		super.setHeight(sHeight);
-
-		for(int index=0; index<tabs.getWidgetCount(); index++)
-			tabs.getWidget(index).setHeight(sHeight);
-	}*/
-
+	/**
+	 * Sets the listener for form submission events.
+	 * 
+	 * @param submitListener the listener.
+	 */
 	public void setSubmitListener(SubmitListener submitListener){
 		this.submitListener = submitListener;
 	}
 
+	/**
+	 * Checks if the preview surface has any widgets.
+	 * 
+	 * @return true if yes, else false.
+	 */
 	public boolean isPreviewing(){
 		return tabs.getWidgetCount() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() > 0;
 	}
 
+	@Override
 	public void onBrowserEvent(Event event) {
 		int type = DOM.eventGetType(event);
 
@@ -136,6 +149,9 @@ public class PreviewView extends FormRunnerView {
 		}	
 	}
 
+	/**
+	 * Reloads widgets on the preview surface.
+	 */
 	public void refresh(){
 		FormUtil.dlg.setText(LocaleText.get("refreshingPreview"));
 		FormUtil.dlg.center();
@@ -155,6 +171,9 @@ public class PreviewView extends FormRunnerView {
 		});
 	}
 
+	/**
+	 * Removes all widgets from the preview surface.
+	 */
 	public void clearPreview(){
 		tabs.clear();
 	}

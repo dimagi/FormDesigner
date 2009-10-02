@@ -37,7 +37,7 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 /**
- * Controls the interactions betwen the menu, toolbar and various views for the form designer.
+ * Controls the interactions between the menu, tool bar and various views for the form designer.
  * 
  * @author daniel
  *

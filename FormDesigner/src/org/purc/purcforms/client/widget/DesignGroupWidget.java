@@ -27,6 +27,12 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 
+
+/**
+ * 
+ * @author daniel
+ *
+ */
 public class DesignGroupWidget extends DesignGroupView implements DragDropListener,SourcesMouseEvents{
 
 	private IWidgetPopupMenuListener widgetPopupMenuListener;
@@ -36,11 +42,18 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	private MenuItem parentDeleteWidgetMenu;
 	private MenuItemSeparator parentMenuSeparator;
 
+	/** The tab index. */
 	private int tabIndex = 0;
 	
+	/** The header label. */
 	private DesignWidgetWrapper headerLabel;
 	
 
+	/**
+	 * 
+	 * @param images
+	 * @param widgetPopupMenuListener
+	 */
 	public DesignGroupWidget(Images images,IWidgetPopupMenuListener widgetPopupMenuListener){
 		super(images);
 
@@ -348,13 +361,16 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		return widgetPopupMenuListener;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.DragDropListener#onDrop(Widget, int, int)
+	 */
 	public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
 		if(!(widget instanceof PaletteWidget))
 			return null;
 
 		DesignWidgetWrapper retWidget = super.onDrop(widget, x, y);
 
-		String text = ((PaletteWidget)widget).getText();
+		String text = ((PaletteWidget)widget).getName();
 
 		if(text.equals(LocaleText.get("picture")))
 			return addNewPicture();
@@ -395,10 +411,20 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 		return selectedDragController.isAnyWidgetSelected();
 	}
 	
+	/**
+	 * Gets the groupbox's header label.
+	 * 
+	 * @return the header label.
+	 */
 	public DesignWidgetWrapper getHeaderLabel(){
 		return headerLabel;
 	}
 	
+	/**
+	 * Sets the groupbox's header label.
+	 * 
+	 * @param headerLabel the header label.
+	 */
 	public void setHeaderLabel(DesignWidgetWrapper headerLabel){
 		this.headerLabel = headerLabel;
 		this.headerLabel.setPopupPanel(null);

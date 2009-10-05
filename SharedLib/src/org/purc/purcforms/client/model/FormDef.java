@@ -359,7 +359,7 @@ public class FormDef implements Serializable{
 	/**
 	 * Updates the xforms document with the current changes in the form.
 	 * 
-	 * @param withData
+	 * @param withData set to true if you want question answers to also be saved as part of the xform.
 	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
@@ -1082,7 +1082,7 @@ public class FormDef implements Serializable{
 	/**
 	 * Updates this formDef (as the main from the refresh source) with the parameter one
 	 * 
-	 * @param formDef the old formdef to copy from.
+	 * @param formDef the old formDef to copy from.
 	 */
 	public void refresh(FormDef formDef){
 		this.id = formDef.getId();

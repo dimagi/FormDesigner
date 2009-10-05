@@ -219,12 +219,12 @@ public class Condition implements Serializable{
 				return answer < longValue || longValue == answer;
 			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer > longValue;
-			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-				return answer > longValue || longValue == answer;
-			else if(operator == ModelConstants.OPERATOR_BETWEEN)
-				return answer > longValue && longValue < secondLongValue;
-			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-				return !(answer > longValue && longValue < secondLongValue);
+				else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
+					return answer > longValue || longValue == answer;
+					else if(operator == ModelConstants.OPERATOR_BETWEEN)
+						return answer > longValue && longValue < secondLongValue;
+						else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
+							return !(answer > longValue && longValue < secondLongValue);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -263,13 +263,13 @@ public class Condition implements Serializable{
 		else{
 			if(answer == null || answer.trim().length() == 0)
 				return true;
-			
+
 			long len1 = 0, len2 = 0, len = 0;
 			if(value != null && value.trim().length() > 0)
 				len1 = Long.parseLong(value);
 			if(secondValue != null && secondValue.trim().length() > 0)
 				len2 = Long.parseLong(secondValue);
-			
+
 			len = answer.trim().length();
 
 			if(operator == ModelConstants.OPERATOR_EQUAL)
@@ -454,12 +454,12 @@ public class Condition implements Serializable{
 				return answer < doubleValue || doubleValue == answer;
 			else if(operator == ModelConstants.OPERATOR_GREATER)
 				return answer > doubleValue;
-				else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-					return answer > doubleValue || doubleValue == answer;
-					else if(operator == ModelConstants.OPERATOR_BETWEEN)
-						return answer > doubleValue && doubleValue < secondDoubleValue;
-						else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
-							return !(answer > doubleValue && doubleValue < secondDoubleValue);
+			else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
+				return answer > doubleValue || doubleValue == answer;
+			else if(operator == ModelConstants.OPERATOR_BETWEEN)
+				return answer > doubleValue && doubleValue < secondDoubleValue;
+			else if(operator == ModelConstants.OPERATOR_NOT_BETWEEN)
+				return !(answer > doubleValue && doubleValue < secondDoubleValue);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
@@ -489,7 +489,7 @@ public class Condition implements Serializable{
 	public QuestionDef getValueQtnDef(){
 		return valueQtnDef;
 	}
-	
+
 	/**
 	 * Checks if a condition references an answer of a particular question.
 	 * 
@@ -503,16 +503,16 @@ public class Condition implements Serializable{
 			if(qtn != null && qtn == questionDef)
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Gets the question, if any, referenced by a condition value.
 	 * Such values exit for cross field validations where a condition's
 	 * value is not static but dynamic in the sense that it comes from 
 	 * the answer of some other question (The question we are returning)
-	 * An example of such a condtion is "Male number of kids should be
+	 * An example of such a condition is "Male number of kids should be
 	 * less than or equal to the Total number of kids."
 	 * 
 	 * @param formDef the form that this condition belongs to.
@@ -521,7 +521,7 @@ public class Condition implements Serializable{
 	public QuestionDef getQuestion(FormDef formDef){
 		if(value.startsWith(formDef.getVariableName()+"/"))
 			return formDef.getQuestion(value.substring(value.indexOf('/')+1));
-		
+
 		return null;
 	}
 }

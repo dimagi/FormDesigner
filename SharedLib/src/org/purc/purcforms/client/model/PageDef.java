@@ -525,43 +525,6 @@ public class PageDef implements Serializable{
 	}
 
 	private QuestionDef getRefQuestion(Vector questions, Vector newQuestions, int index){
-		/*QuestionDef questionDef = (QuestionDef)questions.get(index);
-		if(!newQuestions.contains(questionDef))
-			return questionDef;
-
-		int i = index - 1;
-		while(i >= 0){
-			questionDef = (QuestionDef)questions.get(i);
-			if(!newQuestions.contains(questionDef))
-				return questionDef;
-			i--;
-		}
-
-		i = index + 1;
-		while(i < questions.size()){
-			questionDef = (QuestionDef)questions.get(i);
-			if(!newQuestions.contains(questionDef))
-				return questionDef;
-			i++;
-		}*/
-
-		/*QuestionDef questionDef;
-		int i = index;
-		while(i >= 0){
-			questionDef = (QuestionDef)questions.get(i);
-			if(!newQuestions.contains(questionDef))
-				return questionDef;
-			i--;
-		}
-
-		i = index + 1;
-		while(i < questions.size()){
-			questionDef = (QuestionDef)questions.get(i);
-			if(!newQuestions.contains(questionDef))
-				return questionDef;
-			i++;
-		}*/
-
 		QuestionDef questionDef;
 		int i = index + 1;
 		while(i < questions.size()){

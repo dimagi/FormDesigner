@@ -19,6 +19,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.CompositeTreeItem;
 import org.purc.purcforms.client.widget.TreeItemWidget;
 
@@ -57,24 +58,60 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		AbstractImagePrototype lookup();
 	}
 
+	/** The panel for scrolling when the number of displayed item is more than
+	 * can fit in the visible region.
+	 */
 	private ScrollPanel scrollPanel = new ScrollPanel();
+	
+	/** The main or root widget for displaying the list of forms and their contents
+	 * in a tree view.
+	 */
 	private Tree tree;
+	
+	/** The tree images. */
 	private final Images images;
+	
+	/** Pop up for displaying tree item context menu. */
 	private PopupPanel popup;
+	
+	/** The item that has been copied to the clipboard. */
 	private Object clipboardItem;
 	private boolean inCutMode = false;
+	
+	/** The currently selected tree item. */
 	private TreeItem item;
+	
+	/** Flag determining whether to set the form node as the root tree node. */
 	private boolean showFormAsRoot;
+	
+	/** The currently selected form. */
 	private FormDef formDef;
+	
+	/** List of form item selection listeners. */
 	private List<IFormSelectionListener> formSelectionListeners = new ArrayList<IFormSelectionListener>();
 
+	/** The next available form id. */
 	private int nextFormId = 0;
+	
+	/** The next available page id. */
 	private int nextPageId = 0;
+	
+	/** The next available question id. */
 	private int nextQuestionId = 0;
+	
+	/** The next available question option id. */
 	private int nextOptionId = 0;
+	
+	/** The listener to form designer global events. */
 	private IFormDesignerListener formDesignerListener;
 
 
+	/**
+	 * Creates a new instance of the forms tree view widget.
+	 * 
+	 * @param images the tree images.
+	 * @param formSelectionListener the form item selection events listener.
+	 */
 	public FormsTreeView(Images images,IFormSelectionListener formSelectionListener) {
 
 		this.images = images;
@@ -84,7 +121,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 		scrollPanel.setWidget(tree);
 		initWidget(scrollPanel);
-		FormDesignerUtil.maximizeWidget(scrollPanel);
+		FormUtil.maximizeWidget(scrollPanel);
 
 		tree.addTreeListener(this);
 		tree.ensureSelectedItemVisible();
@@ -101,10 +138,20 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		initContextMenu();
 	}
 
+	/**
+	 * Sets the listener for form designer global events.
+	 * 
+	 * @param formDesignerListener the listener.
+	 */
 	public void setFormDesignerListener(IFormDesignerListener formDesignerListener){
 		this.formDesignerListener = formDesignerListener;
 	}
 
+	/**
+	 * Adds a listener to form item selection events.
+	 * 
+	 * @param formSelectionListener the listener to add.
+	 */
 	public void addFormSelectionListener(IFormSelectionListener formSelectionListener){
 		this.formSelectionListeners.add(formSelectionListener);
 	}
@@ -113,6 +160,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		this.showFormAsRoot = showFormAsRoot;
 	}
 
+	/**
+	 * Prepares the tree item context menu.
+	 */
 	private void initContextMenu(){
 		popup = new PopupPanel(true,true);
 
@@ -187,6 +237,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	  }*/
 
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TreeListener#onTreeItemSelected(TreeItem)
+	 */
 	public void onTreeItemSelected(TreeItem item) {
 
 		//Should not call this more than once for the same selected item.
@@ -198,15 +251,24 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			this.item = item;
 		}
 	}
-
-	private void fireFormItemSelected(Object formItem){
-		for(int i=0; i<formSelectionListeners.size(); i++)
-			formSelectionListeners.get(i).onFormItemSelected(formItem);
-	}
-
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.TreeListener#onTreeItemStateChanged(TreeItem)
+	 */
 	public void onTreeItemStateChanged(TreeItem item) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * Notifies all form item selection listeners about the currently
+	 * selected form item.
+	 * 
+	 * @param formItem the selected form item.
+	 */
+	private void fireFormItemSelected(Object formItem){
+		for(int i=0; i<formSelectionListeners.size(); i++)
+			formSelectionListeners.get(i).onFormItemSelected(formItem);
 	}
 
 	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){
@@ -251,6 +313,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	}
 
+	/**
+	 * Check if a form with a given id is loaded.
+	 * 
+	 * @param formId the form id.
+	 * @return true if it exists, else false.
+	 */
 	public boolean formExists(int formId){
 		int count = tree.getItemCount();
 		for(int index = 0; index < count; index++){
@@ -277,6 +345,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		loadForm(formDef,true,false);
 	}
 
+	/**
+	 * Gets the list of forms that have been loaded.
+	 * 
+	 * @return the form list.
+	 */
 	public List<FormDef> getForms(){
 		List<FormDef> forms = new ArrayList<FormDef>();
 
@@ -340,7 +413,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	/**
-	 * Deletes the selected question.
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItem()
 	 */
 	public void deleteSelectedItem(){
 		TreeItem item = tree.getSelectedItem();
@@ -358,6 +431,11 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		deleteItem(item);
 	}
 
+	/**
+	 * Removes a given tree item from the tree widget.
+	 * 
+	 * @param item the tree item to delete.
+	 */
 	private void deleteItem(TreeItem item){		
 		TreeItem parent = item.getParentItem();
 		int index;
@@ -425,7 +503,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	/**
-	 * Adds a new item.
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem(){
 		if(inReadOnlyMode())
@@ -481,7 +559,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 	public void addNewForm(){
 		int id = ++nextFormId;
-		addNewForm("New Form"+id,"newform"+id,id);
+		addNewForm(LocaleText.get("newForm")+id,"newform"+id,id);
 		
 		//Automatically add a new page
 		addNewChildItem(false);
@@ -504,6 +582,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.setSelectedItem(item);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 */
 	public void addNewChildItem(){
 		addNewChildItem(true);
 	}
@@ -561,6 +642,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			addNewItem();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 */
 	public void moveItemUp() {
 		if(inReadOnlyMode())
 			return;
@@ -637,6 +721,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			((QuestionDef)parentObj).moveOptionDown((OptionDef)userObj);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 */
 	public void moveItemDown(){
 		if(inReadOnlyMode())
 			return;
@@ -715,6 +802,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onDeleteChildren(Object)
+	 */
 	public void onDeleteChildren(Object formItem){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
@@ -726,6 +816,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 */
 	public void cutItem(){
 		if(inReadOnlyMode())
 			return;
@@ -741,6 +834,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		inCutMode = false;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 */
 	public void copyItem() {
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
@@ -750,7 +846,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 	}
 
 	/**
-	 * Paste clipboard item as a child of the selected item.
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem(){
 		if(inReadOnlyMode())
@@ -770,10 +866,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			//Questions can be pasted only as kids of pages or repeat questions.
 			if(! ( (userObj instanceof PageDef) || 
 					(userObj instanceof QuestionDef && 
-							((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) 
-			) 
-			)
+							((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) )){
 				return;
+			}
 
 			//create a copy of the clipboard question.
 			QuestionDef questionDef = new QuestionDef((QuestionDef)clipboardItem,userObj);
@@ -830,6 +925,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#refresh(Object)
+	 */
 	public void refreshItem(){
 		if(inReadOnlyMode())
 			return;
@@ -837,10 +935,18 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		formDesignerListener.refresh(this);
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#saveForm()
+	 */
 	public void saveItem(){
 		formDesignerListener.saveForm();
 	}
 
+	/**
+	 * Gets the selected form.
+	 * 
+	 * @return the selected form.
+	 */
 	public FormDef getSelectedForm(){
 		TreeItem  item = tree.getSelectedItem();
 		if(item != null)
@@ -848,6 +954,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return null;
 	}
 
+	/**
+	 * Gets the form to which the selected tree item belongs.
+	 * 
+	 * @param item the tree item.
+	 * @return the form definition object.
+	 */
 	private FormDef getSelectedForm(TreeItem item){
 		Object obj = item.getUserObject();
 		if(obj instanceof FormDef)
@@ -864,10 +976,18 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return getSelectedItemRoot(item.getParentItem());
 	}
 
+	/**
+	 * Removes all forms.
+	 */
 	public void clear(){
 		tree.clear();
 	}
 
+	/**
+	 * Checks if the selected form is valid for saving.
+	 * 
+	 * @return true if valid, else false.
+	 */
 	public boolean isValidForm(){
 		TreeItem  parent = getSelectedItemRoot(tree.getSelectedItem());
 		if(parent == null)
@@ -896,7 +1016,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return true;
 	}
 
-	public boolean isValidQuestionList(TreeItem  parent,Map<String,QuestionDef> bindings){
+	private boolean isValidQuestionList(TreeItem  parent,Map<String,QuestionDef> bindings){
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
 			TreeItem child = parent.getChild(index);
@@ -925,7 +1045,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return true;
 	}
 
-	public boolean isValidOptionList(TreeItem  parent){
+	private boolean isValidOptionList(TreeItem  parent){
 		Map<String,String> bindings = new HashMap<String,String>();
 
 		int count = parent.getChildCount();
@@ -945,6 +1065,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return true;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveUp()
+	 */
 	public void moveUp(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
@@ -966,6 +1089,9 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveDown()
+	 */
 	public void moveDown(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)

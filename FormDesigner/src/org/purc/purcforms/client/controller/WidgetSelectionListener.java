@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
- * This interface is implemented by those who want to listeing to changes in
+ * This interface is implemented by those who want to listening to changes in
  * widget selection.
  * 
  * @author daniel

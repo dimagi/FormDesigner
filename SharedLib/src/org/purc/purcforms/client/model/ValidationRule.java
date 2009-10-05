@@ -198,30 +198,6 @@ public class ValidationRule implements Serializable{
 	public void updateDoc(FormDef formDef){
 		XformConverter.fromValidationRule2Xform(this,formDef);
 	}
-	
-	/*public void refresh(FormDef dstFormDef, FormDef srcFormDef){
-		ValidationRule validationRule = null;
-		
-		for(int index = 0; index < getConditionCount(); index++){
-			Condition condition = getConditionAt(index);
-			QuestionDef qtn = srcFormDef.getQuestion(condition.getQuestionId());
-			if(qtn == null)
-				continue;
-			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
-			if(questionDef == null)
-				continue;
-			if(validationRule == null)
-				validationRule = new ValidationRule(dstFormDef);
-			condition.setQuestionId(questionDef.getId());
-			validationRule.addCondition(new Condition(condition));
-		}
-		
-		if(validationRule == null)
-			return; //No matching condition found.
-		
-		if(validationRule.getConditionCount() > 0)
-			dstFormDef.addValidationRule(validationRule);
-	}*/
 
 	//TODO This should be smarter
 	public byte getMaxValue(FormDef formDef){

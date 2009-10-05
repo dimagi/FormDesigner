@@ -36,7 +36,7 @@ public class PreviewView extends FormRunnerView {
 	/** Reference to the design surface for getting layout xml during refresh. */
 	private DesignSurfaceView designSurfaceView;
 	
-	/** Reference to the center panel for commiting edit changes and getting the current form. */
+	/** Reference to the center panel for committing edit changes and getting the current form. */
 	private CenterPanel centerPanel;
 
 	

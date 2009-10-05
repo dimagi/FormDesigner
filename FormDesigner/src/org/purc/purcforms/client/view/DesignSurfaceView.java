@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -29,7 +28,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -62,25 +60,37 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ TabListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
 
+	/** Height in pixels of the selected page. */
 	private String sHeight = "100%"; //"100%";
+
+	/** Width in pixels of the selected page. */
 	private String sWidth = "100%";
 
+	/** Listener to layout change events. */
 	private LayoutChangeListener layoutChangeListener;
 
-	//create a DropController for each drop target on which draggable widgets
-	// can be dropped
-	//DropController dropController;
+	/** List of drag controllers. */
 	Vector<FormDesignerDragController> dragControllers = new Vector<FormDesignerDragController>();
+
+	/** The form being designed. */
 	FormDef formDef;
+
+	/** The layout xml document object. */
 	Document doc;
 
+	/** The height offset when the form designer is used as a widget embedded in a GWT application. */
 	private int embeddedHeightOffset = 0;
 
 
+	/**
+	 * Creates a new instance of the design surface.
+	 * 
+	 * @param images the images used by the design surface.
+	 */
 	public DesignSurfaceView(Images images){
 		super(images);
 
-		FormDesignerUtil.maximizeWidget(tabs);
+		FormUtil.maximizeWidget(tabs);
 		initPanel();
 		tabs.selectTab(0);
 
@@ -111,24 +121,30 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		setupPopup();
 
-		//Window.addWindowResizeListener(this);
-
 		rubberBand.addStyleName("rubberBand");
-
-		//DOM.sinkEvents(RootPanel.getBodyElement(), Event.ONKEYDOWN | DOM.getEventsSunk(RootPanel.getBodyElement()));
-
-		//DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 
 		currentWidgetSelectionListener = this;
 	}
-	
+
+	/**
+	 * Processes keyboard events for the design surface.
+	 * 
+	 * @param event the event object.
+	 * @return true if processed, else false.
+	 */
 	public boolean handleKeyBoardEvent(Event event){
 		if(!childHandleKeyDownEvent(event))
 			handleKeyDownEvent(event);
-		
+
 		return true;
 	}
 
+	/**
+	 * Gives a chance to child widgets to process keyboard events.
+	 * 
+	 * @param event the event object.
+	 * @return true if any child has handled the event, else false.
+	 */
 	private boolean childHandleKeyDownEvent(Event event){
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			Widget widget = selectedPanel.getWidget(index);
@@ -144,10 +160,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return false;
 	}
 
+	/**
+	 * Sets up the design surface panel for the first page.
+	 */
 	protected void initPanel(){
 		AbsolutePanel panel = new AbsolutePanel();
-		FormDesignerUtil.maximizeWidget(panel);
-		tabs.add(panel,"Page1");
+		FormUtil.maximizeWidget(panel);
+		tabs.add(panel,LocaleText.get("page") + "1");
 
 		selectedPanel = panel;
 
@@ -166,6 +185,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		});
 	}
 
+	/**
+	 * Sets up up the context menu popup for the design surface.
+	 */
 	private void setupPopup(){
 		popup = new PopupPanel(true,true);
 
@@ -277,6 +299,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		popup.setWidget(menuBar);
 	}
 
+	/**
+	 * Adds a new tab with a given name and selects it.
+	 * 
+	 * @param name the tab name.
+	 */
 	private void addNewTab(String name){
 		initPanel();
 		if(name == null)
@@ -300,20 +327,16 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		});
 	}
 
-
-
-	/*public void onWindowResized(int width, int height){
-		//height -= (160+embeddedHeightOffset); //(160 + 30);
-		//sHeight = height+"px";
-		super.setHeight(sHeight);
-
-
-	}*/
-
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 */
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
 		return true;
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 */
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex){
 		selectedTabIndex = tabIndex;
 
@@ -323,10 +346,20 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		widgetSelectionListener.onWidgetSelected(getSelPageDesignWidget(),false);
 	}
 
+	/**
+	 * Sets the listener to widget selection events.
+	 * 
+	 * @param widgetSelectionListener the listener.
+	 */
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
 		this.widgetSelectionListener = widgetSelectionListener;
 	}
 
+	/**
+	 * Gets the widgets layout xml.
+	 * 
+	 * @return the xml.
+	 */
 	public String getLayoutXml(){
 
 		if(tabs.getWidgetCount() == 0)
@@ -376,6 +409,12 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return null;
 	}
 
+	/**
+	 * Gets the root node of the language or locale translation document for the widgets 
+	 * layout on the design surface.
+	 * 
+	 * @return the root node.
+	 */
 	public Element getLanguageNode(){
 		if(tabs.getWidgetCount() == 0)
 			return null;
@@ -426,6 +465,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return panel.getWidgetCount() > 0;
 	}
 
+	/**
+	 * Sets the layout xml for the design surface.
+	 * 
+	 * @param xml the layout xml.
+	 * @param formDef the form whose layout xml is given.
+	 * @return true if the layout xml has been loaded successfully, else false.
+	 */
 	public boolean setLayoutXml(String xml, FormDef formDef){
 		this.formDef = formDef;
 
@@ -463,6 +509,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return true;
 	}
 
+	/**
+	 * Loads a list of layout xml nodes for a given page on the design surface.
+	 * 
+	 * @param nodes the node list.
+	 */
 	private void loadPage(NodeList nodes){
 		for(int i=0; i<nodes.getLength(); i++){
 			if(nodes.item(i).getNodeType() != Node.ELEMENT_NODE)
@@ -485,6 +536,19 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 	}
 
+	/**
+	 * Loads a widget on the design surface.
+	 * 
+	 * @param node
+	 * @param dragController
+	 * @param panel
+	 * @param images
+	 * @param widgetPopup
+	 * @param widgetPopupMenuListener
+	 * @param widgetSelectionListener
+	 * @param formDef
+	 * @return
+	 */
 	public static DesignWidgetWrapper loadWidget(Element node,FormDesignerDragController dragController, AbsolutePanel panel, Images images, PopupPanel widgetPopup, IWidgetPopupMenuListener widgetPopupMenuListener,WidgetSelectionListener widgetSelectionListener,FormDef formDef){
 		String left = node.getAttribute(WidgetEx.WIDGET_PROPERTY_LEFT);
 		String top = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TOP);
@@ -588,6 +652,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return wrapper;
 	}
 
+	/**
+	 * Deletes the selected widgets.
+	 */
 	public boolean deleteWidgets(){
 		if(super.deleteWidgets() && doc != null){
 			String layout = null;
@@ -597,13 +664,16 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			return true;
 		}
-		
+
 		if(tabs.getTabBar().getTabCount() == 1 && selectedPanel != null && selectedPanel.getWidgetCount() == 0)
 			layoutChangeListener.onLayoutChanged(null);
 
 		return true;
 	}
 
+	/**
+	 * Deletes the selected page tab.
+	 */
 	private void deleteTab(){
 		if(tabs.getWidgetCount() == 1){
 			if(formDef != null)
@@ -630,6 +700,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		tabs.selectTab(selectedTabIndex);
 	}
 
+	/**
+	 * Loads the default widget layout for a given form.
+	 * 
+	 * @param formDef the form dedinition object.
+	 */
 	public void setLayout(FormDef formDef){			
 		this.formDef = formDef;
 
@@ -655,21 +730,38 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 	}
 
+	/**
+	 * Loads the default widget layout for a given page.
+	 * 
+	 * @param pageDef the page definition object.
+	 */
 	private void loadPage(PageDef pageDef){
-		loadQuestions(pageDef.getQuestions(),pageDef.getName());
+		loadQuestions(pageDef.getQuestions());
 	}
 
+	/**
+	 * Does automatic loading of question widgets onto the design surface for a given page.
+	 * 
+	 * @param questions the list of questions.
+	 */
+	private void loadQuestions(List<QuestionDef> questions){
+		loadQuestions(questions,20,0,tabs.getTabBar().getTabCount() == 1);
+	}
 
 	/**
-	 * Does automatic loading of question widgets onto the design surface.
+	 * Does automatic loading of question widgets onto the design surface for a given page
+	 * and starting at a given y coordinate.
 	 * 
-	 * @param questions
-	 * @param pageName
+	 * @param questions the list of questions.
+	 * @param pageName the name of the page.
+	 * @param startY the y coordinate to start at.
+	 * @param tabIndex the tabIndex to start from.
+	 * @param submitCancelBtns set to true to add the submit and cancel buttons
 	 */
-	private void loadQuestions(List<QuestionDef> questions, String pageName){
+	private void loadQuestions(List<QuestionDef> questions, int startY, int tabIndex, boolean submitCancelBtns){
 		int max = 999999; //FormUtil.convertDimensionToInt(sHeight) - 0 + 150; //40; No longer adding submit button on every page
-		int tabIndex = 0;
-		x = y = 20;
+		x = 20;
+		y = startY;
 
 		x += selectedPanel.getAbsoluteLeft();
 		y += selectedPanel.getAbsoluteTop();
@@ -701,13 +793,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			else if(type == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
 			else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-				widgetWrapper = addNewCheckBoxSet(questionDef,max,pageName,true,tabIndex);
+				widgetWrapper = addNewCheckBoxSet(questionDef,true,tabIndex);
 				tabIndex += questionDef.getOptions().size();
 			}
 			else if(type == QuestionDef.QTN_TYPE_BOOLEAN)
 				widgetWrapper = addNewDropdownList(false);
 			else if(type == QuestionDef.QTN_TYPE_REPEAT)
-				widgetWrapper = addNewRepeatSet(questionDef,max,pageName,false);
+				widgetWrapper = addNewRepeatSet(questionDef,false);
 			else if(type == QuestionDef.QTN_TYPE_IMAGE)
 				widgetWrapper = addNewPictureSection(questionDef.getVariableName(),questionDef.getText(),false);
 			else if(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO)
@@ -750,21 +842,22 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 					rptIncr = 75 + 30;
 			}
 
+			//TODO Looks like this is not longer necessary as we can have a page as long as the user wants
 			if((y+40+rptIncr) > max){
 				y += 10;
 				//addNewButton(false);
-				addNewTab(pageName);
+				addNewTab(LocaleText.get("page"));
 				y = 20 + selectedPanel.getAbsoluteTop();
 			}
 		}
 
 		y += 10;
 
-		//The submit button is added only to the first tab such that we dont keep
-		//adding multiple submit buttons everytime one refreshes the design surface
-		if(tabs.getTabBar().getTabCount() == 1){
+		//The submit button is added only to the first tab such that we don't keep
+		//adding multiple submit buttons every time one refreshes the design surface
+		if(submitCancelBtns){
 			addSubmitButton(false);
-			
+
 			x += 200;
 			addCancelButton(false);
 		}
@@ -772,17 +865,16 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		setHeight(y+40+"px");
 	}
 
-	/*public void stopHeaderLabelEdit(DesignWidgetWrapper headerLabel){
-		if(selectedDragController.getSelectedWidgetCount() == 0)
-			return;
-
-		DesignWidgetWrapper group = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
-		assert(group.getWrappedWidget() instanceof DesignGroupWidget);
-		selectedDragController.makeDraggable(group,headerLabel);
-		editWidget = null;
-	}*/
-
-	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, int max, String pageName, boolean vertically, int tabIndex){
+	
+	/**
+	 * Adds a new set of check boxes.
+	 * 
+	 * @param questionDef the multiple select question whose check boxes we are adding.
+	 * @param vertically set to true if you want to add the check boxes vertically.
+	 * @param tabIndex the current tab index.
+	 * @return this is always null.
+	 */
+	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, boolean vertically, int tabIndex){
 		List options = questionDef.getOptions();
 		for(int i=0; i<options.size(); i++){
 			/*if(i != 0){
@@ -795,7 +887,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 					y = 20;
 				}
 			}*/
-			
+
 			OptionDef optionDef = (OptionDef)options.get(i);
 			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
 			wrapper.setBinding(optionDef.getVariableName());
@@ -803,7 +895,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			wrapper.setText(optionDef.getText());
 			wrapper.setTitle(optionDef.getText());
 			wrapper.setTabIndex(++tabIndex);
-			
+
 			if(vertically)
 				y += 40;
 			else
@@ -812,7 +904,14 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return null;
 	}
 
-	protected DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, int max, String pageName, boolean select){
+	/**
+	 * Adds a new repeat set of widgets.
+	 * 
+	 * @param questionDef the repeat question whose widgets we are adding.
+	 * @param select set to true to select the repeat widget after adding it.
+	 * @return the added repeat widget.
+	 */
+	protected DesignWidgetWrapper addNewRepeatSet(QuestionDef questionDef, boolean select){
 		x = 35 + selectedPanel.getAbsoluteLeft();
 		y += 25;
 
@@ -874,7 +973,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-				widgetWrapper = addNewCheckBoxSet(qtn,max,pageName,false,index);
+				widgetWrapper = addNewCheckBoxSet(qtn,false,index);
 				index += qtn.getOptions().size();
 			}
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN)
@@ -912,6 +1011,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		return widget;
 	}
 
+	/**
+	 * Sets the current form beign designed.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){	
 		if(this.formDef != formDef){
 			PaletteView.unRegisterAllDropControllers();
@@ -922,6 +1026,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		this.formDef = formDef;
 	}
 
+	/**
+	 * Loads widgets for questions that are not loaded on the design surface.
+	 */
 	public void refresh(){
 		if(formDef == null)
 			return;
@@ -955,6 +1062,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		});
 	}
 
+	/**
+	 * Loads design surface widgets from layout xml of the current form.
+	 */
 	public void load(){
 		if(formDef == null)
 			return;
@@ -983,13 +1093,35 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		});
 	}
+	
+	/**
+	 * Gets the y coordinate of the lowest widget on the currently selected page.
+	 * 
+	 * @return the y coordinate in pixels.
+	 */
+	private int getLowestWidgetYPos(){
+		
+		int lowestYPos = 0;
+		
+		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
+			Widget widget = selectedPanel.getWidget(index);
+			int y = widget.getAbsoluteTop() + widget.getOffsetHeight();
+			if(y > lowestYPos)
+				lowestYPos = y;
+		}
+		
+		if(lowestYPos > 0)
+			lowestYPos -= selectedPanel.getAbsoluteTop();
+		
+		return lowestYPos;
+	}
 
 	/**
 	 * Loads widgets that have not yet been loaded on the design surface. If if they were once
 	 * loaded, have been deleted.
 	 */
 	private void loadNewWidgets(){
-		
+
 		//Create list of bindings for widgets that are already loaded on the design surface.
 		HashMap<String,String> bindings = new HashMap<String, String>();
 		for(int i=0; i<dragControllers.size(); i++){
@@ -997,16 +1129,23 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			fillBindings(panel,bindings);
 		}
 
-		//Create a list of questions that have not yet been loaded on the design surface.
-		List<QuestionDef> newQuestions = new ArrayList<QuestionDef>();
-		for(int index = 0; index < formDef.getPageCount(); index++)
+		//Load the new questions onto the design surface for all pages.
+		for(int index = 0; index < formDef.getPageCount(); index++){
+			List<QuestionDef> newQuestions = new ArrayList<QuestionDef>();
+			
+			//Create a list of questions that have not yet been loaded on the design surface
+			//for the current page.
 			fillNewQuestions(formDef.getPageAt(index),newQuestions,bindings);
-
-		//Load the new questions onto the design surface.
-		if(newQuestions.size() > 0){
-			String pageName = LocaleText.get("page")+(tabs.getTabBar().getTabCount()+1);
-			addNewTab(pageName);
-			loadQuestions(newQuestions,pageName);
+			
+			//Check if this is a new page whose tab has not yet been added, and then add it
+			if(tabs.getTabBar().getTabCount() < index+1)
+				addNewTab(LocaleText.get("page") + (index+1));
+			else
+				tabs.getTabBar().selectTab(index);
+			
+			//Load the new questions onto the design surface for the current page.
+			if(newQuestions.size() > 0)
+				loadQuestions(newQuestions,getLowestWidgetYPos() + 20,selectedPanel.getWidgetCount(),false);
 		}
 	}
 
@@ -1022,16 +1161,16 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 		for(int index = 0; index < panel.getWidgetCount(); index++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)panel.getWidget(index);
-			
+
 			//When a widget is deleted, it is reloaded on refresh even if its label still exists.
 			if(widget.getWrappedWidget() instanceof Label)
 				continue;
-			
+
 			String binding = widget.getParentBinding();
 			if(binding == null)
 				binding = widget.getBinding();
 			bindings.put(binding, binding); //Could possibly put widget as value.
-			
+
 			if(widget.getWrappedWidget() instanceof DesignGroupWidget)
 				fillBindings(((DesignGroupWidget)widget.getWrappedWidget()).getPanel(),bindings);
 		}
@@ -1052,43 +1191,28 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		}
 	}
 
+	/**
+	 * Sets the height offset to be used when the form designer is used as widget embedded
+	 * in a GWT application.
+	 * 
+	 * @param offset the height offset in pixels.
+	 */
 	public void setEmbeddedHeightOffset(int offset){
 		embeddedHeightOffset = offset;
 	}
 
+	/**
+	 * Sets the listener to widget layout change events.
+	 * 
+	 * @param layoutChangeListener the listener.
+	 */
 	public void setLayoutChangeListener(LayoutChangeListener layoutChangeListener){
 		this.layoutChangeListener = layoutChangeListener;
 	}
 
-	/*public DesignWidgetWrapper onDrop(Widget widget,int x, int y){
-		if(!(widget instanceof PaletteWidget))
-			return null;
-
-		DesignWidgetWrapper retWidget = super.onDrop(widget, x, y);
-
-		String text = ((PaletteWidget)widget).getText();
-
-		if(text.equals(LocaleText.get("groupBox")))
-			retWidget = addNewGroupBox(true);
-		else if(text.equals(LocaleText.get("repeatSection")))
-			retWidget = addNewRepeatSection(true);
-		else if(text.equals(LocaleText.get("picture")))
-			retWidget = addNewPictureSection(null,null,true);
-		else if(text.equals(LocaleText.get("videoAudio")))
-			retWidget = addNewVideoAudioSection(null,null,true);
-		else if(text.equals(LocaleText.get("searchServer")))
-			retWidget = addNewSearchServerWidget(null,null,true);
-
-		if(retWidget != null){
-			int height = FormUtil.convertDimensionToInt(getHeight());
-			int h = retWidget.getTopInt() + retWidget.getHeightInt();
-			if(height < h)
-				setHeight(height + (h-height)+10+"px");
-		}
-
-		return retWidget;
-	}*/
-
+	/**
+	 * @see org.purc.purcforms.client.controller.WidgetSelectionListener#onWidgetSelected(Widget, boolean)
+	 */
 	public void onWidgetSelected(DesignWidgetWrapper widget, boolean multipleSel){
 
 		boolean ctrlKey = FormDesignerUtil.getCtrlKey();
@@ -1137,12 +1261,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		widgetSelectionListener.onWidgetSelected(widget, multipleSel);
 	}
 
+	@Override
 	protected void selectAll(){
 		if(editWidget != null){
 			txtEdit.selectAll();
 			return; //let label editor do select all
 		}
-		
+
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
 		if(widgets != null){
 			for(int index = 0; index < widgets.size(); index++){
@@ -1158,27 +1283,31 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		super.selectAll();
 	}
 
+	@Override
 	public void setHeight(String height) {
 		if(height != null && height.trim().length() > 0 && !height.equals("100%"))
 			sHeight = height;
-		super.setHeight(sHeight);
 
-		//for(int i=0; i<dragControllers.size(); i++)
-		//	dragControllers.elementAt(i).getBoundaryPanel().setHeight(sHeight);
+		super.setHeight(sHeight);
 	}
 
+	@Override
 	public void setWidth(String width) {
 		if(width != null && width.trim().length() > 0 && !width.equals("100%"))
 			sWidth = width;
-		super.setWidth(sWidth);
 
-		//for(int i=0; i<dragControllers.size(); i++)
-		//	dragControllers.elementAt(i).getBoundaryPanel().setWidth(sWidth);
+		super.setWidth(sWidth);
 	}
-	
+
+	/**
+	 * Gets the html for the selected page.
+	 * 
+	 * @return the html text.
+	 */
 	public String getSelectedPageHtml(){
 		if(selectedPanel == null)
 			return "";
+
 		return selectedPanel.getElement().getInnerHTML();
 	}
 }

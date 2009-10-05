@@ -9,6 +9,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.skiprule.ConditionWidget;
 import org.purc.purcforms.client.widget.skiprule.GroupHyperlink;
 
@@ -55,7 +56,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		
 		HorizontalPanel actionPanel = new HorizontalPanel();
 		actionPanel.setWidth("100%");
-		FormDesignerUtil.maximizeWidget(txtErrorMessage);
+		FormUtil.maximizeWidget(txtErrorMessage);
 		actionPanel.add(new Label("Error Message"));
 		actionPanel.add(txtErrorMessage);
 		actionPanel.setSpacing(10);

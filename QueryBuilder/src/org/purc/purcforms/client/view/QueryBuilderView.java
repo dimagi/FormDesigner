@@ -81,10 +81,16 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		//parseQueryDef();
 	}
 	
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 */
 	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
 		return true;
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 */
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
 		selectedTabIndex = tabIndex;
 		

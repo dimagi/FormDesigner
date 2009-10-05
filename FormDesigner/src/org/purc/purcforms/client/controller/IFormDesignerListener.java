@@ -5,7 +5,8 @@ import com.google.gwt.user.client.Event;
 
 /**
  * This interface is implemented by those who want to listen to global events 
- * of the form designer.
+ * of the form designer. An examples of such global events are: New Form, Open,
+ * Save, Close, Print, Show About Info, and more.
  * 
  * @author daniel
  *

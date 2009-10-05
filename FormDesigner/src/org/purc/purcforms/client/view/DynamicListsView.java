@@ -43,26 +43,45 @@ import com.google.gwt.xml.client.Node;
  */
 public class DynamicListsView extends Composite implements ItemSelectionListener, ClickListener{
 
+	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	private Label lblAction = new Label(LocaleText.get("valuesFor"));
 	private Label lblEqual = new Label(" "+LocaleText.get("isEqualTo"));
 	private FieldWidget fieldWidget;
 	private ListBox lbValue = new ListBox(false);
 	private FlexTable table = new FlexTable();
+	
+	/** Button to add a new dynamic list option. */
 	private Button btnAdd = new Button(LocaleText.get("addNew"));
+	
+	/** The form definition object that this dynamic list belongs to. */
 	private FormDef formDef;
 	private QuestionDef questionDef;
+	
+	/** Flag determining whether to enable this widget or not. */
 	private boolean enabled;
 
 	private DynamicOptionDef dynamicOptionDef;
+	
+	/** Contains the list of child options for the parent question's selected option. */
 	private List<OptionDef> optionList;
+	
+	/** The parent question whose selected option determines the list of child options.
+	 *  For the Continent and Country questions, this would be the Continent question.
+	 */
 	private QuestionDef parentQuestionDef;
 
 
+	/**
+	 * Creates a new instance of the dynamic lists widget.
+	 */
 	public DynamicListsView(){
 		setupWidgets();
 	}
 
+	/**
+	 * Sets up widgets.
+	 */
 	private void setupWidgets(){
 
 		fieldWidget = new FieldWidget(this);
@@ -134,6 +153,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			fieldWidget.selectQuestion(parentQuestionDef);
 	}
 
+	/**
+	 * Sets the form definition object that this dynamic list belongs to.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){
 		updateDynamicLists();
 		this.formDef = formDef;
@@ -165,6 +189,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			table.removeRow(1);
 	}
 
+	/**
+	 * Sets whether to enable this widget or not.
+	 * 
+	 * @param enabled set to true to enable, else false.
+	 */
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 
@@ -174,6 +203,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			clearConditions();
 	}
 
+	/**
+	 * Checks whether this widget is enabled or not.
+	 * 
+	 * @return true of enabled, else false.
+	 */
 	public boolean isEnabled(){
 		return enabled;
 	}
@@ -289,9 +323,6 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					table.removeRow(row);
 					optionList.remove(row-1);
 	
-					//if(optionList.size() == 0)
-					//		firstOptionNode = null;
-
 					if(optionDef.getControlNode() != null && optionDef.getControlNode().getParentNode() != null)
 						optionDef.getControlNode().getParentNode().removeChild(optionDef.getControlNode());
 					break;
@@ -324,6 +355,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 	}
 
+	/**
+	 * Adds a new dynamic list option.
+	 */
 	private void addNewOption(){
 		table.removeRow(table.getRowCount() - 1);
 		TextBox textBox = addValue("","",table.getRowCount());
@@ -439,6 +473,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 	}
 
+	/**
+	 * Adds the add new button to the widget.
+	 */
 	private void addAddButton(){
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		int row = table.getRowCount();

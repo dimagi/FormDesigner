@@ -12,6 +12,7 @@ import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DescTemplateWidget;
 
 import com.google.gwt.user.client.Command;
@@ -186,8 +187,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.add(txtDescTemplate);
 		panel.add(btnDescTemplate);
 		panel.setCellWidth(btnDescTemplate, "20%");
-		FormDesignerUtil.maximizeWidget(txtDescTemplate);
-		FormDesignerUtil.maximizeWidget(panel);
+		FormUtil.maximizeWidget(txtDescTemplate);
+		FormUtil.maximizeWidget(panel);
 		table.setWidget(9, 1, panel);
 
 		table.setStyleName("cw-FlexTable");
@@ -232,9 +233,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
-		FormDesignerUtil.maximizeWidget(tabs);
+		FormUtil.maximizeWidget(tabs);
 
-		FormDesignerUtil.maximizeWidget(verticalPanel);
+		FormUtil.maximizeWidget(verticalPanel);
 		initWidget(verticalPanel);
 
 		setupEventListeners();

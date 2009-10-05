@@ -37,6 +37,7 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class XformConverter implements Serializable{
 
+	/** The xmlns prefix. */
 	private static final String XML_NAMESPACE_PREFIX = "xmlns:";
 
 	/** Namespace prefix for XForms. */
@@ -143,13 +144,13 @@ public class XformConverter implements Serializable{
 
 	/** The current question id. */
 	private static int currentQuestionId = 1;
-	
+
 	/** The current page number. */
 	private static int currentPageNo = 1;
 
 	/**
 	 * All methods in this class are static and hence we expect to external
-	 * instanciation of this class.
+	 * Instantiation of this class.
 	 */
 	private XformConverter(){
 
@@ -232,7 +233,32 @@ public class XformConverter implements Serializable{
 		else
 			formDef.updateDoc(false);
 
-		return fromXform2FormDef(fromDoc2String(formDef.getDoc()));
+		return fromXform2FormDef(normalizeNameSpace(formDef.getDoc(),fromDoc2String(formDef.getDoc())));
+	}
+	
+	/**
+	 * Changes our namespace prefix to the one used in the original document.
+	 * 
+	 * @param doc the document.
+	 * @param xml the document xml.
+	 * @return the new document xml with all namespace prefixes equal to the ones in the original document.
+	 */
+	public static String normalizeNameSpace(Document doc, String xml){
+		//We use xf prefix. So if the loaded xform
+		//did not use the same prefix, then replace our prefix with that
+		//which came with the xform.
+		String prefix = doc.getDocumentElement().getPrefix();
+			
+		if(!"xf".equals(prefix)){
+			if(prefix == null || prefix.trim().length() == 0)
+				prefix = "";
+			else
+				prefix += ":";
+			
+			xml = xml.replace("xf:", prefix);
+		}
+		
+		return xml;
 	}
 
 	/**
@@ -314,8 +340,8 @@ public class XformConverter implements Serializable{
 
 	/**
 	 * For creating dynamic options instance node for those that were not created in the
-	 * first pass because of dependant dynamic options not have also been created yet.
-	 * To see this, hust create a new dynamic options question which depends on another
+	 * first pass because of dependent dynamic options not have also been created yet.
+	 * To see this, first create a new dynamic options question which depends on another
 	 * dynamic options questions and then try saving. The second question's instance
 	 * values will only be created during second save, if this method is not called.
 	 * 
@@ -376,6 +402,15 @@ public class XformConverter implements Serializable{
 		node.setAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}
 
+	/**
+	 * Converts a dynamic option definition object to an xform.
+	 * 
+	 * @param doc the xforms document.
+	 * @param dynamicOptionDef the dynamic option definition object.
+	 * @param parentQuestionDef the question whose selected option determines the allowed options for the dynamic option definition object.
+	 * @param formDef the form definition object.
+	 * @return true if the conversion was completed successfully.
+	 */
 	public static boolean fromDynamicOptionDef2Xform(Document doc, DynamicOptionDef dynamicOptionDef, QuestionDef parentQuestionDef, FormDef formDef){
 		QuestionDef questionDef = formDef.getQuestion(dynamicOptionDef.getQuestionId());
 		if(questionDef == null)
@@ -386,7 +421,7 @@ public class XformConverter implements Serializable{
 		instanceNode.setAttribute(ATTRIBUTE_NAME_ID, questionDef.getVariableName());
 		NodeList nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE);
 		if(nodes.getLength() == 0)
-			nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE_MINUS_PREFIX);
+			nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE_MINUS_PREFIX); //TODO What happens when we pass a name with a prefix?
 		modelNode.insertBefore(instanceNode, getNextElementSibling((Element)nodes.item(nodes.getLength() - 1)));
 
 		Element dataNode =  doc.createElement("dynamiclist"/*questionDef.getVariableName()*/);
@@ -401,6 +436,7 @@ public class XformConverter implements Serializable{
 
 			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
 			if(parentOptionDef == null){
+				//Parent question options are not yet loaded.
 				modelNode.removeChild(instanceNode);
 				return false;//continue;
 			}
@@ -422,6 +458,15 @@ public class XformConverter implements Serializable{
 		return true;
 	}
 
+	/**
+	 * Adds a new xforms node for an option definition object of a dynamic option definition object.
+	 * 
+	 * @param doc the xforms document.
+	 * @param optionDef the new option definition object.
+	 * @param parentOptionDef the parent option definition object whose being selected results into
+	 *                        the child question list where the new option we are adding belongs.
+	 * @param dataNode the dynamic option definition xforms data node.
+	 */
 	private static void addNewDynamicOption(Document doc, OptionDef optionDef, OptionDef parentOptionDef, Element dataNode){
 		Element itemNode =  doc.createElement("item");
 		optionDef.setControlNode(itemNode);
@@ -483,6 +528,12 @@ public class XformConverter implements Serializable{
 		return node;
 	}
 
+	/**
+	 * Converts a skip rule definition object to xforms.
+	 * 
+	 * @param rule the skip rule definition object
+	 * @param formDef the form definition.
+	 */
 	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
 		String relevant = "";
 		Vector conditions  = rule.getConditions();
@@ -752,6 +803,14 @@ public class XformConverter implements Serializable{
 		}
 	}
 
+	/**
+	 * Converts an option definition object to xforms.
+	 * 
+	 * @param optionDef
+	 * @param doc
+	 * @param inputNode
+	 * @return
+	 */
 	public static Element fromOptionDef2Xform(OptionDef optionDef, Document doc, Element inputNode){
 		Element itemNode =  doc.createElement(NODE_NAME_ITEM);
 		itemNode.setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
@@ -918,7 +977,8 @@ public class XformConverter implements Serializable{
 				Element child = (Element)element.getChildNodes().item(i);
 				//String tagname = getNodeName(child);
 				String tagname = child.getNodeName(); //NODE_NAME_INSTANCE has prefix
-				if (tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX))
+				//if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX))
+				if(nodeNameEquals(tagname,NODE_NAME_INSTANCE_MINUS_PREFIX))
 					return child;
 				else{
 					child = getInstanceNode(child);
@@ -928,6 +988,18 @@ public class XformConverter implements Serializable{
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Checks if a node name equals a particular name, regardless of prefix.
+	 * 
+	 * @param nodeName the node name.
+	 * @param name the name to compare with.
+	 * @return true if they are the same, else false.
+	 */
+	private static boolean nodeNameEquals(String nodeName, String name){
+		return nodeName.equals(name) || nodeName.contains(":"+name);
+
 	}
 
 	private static Element getInstanceDataNode(Element element){
@@ -947,7 +1019,8 @@ public class XformConverter implements Serializable{
 				Element child = (Element)element.getChildNodes().item(i);
 				//String tagname = getNodeName(child);
 				String tagname = child.getNodeName(); //NODE_NAME_INSTANCE has prefix
-				if (tagname.equals(NODE_NAME_MODEL)||tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX))
+				//if (tagname.equals(NODE_NAME_MODEL)||tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX))
+				if(nodeNameEquals(tagname,NODE_NAME_MODEL_MINUS_PREFIX))
 					return child;
 				else{
 					child = getModelNode(child);
@@ -1002,22 +1075,22 @@ public class XformConverter implements Serializable{
 		Vector repeats = new Vector();
 		HashMap rptKidMap = new HashMap();
 		List<QuestionDef> orphanDynOptionQns = new ArrayList<QuestionDef>();
-		
+
 		currentQuestionId = 1;
 		currentPageNo = 1;
-		
+
 		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints,orphanDynOptionQns);
 		if(formDef.getName() == null || formDef.getName().length() == 0)
 			formDef.setName(formDef.getVariableName());
 		setDefaultValues(getInstanceDataNode(doc),formDef,id2VarNameMap); //TODO Very slow needs optimisation for very big forms
 		addSkipRules(formDef,id2VarNameMap,relevants);
 		addValidationRules(formDef,id2VarNameMap,constraints);
-		
+
 		parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
-		
+
 		return formDef;
 	}
-	
+
 	/**
 	 * Parses dynamic option lists for questions whose parent questions had not been yet 
 	 * processed during the earlier passes because of question ordering in the xform.
@@ -1029,7 +1102,7 @@ public class XformConverter implements Serializable{
 		int orgSize = orphanDynOptionQns.size();
 		if(orgSize == 0)
 			return;
-		
+
 		//We are using an array copy because we will modify the orphanDynOptionQns list
 		//as we loop through it and hence do not want concurency modification exceptions.
 		Object[] qtns = orphanDynOptionQns.toArray();
@@ -1038,7 +1111,7 @@ public class XformConverter implements Serializable{
 			if(questionDef.getFirstOptionNode() != null)
 				parseDynamicOptionsList(questionDef, questionDef.getFirstOptionNode().getAttribute(ATTRIBUTE_NAME_NODESET), formDef,orphanDynOptionQns);
 		}
-		
+
 		//If we have more to process and the number has reduced, just continue
 		//Else if number is the same then we 
 		int newSize = orphanDynOptionQns.size();
@@ -1262,10 +1335,12 @@ public class XformConverter implements Serializable{
 				Element child = (Element)nodes.item(i);
 				String tagname = child.getNodeName(); //getNodeName(child);
 
-				if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))
+				//if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))
+				if(nodeNameEquals(tagname,NODE_NAME_REPEAT_MINUS_PREFIX))
 					tagname.toString();
 
-				if(tagname.equals(NODE_NAME_SUBMIT) || tagname.equals(NODE_NAME_SUBMIT_MINUS_PREFIX))
+				//if(tagname.equals(NODE_NAME_SUBMIT) || tagname.equals(NODE_NAME_SUBMIT_MINUS_PREFIX))
+				if(nodeNameEquals(tagname,NODE_NAME_SUBMIT_MINUS_PREFIX))
 					continue;
 				else if (tagname.equals("head"))
 					parseElement(formDef,child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
@@ -1275,21 +1350,25 @@ public class XformConverter implements Serializable{
 					if(child.getChildNodes().getLength() != 0)
 						formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
 				}
-				else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
+				//else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_MODEL_MINUS_PREFIX)){
 					formDef.setModelNode((Element)child);
 					formDef.setXformsNode((Element)child.getParentNode());
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				}
-				else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){
+				//else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_GROUP_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
-					if(!(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX))){
+					//if(!(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX))){
+					if(!nodeNameEquals(parentName,NODE_NAME_GROUP_MINUS_PREFIX)){
 						if(formDef.getPageCount() < ++currentPageNo)
 							formDef.addPage();
 						formDef.setPageGroupNode((Element)child);
 					}
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 				}
-				else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
+				//else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
+				else if(nodeNameEquals(tagname,NODE_NAME_INSTANCE_MINUS_PREFIX)){
 					if(formDef.getDataNode() != null)
 						continue; //we only take the first instance node for formdef ref
 
@@ -1307,7 +1386,9 @@ public class XformConverter implements Serializable{
 						formDef.setId(Integer.parseInt(dataNode.getAttribute(ATTRIBUTE_NAME_ID)));
 					if(dataNode.getAttribute(ATTRIBUTE_NAME_NAME) != null)
 						formDef.setName(dataNode.getAttribute(ATTRIBUTE_NAME_NAME));
-				} else if (tagname.equals(NODE_NAME_BIND)||tagname.equals(NODE_NAME_BIND_MINUS_PREFIX) /*|| tagname.equals(ATTRIBUTE_NAME_REF)*/) {
+				} 
+				//else if (tagname.equals(NODE_NAME_BIND)||tagname.equals(NODE_NAME_BIND_MINUS_PREFIX) /*|| tagname.equals(ATTRIBUTE_NAME_REF)*/) {
+				else if(nodeNameEquals(tagname,NODE_NAME_BIND_MINUS_PREFIX)){
 					QuestionDef qtn = new QuestionDef(null);
 					qtn.setBindNode(child);
 					//qtn.setId(Integer.parseInt(String.valueOf(i)));
@@ -1353,8 +1434,12 @@ public class XformConverter implements Serializable{
 						questionDef = qtn;
 					}
 
-				} else if (tagname.equals(NODE_NAME_INPUT) || tagname.equals(NODE_NAME_SELECT1) || tagname.equals(NODE_NAME_SELECT) || tagname.equals(NODE_NAME_REPEAT)
-						|| tagname.equals(NODE_NAME_INPUT_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) {
+				} 
+				//else if (tagname.equals(NODE_NAME_INPUT) || tagname.equals(NODE_NAME_SELECT1) || tagname.equals(NODE_NAME_SELECT) || tagname.equals(NODE_NAME_REPEAT)
+				//		|| tagname.equals(NODE_NAME_INPUT_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) {
+				else if(nodeNameEquals(tagname,NODE_NAME_INPUT_MINUS_PREFIX) || nodeNameEquals(tagname,NODE_NAME_SELECT1_MINUS_PREFIX) || 
+						nodeNameEquals(tagname,NODE_NAME_SELECT_MINUS_PREFIX) || nodeNameEquals(tagname,NODE_NAME_REPEAT_MINUS_PREFIX)){
+
 					String ref = child.getAttribute(ATTRIBUTE_NAME_REF);
 					String bind = child.getAttribute(ATTRIBUTE_NAME_BIND);
 					String varName = (String)map.get(((ref != null) ? ref : bind));
@@ -1374,12 +1459,15 @@ public class XformConverter implements Serializable{
 						if(qtn == null)
 							qtn = (QuestionDef)rptKidMap.get(varName);
 
-						if(tagname.equals(NODE_NAME_SELECT1) || tagname.equals(NODE_NAME_SELECT)
-								||tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX)){
-							qtn.setDataType((tagname.equals(NODE_NAME_SELECT1)||tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+						//if(tagname.equals(NODE_NAME_SELECT1) || tagname.equals(NODE_NAME_SELECT)
+						//		||tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX)){
+						if(nodeNameEquals(tagname,NODE_NAME_SELECT1_MINUS_PREFIX) || nodeNameEquals(tagname,NODE_NAME_SELECT_MINUS_PREFIX)){
+							//qtn.setDataType((tagname.equals(NODE_NAME_SELECT1)||tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+							qtn.setDataType((nodeNameEquals(tagname,NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
 							qtn.setOptions(new Vector());
 						}//TODO first addition for repeats
-						else if((tagname.equals(NODE_NAME_REPEAT)||tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) && !label.equals("")){
+						//else if((tagname.equals(NODE_NAME_REPEAT)||tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) && !label.equals("")){
+						else if(nodeNameEquals(tagname,NODE_NAME_REPEAT_MINUS_PREFIX) && !label.equals("")){
 							qtn.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 							qtn.setText(label);
 							qtn.setHelpText(hint);
@@ -1398,7 +1486,8 @@ public class XformConverter implements Serializable{
 
 						//TODO second addition for repeats
 						Element parent = (Element)child.getParentNode(); 
-						if(parent.getNodeName().equals(NODE_NAME_REPEAT)||parent.getNodeName().equals(NODE_NAME_REPEAT_MINUS_PREFIX)){
+						//if(parent.getNodeName().equals(NODE_NAME_REPEAT)||parent.getNodeName().equals(NODE_NAME_REPEAT_MINUS_PREFIX)){
+						if(nodeNameEquals(parent.getNodeName(),NODE_NAME_REPEAT_MINUS_PREFIX)){
 							varName = (String)map.get(parent.getAttribute(ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(ATTRIBUTE_NAME_BIND) : parent.getAttribute(ATTRIBUTE_NAME_NODESET));
 							QuestionDef rptQtnDef = formDef.getQuestion(varName);
 							qtn.setId(getNextQuestionId());
@@ -1417,29 +1506,37 @@ public class XformConverter implements Serializable{
 						questionDef = qtn;
 						parseElement(formDef, child, map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 					}
-				} else if(tagname.equals(NODE_NAME_LABEL)||tagname.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
+				} 
+				//else if(tagname.equals(NODE_NAME_LABEL)||tagname.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_LABEL_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
-					if(parentName.equalsIgnoreCase(NODE_NAME_INPUT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1) || parentName.equalsIgnoreCase(NODE_NAME_ITEM)
-							||parentName.equalsIgnoreCase(NODE_NAME_INPUT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_ITEM_MINUS_PREFIX)){
+					//if(parentName.equalsIgnoreCase(NODE_NAME_INPUT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1) || parentName.equalsIgnoreCase(NODE_NAME_ITEM)
+					//		||parentName.equalsIgnoreCase(NODE_NAME_INPUT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_ITEM_MINUS_PREFIX)){
+					if(nodeNameEquals(parentName,NODE_NAME_INPUT_MINUS_PREFIX) || nodeNameEquals(parentName,NODE_NAME_SELECT_MINUS_PREFIX) ||
+							nodeNameEquals(parentName,NODE_NAME_SELECT1_MINUS_PREFIX) || nodeNameEquals(parentName,NODE_NAME_ITEM_MINUS_PREFIX)){
 						if(child.getChildNodes().getLength() != 0){
 							label = child.getChildNodes().item(0).getNodeValue().trim(); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 							labelNode = child;
 						}
 					}
-					else if(parentName.equalsIgnoreCase(NODE_NAME_REPEAT)||parentName.equalsIgnoreCase(NODE_NAME_REPEAT_MINUS_PREFIX)){
+					//else if(parentName.equalsIgnoreCase(NODE_NAME_REPEAT)||parentName.equalsIgnoreCase(NODE_NAME_REPEAT_MINUS_PREFIX)){
+					else if(nodeNameEquals(parentName,NODE_NAME_REPEAT_MINUS_PREFIX)){
 						if(questionDef != null && child.getChildNodes().getLength() != 0)
 							questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 					}
-					else if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
+					//else if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
+					else if(nodeNameEquals(parentName,NODE_NAME_GROUP_MINUS_PREFIX)){
 						if(child.getChildNodes().getLength() != 0){
 							label = child.getChildNodes().item(0).getNodeValue().trim();
 							labelNode = child;
 						}
 					}
 				}
-				else if (tagname.equals(NODE_NAME_HINT)||tagname.equals(NODE_NAME_HINT_MINUS_PREFIX)){
+				//else if (tagname.equals(NODE_NAME_HINT)||tagname.equals(NODE_NAME_HINT_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_HINT_MINUS_PREFIX)){
 					String parentName = ((Element)child.getParentNode()).getNodeName();
-					if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
+					//if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
+					if(nodeNameEquals(parentName,NODE_NAME_GROUP_MINUS_PREFIX)){
 						if(child.getChildNodes().getLength() != 0){
 							hint = child.getChildNodes().item(0).getNodeValue().trim();
 							hintNode = child;
@@ -1452,15 +1549,18 @@ public class XformConverter implements Serializable{
 						}
 					}
 				}
-				else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
+				//else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
+				else if(nodeNameEquals(tagname,NODE_NAME_ITEM_MINUS_PREFIX))
 					parseElement(formDef, child,map,questionDef,relevants,repeats,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
-				else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
+				//else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_VALUE_MINUS_PREFIX)){
 					if(child.getChildNodes().getLength() != 0){
 						value = child.getChildNodes().item(0).getNodeValue().trim();
 						valueNode = child;
 					}
 				}
-				else if(tagname.equals(NODE_NAME_ITEMSET)||tagname.equals(NODE_NAME_ITEMSET_MINUS_PREFIX)){
+				//else if(tagname.equals(NODE_NAME_ITEMSET)||tagname.equals(NODE_NAME_ITEMSET_MINUS_PREFIX)){
+				else if(nodeNameEquals(tagname,NODE_NAME_ITEMSET_MINUS_PREFIX)){
 					questionDef.setDataType(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC);
 					questionDef.setFirstOptionNode(child);
 					parseDynamicOptionsList(questionDef,child.getAttribute(ATTRIBUTE_NAME_NODESET),formDef,orphanDynOptionQns);
@@ -1546,12 +1646,12 @@ public class XformConverter implements Serializable{
 
 		if(dynamicOptionDef.getParentToChildOptions() != null && orphanDynOptionQns.contains(questionDef))
 			orphanDynOptionQns.remove(questionDef);
-		
+
 		formDef.setDynamicOptionDef(parentQuestionDef.getId(), dynamicOptionDef);
 	}
 
 	private static Element getInstanceNode(Element modelNode, String instanceId){
-		NodeList nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE);
+		NodeList nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE); //TODO What if we have a different prefix from xf?
 		if(nodes.getLength() == 0)
 			nodes = modelNode.getElementsByTagName(NODE_NAME_INSTANCE_MINUS_PREFIX);
 		if(nodes == null)
@@ -1577,7 +1677,8 @@ public class XformConverter implements Serializable{
 				continue;
 
 			String name = child.getNodeName();
-			if(name.equals(NODE_NAME_ITEM_MINUS_PREFIX)){
+			//if(name.equals(NODE_NAME_ITEM_MINUS_PREFIX)){
+			if(nodeNameEquals(name,NODE_NAME_ITEM_MINUS_PREFIX)){
 				String parent = ((Element)child).getAttribute(ATTRIBUTE_NAME_PARENT);
 				if(parent == null || parent.trim().length() == 0)
 					continue;
@@ -1596,10 +1697,10 @@ public class XformConverter implements Serializable{
 					if(optnDef == null){
 						if(!orphanDynOptionQns.contains(questionDef))
 							orphanDynOptionQns.add(questionDef);
-						
+
 						continue;
 					}
-					
+
 					optionId = optnDef.getId();
 					parentOptionIdMap.put(parent, optionId);
 				}
@@ -1612,13 +1713,15 @@ public class XformConverter implements Serializable{
 
 				parseDynamicOptions(dynamicOptionDef,questionDef,parentQuestionDef,child,optionDef,parentOptionIdMap,formDef,orphanDynOptionQns);
 			}
-			else if(name.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
+			//else if(name.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
+			else if(nodeNameEquals(name,NODE_NAME_LABEL_MINUS_PREFIX)){
 				if(child.getChildNodes().getLength() != 0){
 					label = child.getChildNodes().item(0).getNodeValue().trim(); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 					labelNode = (Element)child;
 				}
 			}
-			else if(name.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
+			//else if(name.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
+			else if(nodeNameEquals(name,NODE_NAME_VALUE_MINUS_PREFIX)){
 				if(child.getChildNodes().getLength() != 0){
 					value = child.getChildNodes().item(0).getNodeValue().trim();
 					valueNode = (Element)child;
@@ -2337,6 +2440,12 @@ public class XformConverter implements Serializable{
 		return fromDoc2String(doc);
 	}
 
+	/**
+	 * Copies the xforms model instance from one document to another.
+	 * 
+	 * @param srcDoc the xforms document with the model instance to copy.
+	 * @param destDoc the xforms document whose model instance we are to replace with the copied one.
+	 */
 	private static void copyModel(Document srcDoc, Document destDoc){
 		if(srcDoc != null){			
 			Element oldModel = getModelNode(srcDoc.getDocumentElement());

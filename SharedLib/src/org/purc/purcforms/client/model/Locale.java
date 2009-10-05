@@ -2,7 +2,7 @@ package org.purc.purcforms.client.model;
 
 
 /**
- * Represents a locale supported by the form designer and runner.
+ * Represents a locale or language supported by the form designer and runner.
  * 
  * @author daniel
  *

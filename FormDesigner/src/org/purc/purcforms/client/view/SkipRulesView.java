@@ -31,28 +31,65 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SkipRulesView extends Composite implements IConditionController{
 
+	/** The widget horizontal spacing in horizontal panels. */
 	private static final int HORIZONTAL_SPACING = 5;
+	
+	/** The widget vertical spacing in vertical panels. */
 	private static final int VERTICAL_SPACING = 0;
 
+	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
+	
+	/** Widget for adding new conditions. */
 	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
+	
+	/** Widget for grouping conditions. Has all,any, none, and not all. */
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
 
+	/** The form definition object that this skip rule belongs to. */
 	private FormDef formDef;
+	
+	/** The question definition object which is the target of the skip rule. 
+	 *  As for now, the form designer supports only one skip rule target. But the
+	 *  skip rule object supports an un limited number.
+	 */
 	private QuestionDef questionDef;
+	
+	/** The skip rule definition object. */
 	private SkipRule skipRule;
+	
+	/** Flag determining whether to enable this widget or not. */
 	private boolean enabled;
+	
+	/** Widget for the skip rule action to enable a question. */
 	private RadioButton rdEnable = new RadioButton("action","Enable");
+	
+	/** Widget for the skip rule action to disable a question. */
 	private RadioButton rdDisable = new RadioButton("action","Disable");
+	
+	/** Widget for the skip rule action to show a question. */
 	private RadioButton rdShow = new RadioButton("action","Show");
+	
+	/** Widget for the skip rule action to hide a question. */
 	private RadioButton rdHide = new RadioButton("action","Hide");
+	
+	/** Widget for the skip rule action to make a question required. */
 	private CheckBox chkMakeRequired = new CheckBox("Make Required");
+	
+	/** Label for question. */
 	private Label lblAction = new Label(LocaleText.get("forQuestion"));
 
+	
+	/**
+	 * Creates a new instance of the skip logic widget.
+	 */
 	public SkipRulesView(){
 		setupWidgets();
 	}
 
+	/**
+	 * Sets up the widgets.
+	 */
 	private void setupWidgets(){
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
@@ -66,19 +103,13 @@ public class SkipRulesView extends Composite implements IConditionController{
 		actionPanel.setSpacing(10);
 
 		verticalPanel.add(lblAction);
-		//verticalPanel.add(new Label(" "));
 		verticalPanel.add(actionPanel);
-		//verticalPanel.add(new Label(" "));
-
-		//verticalPanel.setCellHeight(lblAction, "30px");
-		//verticalPanel.setCellHeight(actionPanel, "30px");
 
 		horizontalPanel.add(new Label(LocaleText.get("when")));
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
 		verticalPanel.add(horizontalPanel);
 
-		//verticalPanel.add(new ConditionWidget(FormDefTest.getPatientFormDef(),this));
 		verticalPanel.add(addConditionLink);
 
 		addConditionLink.addClickListener(new ClickListener(){
@@ -112,17 +143,23 @@ public class SkipRulesView extends Composite implements IConditionController{
 		initWidget(verticalPanel);
 	}
 
+	/**
+	 * Enables the make required widget if the enable or show widget is ticked, 
+	 * else disables and unticks it.
+	 */
 	private void updateMakeRequired(){
 		chkMakeRequired.setEnabled(rdEnable.isChecked() || rdShow.isChecked());
 		if(!chkMakeRequired.isEnabled())
 			chkMakeRequired.setChecked(false);
 	}
 
+	/**
+	 * Adds a new condition.
+	 */
 	public void addCondition(){
 		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
 			ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
-			//conditionWidget.setQuestionDef(questionDef);
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 
@@ -133,16 +170,28 @@ public class SkipRulesView extends Composite implements IConditionController{
 		}
 	}
 
+	/**
+	 * Supposed to add a bracket or nested set of related conditions which are 
+	 * currently not supported.
+	 */
 	public void addBracket(){
 
 	}
 
+	/**
+	 * Deletes a condition.
+	 * 
+	 * @param conditionWidget the widget having the condition to delete.
+	 */
 	public void deleteCondition(ConditionWidget conditionWidget){
 		if(skipRule != null)
 			skipRule.removeCondition(conditionWidget.getCondition());
 		verticalPanel.remove(conditionWidget);
 	}
 
+	/**
+	 * Sets or updates the values of the skip rule object from the user's widget selections.
+	 */
 	public void updateSkipRule(){
 		if(questionDef == null){
 			skipRule = null;
@@ -157,9 +206,6 @@ public class SkipRulesView extends Composite implements IConditionController{
 			Widget widget = verticalPanel.getWidget(i);
 			if(widget instanceof ConditionWidget){
 				Condition condition = ((ConditionWidget)widget).getCondition();
-				//if(!(rdEnable.isChecked() || rdShow.isChecked()))
-				//	condition.setOperator(getInvertedOperator(condition.getOperator()));
-
 				if(condition != null && !skipRule.containsCondition(condition))
 					skipRule.addCondition(condition);
 				else if(condition != null && skipRule.containsCondition(condition))
@@ -180,6 +226,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 			formDef.addSkipRule(skipRule);
 	}
 
+	/**
+	 * Gets the skip rule action based on the user's widget selections.
+	 * 
+	 * @return the skip rule action.
+	 */
 	private int getAction(){
 		int action = 0;
 		if(rdEnable.isChecked())
@@ -199,6 +250,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 		return action;
 	}
 
+	/**
+	 * Updates the widgets basing on a given skip rule action.
+	 * 
+	 * @param action the skip rule action.
+	 */
 	private void setAction(int action){
 		rdEnable.setChecked((action & ModelConstants.ACTION_ENABLE) != 0);
 		rdDisable.setChecked((action & ModelConstants.ACTION_DISABLE) != 0);
@@ -208,16 +264,17 @@ public class SkipRulesView extends Composite implements IConditionController{
 		updateMakeRequired();
 	}
 
+	/**
+	 * Sets the question definition object which is the target of the skip rule.
+	 * For now we support only one target for the skip rule.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	public void setQuestionDef(QuestionDef questionDef){
 		clearConditions();
 
 		formDef = questionDef.getParentFormDef();
 		
-		/*if(questionDef.getParent() instanceof PageDef)
-			formDef = ((PageDef)questionDef.getParent()).getParent();
-		else
-			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();*/
-
 		if(questionDef != null)
 			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());
 		else
@@ -250,6 +307,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 		}
 	}
 
+	/**
+	 * Sets the form definition object to which this skip rule belongs.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){
 		updateSkipRule();
 		this.formDef = formDef;
@@ -257,6 +319,9 @@ public class SkipRulesView extends Composite implements IConditionController{
 		clearConditions();
 	}
 
+	/**
+	 * Removes all skip rule conditions.
+	 */
 	private void clearConditions(){
 		if(questionDef != null)
 			updateSkipRule();
@@ -275,6 +340,11 @@ public class SkipRulesView extends Composite implements IConditionController{
 		updateMakeRequired();
 	}
 
+	/**
+	 * Sets whether to enable this widget or not.
+	 * 
+	 * @param enabled set to true to enable, else false.
+	 */
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 		

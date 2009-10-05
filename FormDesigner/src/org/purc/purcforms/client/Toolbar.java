@@ -266,5 +266,8 @@ public class Toolbar extends Composite{
 		
 		btnSameSize.addClickListener(new ClickListener(){
 			public void onClick(Widget widget){controller.makeSameSize();}});
+		
+		btnRefresh.addClickListener(new ClickListener(){
+			public void onClick(Widget widget){controller.refresh(this);}});
 	}
 }

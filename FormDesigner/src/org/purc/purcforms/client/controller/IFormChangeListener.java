@@ -2,7 +2,8 @@ package org.purc.purcforms.client.controller;
 
 
 /**
- * Interface for listening to form changes during design.
+ * Interface for listening to form item (form,page,question or question option)
+ *  property changes during design.
  * 
  * @author daniel
  *
@@ -10,14 +11,15 @@ package org.purc.purcforms.client.controller;
 public interface IFormChangeListener {
 
 	/**
-	 * Called when a form item (form,page,question or question option) is changed.
+	 * Called when the property of a form item (form,page,question or question option) 
+	 * is changed. Such properties could be, Text, Help Text, Binding, Data Type, Visibility, and more.
 	 * 
 	 * @param formItem the item which has been changed.
 	 */
 	public void onFormItemChanged(Object formItem);
 	
 	/**
-	 * Called when it is time to deleetd the kids of a form item (QuestionDef,PageDef).
+	 * Called when it is time to deleted the kids of a form item (QuestionDef,PageDef).
 	 * 
 	 * @param formItem the form item whose kids are to be deleted.
 	 */

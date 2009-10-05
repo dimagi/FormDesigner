@@ -54,7 +54,6 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 			FormUtil.retrieveUserDivParameters();
 
-
 			// Get rid of scrollbars, and clear out the window's built-in margin,
 			// because we want to take advantage of the entire client area.
 			Window.enableScrolling(false);
@@ -70,13 +69,15 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 			designer = new FormDesignerWidget(true,true,true);
 			
-			// Finally, add the designer widget to the RootPanel, so that it will be
-			// displayed.
+			// Finally, add the designer widget to the RootPanel, so that it will be displayed.
 			rootPanel.add(designer);
 			
+			//If a form id has been specified in the html host page, load the form
+			//with that id in the designer.
 			s = FormUtil.getFormId();
 			if(s != null)
 				designer.loadForm(Integer.parseInt(s));
+			
 
 			// Call the window resized handler to get the initial sizes setup. Doing
 			// this in a deferred command causes it to occur after all widgets' sizes
@@ -90,21 +91,6 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 						FormUtil.dlg.hide();
 				}
 			});
-
-			
-			//LoginDialog dlg = new LoginDialog(null);
-			//dlg.center();
-			
-			//FormDesignerUtil.authenticate();
-			
-			//FormUtil.dlg.hide();
-
-			//Element elem = DOM.getElementById("loading");
-			//DOM.removeChild(elem.getParentElement(), elem);
-			//DOM.removeChild(elem.getParentElement(), elem);
-			//DOM.removeChild(RootPanel.getBodyElement(), DOM.getElementById("loading")); 
-
-			//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 			
 			// Hook the window resize event, so that we can adjust the UI.
 			Window.addWindowResizeListener(this);

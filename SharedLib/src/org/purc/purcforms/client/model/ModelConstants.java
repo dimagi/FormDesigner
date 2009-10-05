@@ -9,15 +9,6 @@ import java.io.Serializable;
  */
 public class ModelConstants implements Serializable{
 	
-	//Bit flags for some optimizations (e.g data compression.)
-	public static final int BIT_FLAG1 = 1 << 0;  //  1 
-	public static final int BIT_FLAG2 = 1 << 1;  //  2 
-	public static final int BIT_FLAG3 = 1 << 2;  //  4 
-	public static final int BIT_FLAG4 = 1 << 3;  //  8 
-	public static final int BIT_FLAG5 = 1 << 4;  // 16 
-	public static final int BIT_FLAG6 = 1 << 5;  // 32
-	public static final int BIT_FLAG7 = 1 << 6;  // 64 
-	
 	/** Empty strig representation */
 	public static final String EMPTY_STRING = "";
 	
@@ -54,33 +45,46 @@ public class ModelConstants implements Serializable{
 	/** Operator Less */
 	public static final int OPERATOR_LESS = 5;
 	
-	/** Operator Less than */
+	/** Operator Less than or equal to */
 	public static final int OPERATOR_LESS_EQUAL = 6;
 	
+	/** Operator In List. */
 	public static final int OPERATOR_IN_LIST = 7;
 	
+	/**Operator Not In List. */
 	public static final int OPERATOR_NOT_IN_LIST = 8;
 	
+	/** Operator Is Null. */
 	public static final int OPERATOR_IS_NULL = 9;
 	
+	/** Operator Between. */
 	public static final int OPERATOR_BETWEEN = 10;
 	
+	/** Operator Not Between. */
 	public static final int OPERATOR_NOT_BETWEEN = 11;
 	
+	/** Operator Contains. */
 	public static final int OPERATOR_CONTAINS = 12;
 	
+	/** Operator Not Contain. */
 	public static final int OPERATOR_NOT_CONTAIN = 13;
 	
+	/** Operator Starts With. */
 	public static final int OPERATOR_STARTS_WITH = 14;
 	
+	/** Operator Not Starts With. */
 	public static final int OPERATOR_NOT_START_WITH = 15;
 	
+	/** Operator Is Not Null. */
 	public static final int OPERATOR_IS_NOT_NULL = 16;
 	
+	/** Operator Ends With. */
 	public static final int OPERATOR_ENDS_WITH = 17;
 	
+	/** Operator Not End With. */
 	public static final int OPERATOR_NOT_END_WITH = 18;
 	
+	/** The Value Function. */
 	public static final int FUNCTION_VALUE = 1;
 	
 	/** The Length function. */
@@ -106,12 +110,4 @@ public class ModelConstants implements Serializable{
 	
 	/** Rule action to make a question optional */
 	public static final int ACTION_MAKE_OPTIONAL = 1 << 6;
-	
-	public static final String NULLS_NOT_ALLOWED = "Nulls not allowed. Use empty string";
-	
-	/** The maximum number of characters for text input. */
-	public static final int MAX_NUM_CHARS = 500;
-	
-	/** The default study id for those that dont deal with studies, they just have forms. */
-	public static final int DEFAULT_STUDY_ID = 1;
 }

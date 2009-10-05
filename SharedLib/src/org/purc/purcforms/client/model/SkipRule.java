@@ -33,10 +33,7 @@ public class SkipRule implements Serializable{
 	
 	/** A list of question identifiers (int) acted upon when conditions for the rule are true. */
 	private Vector actionTargets;
-	
-	/** The skip rule name. */
-	//private String name; (No use found for this as for now)
-	
+		
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
 	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
 	
@@ -50,7 +47,6 @@ public class SkipRule implements Serializable{
 	public SkipRule(SkipRule skipRule){
 		setId(skipRule.getId());
 		setAction(skipRule.getAction());
-		//setName(skipRule.getName());
 		setConditionsOperator(skipRule.getConditionsOperator());
 		copyConditions(skipRule.getConditions());
 		copyActionTargets(skipRule.getActionTargets());
@@ -68,7 +64,6 @@ public class SkipRule implements Serializable{
 		setConditions(conditions);
 		setAction(action);
 		setActionTargets(actionTargets);
-		//setName(name);
 	}
 	
 	public int getAction() {
@@ -134,13 +129,6 @@ public class SkipRule implements Serializable{
 			return null;
 		return (Integer)actionTargets.elementAt(index);
 	}
-	/*public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}*/
 	
 	public void addActionTarget(int id){
 		if(actionTargets == null)
@@ -252,10 +240,6 @@ public class SkipRule implements Serializable{
 			qtn.setRequired(conditionTrue);
 	}
 	
-	/*public String toString() {
-		return getName();
-	}*/
-	
 	private void copyConditions(Vector conditions){
 		this.conditions = new Vector();
 		for(int i=0; i<conditions.size(); i++)
@@ -270,14 +254,6 @@ public class SkipRule implements Serializable{
 	
 	public void updateDoc(FormDef formDef){
 		XformConverter.fromSkipRule2Xform(this,formDef);
-		/*for(int i=0; i<actionTargets.size(); i++){
-			int id = ((Integer)actionTargets.elementAt(i)).intValue();
-			QuestionDef questionDef = formDef.getQuestion(id);
-			Element node = questionDef.getBindNode();
-			if(node == null)
-				node = questionDef.getControlNode();
-			node.setAttribute(EpihandyXform.ATTRIBUTE_NAME_RELEVANT, "");
-		}*/
 	}
 	
 	public void refresh(FormDef dstFormDef, FormDef srcFormDef){

@@ -129,7 +129,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		initPreview();
 		initModelXml();
 
-		FormDesignerUtil.maximizeWidget(tabs);
+		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(0);
 		initWidget(tabs);
@@ -164,11 +164,18 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		});
 	}
 
-
+	/**
+	 * Sets the listener to form item property change events.
+	 * 
+	 * @param formChangeListener the listener.
+	 */
 	public void setFormChangeListener(IFormChangeListener formChangeListener){
 		propertiesView.setFormChangeListener(formChangeListener);
 	}
 
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 */
 	public void onTabSelected(SourcesTabEvents sender, int tabIndex){
 		if(tabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			Context.setCurrentMode(Context.MODE_DESIGN);
@@ -196,6 +203,13 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		//else if(selectedTabIndex == SELECTED_INDEX_LAYOUT_XML)
 		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 	}
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 */
+	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
+		return true;
+	}
 
 	private void loadPreview(){
 		FormUtil.dlg.setText(LocaleText.get("loadingPreview"));
@@ -216,56 +230,48 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		});
 	}
 
-	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
-		return true;
-	}
-
+	/**
+	 * Sets up the design surface.
+	 */
 	private void initDesignSurface(){
-		tabs.add(scrollPanelDesign, "Design Surface");
+		tabs.add(scrollPanelDesign, LocaleText.get("designSurface"));
 
 		designSurfaceView.setWidth("100%"); //1015px
 		designSurfaceView.setHeight("700px"); //707px
 		designSurfaceView.setLayoutChangeListener(this);
 
 		scrollPanelDesign.setWidget(designSurfaceView);
-
-		//FormDesignerUtil.maximizeWidget(scrollPanel);
-
-		/*tabs.add(designSurfaceView, "Design Surface");
-		FormDesignerUtil.maximizeWidget(designSurfaceView);
-		designSurfaceView.setLayoutChangeListener(this);*/
 	}
 
 	/**
 	 * Sets up the xforms source tab.
 	 */
 	private void initXformsSource(){
-		FormDesignerUtil.maximizeWidget(txtXformsSource);
-		tabs.add(txtXformsSource, "XForms Source");
+		tabs.add(txtXformsSource, LocaleText.get("xformsSource"));
+		FormUtil.maximizeWidget(txtXformsSource);
 	}
 
 	/**
 	 * Sets up the layout xml tab.
 	 */
 	private void initLayoutXml(){
-		tabs.add(txtLayoutXml, "Layout XML");
-		FormDesignerUtil.maximizeWidget(txtLayoutXml);
+		tabs.add(txtLayoutXml, LocaleText.get("layoutXml"));
+		FormUtil.maximizeWidget(txtLayoutXml);
 	}
 	
 	/**
 	 * Sets up the language xml tab.
 	 */
 	private void initLanguageXml(){
-		tabs.add(txtLanguageXml, "Language XML");
-		FormDesignerUtil.maximizeWidget(txtLanguageXml);
+		tabs.add(txtLanguageXml, LocaleText.get("languageXml"));
+		FormUtil.maximizeWidget(txtLanguageXml);
 	}
 
 	/**
 	 * Sets up the preview surface tab.
 	 */
 	private void initPreview(){
-		tabs.add(scrollPanelPreview, "Preview");
-		//FormDesignerUtil.maximizeWidget(previewView);
+		tabs.add(scrollPanelPreview, LocaleText.get("preview"));
 		previewView.setWidth("100%"); //1015px
 		previewView.setHeight("700px"); //707px
 		previewView.setSubmitListener(this);
@@ -279,22 +285,25 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 * Sets up the model xml tab.
 	 */
 	private void initModelXml(){
-		tabs.add(txtModelXml, "Model XML");
-		FormDesignerUtil.maximizeWidget(txtModelXml);
+		tabs.add(txtModelXml, LocaleText.get("modelXml"));
+		FormUtil.maximizeWidget(txtModelXml);
 	}
 
 	/**
 	 * Sets up the properties tab.
 	 */
 	private void initProperties(){
-		tabs.add(propertiesView, "Properties");
+		tabs.add(propertiesView, LocaleText.get("properties"));
 	}
 
+	/**
+	 * Sets the height of the text area widgets.
+	 * 
+	 * @param height the height in pixels
+	 */
 	public void adjustHeight(String height){
 		txtXformsSource.setHeight(height);
-		//designSurfaceView.setHeight(height);
 		txtLayoutXml.setHeight(height);
-		//previewView.setHeight(height);
 		txtModelXml.setHeight(height);
 		txtLanguageXml.setHeight(height);
 	}
@@ -313,13 +322,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		if(this.formDef != form){
 			setFormDef(form);
 
-			//if(formItem instanceof FormDef){
 			designSurfaceView.setFormDef(formDef);
 			previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
-			//}
 			
 			//This is necessary for those running in a non GWT mode to update the 
 			//scroll bars on loading the form.
@@ -332,16 +339,12 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	public void onWindowResized(int width, int height){
 		propertiesView.onWindowResized(width, height);
-		//designSurfaceView.onWindowResized(width, height);
-		//previewView.onWindowResized(width, height);
-
 		updateScrollPos();
-
-		//scrollPanel.setWidth(width-261+"px");
-		//scrollPanel.setHeight(height-110+"px");
-		//FormDesignerUtil.maximizeWidget(scrollPanel);
 	}
 	
+	/**
+	 * Sets the current scroll height and width of the design and preview surface.
+	 */
 	private void updateScrollPos(){
 		onVerticalResize();
 		
@@ -352,6 +355,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		}
 	}
 
+	/**
+	 * Called every time this widget is resized.
+	 */
 	public void onVerticalResize(){
 		int d = Window.getClientWidth()-tabs.getAbsoluteLeft();
 		if(d > 0){
@@ -360,6 +366,13 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		}
 	}
 
+	/**
+	 * Loads a form with a given layout xml.
+	 * 
+	 * @param formDef the form definition object.
+	 * @param layoutXml the layout xml. If this is null, the form is loaded
+	 * 					with the default layout which is build automatically.
+	 */
 	public void loadForm(FormDef formDef, String layoutXml){
 		setFormDef(formDef);
 
@@ -488,17 +501,18 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	/**
 	 * Loads layout xml and builds the widgets represented on the design surface tab. 
 	 *
-	 * @param xml the layout xml.
+	 * @param layoutXml the layout xml. If layoutXml is null, then it uses the one in
+	 * 					the layout xml tab, if any is found there.
 	 * @param selectTabs set to true to select the layout xml tab, else set to false.
 	 */
-	public void loadLayoutXml(String xml, boolean selectTabs){
-		if(xml != null)
-			txtLayoutXml.setText(xml);
+	public void loadLayoutXml(String layoutXml, boolean selectTabs){
+		if(layoutXml != null)
+			txtLayoutXml.setText(layoutXml);
 		else
-			xml = txtLayoutXml.getText();
+			layoutXml = txtLayoutXml.getText();
 
-		if(xml != null && xml.trim().length() > 0){
-			designSurfaceView.setLayoutXml(xml,Context.inLocalizationMode() ? formDef : null); //TODO This passed null formdef in localization mode
+		if(layoutXml != null && layoutXml.trim().length() > 0){
+			designSurfaceView.setLayoutXml(layoutXml,Context.inLocalizationMode() ? formDef : null); //TODO This passed null formdef in localization mode
 			updateScrollPos();
 			
 			if(selectTabs)
@@ -508,13 +522,21 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
 
 		if(formDef != null)
-			formDef.setLayoutXml(xml);
+			formDef.setLayoutXml(layoutXml);
 	}
 
+	/**
+	 * Loads the form widget layout from the xml in the layout xml tab.
+	 * 
+	 * @param selectTabs set to true to select the layout xml tab, else false.
+	 */
 	public void openFormLayout(boolean selectTabs){
 		loadLayoutXml(null,selectTabs);
 	}
 
+	/**
+	 * Loads the current form in the locale whose contents are in the language xml tab.
+	 */
 	public void openLanguageXml(){
 		loadLanguageXml(null,false);
 	}
@@ -564,6 +586,9 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			formDef.setLanguageXml(txtLanguageXml.getText());
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#format()()
+	 */
 	public void format(){
 		if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)
 			txtXformsSource.setText(FormDesignerUtil.formatXml(txtXformsSource.getText()));
@@ -581,44 +606,58 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		propertiesView.commitChanges();
 	}
 
+	/**
+	 * Sets the listener to widget selection changes.
+	 * 
+	 * @param widgetSelectionListener the listener.
+	 */
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
 		designSurfaceView.setWidgetSelectionListener(widgetSelectionListener);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormDesignerController#deleteSelectedItem()
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.deleteSelectedItem();	
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 */
 	public void copyItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.copyItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#cutItem()
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.cutItem();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.purc.purcform.client.controller.IFormActionListener#pasteItem()
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.pasteItem();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.SubmitListener#onSubmit(String)()
+	 */
 	public void onSubmit(String xml) {
 		this.txtModelXml.setText(xml);
 		tabs.selectTab(SELECTED_INDEX_MODEL_XML);
 	}
 	
+	/**
+	 * @see org.purc.purcforms.client.controller.SubmitListener#onCancel()()
+	 */
 	public void onCancel(){
 		
 	}
@@ -683,12 +722,17 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#refresh()
 	 */
 	public void refresh(){
-		if(selectedTabIndex == SELECTED_INDEX_PREVIEW )
-			previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),null);
+		if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
+			previewView.refresh(); //loadForm(formDef,designSurfaceView.getLayoutXml(),null);
 		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			designSurfaceView.refresh();
 	}
 
+	/**
+	 * Sets the current form that is being designed.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){
 		if(this.formDef == null || this.formDef != formDef){
 			if(formDef ==  null){
@@ -706,34 +750,64 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		this.formDef = formDef;
 	}
 
+	/**
+	 * Gets the current form that is being designed.
+	 * 
+	 * @return the form definition object.
+	 */
 	public FormDef getFormDef(){
 		return formDef;
 	}
 
+	/**
+	 * Sets the height offset used by this widget when embedded as a widget
+	 * in a GWT application.
+	 * 
+	 * @param offset the offset pixels.
+	 */
 	public void setEmbeddedHeightOffset(int offset){
 		designSurfaceView.setEmbeddedHeightOffset(offset);
 		previewView.setEmbeddedHeightOffset(offset);
 	}
 
+	/**
+	 * Sets the listener to form action events.
+	 * 
+	 * @param formActionListener the listener.
+	 */
 	public void setFormActionListener(IFormActionListener formActionListener){
 		this.propertiesView.setFormActionListener(formActionListener);
 	}
 
+	/**
+	 * Checks if the layout xml tab is selected.
+	 * 
+	 * @return true if yes, else false.
+	 */
 	public boolean isInLayoutMode(){
 		return tabs.getTabBar().getSelectedTab() == SELECTED_INDEX_LAYOUT_XML;
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.LayoutChangeListener#onLayoutChanged(String)
+	 */
 	public void onLayoutChanged(String xml){
 		txtLayoutXml.setText(xml);
 		if(formDef != null)
 			formDef.setLayoutXml(xml);
 	}
 
+	/**
+	 * Selects the language xml tab.
+	 */
 	private void selectLanguageTab(){
 		if(tabs.getTabBar().getTabCount() == 7)
 			tabs.selectTab(SELECTED_INDEX_LANGUAGE_XML);
 	}
 
+	/**
+	 * Removes the language xml tab.
+	 */
 	public void removeLanguageTab(){
 		if(tabs.getTabBar().getTabCount() == 7){
 			tabs.remove(SELECTED_INDEX_LANGUAGE_XML);
@@ -749,5 +823,14 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	 */
 	public void setFormDesignerListener(IFormDesignerListener formDesignerListener){
 		this.formDesignerListener = formDesignerListener;
+	}
+	
+	/**
+	 * Checks if the current selection mode allows refreshes.
+	 * 
+	 * @return true if it allows, else false.
+	 */
+	public boolean allowsRefresh(){
+		return selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE || selectedTabIndex == SELECTED_INDEX_PREVIEW;
 	}
 }

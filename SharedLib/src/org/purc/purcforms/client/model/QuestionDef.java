@@ -1280,7 +1280,7 @@ public class QuestionDef implements Serializable{
 	 * @param parentXpath the parent xpath expression we are building onto.
 	 * @param doc the locale document that we are building.
 	 * @param parentXformNode the parent xforms node for this question.
-	 * @param parentLangNode the parent language node we are bulding onto.
+	 * @param parentLangNode the parent language node we are building onto.
 	 */
 	public void buildLanguageNodes(String parentXpath, com.google.gwt.xml.client.Document doc, Element parentXformNode, Element parentLangNode){
 		if(controlNode == null)

@@ -3,6 +3,7 @@ package org.purc.purcforms.client.view;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
 import org.purc.purcforms.client.widget.PaletteWidget;
 
@@ -16,7 +17,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
- * Contains the palette where the user can pick wdigets and drag drop
+ * Contains the palette where the user can pick widgets and drag drop
  *  them onto the design surface.
  * 
  * @author daniel
@@ -24,12 +25,26 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class PaletteView extends Composite {
 
+	/** The panel to contain the palette widgets. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
+	
+	/** The panel to enable scrolling when the number of widgets is greater
+	 * than can be contained in the visible region of this widget.
+	 */
 	private ScrollPanel scrollPanel = new ScrollPanel();
+	
+	/** The palette images. */
 	private final Images images;
 	
+	/** The DND drag controller. */
 	private static FormDesignerDragController dragController;
 
+	
+	/**
+	 * Creates a new instance of the palette.
+	 * 
+	 * @param images the palette images.
+	 */
 	public PaletteView(Images images) {
 
 		this.images = images;
@@ -58,31 +73,52 @@ public class PaletteView extends Composite {
 		scrollPanel.setWidget(verticalPanel);
 
 		initWidget(scrollPanel);
-		FormDesignerUtil.maximizeWidget(scrollPanel);
+		FormUtil.maximizeWidget(scrollPanel);
 	}
 	
+	/**
+	 * Sets up the DND drag controller.
+	 */
 	private static void initDnd(){
 		dragController = new FormDesignerDragController(RootPanel.get(), false,null);
 		dragController.setBehaviorMultipleSelection(false);
-		//dragController.setBehaviorCancelDocumentSelections(true);
 	}
 
+	/**
+	 * Creates a new palette widget.
+	 * 
+	 * @param html the name of the widget.
+	 * @return the new palette widget.
+	 */
 	private PaletteWidget createPaletteWidget(HTML html){
 		PaletteWidget widget = new PaletteWidget(images,html);
 		dragController.makeDraggable(widget);
 		return widget;
 	}
 	
+	/**
+	 * Registers a drop controller for widgets from this palette.
+	 * 
+	 * @param dropController the drop controller to register.
+	 */
 	public static void registerDropController(DropController dropController) {
 		if(dragController == null)
 			initDnd();
 		dragController.registerDropController(dropController);
 	}
 	
+	/**
+	 * Removes a previously registered drop controller.
+	 * 
+	 * @param dropController the drop controller to un register.
+	 */
 	public static void unRegisterDropController(DropController dropController){
 		dragController.unregisterDropController(dropController);
 	}
 	
+	/**
+	 * Removes all registered drop controllers.
+	 */
 	public static void unRegisterAllDropControllers(){
 		dragController.unregisterAllDropControllers();
 	}

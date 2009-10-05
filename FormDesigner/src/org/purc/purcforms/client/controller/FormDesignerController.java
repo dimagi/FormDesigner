@@ -295,15 +295,16 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					//TODO Need to preserve user's model and any others.
 					String xml = null;
 					FormDef formDef = obj;
-					if(formDef.getDoc() == null){
+					if(formDef.getDoc() == null)
 						xml = XformConverter.fromFormDef2Xform(formDef);
-						xml = FormDesignerUtil.formatXml(xml);
-					}
 					else{
 						formDef.updateDoc(false);
 						xml = XformConverter.fromDoc2String(formDef.getDoc());
-						xml = FormDesignerUtil.formatXml(xml);
 					}
+					
+					xml = XformConverter.normalizeNameSpace(formDef.getDoc(), xml);
+					
+					xml = FormDesignerUtil.formatXml(xml);
 
 					formDef.setXformXml(xml);
 					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
@@ -520,7 +521,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	private void refreshObject() {
-		if(refreshObject instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
+		
+		//If the center panel's current mode does not allow refreshes 
+		//or the forms tree view is the one which has requested a refresh.
+		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
 			if(formId != null){
 				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();

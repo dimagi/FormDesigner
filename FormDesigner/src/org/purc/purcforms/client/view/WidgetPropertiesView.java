@@ -272,11 +272,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		setupEvents();
 		txtChildBinding.setEnabled(false);
 
-		FormDesignerUtil.allowNumericOnly(txtWidth,false);
-		FormDesignerUtil.allowNumericOnly(txtHeight,false);
-		FormDesignerUtil.allowNumericOnly(txtLeft,false);
-		FormDesignerUtil.allowNumericOnly(txtTop,false);
-		FormDesignerUtil.allowNumericOnly(txtTabIndex,false);
+		FormUtil.allowNumericOnly(txtWidth,false);
+		FormUtil.allowNumericOnly(txtHeight,false);
+		FormUtil.allowNumericOnly(txtLeft,false);
+		FormUtil.allowNumericOnly(txtTop,false);
+		FormUtil.allowNumericOnly(txtTabIndex,false);
 
 		enableLabelProperties(false);
 
@@ -986,7 +986,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		else{
 			List options  = questionDef.getOptions();
 			if(options != null){
-				FormDesignerUtil.loadOptions(options,oracle);
+				FormUtil.loadOptions(options,oracle);
 				txtChildBinding.setEnabled(true);
 			}
 		}

@@ -37,50 +37,79 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 /**
- * Controls the interactions between the menu, tool bar and various views for the form designer.
+ * Controls the interactions between the menu, tool bar and 
+ * various views (eg Left and Center panels) for the form designer.
  * 
  * @author daniel
  *
  */
 public class FormDesignerController implements IFormDesignerListener, OpenFileDialogEventListener{
 
+	/** The panel on the right hand side of the form designer. */
 	private CenterPanel centerPanel;
-	private LeftPanel leftPanel;
 	
+	/** The panel on the left hand side of the form designer. */
+	private LeftPanel leftPanel;
+
 	/**
 	 * The identifier of the loaded or opened form.
 	 */
 	private Integer formId;	
-	
+
 	/**
 	 * The listener to form save events.
 	 */
 	private IFormSaveListener formSaveListener;
-	
-	
+
+	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
+	 * key and text, where locale key is the value map key and text is the value map value.
+	 */
 	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
+	//These are constants to remember the current action during the login call back
+	//such that we know which action to execute.
+	/** No current action. */
 	private static final byte CA_NONE = 0;
+	
+	/** Action for loading a form definition. */
 	private static final byte CA_LOAD_FORM = 1;
+	
+	/** Action for saving form. */
 	private static final byte CA_SAVE_FORM = 2;
+	
+	/** Action for refreshing a form. */
 	private static final byte CA_REFRESH_FORM = 3;
+	
+	/** Action for setting file contents. */
 	private static final byte CA_SET_FILE_CONTENTS = 4;
 
+	/** The current action by the time to try to authenticate the user at the server. */
 	private static byte currentAction = CA_NONE;
 
 	/**
-	 * The dialog box used to logon the server when the user's session expires on the server.
+	 * The dialog box used to log on the server when the user's session expires on the server.
 	 */
 	private static LoginDialog loginDlg = new LoginDialog();
-	
-	
+
+	/** Static self reference such that the static login call back can have
+	 *  a reference to proceed with the current action.
+	 */
 	private static FormDesignerController controller;
+	
+	/** The object that is being refreshed. */
 	private Object refreshObject;
 
+	
+	/**
+	 * Constructs a new instance of the form designer controller.
+	 * 
+	 * @param centerPanel the right hand side panel.
+	 * @param leftPanel the left hand side panel.
+	 */
 	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
 		this.leftPanel = leftPanel;
 		this.centerPanel = centerPanel;
-		
+
 		this.centerPanel.setFormDesignerListener(this);
 
 		controller = this;
@@ -99,17 +128,23 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void addNewChildItem() {
 		leftPanel.addNewChildItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#printForm()
 	 */
 	public void printForm(){
 		FormDef formDef = centerPanel.getFormDef();
 		if(formDef != null)
-			printForm(formDef.getName(), centerPanel.getFormInnerHtml());
+			openForm(formDef.getName(), centerPanel.getFormInnerHtml());
 	}
-	
-	public static native void printForm(String title,String html) /*-{
+
+	/**
+	 * Opens a new browser window with a given title and html contents.
+	 * 
+	 * @param title the window title.
+	 * @param html the window html contents.
+	 */
+	public static native void openForm(String title,String html) /*-{
 		 var win =window.open('','purcforms','width=350,height=250,menubar=1,toolbar=1,status=1,scrollbars=1,resizable=1');
 		 win.document.open("text/html","replace");
 		 win.document.writeln('<html><head><title>' + title + '</title></head><body bgcolor=white onLoad="self.focus()">'+html+'</body></html>');
@@ -161,7 +196,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void openForm() {
 		if(isOfflineMode()){
 			String xml = centerPanel.getXformsSource();
-			
+
 			//Only load layout if in layout mode and no xforms source is supplied.
 			if(centerPanel.isInLayoutMode() && (xml == null || xml.trim().length() == 0)){
 				xml = centerPanel.getLayoutXml();
@@ -187,6 +222,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		}
 	}
 
+	/**
+	 * Loads a form from the Xforms Source tab, in a deferred command.
+	 * 
+	 * @param id the form identifier.
+	 * @param readonly set to true to load the form in read only mode.
+	 */
 	public void openFormDeffered(int id, boolean readonly) {
 		final int tempFormId = id;
 		final boolean tempReadonly = readonly;
@@ -228,11 +269,20 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		openFormLayout(true);
 	}
 
+	/**
+	 * Loads the form widget layout in the Layout Xml tab.
+	 * 
+	 * @param selectTabs set to true to select the layout xml tab.
+	 */
 	public void openFormLayout(boolean selectTabs) {
-		//if(isOfflineMode())
 		openFormLayoutDeffered(selectTabs);
 	}
 
+	/**
+	 * Loads the form widget layout in the Layout Xml tab, in a deferred command.
+	 * 
+	 * @param selectTabs set to true to select the layout xml tab.
+	 */
 	public void openFormLayoutDeffered(boolean selectTabs) {
 		final boolean selectTbs = selectTabs;
 
@@ -301,9 +351,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						formDef.updateDoc(false);
 						xml = XformConverter.fromDoc2String(formDef.getDoc());
 					}
-					
+
 					xml = XformConverter.normalizeNameSpace(formDef.getDoc(), xml);
-					
+
 					xml = FormDesignerUtil.formatXml(xml);
 
 					formDef.setXformXml(xml);
@@ -521,10 +571,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	private void refreshObject() {
-		
+
 		//If the center panel's current mode does not allow refreshes 
 		//or the forms tree view is the one which has requested a refresh.
-		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView){ //TODO This controller should not know about LeftPanel implementation details.
+		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView ||
+				Context.getCurrentMode() == Context.MODE_XFORMS_SOURCE){ //TODO This controller should not know about LeftPanel implementation details.
+			
 			if(formId != null){
 				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();
@@ -556,6 +608,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		}
 	}
 
+	/**
+	 * Loads a form from the server.
+	 */
 	private void loadForm(){
 		FormUtil.dlg.setText(LocaleText.get("openingForm"));
 		FormUtil.dlg.center();
@@ -708,22 +763,22 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
 						FormDef formDef = XformConverter.fromXform2FormDef(xml);
-						
+
 						FormDef oldFormDef = centerPanel.getFormDef();
-						
+
 						//If we are in offline mode, we completely overwrite the form 
 						//with the contents of the xforms source tab.
 						if(!isOfflineMode())
 							formDef.refresh(oldFormDef);
-						
+
 						formDef.updateDoc(false);
 						xml = formDef.getDoc().toString();
 
 						formDef.setXformXml(FormUtil.formatXml(xml));
-						
+
 						formDef.setLayoutXml(oldFormDef.getLayoutXml());
 						formDef.setLanguageXml(oldFormDef.getLanguageXml());
-						
+
 						leftPanel.refresh(formDef);
 						centerPanel.refresh();
 					}
@@ -892,14 +947,27 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		});
 	}
 
+	/**
+	 * Saves locale text for the selected form.
+	 * 
+	 * @param selectTab set to true to select the language tab.
+	 */
 	public void saveLanguageText(boolean selectTab){
 		saveLanguageTextDeffered(selectTab);
 	}
 
+	/**
+	 * Saves locale text for the selected form.
+	 */
 	public void saveLanguageText(){
 		saveLanguageTextDeffered(true);
 	}
 
+	/**
+	 * Saves locale text for the selected form, in a deferred command.
+	 * 
+	 * @param selectTab set to true to select the language tab.
+	 */
 	public void saveLanguageTextDeffered(boolean selectTab){
 		final boolean selTab = selectTab;
 
@@ -932,24 +1000,42 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		});
 	}
 
+	/**
+	 * Reloads forms in a given locale.
+	 * 
+	 * @param locale the locale key.
+	 */
 	public void changeLocale(String locale){
+		
+		//Store the new locale.
 		Context.setLocale(locale);
 
 		String xml = null;
 		FormDef formDef = centerPanel.getFormDef();
 		if(formDef != null){
 			HashMap<String,String> map = languageText.get(formDef.getId());
+			
+			//Get text for this locale, if we have it. 
 			if(map != null)
 				xml = map.get(locale);
 
+			//If we don't, then get text for the default locale.
 			if(xml == null && map != null)
 				xml = map.get(Context.getDefaultLocale());
 		}
 
+		//Now reload the forms in this selected locale.
 		centerPanel.setLanguageXml(xml, false);
 		openLanguageText();
 	}
 
+	/**
+	 * Sets locale text for a given form.
+	 * 
+	 * @param formId the form identifier.
+	 * @param locale the locale key.
+	 * @param text the form locale text.
+	 */
 	private void setLocaleText(Integer formId, String locale, String text){
 		HashMap<String,String> map = languageText.get(formId);
 		if(map == null){
@@ -960,6 +1046,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		map.put(locale, text);
 	}
 
+	/**
+	 * Gets locale text for a given form.
+	 * 
+	 * @param formId the form identifier.
+	 * @param locale  the locale key.
+	 * @return the form locale text.
+	 */
 	private String getFormLocaleText(int formId, String locale){
 		HashMap<String,String> map = languageText.get(formId);
 		if(map != null)
@@ -967,9 +1060,16 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		return null;
 	}
 
+	/**
+	 * Sets xforms and layout locale text for a given form.
+	 * 
+	 * @param formId the form identifier.
+	 * @param locale the locale key.
+	 * @param xform the xforms locale text.
+	 * @param layout the layout locale text.
+	 */
 	public void setLocaleText(Integer formId, String locale, String xform, String layout){
 		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
-		//languageText.put(locale, LanguageUtil.getLocaleText(xform, layout));
 	}
 
 	/**
@@ -1022,7 +1122,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param authenticated has a value of true if the server has successfully authenticated the user, else false.
 	 */
 	private static void authenticationCallback(boolean authenticated) {	
-		
+
 		//If user has passed authentication, just go on with whatever they wanted to do
 		//else just redisplay the login dialog and let them enter correct
 		//user name and password.
@@ -1043,13 +1143,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		else
 			loginDlg.center();
 	}
-	
+
 	/**
 	 * Called to handle form designer global keyboard short cuts.
 	 */
 	public boolean handleKeyBoardEvent(Event event){
 		if(event.getCtrlKey()){
-			
+
 			if(event.getKeyCode() == 'S'){
 				saveForm();
 				//Returning false such that firefox does not try to save the page.
@@ -1060,7 +1160,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 }

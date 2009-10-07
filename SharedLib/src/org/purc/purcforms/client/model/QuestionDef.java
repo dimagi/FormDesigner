@@ -685,8 +685,12 @@ public class QuestionDef implements Serializable{
 			XformConverter.setTextNodeValue(labelNode,text);
 
 		Element node = bindNode;
-		if(node == null)
+		if(node == null){
+			//We are using a ref instead of bind
 			node = controlNode;
+			appendParentBinding = false;
+		}
+		
 		if(node != null){
 			String binding = variableName;
 			if(!binding.startsWith("/"+ formDef.getVariableName()+"/") && appendParentBinding){
@@ -698,6 +702,7 @@ public class QuestionDef implements Serializable{
 					binding = variableName;
 				}
 			}
+			
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
 				node.setAttribute(XformConverter.ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(dataType,node));
 			if(node.getAttribute(XformConverter.ATTRIBUTE_NAME_NODESET) != null)
@@ -1010,28 +1015,28 @@ public class QuestionDef implements Serializable{
 		String xml = controlNode.toString();
 		boolean modified = false;
 
-		if(name.equals(XformConverter.NODE_NAME_INPUT) &&
+		if(name.contains(XformConverter.NODE_NAME_INPUT_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if(name.equals(XformConverter.NODE_NAME_INPUT) &&
+		else if(name.contains(XformConverter.NODE_NAME_INPUT_MINUS_PREFIX) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
 			modified = true;
 		}
-		else if(name.equals(XformConverter.NODE_NAME_SELECT) &&
-				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
-			modified = true;
-		}
-		else if(name.equals(XformConverter.NODE_NAME_SELECT1) &&
+		else if(name.contains(XformConverter.NODE_NAME_SELECT1_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if((name.equals(XformConverter.NODE_NAME_SELECT1) || 
-				name.equals(XformConverter.NODE_NAME_SELECT)) &&
+		else if(name.contains(XformConverter.NODE_NAME_SELECT_MINUS_PREFIX) &&
+				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
+			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
+			modified = true;
+		}
+		else if((name.contains(XformConverter.NODE_NAME_SELECT1_MINUS_PREFIX) || 
+				name.contains(XformConverter.NODE_NAME_SELECT_MINUS_PREFIX)) &&
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){

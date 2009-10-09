@@ -534,7 +534,7 @@ public class FormUtil {
 	/**
 	 * Displays an exception to the user.
 	 * 
-	 * @param ex
+	 * @param ex the exception to display.
 	 */
 	public static void displayException(Throwable ex){
 		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.

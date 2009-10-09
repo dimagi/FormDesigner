@@ -508,8 +508,8 @@ public class XformConverter implements Serializable{
 				if(optionDef.getControlNode() == null)
 					addNewDynamicOption(formDef.getDoc(), list.get(index), parentOptionDef, dynamicOptionDef.getDataNode());
 				else{
-					setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
-					setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
+					XformUtil.setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
+					XformUtil.setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
 					optionDef.getControlNode().setAttribute(ATTRIBUTE_NAME_ID, optionDef.getVariableName());
 					optionDef.getControlNode().setAttribute(ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
 				}
@@ -517,6 +517,12 @@ public class XformConverter implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the next sibling of a node whose type is Node.ELEMENT_NODE
+	 * 
+	 * @param node the node whose next sibling element to get.
+	 * @return the next sibling element.
+	 */
 	public static Element getNextElementSibling(Element node){
 		Node sibling = node.getNextSibling();
 		while(sibling != null){
@@ -1032,24 +1038,39 @@ public class XformConverter implements Serializable{
 		return null;
 	}
 
-	//TODO This and the one below need to be refactored.
-	public static String fromNode2String(Node node){
-		return node.toString();
-	}
-
-
+	/**
+	 * Converts an xml document to a string.
+	 * 
+	 * @param doc the document.
+	 * @return the xml string.
+	 */
 	public static String fromDoc2String(Document doc){
 		return doc.toString();
 	}
 
+	/**
+	 * Converts an xml document to a form definition object.
+	 * 
+	 * @param xml the document xml.
+	 * @return the form definition object.
+	 */
 	public static FormDef fromXform2FormDef(String xml){
 		Document doc = getDocument(xml);
 		return getFormDef(doc);
 	}
 
+	/**
+	 * Converts an xforms document into a form definition object and also
+	 * replaces its model with the given one.
+	 * 
+	 * @param xformXml the xforms document xml.
+	 * @param modelXml the new xforms model xml.
+	 * @return the form definition object.
+	 */
 	public static FormDef fromXform2FormDef(String xformXml, String modelXml){
 		Document doc = getDocument(xformXml);
 
+		//If model xml has been supplied, use it to replace the existing one.
 		if(modelXml != null){
 			Element node = getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
 			Element dataNode = XformConverter.getInstanceDataNode(doc);
@@ -1061,10 +1082,22 @@ public class XformConverter implements Serializable{
 		return getFormDef(doc);
 	}
 
+	/**
+	 * Creates an xml document object from its text xml.
+	 * 
+	 * @param xml the text xml.
+	 * @return the document object.
+	 */
 	public static Document getDocument(String xml){
 		return XMLParser.parse(xml);
 	}
 
+	/**
+	 * Converts an xml document object to a form definition object.
+	 * 
+	 * @param doc the xml document object.
+	 * @return the form definition object.
+	 */
 	public static FormDef getFormDef(Document doc){
 		Element rootNode = doc.getDocumentElement();
 		FormDef formDef = new FormDef();
@@ -1104,7 +1137,7 @@ public class XformConverter implements Serializable{
 			return;
 
 		//We are using an array copy because we will modify the orphanDynOptionQns list
-		//as we loop through it and hence do not want concurency modification exceptions.
+		//as we loop through it and hence do not want concurrency modification exceptions.
 		Object[] qtns = orphanDynOptionQns.toArray();
 		for(int index = 0; index < qtns.length; index++){
 			QuestionDef questionDef = (QuestionDef)qtns[index];
@@ -1119,13 +1152,29 @@ public class XformConverter implements Serializable{
 			parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
 	}
 
+	/**
+	 * Gets the text value of a node with a given name.
+	 * 
+	 * @param dataNode the parent node of the node whose text value we are to get.
+	 *                 this node is normally an xforms instance data node.
+	 * @param name the name of the node.
+	 * @return the node text value.
+	 */
 	private static String getNodeTextValue(Element dataNode,String name){
 		Element node = getNode(dataNode,name);
 		if(node != null)
-			return getTextValue(node);
+			return XformUtil.getTextValue(node);
 		return null;
 	}
 
+	/**
+	 * Sets all default values of questions in a form definition object
+	 * as per the xforms document being parsed.
+	 * 
+	 * @param dataNode the xforms instance data node.
+	 * @param formDef the form definition object.
+	 * @param id2VarNameMap a map between questions ids and their binding or variableName.
+	 */
 	private static void setDefaultValues(Element dataNode,FormDef formDef,HashMap id2VarNameMap){
 		boolean valueSet = false;
 		String id, val;
@@ -1148,7 +1197,7 @@ public class XformConverter implements Serializable{
 					valueSet = true;
 					node = getValueNode(dataNode,variableName);
 					if(node != null)
-						val = getTextValue(node);
+						val = XformUtil.getTextValue(node);
 				}
 
 				if(node != null){
@@ -1174,6 +1223,14 @@ public class XformConverter implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the node that has the text value which is the answer, in a given
+	 * binding or variable name (e.g obs/weight/value)
+	 * 
+	 * @param dataNode the xforms instance data node.
+	 * @param variableName te binding or variable name.
+	 * @return the value node.
+	 */
 	private static Element getValueNode(Element dataNode,String variableName){
 		Element node = dataNode;
 		int startPos = 0;
@@ -1195,6 +1252,13 @@ public class XformConverter implements Serializable{
 		return node;
 	}
 
+	/**
+	 * Sets a question's default value which comes from a node attribute value.
+	 * 
+	 * @param qtn the question definition object.
+	 * @param variableName the binding or variable name of the question.
+	 * @param dataNode the xforms instance data node.
+	 */
 	private static void setAttributeDefaultValue(QuestionDef qtn, String variableName,Element dataNode){
 		String xpath = variableName;
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
@@ -1235,58 +1299,6 @@ public class XformConverter implements Serializable{
 		}
 	}
 
-	public static String getTextValue(Element node){
-		int numOfEntries = node.getChildNodes().getLength();
-		for (int i = 0; i < numOfEntries; i++) {
-			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
-
-				//These iterations are for particularly firefox which when comes accross
-				//text bigger than 4096, splits it into multiple adjacent text nodes
-				//each not exceeding the maximum 4096. This is as of 04/04/2009
-				//and for Firefox version 3.0.8
-				String s = "";
-
-				for(int index = i; index<numOfEntries; index++){
-					Node currentNode = node.getChildNodes().item(index);
-					String value = currentNode.getNodeValue();
-					if(currentNode.getNodeType() == Node.TEXT_NODE && value != null)
-						s += value;
-					else
-						break;
-				}
-
-				return s;
-				//return node.getChildNodes().item(i).getNodeValue();
-			}
-
-			if(node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
-				String val = getTextValue((Element)node.getChildNodes().item(i));
-				if(val != null)
-					return val;
-			}
-		}
-
-		return null;
-	}
-
-	public static boolean setTextNodeValue(Element node, String value){
-		if(node == null)
-			return false;
-
-		int numOfEntries = node.getChildNodes().getLength();
-		for (int i = 0; i < numOfEntries; i++) {
-			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
-				node.getChildNodes().item(i).setNodeValue(value);
-				return true;
-			}
-
-			if(node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
-				if(setTextNodeValue((Element)node.getChildNodes().item(i),value))
-					return true;
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * Gets a child element of a parent node with a given name.
@@ -1902,6 +1914,13 @@ public class XformConverter implements Serializable{
 		}
 	}
 
+	/**
+	 * Gets the skip rule action for a question.
+	 * 
+	 * @param qtn the question definition object.
+	 * @return the skip rule action which can be (ModelConstants.ACTION_DISABLE,
+	 *         ModelConstants.ACTION_HIDE,ModelConstants.ACTION_SHOW or ModelConstants.ACTION_ENABLE)
+	 */
 	private static int getAction(QuestionDef qtn){
 		Element node = qtn.getBindNode();
 		if(node == null)
@@ -1930,6 +1949,16 @@ public class XformConverter implements Serializable{
 		return action;
 	}
 
+	/**
+	 * Creates a skip rule object from a relevent attribute value.
+	 * 
+	 * @param formDef the form definition object to build the skip rule for.
+	 * @param questionId the identifier of the question which is the target of the skip rule.
+	 * @param relevant the relevant attribute value.
+	 * @param id the identifier for the skip rule.
+	 * @param action the skip rule action to apply to the above target question.
+	 * @return the skip rule object.
+	 */
 	private static SkipRule buildSkipRule(FormDef formDef, int questionId, String relevant, int id, int action){
 
 		SkipRule skipRule = new SkipRule();
@@ -1939,16 +1968,27 @@ public class XformConverter implements Serializable{
 		skipRule.setConditions(getSkipRuleConditions(formDef,relevant,action));
 		skipRule.setConditionsOperator(getConditionsOperator(relevant));
 
+		//For now we only have one action target, much as the object model is
+		//flexible enough to support any number of them.
 		Vector actionTargets = new Vector();
 		actionTargets.add(new Integer(questionId));
 		skipRule.setActionTargets(actionTargets);
-		//skipRule.setName(name);
 
+		// If skip rule has no conditions, then its as good as no skip rule at all.
 		if(skipRule.getConditions() == null || skipRule.getConditions().size() == 0)
 			return null;
 		return skipRule;
 	}
 
+	
+	/**
+	 * Creates a validation rule object from a constraint attribute value.
+	 * 
+	 * @param formDef the form definition object to build the validation rule for.
+	 * @param questionId the identifier of the question which is the target of the validation rule.
+	 * @param constraint the constraint attribute value.
+	 * @return the validation rule object.
+	 */
 	private static ValidationRule buildValidationRule(FormDef formDef, int questionId, String constraint){
 
 		ValidationRule validationRule = new ValidationRule(questionId,formDef);
@@ -1962,11 +2002,20 @@ public class XformConverter implements Serializable{
 		else
 			validationRule.setErrorMessage(node.getAttribute(ATTRIBUTE_NAME_CONSTRAINT_MESSAGE));
 
+		// If the validation rule has no conditions, then its as good as no rule at all.
 		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0)
 			return null;
 		return validationRule;
 	}
 
+	/**
+	 * Gets a list of conditions for a skip rule as per the relevant attribute value.
+	 * 
+	 * @param formDef the form definition object to which the skip rule belongs.
+	 * @param relevant the relevant attribute value.
+	 * @param action the skip rule target action.
+	 * @return the conditions list.
+	 */
 	private static Vector getSkipRuleConditions(FormDef formDef, String relevant, int action){
 		Vector conditions = new Vector();
 
@@ -1982,6 +2031,15 @@ public class XformConverter implements Serializable{
 		return conditions;
 	}
 
+	
+	/**
+	 * Gets a list of conditions for a validation rule as per the constraint attribute value.
+	 * 
+	 * @param formDef the form definition object to which the validation rule belongs.
+	 * @param constraint the relevant attribute value.
+	 * @param questionId the identifier of the question which is the target of the validation rule.
+	 * @return the conditions list.
+	 */
 	private static Vector getValidationRuleConditions(FormDef formDef, String constraint, int questionId){
 		Vector conditions = new Vector();
 		Vector list = getConditionsOperatorTokens(constraint);
@@ -1996,6 +2054,16 @@ public class XformConverter implements Serializable{
 		return conditions;
 	}
 
+	
+	/**
+	 * Creates a skip rule condition object from a portion of the relevant attribute value.
+	 * 
+	 * @param formDef the form definition object to which the skip rule belongs.
+	 * @param relevant the token or portion from the relevant attribute value.
+	 * @param id the new condition identifier.
+	 * @param action the skip rule target action.
+	 * @return the new condition object.
+	 */
 	private static Condition getSkipRuleCondition(FormDef formDef, String relevant, int id, int action){		
 		Condition condition  = new Condition();
 		condition.setId(id);
@@ -2050,6 +2118,15 @@ public class XformConverter implements Serializable{
 		return condition;
 	}
 
+	
+	/**
+	 * Creates a validation rule condition object from a portion of the constraint attribute value.
+	 * 
+	 * @param formDef the form definition object to which the validation rule belongs.
+	 * @param constraint the
+	 * @param questionId
+	 * @return
+	 */
 	private static Condition getValidationRuleCondition(FormDef formDef, String constraint, int questionId){		
 		Condition condition  = new Condition();
 		condition.setId(questionId);

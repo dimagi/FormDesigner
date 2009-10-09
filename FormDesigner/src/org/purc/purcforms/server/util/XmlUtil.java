@@ -28,6 +28,13 @@ import org.w3c.dom.Element;
  */
 public class XmlUtil {
 
+	/**
+	 * Reads text data from an http request stream.
+	 * 
+	 * @param request the http request stream.
+	 * @return the text data.
+	 * @throws java.io.IOException
+	 */
 	public static String getRequestAsString(HttpServletRequest request) throws java.io.IOException {
 		BufferedReader requestData = new BufferedReader(new InputStreamReader(request.getInputStream()));
 		StringBuffer stringBuffer = new StringBuffer();
@@ -67,6 +74,12 @@ public class XmlUtil {
 		return null;
 	}
 	
+	/**
+	 * Creates an xml document from its xml text.
+	 * 
+	 * @param xml the xml text.
+	 * @return the xml document.
+	 */
 	public static Document fromString2Doc(String xml){
 		try{
 			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(IOUtils.toInputStream(xml));
@@ -77,7 +90,14 @@ public class XmlUtil {
 		return null;
 	}
 	
-	public static String getNodeValue(Document doc, String xpath){
+	/**
+	 * Gets the text or attribute value of an xpath expression from an xforms instance data document.
+	 * 
+	 * @param doc the instance data document.
+	 * @param xpath the xpath expression.
+	 * @return the text or attribute value.
+	 */
+	/*public static String getNodeValue(Document doc, String xpath){
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
 		if(pos > 0){
@@ -97,7 +117,7 @@ public class XmlUtil {
 			}
 		}
 		return null;
-	}
+	}*/
 	
 	/**
 	 * Gets the value of the description template for an xforms xml model.
@@ -138,14 +158,21 @@ public class XmlUtil {
 		return text;
 	}
 	
-	private static String getValue(Element node, String xpath){
+	/**
+	 * Gets the text or attribute value of an xpath expression from an xforms instance data node.
+	 * 
+	 * @param dataNode the instance data node.
+	 * @param xpath the xpath expression.
+	 * @return the text or attribute value.
+	 */
+	private static String getValue(Element dataNode, String xpath){
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
 		if(pos > 0){
 			attributeName = xpath.substring(pos+1,xpath.length());
 			xpath = xpath.substring(0,pos-1);
 		}
 		
-		XPathExpression xpls = new XPathExpression(node, xpath);
+		XPathExpression xpls = new XPathExpression(dataNode, xpath);
 		Vector result = xpls.getResult();
 
 		for (Enumeration e = result.elements(); e.hasMoreElements();) {

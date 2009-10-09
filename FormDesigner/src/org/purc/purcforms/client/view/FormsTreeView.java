@@ -360,6 +360,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		return forms;
 	}
 
+	/**
+	 * Loads a list of forms and selects one of them.
+	 * 
+	 * @param forms the form list to load.
+	 * @param selFormId the id of the form to select.
+	 */
 	public void loadForms(List<FormDef> forms, int selFormId){
 		if(forms == null || forms.size() == 0)
 			return;
@@ -462,12 +468,17 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 			item.remove();
 
 			int count = tree.getItemCount();
+			
+			//If we have any items left, select the one which was after
+			//the one we have just removed.
 			if(count > 0){
+				
+				//If we have deleted the last item, select the item which was before it.
 				if(index == count)
 					index--;
+				
 				tree.setSelectedItem(tree.getItem(index));
 			}
-			//tree.setSelectedItem(tree.getItem(0));
 		}
 
 		if(tree.getSelectedItem() == null){
@@ -476,12 +487,19 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	/**
+	 * Gets the index of the tree item which is at the root level.
+	 * 
+	 * @param item the tree root item whose index we are to get.
+	 * @return the index of the tree item.
+	 */
 	private int getRootItemIndex(TreeItem item){
 		int count = tree.getItemCount();
 		for(int index = 0; index < count; index++){
 			if(item == tree.getItem(index))
 				return index;
 		}
+		
 		return 0;
 	}
 

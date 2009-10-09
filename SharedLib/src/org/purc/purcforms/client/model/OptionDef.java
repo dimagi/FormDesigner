@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -157,10 +158,10 @@ public class OptionDef implements Serializable {
 	 */
     public void updateDoc(Document doc, Element selectNode){
     	if(labelNode != null)
-    		XformConverter.setTextNodeValue(labelNode,text);
+    		XformUtil.setTextNodeValue(labelNode,text);
     	
     	if(valueNode != null)
-    		XformConverter.setTextNodeValue(valueNode,variableName);
+    		XformUtil.setTextNodeValue(valueNode,variableName);
     	
     	if(labelNode == null && valueNode == null) ////Must be new option.
     		XformConverter.fromOptionDef2Xform(this,doc,selectNode);

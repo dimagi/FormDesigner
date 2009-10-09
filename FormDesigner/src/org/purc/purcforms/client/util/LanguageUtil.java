@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
@@ -84,7 +85,7 @@ public class LanguageUtil {
 						targetNode.setAttribute(attributeName, value);
 					}
 					else
-						XformConverter.setTextNodeValue(targetNode, value);
+						XformUtil.setTextNodeValue(targetNode, value);
 				}
 			}
 		}
@@ -118,7 +119,7 @@ public class LanguageUtil {
 					targetNode.setAttribute(attributeName, value);
 				}
 				else
-					XformConverter.setTextNodeValue(targetNode, value);
+					XformUtil.setTextNodeValue(targetNode, value);
 			}
 		}
 		return doc.toString();

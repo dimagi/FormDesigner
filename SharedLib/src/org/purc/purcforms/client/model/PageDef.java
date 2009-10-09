@@ -8,6 +8,7 @@ import java.util.Vector;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
@@ -487,7 +488,7 @@ public class PageDef implements Serializable{
 			XformConverter.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 
 		if(labelNode != null)
-			XformConverter.setTextNodeValue(labelNode,name);
+			XformUtil.setTextNodeValue(labelNode,name);
 
 		if(groupNode != null)
 			groupNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, pageNo+"");

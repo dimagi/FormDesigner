@@ -1,5 +1,9 @@
 package org.purc.purcforms.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 
@@ -37,6 +41,10 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 		});		
 	}
 
+	
+	/**
+	 * Sets up the form designer.
+	 */
 	public void onModuleLoadDeffered() {
 
 		try{
@@ -67,6 +75,8 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 			RootPanel.getBodyElement().getStyle().setProperty("display", "none");
 			RootPanel.getBodyElement().getStyle().setProperty("display", "");
 
+			loadLocales();
+			
 			designer = new FormDesignerWidget(true,true,true);
 			
 			// Finally, add the designer widget to the RootPanel, so that it will be displayed.
@@ -112,4 +122,33 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 	private native void publishJS() /*-{
    		$wnd.authenticationCallback = @org.purc.purcforms.client.controller.FormDesignerController::authenticationCallback(Z);
 	}-*/;
+	
+	
+	/**
+	 * Loads a list of locales supported by the form designer.
+	 */
+	private void loadLocales(){
+		String localesList = FormUtil.getDivValue("localeList");
+		
+		if(localesList == null || localesList.trim().length() == 0)
+			return;
+		
+		String[] tokens = localesList.split(",");
+		if(tokens == null || tokens.length == 0)
+			return;
+		
+		List<Locale> locales = new ArrayList<Locale>();
+		
+		for(String token: tokens){
+			int index = token.indexOf(':');
+			
+			//Should at least have one character for key or name
+			if(index < 1 || index == token.length() - 1)
+				continue;
+			
+			locales.add(new Locale(token.substring(0,index).trim(),token.substring(index+1).trim()));
+		}
+		
+		Context.setLocales(locales);
+	}
 }

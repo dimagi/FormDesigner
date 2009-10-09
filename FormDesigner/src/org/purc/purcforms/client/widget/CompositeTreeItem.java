@@ -4,38 +4,60 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * Custom widget to wrap around tree items and enable proper selection.
+ * 
+ * @author daniel
+ *
+ */
 public class CompositeTreeItem extends TreeItem {
-	   public CompositeTreeItem() {
-		      super();
-		   }
+	
+	/**
+	* Creates an empty tree item.
+	*/
+	public CompositeTreeItem() {
+		super();
+	}
 
-		   public CompositeTreeItem(String html) {
-		      super(new Label(html));
-		   }
+	/**
+	* Constructs a tree item with the given text.
+	* 
+	* @param text the item's text
+	*/
+	public CompositeTreeItem(String text) {
+		super(new Label(text));
+	}
 
-		   public CompositeTreeItem(Widget widget) {
-		      super(widget);
-		   }
+	/**
+	 * Constructs a tree item with the given <code>Widget</code>.
+	 * 
+	 * @param widget the item's widget
+	 */
+	public CompositeTreeItem(Widget widget) {
+		super(widget);
+	}
 
-		   public void setWidget(Widget newWidget) {
-		      super.setWidget(newWidget);
-		      getWidget().setStyleName("gwt-CompositeTreeItem");
-		   }
+	@Override
+	public void setWidget(Widget newWidget) {
+		super.setWidget(newWidget);
+		getWidget().setStyleName("gwt-CompositeTreeItem");
+	}
 
-		   public TreeItem addItem(String itemText) {
-		      return super.addItem(new Label(itemText));
-		   }
+	@Override
+	public TreeItem addItem(String itemText) {
+		return super.addItem(new Label(itemText));
+	}
 
-		   public void setSelected(boolean selected) {
-		      if (isSelected() == selected) {
-		         return;
-		      }
+	@Override
+	public void setSelected(boolean selected) {
+		if (isSelected() == selected)
+			return;
 
-		      super.setSelected(selected);
+		super.setSelected(selected);
 
-		      if (selected)
-		         getWidget().addStyleName("gwt-CompositeTreeItem-selected");
-		      else
-		         getWidget().removeStyleName("gwt-CompositeTreeItem-selected");
-		   }
+		if (selected)
+			getWidget().addStyleName("gwt-CompositeTreeItem-selected");
+		else
+			getWidget().removeStyleName("gwt-CompositeTreeItem-selected");
+	}
 }

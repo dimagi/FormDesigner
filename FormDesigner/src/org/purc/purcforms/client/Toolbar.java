@@ -1,7 +1,10 @@
 package org.purc.purcforms.client;
 
+import java.util.List;
+
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -190,12 +193,8 @@ public class Toolbar extends Composite{
 		panel.add(label);
 		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_RIGHT);
 		
-		//TODO These need not be hard coded. They could come from the html host file.
-		cbLanguages.addItem("English","en");
-		cbLanguages.addItem("Luganda","lug");
-		cbLanguages.addItem("Swahili","swa");
-		cbLanguages.addItem("Lusoga","lus");
-		cbLanguages.addItem("Runyankole","rny");
+		populateLocales();
+		
 		cbLanguages.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
 				controller.changeLocale(((ListBox)sender).getValue(((ListBox)sender).getSelectedIndex()));
@@ -269,5 +268,17 @@ public class Toolbar extends Composite{
 		
 		btnRefresh.addClickListener(new ClickListener(){
 			public void onClick(Widget widget){controller.refresh(this);}});
+	}
+	
+	/**
+	 * Populates the locale drop down with a list of locales supported by the form designer.
+	 */
+	private void populateLocales(){
+		List<Locale> locales = Context.getLocales();
+		if(locales == null)
+			return;
+		
+		for(Locale locale : locales)
+			cbLanguages.addItem(locale.getName(), locale.getKey());
 	}
 }

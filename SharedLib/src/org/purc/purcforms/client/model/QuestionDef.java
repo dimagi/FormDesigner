@@ -11,6 +11,7 @@ import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -682,7 +683,7 @@ public class QuestionDef implements Serializable{
 			updateControlNodeName();
 
 		if(labelNode != null) //How can this happen
-			XformConverter.setTextNodeValue(labelNode,text);
+			XformUtil.setTextNodeValue(labelNode,text);
 
 		Element node = bindNode;
 		if(node == null){
@@ -781,7 +782,7 @@ public class QuestionDef implements Serializable{
 		//Put after options because it depends on the firstOptionNode
 		if(hintNode != null){
 			if(helpText.trim().length() > 0)
-				XformConverter.setTextNodeValue(hintNode,helpText);
+				XformUtil.setTextNodeValue(hintNode,helpText);
 			else{
 				controlNode.removeChild(hintNode);
 				hintNode = null;
@@ -1089,7 +1090,7 @@ public class QuestionDef implements Serializable{
 				if(list.getLength() == 0)
 					continue;
 
-				if(optionDef.getText().equals(XformConverter.getTextValue((Element)list.item(0)))){
+				if(optionDef.getText().equals(XformUtil.getTextValue((Element)list.item(0)))){
 					optionDef.setLabelNode((Element)list.item(0));
 					optionDef.setControlNode((Element)node);
 

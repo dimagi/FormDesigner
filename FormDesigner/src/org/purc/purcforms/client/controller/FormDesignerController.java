@@ -20,7 +20,11 @@ import org.purc.purcforms.client.view.LocalesDialog;
 import org.purc.purcforms.client.view.LoginDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformBuilder;
+import org.purc.purcforms.client.xforms.XformParser;
+import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.XhtmlBuilder;
+import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -240,7 +244,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
-						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						FormDef formDef = XformParser.fromXform2FormDef(xml);
 						formDef.setReadOnly(tempReadonly);
 
 						if(tempFormId != ModelConstants.NULL_ID)
@@ -346,13 +350,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					String xml = null;
 					FormDef formDef = obj;
 					if(formDef.getDoc() == null)
-						xml = XformConverter.fromFormDef2Xform(formDef);
+						xml = XformBuilder.fromFormDef2Xform(formDef);
 					else{
 						formDef.updateDoc(false);
-						xml = XformConverter.fromDoc2String(formDef.getDoc());
+						xml = XmlUtil.fromDoc2String(formDef.getDoc());
 					}
 
-					xml = XformConverter.normalizeNameSpace(formDef.getDoc(), xml);
+					xml = XformUtil.normalizeNameSpace(formDef.getDoc(), xml);
 
 					xml = FormDesignerUtil.formatXml(xml);
 
@@ -400,7 +404,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				public void execute() {
 					try{
 						String xml = null;
-						xml = XformConverter.fromFormDef2Xform((FormDef)obj);
+						xml = XformBuilder.fromFormDef2Xform((FormDef)obj);
 						xml = FormDesignerUtil.formatXml(xml);
 						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 						FormUtil.dlg.hide();
@@ -762,7 +766,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource();
 					if(xml != null && xml.trim().length() > 0){
-						FormDef formDef = XformConverter.fromXform2FormDef(xml);
+						FormDef formDef = XformParser.fromXform2FormDef(xml);
 
 						FormDef oldFormDef = centerPanel.getFormDef();
 
@@ -914,7 +918,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							xml = getFormLocaleText(form.getId(),Context.getLocale());
 							if(xml != null){
 								String xform = FormUtil.formatXml(LanguageUtil.translate(form.getDoc(), xml, true));
-								FormDef newFormDef = XformConverter.fromXform2FormDef(xform);
+								FormDef newFormDef = XformParser.fromXform2FormDef(xform);
 								newFormDef.setXformXml(xform);
 								newFormDef.setLayoutXml(FormUtil.formatXml(LanguageUtil.translate(form.getLayoutXml(), xml, false)));
 								newFormDef.setLanguageXml(xml);
@@ -1101,7 +1105,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						String xml = null;
 						FormDef formDef = new FormDef((FormDef)obj);
 						formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
-						xml = XformConverter.fromFormDef2Xhtml(formDef);
+						xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);
 						xml = FormDesignerUtil.formatXml(xml);
 						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 						FormUtil.dlg.hide();

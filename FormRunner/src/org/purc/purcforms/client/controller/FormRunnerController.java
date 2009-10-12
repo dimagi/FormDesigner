@@ -12,7 +12,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.FormRunnerWidget;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformParser;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -114,7 +114,7 @@ public class FormRunnerController implements SubmitListener{
 			public void execute() {
 				try{
 					externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
-					FormDef formDef = XformConverter.fromXform2FormDef(xformXml);
+					FormDef formDef = XformParser.fromXform2FormDef(xformXml);
 					formRunner.loadForm(formDef, layoutXml,externalSourceWidgets);
 
 					if(externalSourceWidgets.size() > 0)

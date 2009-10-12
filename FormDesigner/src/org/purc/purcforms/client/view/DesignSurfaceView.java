@@ -22,7 +22,7 @@ import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -368,7 +368,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("Form");
 		if(formDef != null)
-			rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, formDef.getId()+"");
+			rootNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getId()+"");
 		doc.appendChild(rootNode);
 
 		this.doc = doc;
@@ -422,7 +422,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("Form");
 		if(formDef != null)
-			rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, formDef.getId()+"");
+			rootNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getId()+"");
 		doc.appendChild(rootNode);
 
 		//String xpath = "Form/Page/Item[@Binding='";
@@ -434,9 +434,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			String xpath = "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"']/Item[@";
 
 			String text = DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i));
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, "Form/Page[@Binding='"+pageWidgets.get(i).getBinding()+"'][@Text]");
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			rootNode.appendChild(node);
 
 			buildLanguageNode((AbsolutePanel)tabs.getWidget(i),doc, rootNode,xpath);

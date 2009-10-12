@@ -10,8 +10,11 @@ import java.util.Vector;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.UiElementBuilder;
+import org.purc.purcforms.client.xforms.XformBuilderUtil;
+import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -678,12 +681,12 @@ public class QuestionDef implements Serializable{
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
 		boolean isNew = controlNode == null;
 		if(controlNode == null) //Must be new question.
-			XformConverter.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+			UiElementBuilder.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
 		else
 			updateControlNodeName();
 
 		if(labelNode != null) //How can this happen
-			XformUtil.setTextNodeValue(labelNode,text);
+			XmlUtil.setTextNodeValue(labelNode,text);
 
 		Element node = bindNode;
 		if(node == null){
@@ -705,31 +708,31 @@ public class QuestionDef implements Serializable{
 			}
 			
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(dataType,node));
-			if(node.getAttribute(XformConverter.ATTRIBUTE_NAME_NODESET) != null)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET,binding);
-			if(node.getAttribute(XformConverter.ATTRIBUTE_NAME_REF) != null)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_REF,binding);
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
+			if(node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET) != null)
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET,binding);
+			if(node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF) != null)
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,binding);
 
 			if(required)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED,XformConverter.XPATH_VALUE_TRUE);
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED,XformConstants.XPATH_VALUE_TRUE);
 			else
-				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_REQUIRED);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED);
 
 			if(!enabled)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_READONLY,XformConverter.XPATH_VALUE_TRUE);
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY,XformConstants.XPATH_VALUE_TRUE);
 			else
-				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_READONLY);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_READONLY);
 
 			if(locked)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED,XformConverter.XPATH_VALUE_TRUE);
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED,XformConstants.XPATH_VALUE_TRUE);
 			else
-				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_LOCKED);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);
 			
 			if(!visible)
-				node.setAttribute(XformConverter.ATTRIBUTE_NAME_VISIBLE,XformConverter.XPATH_VALUE_FALSE);
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE,XformConstants.XPATH_VALUE_FALSE);
 			else
-				node.removeAttribute(XformConverter.ATTRIBUTE_NAME_VISIBLE);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE);
 
 			if(dataNode != null)
 				updateDataNode(doc,formDef,orgFormVarName);
@@ -766,7 +769,7 @@ public class QuestionDef implements Serializable{
 			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData,orgFormVarName);
 
 			if(controlNode != null)
-				((Element)controlNode.getParentNode()).setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
+				((Element)controlNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 
 			if(!withData){
 				//Remove all repeating data kids
@@ -782,14 +785,14 @@ public class QuestionDef implements Serializable{
 		//Put after options because it depends on the firstOptionNode
 		if(hintNode != null){
 			if(helpText.trim().length() > 0)
-				XformUtil.setTextNodeValue(hintNode,helpText);
+				XmlUtil.setTextNodeValue(hintNode,helpText);
 			else{
 				controlNode.removeChild(hintNode);
 				hintNode = null;
 			}
 		}
 		else if(hintNode == null && helpText.trim().length() > 0)
-			XformConverter.addHelpTextNode(this, doc, controlNode, firstOptionNode);
+			UiElementBuilder.addHelpTextNode(this, doc, controlNode, firstOptionNode);
 
 		if(withData)
 			updateNodeValue(doc,formNode,(answer != null) ? answer : defaultValue,withData);
@@ -942,7 +945,7 @@ public class QuestionDef implements Serializable{
 		String xml = dataNode.toString();
 		if(!variableName.contains("/")){
 			xml = xml.replace(name, variableName);
-			Element node = XformConverter.getNode(xml);
+			Element node = XformUtil.getNode(xml);
 			Element parent = (Element)dataNode.getParentNode();
 			if(formDef.getVariableName().equals(parent.getNodeName()))
 				parent.replaceChild(node, dataNode);
@@ -956,7 +959,7 @@ public class QuestionDef implements Serializable{
 			String newName = variableName.substring(variableName.lastIndexOf("/")+1);
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
-				Element node = XformConverter.getNode(xml);
+				Element node = XformUtil.getNode(xml);
 				Element parent = (Element)dataNode.getParentNode();
 				parent.replaceChild(node, dataNode);
 				dataNode = node;
@@ -988,19 +991,19 @@ public class QuestionDef implements Serializable{
 			id = id.substring(id.lastIndexOf('/')+1);
 
 		//update binding node
-		if(bindNode != null && bindNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID) != null)
-			bindNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID,id);
+		if(bindNode != null && bindNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null)
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,id);
 
 		//update control node referencing the binding
-		if(controlNode != null&& controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_BIND) != null)
-			controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_BIND,id);
-		else if(controlNode != null && controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_REF) != null){
+		if(controlNode != null&& controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) != null)
+			controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_BIND,id);
+		else if(controlNode != null && controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_REF) != null){
 			/*String ref = controlNode.getAttribute(EpihandyXform.ATTRIBUTE_NAME_REF);
 			if(!ref.contains("/"))
 				controlNode.setAttribute(EpihandyXform.ATTRIBUTE_NAME_REF,variableName);
 			else
 				ref = ref.substring(0,ref.indexOf('/')) + variableName;*/
-			controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_REF,id);
+			controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,id);
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
@@ -1009,6 +1012,11 @@ public class QuestionDef implements Serializable{
 		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getVariableName()+"/"+variableName);
 	}
 
+	
+	/**
+	 * Checks if the xforms ui node name of this question requires to
+	 * be changed and does so, if it needs to be changed.
+	 */
 	private void updateControlNodeName(){
 		//TODO How about cases where the prefix is not xf?
 		String name = controlNode.getNodeName();
@@ -1016,49 +1024,55 @@ public class QuestionDef implements Serializable{
 		String xml = controlNode.toString();
 		boolean modified = false;
 
-		if(name.contains(XformConverter.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if(name.contains(XformConverter.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		else if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
-		else if(name.contains(XformConverter.NODE_NAME_SELECT1_MINUS_PREFIX) &&
+		else if(name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if(name.contains(XformConverter.NODE_NAME_SELECT_MINUS_PREFIX) &&
+		else if((name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) &&
+				!name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX)) && 
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConverter.NODE_NAME_SELECT1);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
-		else if((name.contains(XformConverter.NODE_NAME_SELECT1_MINUS_PREFIX) || 
-				name.contains(XformConverter.NODE_NAME_SELECT_MINUS_PREFIX)) &&
+		else if((name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
+				name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX)) &&
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConverter.NODE_NAME_INPUT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
 
 		if(modified){
-			Element child = XformConverter.getNode(xml);
+			Element child = XformUtil.getNode(xml);
 			parent.replaceChild(child, controlNode);
 			controlNode =  child;
 			updateControlNodeChildren();
 		}
 	}
 
+	
+	/**
+	 * Updates xforms ui nodes of the child nodes when the name of xforms ui 
+	 * node of this question has changed. Eg when changes from select to select1.
+	 */
 	private void updateControlNodeChildren(){
-		NodeList list = controlNode.getElementsByTagName(XformConverter.NODE_NAME_LABEL_MINUS_PREFIX);
+		NodeList list = controlNode.getElementsByTagName(XformConstants.NODE_NAME_LABEL_MINUS_PREFIX);
 		if(list.getLength() > 0)
 			labelNode = (Element)list.item(0);
 
-		list = controlNode.getElementsByTagName(XformConverter.NODE_NAME_HINT_MINUS_PREFIX);
+		list = controlNode.getElementsByTagName(XformConstants.NODE_NAME_HINT_MINUS_PREFIX);
 		if(list.getLength() > 0)
 			hintNode = (Element)list.item(0);
 
@@ -1073,28 +1087,32 @@ public class QuestionDef implements Serializable{
 			}
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
-			list = controlNode.getElementsByTagName(XformConverter.NODE_NAME_ITEMSET_MINUS_PREFIX);
+			list = controlNode.getElementsByTagName(XformConstants.NODE_NAME_ITEMSET_MINUS_PREFIX);
 			if(list.getLength() > 0)
 				firstOptionNode = (Element)list.item(0);
 		}
 	}
 
+	/**
+	 * Updates xforms ui nodes of an option definition object when the name of
+	 * xforms ui node of this question has changed.
+	 */
 	private void updateOptionNodeChildren(OptionDef optionDef){
 		int count = controlNode.getChildNodes().getLength();
 		for(int i=0; i<count; i++){
 			Node node = controlNode.getChildNodes().item(i);
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			if(node.getNodeName().equals(XformConverter.NODE_NAME_ITEM)){
-				NodeList list = ((Element)node).getElementsByTagName(XformConverter.NODE_NAME_LABEL_MINUS_PREFIX);
+			if(node.getNodeName().equals(XformConstants.NODE_NAME_ITEM)){
+				NodeList list = ((Element)node).getElementsByTagName(XformConstants.NODE_NAME_LABEL_MINUS_PREFIX);
 				if(list.getLength() == 0)
 					continue;
 
-				if(optionDef.getText().equals(XformUtil.getTextValue((Element)list.item(0)))){
+				if(optionDef.getText().equals(XmlUtil.getTextValue((Element)list.item(0)))){
 					optionDef.setLabelNode((Element)list.item(0));
 					optionDef.setControlNode((Element)node);
 
-					list = ((Element)node).getElementsByTagName(XformConverter.NODE_NAME_VALUE_MINUS_PREFIX);
+					list = ((Element)node).getElementsByTagName(XformConstants.NODE_NAME_VALUE_MINUS_PREFIX);
 					if(list.getLength() > 0)
 						optionDef.setValueNode((Element)list.item(0));
 					return;
@@ -1264,6 +1282,12 @@ public class QuestionDef implements Serializable{
 			changeListeners.get(index).onOptionsChanged(this,optionList);
 	}
 
+	
+	/**
+	 * Updates the xforms instance data nodes referenced by this question and its children.
+	 * 
+	 * @param parentDataNode the parent data node for this question.
+	 */
 	public void updateDataNodes(Element parentDataNode){
 		if(dataNode == null)
 			return;
@@ -1298,32 +1322,32 @@ public class QuestionDef implements Serializable{
 			Element parent = (Element)controlNode.getParentNode();
 			xpath = parentXpath + FormUtil.getNodePath(parent,parentXformNode);
 
-			String id = parent.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+			String id = parent.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 			if(id != null && id.trim().length() > 0)
-				xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+				xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
 		}
 		else{
-			String id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_BIND);
+			String id = controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
 			if(id != null && id.trim().length() > 0)
-				xpath += "[@" + XformConverter.ATTRIBUTE_NAME_BIND + "='" + id + "']";
+				xpath += "[@" + XformConstants.ATTRIBUTE_NAME_BIND + "='" + id + "']";
 			else{
-				id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_REF);
+				id = controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
 				if(id != null && id.trim().length() > 0)
-					xpath += "[@" + XformConverter.ATTRIBUTE_NAME_REF + "='" + id + "']";
+					xpath += "[@" + XformConstants.ATTRIBUTE_NAME_REF + "='" + id + "']";
 			}
 		}
 
 		if(labelNode != null){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(labelNode));
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(labelNode));
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			parentLangNode.appendChild(node);
 		}
 
 		if(hintNode != null){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, helpText);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, helpText);
 			parentLangNode.appendChild(node);
 		}
 

@@ -7,8 +7,9 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
-import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.XformBuilder;
+import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
@@ -16,7 +17,7 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 
 
-/** The definition of a page in a form or questionaire. 
+/** The definition of a page in a form or questionnaire. 
  * 
  * @author Daniel Kayiwa
  *
@@ -38,7 +39,7 @@ public class PageDef implements Serializable{
 	/** The xforms group node for this page. */
 	private Element groupNode;
 
-	/** The form defintion to which this page belongs. */
+	/** The form definition to which this page belongs. */
 	private FormDef parent;
 
 	
@@ -121,18 +122,6 @@ public class PageDef implements Serializable{
 		this.parent = parent;
 	}
 
-	public int getQuestionCount(){
-		if(questions == null)
-			return 0;
-		return questions.size();
-	}
-
-	public QuestionDef getQuestionAt(int index){
-		if(questions == null)
-			return null;
-		return (QuestionDef)questions.elementAt(index);
-	}
-
 	/**
 	 * @return the labelNode
 	 */
@@ -161,6 +150,41 @@ public class PageDef implements Serializable{
 		this.groupNode = groupNode;
 	}
 
+	public void setQuestions(Vector questions) {
+		this.questions = questions;
+	}
+	
+	
+	/**
+	 * Gets the number of questions on this page.
+	 * 
+	 * @return the number of questions.
+	 */
+	public int getQuestionCount(){
+		if(questions == null)
+			return 0;
+		return questions.size();
+	}
+
+	
+	/**
+	 * Gets the question at a given position on this page.
+	 * 
+	 * @param index the position.
+	 * @return the question.
+	 */
+	public QuestionDef getQuestionAt(int index){
+		if(questions == null)
+			return null;
+		return (QuestionDef)questions.elementAt(index);
+	}
+	
+	
+	/**
+	 * Adds a question to the page.
+	 * 
+	 * @param qtn the question to add.
+	 */
 	public void addQuestion(QuestionDef qtn){
 		if(questions == null)
 			questions = new Vector();
@@ -168,10 +192,13 @@ public class PageDef implements Serializable{
 		qtn.setParent(this);
 	}
 
-	public void setQuestions(Vector questions) {
-		this.questions = questions;
-	}
-
+	
+	/**
+	 * Gets a question with a given variable name.
+	 * 
+	 * @param varName the question variable name.
+	 * @return the question.
+	 */
 	public QuestionDef getQuestion(String varName){
 		if(questions == null)
 			return null;
@@ -209,6 +236,13 @@ public class PageDef implements Serializable{
 		return null;
 	}
 
+	
+	/**
+	 * Gets a question with a given identifier.
+	 * 
+	 * @param id the question identifier.
+	 * @return the question.
+	 */
 	public QuestionDef getQuestion(int id){
 		if(questions == null)
 			return null;
@@ -229,10 +263,18 @@ public class PageDef implements Serializable{
 		return null;
 	}
 
+	
+	@Override
 	public String toString() {
 		return getName();
 	}
 
+	
+	/**
+	 * Copies a list of questions into this page.
+	 * 
+	 * @param questions the list of questions to copy.
+	 */
 	private void copyQuestions(Vector questions){
 		if(questions != null){
 			this.questions = new Vector();
@@ -241,6 +283,14 @@ public class PageDef implements Serializable{
 		}
 	}
 
+	
+	/**
+	 * Removes a question from this page.
+	 * 
+	 * @param qtnDef the question to remove.
+	 * @param formDef the form to which this page belongs.
+	 * @return true if the question was found and removed successfully, else false.
+	 */
 	public boolean removeQuestion(QuestionDef qtnDef, FormDef formDef){
 		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
@@ -265,15 +315,13 @@ public class PageDef implements Serializable{
 		return questions.removeElement(qtnDef);
 	}
 
-	public boolean removeQuestionEx(QuestionDef qtnDef){
-		return questions.removeElement(qtnDef);
-	}
-
+	
+	/**
+	 * Removes all questions from this page.
+	 * 
+	 * @param formDef the form to which the page belongs.
+	 */
 	public void removeAllQuestions(FormDef formDef){
-		/*for(int i=0; i<questions.size(); i++)
-			removeQuestion((QuestionDef)questions.elementAt(i));
-
-		questions.removeAllElements();*/
 		if(questions == null)
 			return;
 
@@ -281,16 +329,35 @@ public class PageDef implements Serializable{
 			removeQuestion((QuestionDef)questions.elementAt(0),formDef);
 	}
 
+	
+	/**
+	 * Gets the number of questions on this page.
+	 * 
+	 * @return the number of questions.
+	 */
 	public int size(){
 		if(questions == null)
 			return 0;
 		return questions.size();
 	}
 
+	
+	/**
+	 * Moves a question up by one position in the page.
+	 * 
+	 * @param questionDef the question to move.
+	 */
 	public void moveQuestionUp(QuestionDef questionDef){
 		moveQuestionUp(questions,questionDef);
 	}
 
+	
+	/**
+	 * Moves a question up by one position in a list of questions.
+	 * 
+	 * @param questions the list of questions.
+	 * @param questionDef the question to move.
+	 */
 	public static void moveQuestionUp(Vector questions, QuestionDef questionDef){
 		int index = questions.indexOf(questionDef);
 
@@ -301,9 +368,6 @@ public class PageDef implements Serializable{
 			controlNode = (Element)controlNode.getParentNode();
 			parentNode = (Element)parentNode.getParentNode();
 		}
-
-		//if(parentNode == null && controlNode != null)
-		//	return; //we have a problem here
 
 		questions.remove(questionDef);
 
@@ -352,10 +416,23 @@ public class PageDef implements Serializable{
 		}
 	}
 
+	
+	/**
+	 * Moves a question down by one position in the page.
+	 * 
+	 * @param questionDef the question to move.
+	 */
 	public void moveQuestionDown(QuestionDef questionDef){
 		moveQuestionDown(questions,questionDef);
 	}
 
+	
+	/**
+	 * Moves a question down by one position in a list of questions.
+	 * 
+	 * @param questions the list of questions.
+	 * @param questionDef the question to move.
+	 */
 	public static void moveQuestionDown(Vector questions, QuestionDef questionDef){
 		int index = questions.indexOf(questionDef);	
 
@@ -366,9 +443,6 @@ public class PageDef implements Serializable{
 			controlNode = (Element)controlNode.getParentNode();
 			parentNode = (Element)parentNode.getParentNode();
 		}
-
-		//if(parentNode == null && controlNode != null)
-		//	return; //we have a problem here
 
 		questions.remove(questionDef);
 
@@ -468,6 +542,16 @@ public class PageDef implements Serializable{
 		}
 	}
 
+	
+	/**
+	 * Gets the next question which has been converted to xforms and 
+	 * hence attached to an xforms document node, starting at a given 
+	 * index in a list of questions.
+	 * 
+	 * @param questions the list of questions.
+	 * @param index the index to start from in the questions list.
+	 * @return the question.
+	 */
 	private static QuestionDef getNextSavedQuestion(List questions, int index){
 		int size = questions.size();
 		for(int i=index; i<size; i++){
@@ -478,20 +562,39 @@ public class PageDef implements Serializable{
 		return (QuestionDef)questions.get(index);
 	}
 
+	
+	/**
+	 * Checks if this page contains a particular question.
+	 * 
+	 * @param qtn the question to check.
+	 * @return true if it contains, else false.
+	 */
 	public boolean contains(QuestionDef qtn){
 		return questions.contains(qtn);
 	}
 
+	
+	/**
+	 * Updates the xforms document nodes referenced by this page and all its children.
+	 * 
+	 * @param doc the xforms document.
+	 * @param xformsNode the xforms document root node.
+	 * @param formDef the form to which this page belongs.
+	 * @param formNode the xforms instance data node.
+	 * @param modelNode the xforms model node.
+	 * @param withData set to true to also update the xforms instance data values from question answers.
+	 * @param orgFormVarName the original form variable name before any updates were done.
+	 */
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
 		if(labelNode == null && groupNode == null && allQuestionsNew) //Must be new page{
-			XformConverter.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
+			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 
 		if(labelNode != null)
-			XformUtil.setTextNodeValue(labelNode,name);
+			XmlUtil.setTextNodeValue(labelNode,name);
 
 		if(groupNode != null)
-			groupNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, pageNo+"");
+			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
 
 		Vector newQuestions = new Vector();
 		if(questions != null){
@@ -525,6 +628,16 @@ public class PageDef implements Serializable{
 		}
 	}
 
+	
+	/**
+	 * Gets the first question which is not new, in a given list of questions,
+	 * starting at a given position.
+	 *  
+	 * @param questions the list of questions to traverse.
+	 * @param newQuestions the list of new questions.
+	 * @param index the position to start from.
+	 * @return the question.
+	 */
 	private QuestionDef getRefQuestion(Vector questions, Vector newQuestions, int index){
 		QuestionDef questionDef;
 		int i = index + 1;
@@ -538,6 +651,12 @@ public class PageDef implements Serializable{
 		return null;
 	}
 
+	
+	/**
+	 * Checks if all question on this page are new.
+	 * 
+	 * @return true if all are new, else false.
+	 */
 	private boolean areAllQuestionsNew(){
 		if(questions == null)
 			return false;
@@ -550,6 +669,13 @@ public class PageDef implements Serializable{
 		return true;
 	}
 
+	
+	/**
+	 * Gets a question with a given text.
+	 * 
+	 * @param text the text.
+	 * @return the question.
+	 */
 	public QuestionDef getQuestionWithText(String text){
 		if(questions == null)
 			return null;
@@ -586,6 +712,13 @@ public class PageDef implements Serializable{
 		}
 	}
 
+	
+	/**
+	 * Moves the question xforms document nodes by one position upwards.
+	 * 
+	 * @param questionDef the question whose xforms nodes to move. 
+	 * @param refQuestionDef the question immediately above which we are to move.
+	 */
 	public void moveQuestionNodesUp(QuestionDef questionDef, QuestionDef refQuestionDef){
 
 		//Not relying on group node because some forms have no groups
@@ -620,6 +753,12 @@ public class PageDef implements Serializable{
 
 	}
 
+	
+	/**
+	 * Updates the xforms instance data nodes referenced by this page's questions.
+	 * 
+	 * @param parentDataNode the parent data node for this page.
+	 */
 	public void updateDataNodes(Element parentDataNode){
 		if(questions == null)
 			return;
@@ -628,18 +767,25 @@ public class PageDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
 	}
 
+	
+	/**
+	 * Builds the language translation nodes for text in this page and all its children.
+	 * 
+	 * @param doc the language translation document.
+	 * @param parentLangNode the language parent node for the page language nodes.
+	 */
 	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
 		if(labelNode == null || groupNode == null)
 			return;
 
 		String xpath = FormUtil.getNodePath(groupNode);
-		String id = groupNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
 
-		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
-		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
+		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
 		parentLangNode.appendChild(node);
 
 		if(questions == null)
@@ -649,6 +795,10 @@ public class PageDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
 	}
 
+	
+	/**
+	 * Removes all question change event listeners.
+	 */
 	public void clearChangeListeners(){
 		if(questions == null)
 			return;

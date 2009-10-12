@@ -8,7 +8,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformParser;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -78,11 +78,11 @@ public class FormRunnerWidget extends Composite{
 	 * @param layoutXml the layout xml.
 	 */
 	public void loadForm(String xformXml, String layoutXml){
-		view.loadForm(XformConverter.fromXform2FormDef(xformXml), layoutXml, null);
+		view.loadForm(XformParser.fromXform2FormDef(xformXml), layoutXml, null);
 	}
 	
 	public void loadForm(int formId, String xformXml, String modelXml,String layoutXml){
-		FormDef formDef = XformConverter.fromXform2FormDef(xformXml,modelXml);
+		FormDef formDef = XformParser.fromXform2FormDef(xformXml,modelXml);
 		formDef.setId(formId);
 		view.loadForm(formDef, layoutXml, null);
 	}

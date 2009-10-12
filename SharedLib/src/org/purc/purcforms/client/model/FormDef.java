@@ -9,7 +9,8 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -362,32 +363,32 @@ public class FormDef implements Serializable{
 	 * @param withData set to true if you want question answers to also be saved as part of the xform.
 	 */
 	public void updateDoc(boolean withData){
-		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_NAME, name);
+		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
 
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
 		//If ones want to change the id, he should load the xform as a new form with that id
-		/*String val = dataNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		/*String val = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(val == null || val.trim().length() == 0)
-			dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, String.valueOf(id));
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, String.valueOf(id));
 		else
 			setId(Integer.parseInt(val));*/
 
 		//TODO Check this with the above
-		dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID,String.valueOf(id));
+		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){
-			dataNode = XformConverter.renameNode(dataNode,variableName);
+			dataNode = XformUtil.renameNode(dataNode,variableName);
 			updateDataNodes();
-			((Element)dataNode.getParentNode()).setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
+			((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 		}
 
 		if(dataNode != null){
 			if(descriptionTemplate == null || descriptionTemplate.trim().length() == 0)
-				dataNode.removeAttribute(XformConverter.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE);
+				dataNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE);
 			else
-				dataNode.setAttribute(XformConverter.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
+				dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
 		}
 
 		if(pages != null){
@@ -873,7 +874,7 @@ public class FormDef implements Serializable{
 			if(page.contains(qtn)){
 				if(i == pageNo-1)
 					return;
-				page.removeQuestionEx(qtn);
+				page.getQuestions().removeElement(qtn);
 				((PageDef)pages.elementAt(pageNo-1)).addQuestion(qtn);
 				return;
 			}
@@ -894,22 +895,7 @@ public class FormDef implements Serializable{
 		}
 		return null;
 	}
-
-	public String getQuestionBinding(QuestionDef questionDef){
-		String binding = questionDef.getVariableName();
-		if(!binding.startsWith("/"+ variableName+"/")){
-			//if(!binding.contains("/"+ formDef.getVariableName()+"/"))
-			if(binding.startsWith(variableName+"/"))
-				binding = "/"+ binding;
-			else
-				binding = "/"+ variableName+"/" + binding;
-			/*else{
-					variableName = "/" + variableName; //correct user binding syntax error
-					binding = variableName;
-				}*/
-		}
-		return binding;
-	}
+	
 
 	/**
 	 * Checks if the form has a particular skip rule.
@@ -973,8 +959,8 @@ public class FormDef implements Serializable{
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
 				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
 				if(questionDef != null && questionDef.getDataNode() != null){
-					questionDef.getDataNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_RELEVANT);
-					questionDef.getDataNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_ACTION);
+					questionDef.getDataNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
+					questionDef.getDataNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
 				}
 			}
 		}
@@ -995,8 +981,8 @@ public class FormDef implements Serializable{
 		if(dataNode != null){
 			QuestionDef questionDef = getQuestion(validationRule.getQuestionId());
 			if(questionDef != null && questionDef.getBindNode() != null){
-				questionDef.getBindNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT);
-				questionDef.getBindNode().removeAttribute(XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+				questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
+				questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
 			}
 		}
 		return ret;
@@ -1173,13 +1159,13 @@ public class FormDef implements Serializable{
 	public Element getLanguageNode() {
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		Element rootNode = doc.createElement("xform");
-		rootNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, id+"");
+		rootNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id+"");
 		doc.appendChild(rootNode);
 
 		if(dataNode != null){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, FormUtil.getNodePath(dataNode)+"[@name]");
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, name);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, FormUtil.getNodePath(dataNode)+"[@name]");
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
 			rootNode.appendChild(node);
 
 			if(pages != null){
@@ -1231,7 +1217,7 @@ public class FormDef implements Serializable{
 	}
 
 	/**
-	 * Removes all quetions change listeners.
+	 * Removes all question change event listeners.
 	 */
 	public void clearChangeListeners(){
 		if(pages == null)

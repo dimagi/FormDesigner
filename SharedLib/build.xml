@@ -74,7 +74,7 @@
 			</fileset>
 		</jar>
 		
-		<copy tofile="H:/openxdata/Manager/OpenXDataServerAdmin/lib/${appname}-${version}.jar" file="dist/${appname}-${version}.jar"/>
+		<copy tofile="/lib/${appname}-${version}.jar" file="dist/${appname}-${version}.jar"/>
 		
 	</target>
 

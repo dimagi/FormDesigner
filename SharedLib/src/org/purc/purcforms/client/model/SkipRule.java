@@ -3,7 +3,7 @@ package org.purc.purcforms.client.model;
 import java.io.Serializable;
 import java.util.Vector;
 
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.RelevantBuilder;
 
 
 /**
@@ -253,7 +253,7 @@ public class SkipRule implements Serializable{
 	}
 	
 	public void updateDoc(FormDef formDef){
-		XformConverter.fromSkipRule2Xform(this,formDef);
+		RelevantBuilder.fromSkipRule2Xform(this,formDef);
 	}
 	
 	public void refresh(FormDef dstFormDef, FormDef srcFormDef){

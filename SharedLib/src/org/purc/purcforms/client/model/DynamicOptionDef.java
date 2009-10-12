@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.ItemsetBuilder;
+import org.purc.purcforms.client.xforms.ItemsetUtil;
+import org.purc.purcforms.client.xforms.XformBuilder;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 
@@ -208,46 +211,46 @@ public class DynamicOptionDef  implements Serializable{
 			return;
 
 		if(dataNode == null)
-			XformConverter.fromDynamicOptionDef2Xform(formDef.getDoc(),this,parentQuestionDef,formDef);
+			ItemsetBuilder.fromDynamicOptionDef2Xform(formDef.getDoc(),this,parentQuestionDef,formDef);
 		else{
 			//Update the nodeset child instance id
 			QuestionDef  questionDef = formDef.getQuestion(questionId);
 			if(questionDef == null || questionDef.getFirstOptionNode() == null)
 				return;
 
-			String nodeset = questionDef.getFirstOptionNode().getAttribute(XformConverter.ATTRIBUTE_NAME_NODESET);
+			String nodeset = questionDef.getFirstOptionNode().getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
 			if(nodeset == null)
 				return;
 			
 			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
-				questionDef.getFirstOptionNode().setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
 
 			
-			String instanceId = XformConverter.getDynamicOptionChildInstanceId(nodeset);
+			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);
 			if(!(instanceId == null || instanceId.equals(questionDef.getVariableName()))){
 				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getVariableName()+"'");
-				questionDef.getFirstOptionNode().setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET, nodeset);
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 
 			//Update the nodeset parent instance id
-			instanceId = XformConverter.getDynamicOptionParentInstanceId(nodeset);
+			instanceId = ItemsetUtil.getParentQuestionBindId(nodeset);
 			if(!(instanceId == null || instanceId.equals(parentQuestionDef.getVariableName()))){
 				nodeset = nodeset.replace("')/"+instanceId+"]", "')/"+parentQuestionDef.getVariableName()+"]");
-				questionDef.getFirstOptionNode().setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET, nodeset);
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 			
 			//update the nodeset form instance id
-			instanceId = XformConverter.getDynamicOptionFormInstanceId(nodeset);
+			instanceId = ItemsetUtil.getFormInstanceId(nodeset);
 			if(!(instanceId == null || instanceId.equals(formDef.getVariableName()))){
 				nodeset = nodeset.replace("'"+instanceId+"'", "'"+formDef.getVariableName()+"'");
-				questionDef.getFirstOptionNode().setAttribute(XformConverter.ATTRIBUTE_NAME_NODESET, nodeset);
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 			
 			//Update the instance id
 			if(dataNode.getParentNode() != null)
-				((Element)dataNode.getParentNode()).setAttribute(XformConverter.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+				((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
 		
-			XformConverter.updateDynamicOptionDef(formDef, parentQuestionDef, this);
+			ItemsetBuilder.updateDynamicOptionDef(formDef, parentQuestionDef, this);
 		}
 	}
 
@@ -386,9 +389,9 @@ public class DynamicOptionDef  implements Serializable{
 			return;
 		
 		String xpath = FormUtil.getNodePath(dataNode.getParentNode());
-		String id = ((Element)dataNode.getParentNode()).getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+		String id = ((Element)dataNode.getParentNode()).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + questionDef.getVariableName() + "']";
+			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + questionDef.getVariableName() + "']";
 		
 		xpath += "/" + FormUtil.getNodeName(dataNode);
 		

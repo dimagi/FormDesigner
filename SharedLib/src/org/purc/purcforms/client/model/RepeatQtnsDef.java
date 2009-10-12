@@ -193,6 +193,13 @@ public class RepeatQtnsDef implements Serializable {
 		}
 	}
 	
+	
+	/**
+	 * Updates the xforms instance data nodes referenced by this 
+ 	 * repeat questions definition and its children.
+	 * 
+	 * @param parentDataNode the parent data node for this repeat questions definition.
+	 */
 	public void updateDataNodes(Element parentDataNode){
 		if(questions == null)
 			return;

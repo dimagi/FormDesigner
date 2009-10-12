@@ -3,8 +3,9 @@ package org.purc.purcforms.client.util;
 import java.util.Vector;
 
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
@@ -15,7 +16,8 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 /**
- * This class is responsible for the translation of xforms and layout xml files in various locales.
+ * This class is responsible for the translation of xforms and layout xml 
+ * files in various locales.
  * 
  * @author daniel
  *
@@ -70,8 +72,8 @@ public class LanguageUtil {
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
 
-			String xpath = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_XPATH);
-			String value = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_VALUE);
+			String xpath = ((Element)node).getAttribute(XformConstants.ATTRIBUTE_NAME_XPATH);
+			String value = ((Element)node).getAttribute(XformConstants.ATTRIBUTE_NAME_VALUE);
 			if(xpath == null || value == null)
 				continue;
 
@@ -85,7 +87,7 @@ public class LanguageUtil {
 						targetNode.setAttribute(attributeName, value);
 					}
 					else
-						XformUtil.setTextNodeValue(targetNode, value);
+						XmlUtil.setTextNodeValue(targetNode, value);
 				}
 			}
 		}
@@ -105,8 +107,8 @@ public class LanguageUtil {
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
 
-			String xpath = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_XPATH);
-			String value = ((Element)node).getAttribute(XformConverter.ATTRIBUTE_NAME_VALUE);
+			String xpath = ((Element)node).getAttribute(XformConstants.ATTRIBUTE_NAME_XPATH);
+			String value = ((Element)node).getAttribute(XformConstants.ATTRIBUTE_NAME_VALUE);
 			if(xpath == null || value == null)
 				continue;
 
@@ -119,7 +121,7 @@ public class LanguageUtil {
 					targetNode.setAttribute(attributeName, value);
 				}
 				else
-					XformUtil.setTextNodeValue(targetNode, value);
+					XmlUtil.setTextNodeValue(targetNode, value);
 			}
 		}
 		return doc.toString();

@@ -11,7 +11,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformConstants;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -539,9 +539,9 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	private void buildLanguageText(com.google.gwt.xml.client.Document doc, String text, String name, Element parentNode, String xpathRoot){
 		if(text != null && text.trim().length() > 0){
-			Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpathRoot + name + "]");
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpathRoot + name + "]");
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			parentNode.appendChild(node);
 		}
 	}

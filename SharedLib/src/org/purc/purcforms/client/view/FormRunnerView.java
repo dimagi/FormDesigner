@@ -24,7 +24,9 @@ import org.purc.purcforms.client.widget.EditListener;
 import org.purc.purcforms.client.widget.RuntimeGroupWidget;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformBuilder;
+import org.purc.purcforms.client.xforms.XformParser;
+import org.purc.purcforms.client.xforms.XformUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -175,7 +177,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 			if(formDef == null)
 				this.formDef = null;
 			else //set the document xml which we shall need for updating the model with question answers
-				this.formDef = XformConverter.copyFormDef(formDef);
+				this.formDef = XformParser.copyFormDef(formDef);
 		}
 		else
 			this.formDef = formDef;
@@ -628,14 +630,14 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 	private void submitData(){
 		if(formDef.getDoc() == null)
-			XformConverter.fromFormDef2Xform(formDef);
+			XformBuilder.fromFormDef2Xform(formDef);
 
 		saveValues();
 
 		if(!isValid())
 			return;
 
-		String xml = XformConverter.getInstanceDataDoc(formDef.getDoc()).toString();
+		String xml = XformUtil.getInstanceDataDoc(formDef.getDoc()).toString();
 		xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
 		submitListener.onSubmit(xml);
 	}

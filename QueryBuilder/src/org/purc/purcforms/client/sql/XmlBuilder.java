@@ -8,7 +8,7 @@ import org.purc.purcforms.client.model.FilterConditionGroup;
 import org.purc.purcforms.client.model.FilterConditionRow;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.SortField;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformBuilderUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -106,7 +106,7 @@ public class XmlBuilder {
 			Element node = doc.createElement(NODE_NAME_FIELD);
 			node.setAttribute(ATTRIBUTE_NAME_NAME, field.getName());
 			node.setAttribute(ATTRIBUTE_NAME_TEXT, field.getText());
-			node.setAttribute(ATTRIBUTE_NAME_TYPE, XformConverter.getXmlType(field.getDataType(),null));
+			node.setAttribute(ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(field.getDataType(),null));
 			if(field.getAggFunc() != null)
 				node.setAttribute(ATTRIBUTE_NAME_AGG_FUNC, field.getAggFunc());
 			displayFieldsNode.appendChild(node);

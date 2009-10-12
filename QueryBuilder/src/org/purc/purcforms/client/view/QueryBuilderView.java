@@ -4,7 +4,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.sql.SqlBuilder;
 import org.purc.purcforms.client.sql.XmlBuilder;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformParser;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -131,7 +131,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 					FormDef formDef = null;
 					String xml = txtXform.getText().trim();
 					if(xml.length() > 0)
-						formDef = XformConverter.fromXform2FormDef(xml);
+						formDef = XformParser.fromXform2FormDef(xml);
 
 					filterConditionsView.setFormDef(formDef);
 					displayFieldsView.setFormDef(formDef);

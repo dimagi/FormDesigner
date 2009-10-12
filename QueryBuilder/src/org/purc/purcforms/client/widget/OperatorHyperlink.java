@@ -135,7 +135,7 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		}
 	}
 
-	private Byte fromOperatorText2Value(String text){
+	private int fromOperatorText2Value(String text){
 		if(text.equals(OP_TEXT_EQUAL))
 			return ModelConstants.OPERATOR_EQUAL;
 		else if(text.equals(OP_TEXT_NOT_EQUAL))

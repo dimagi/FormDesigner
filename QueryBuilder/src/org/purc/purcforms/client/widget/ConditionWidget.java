@@ -96,7 +96,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 			valueWidget.setQuestionDef(questionDef);
 		}
 		else if(sender == operatorHyperlink){
-			operator = ((Byte)item).byteValue();
+			operator = ((Integer)item).intValue();
 			valueWidget.setOperator(operator);
 
 			if(allowFieldSelection)

@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.ConstraintBuilder;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 
@@ -196,7 +197,7 @@ public class ValidationRule implements Serializable{
 	}
 	
 	public void updateDoc(FormDef formDef){
-		XformConverter.fromValidationRule2Xform(this,formDef);
+		ConstraintBuilder.fromValidationRule2Xform(this,formDef);
 	}
 
 	//TODO This should be smarter
@@ -223,12 +224,12 @@ public class ValidationRule implements Serializable{
 		if(questionDef == null || questionDef.getBindNode() == null)
 			return;
 		
-		Element node = formDef.getDoc().createElement(XformConverter.NODE_NAME_TEXT);
+		Element node = formDef.getDoc().createElement(XformConstants.NODE_NAME_TEXT);
 		String xpath = FormUtil.getNodePath(questionDef.getBindNode());
-		xpath += "[@"+XformConverter.ATTRIBUTE_NAME_ID+"='"+ questionDef.getBindNode().getAttribute(XformConverter.ATTRIBUTE_NAME_ID)+"']";
-		xpath += "[@"+XformConverter.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE+"]";
-		node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath);
-		node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, errorMessage);
+		xpath += "[@"+XformConstants.ATTRIBUTE_NAME_ID+"='"+ questionDef.getBindNode().getAttribute(XformConstants.ATTRIBUTE_NAME_ID)+"']";
+		xpath += "[@"+XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE+"]";
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath);
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, errorMessage);
 		parentNode.appendChild(node);
 	}
 	

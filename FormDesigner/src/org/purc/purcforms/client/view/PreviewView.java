@@ -6,7 +6,8 @@ import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
+import org.purc.purcforms.client.xforms.XformBuilder;
+import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -101,18 +102,19 @@ public class PreviewView extends FormRunnerView {
 	protected void submit(){
 		if(formDef != null){
 			if(formDef.getDoc() == null)
-				XformConverter.fromFormDef2Xform(formDef);
+				XformBuilder.fromFormDef2Xform(formDef);
 
 			saveValues();
 
 			if(!isValid())
 				return;
 
-			String xml = XformConverter.getInstanceDataDoc(formDef.getDoc()).toString();
+			String xml = XformUtil.getInstanceDataDoc(formDef.getDoc()).toString();
 			xml = FormDesignerUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
 			submitListener.onSubmit(xml);
 		}
 	}
+	
 
 	/**
 	 * Sets the listener for form submission events.

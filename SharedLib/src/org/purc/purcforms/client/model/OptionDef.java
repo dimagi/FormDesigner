@@ -3,8 +3,9 @@ package org.purc.purcforms.client.model;
 import java.io.Serializable;
 
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConverter;
-import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.UiElementBuilder;
+import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -158,16 +159,16 @@ public class OptionDef implements Serializable {
 	 */
     public void updateDoc(Document doc, Element selectNode){
     	if(labelNode != null)
-    		XformUtil.setTextNodeValue(labelNode,text);
+    		XmlUtil.setTextNodeValue(labelNode,text);
     	
     	if(valueNode != null)
-    		XformUtil.setTextNodeValue(valueNode,variableName);
+    		XmlUtil.setTextNodeValue(valueNode,variableName);
     	
     	if(labelNode == null && valueNode == null) ////Must be new option.
-    		XformConverter.fromOptionDef2Xform(this,doc,selectNode);
+    		UiElementBuilder.fromOptionDef2Xform(this,doc,selectNode);
     	
     	if(controlNode != null)
-    		controlNode.setAttribute(XformConverter.ATTRIBUTE_NAME_ID, variableName);
+    		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 	}
     
     /**
@@ -181,19 +182,19 @@ public class OptionDef implements Serializable {
     	if(labelNode != null && controlNode != null){
     		String xpath = parentXpath + "/" + FormUtil.getNodeName(controlNode);
     		
-    		String id = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_ID);
+    		String id = controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
     		if(id != null && id.trim().length() > 0)
-    			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_ID + "='" + id + "']";
+    			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
     		
-    		/*String parent = controlNode.getAttribute(XformConverter.ATTRIBUTE_NAME_PARENT);
+    		/*String parent = controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_PARENT);
     		if(parent != null && parent.trim().length() > 0)
-    			xpath += "[@" + XformConverter.ATTRIBUTE_NAME_PARENT + "='" + parent + "']";*/
+    			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_PARENT + "='" + parent + "']";*/
     		
     		xpath += "/"+ FormUtil.getNodeName(labelNode);
 			
-    		Element node = doc.createElement(XformConverter.NODE_NAME_TEXT);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_XPATH, xpath);
-			node.setAttribute(XformConverter.ATTRIBUTE_NAME_VALUE, text);
+    		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			parentNode.appendChild(node);
 		}
     }

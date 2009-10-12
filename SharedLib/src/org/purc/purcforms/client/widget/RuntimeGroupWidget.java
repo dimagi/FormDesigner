@@ -16,7 +16,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
-import org.purc.purcforms.client.xforms.XformUtil;
+import org.purc.purcforms.client.xforms.XmlUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.http.client.URL;
@@ -712,7 +712,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				else{
 					widget.getQuestionDef().setDataNode((Element)child);
 					if(loadQtn){
-						widget.getQuestionDef().setDefaultValue(XformUtil.getTextValue((Element)child));
+						widget.getQuestionDef().setDefaultValue(XmlUtil.getTextValue((Element)child));
 						widget.loadQuestion();
 					}
 				}

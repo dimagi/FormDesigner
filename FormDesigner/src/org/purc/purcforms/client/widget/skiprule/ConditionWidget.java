@@ -128,14 +128,14 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			valueWidget.setQuestionDef(questionDef);
 		}
 		else if(sender == operatorHyperlink){
-			operator = ((Byte)item).byteValue();
+			operator = ((Integer)item).intValue();
 			valueWidget.setOperator(operator);
 
 			if(allowFieldSelection)
 				fieldWidget.stopSelection();
 		}
 		else if(sender == funcHyperlink){
-			function = ((Byte)item).byteValue();
+			function = ((Integer)item).intValue();
 			valueWidget.setFunction(function);
 			operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
 		}

@@ -47,13 +47,17 @@ public class FormRunnerEntryPoint implements EntryPoint{
 
 	public void onModuleLoadDeffered() {
 		try{
+			RootPanel rootPanel = RootPanel.get("purcformrunner");
+			if(rootPanel == null)
+				return;
+			
 			FormUtil.setupUncaughtExceptionHandler();	
 
 			FormUtil.retrieveUserDivParameters();
 
 			formRunner = new FormRunnerWidget(images);
 			
-			RootPanel.get("purcformrunner").add(formRunner);
+			rootPanel.add(formRunner);
 
 			FormUtil.maximizeWidget(formRunner);
 

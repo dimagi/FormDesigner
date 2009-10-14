@@ -1,8 +1,10 @@
 package org.purc.purcforms.client.view;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.controller.IConditionController;
+import org.purc.purcforms.client.controller.QuestionSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
 import org.purc.purcforms.client.model.FormDef;
@@ -29,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class SkipRulesView extends Composite implements IConditionController{
+public class SkipRulesView extends Composite implements IConditionController, QuestionSelectionListener{
 
 	/** The widget horizontal spacing in horizontal panels. */
 	private static final int HORIZONTAL_SPACING = 5;
@@ -76,9 +78,12 @@ public class SkipRulesView extends Composite implements IConditionController{
 	/** Widget for the skip rule action to make a question required. */
 	private CheckBox chkMakeRequired = new CheckBox("Make Required");
 	
-	/** Label for question. */
+	/** Label "for question". */
 	private Label lblAction = new Label(LocaleText.get("forQuestion"));
 
+	/** Label "and". */
+	private Label lblAnd = new Label(LocaleText.get("and"));
+	
 	
 	/**
 	 * Creates a new instance of the skip logic widget.
@@ -100,9 +105,22 @@ public class SkipRulesView extends Composite implements IConditionController{
 		actionPanel.add(rdShow);
 		actionPanel.add(rdHide);
 		actionPanel.add(chkMakeRequired);
-		actionPanel.setSpacing(10);
+		actionPanel.setSpacing(5);
 
-		verticalPanel.add(lblAction);
+		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),null);
+		hyperlink.addClickListener(new ClickListener(){
+			public void onClick(Widget sender){
+				showOtherQuestions();
+			}
+		});
+		
+		HorizontalPanel horzPanel = new HorizontalPanel();
+		horzPanel.setSpacing(10);
+		horzPanel.add(lblAction);
+		horzPanel.add(lblAnd);
+		horzPanel.add(hyperlink);
+		
+		verticalPanel.add(horzPanel);
 		verticalPanel.add(actionPanel);
 
 		horizontalPanel.add(new Label(LocaleText.get("when")));
@@ -358,5 +376,21 @@ public class SkipRulesView extends Composite implements IConditionController{
 		
 		if(!enabled)
 			clearConditions();
+	}
+	
+	
+	/**
+	 * Shows a list of other questions that are targets of the current skip rule.
+	 */
+	private void showOtherQuestions(){
+		if(enabled){
+			SkipQtnsDialog dialog = new SkipQtnsDialog(this);
+			dialog.setData(formDef,questionDef);
+			dialog.center();
+		}
+	}
+	
+	public void onQuestionsSelected(List<String> questions){
+		
 	}
 }

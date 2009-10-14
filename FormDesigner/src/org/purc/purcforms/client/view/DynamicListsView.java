@@ -13,6 +13,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.widget.skiprule.FieldWidget;
 
 import com.google.gwt.user.client.Window;
@@ -36,7 +37,7 @@ import com.google.gwt.xml.client.Node;
 
 
 /**
- * This widget enables creation of dynamic lists.
+ * This widget enables creation of dynamic selection lists.
  * 
  * @author daniel
  *
@@ -45,27 +46,44 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private Label lblAction = new Label(LocaleText.get("valuesFor"));
+
+	/** Widget to display the "Values for" text. */
+	private Label lblValuesFor = new Label(LocaleText.get("valuesFor"));
+
+	/** Widget to display the is equal to text. */
 	private Label lblEqual = new Label(" "+LocaleText.get("isEqualTo"));
+
+	/** The widget for selection of the parent questions.
+	 * The parent question is the one on which the single select dynamic question depends.
+	 */
 	private FieldWidget fieldWidget;
-	private ListBox lbValue = new ListBox(false);
+
+	/** Widget to display the list of parent question options to select from. */
+	private ListBox lbOption = new ListBox(false);
+
+	/** Table to hold the list of dynamic options. */
 	private FlexTable table = new FlexTable();
-	
-	/** Button to add a new dynamic list option. */
+
+	/** Button to add a new dynamic selection list option. */
 	private Button btnAdd = new Button(LocaleText.get("addNew"));
-	
+
 	/** The form definition object that this dynamic list belongs to. */
 	private FormDef formDef;
+
+	/** The question that we are building this dynamic selection list for.
+	 * For the Continent and Country questions, this would be the Country question.
+	 */
 	private QuestionDef questionDef;
-	
+
 	/** Flag determining whether to enable this widget or not. */
 	private boolean enabled;
 
+	/** The dynamic option definition object that we are building. */
 	private DynamicOptionDef dynamicOptionDef;
-	
+
 	/** Contains the list of child options for the parent question's selected option. */
 	private List<OptionDef> optionList;
-	
+
 	/** The parent question whose selected option determines the list of child options.
 	 *  For the Continent and Country questions, this would be the Continent question.
 	 */
@@ -79,6 +97,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		setupWidgets();
 	}
 
+	
 	/**
 	 * Sets up widgets.
 	 */
@@ -88,39 +107,45 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		fieldWidget.setForDynamicOptions(true);
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		horizontalPanel.add(lblAction);
+		horizontalPanel.add(lblValuesFor);
 		horizontalPanel.add(fieldWidget);
 		horizontalPanel.add(lblEqual);
-		horizontalPanel.add(lbValue);
+		horizontalPanel.add(lbOption);
 		horizontalPanel.setSpacing(5);
 
 		verticalPanel.add(horizontalPanel);
 		verticalPanel.add(table);
 
-		lbValue.addChangeListener(new ChangeListener(){
+		lbOption.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				updateValueList();
+				updateOptionList();
 			}
 		});
 
 		btnAdd.addClickListener(this);
-		
+
 		table.setStyleName("cw-FlexTable");
 		table.setWidget(0, 0,new Label(LocaleText.get("text")));
 		table.setWidget(0, 1,new Label(LocaleText.get("binding")));
 		table.setWidget(0, 2,new Label(LocaleText.get("action")));
 		table.getFlexCellFormatter().setColSpan(0, 2, 3);
-		
+
 		table.setWidth("100%");
 		table.setHeight("100%");
-		
+
 		table.getCellFormatter().setStyleName(0, 0, "getting-started-label");
 		table.getCellFormatter().setStyleName(0, 1, "getting-started-label");
 		table.getCellFormatter().setStyleName(0, 2, "getting-started-label");
-		
+
 		initWidget(verticalPanel);
 	}
 
+
+	/**
+	 * Sets the dynamic selection list question, whose list of options we set on this widget.
+	 * 
+	 * @param questionDef the question.
+	 */
 	public void setQuestionDef(QuestionDef questionDef){
 		if(questionDef == null || questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 			setEnabled(false);
@@ -128,7 +153,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 
 		setEnabled(true);
-		clearConditions();
+		clear();
 
 		parentQuestionDef = null;
 		optionList = null;
@@ -140,9 +165,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("valuesFor") + questionDef.getDisplayText() + "  "+LocaleText.get("whenAnswerFor"));
+			lblValuesFor.setText(LocaleText.get("valuesFor") + questionDef.getDisplayText() + "  "+LocaleText.get("whenAnswerFor"));
 		else
-			lblAction.setText(LocaleText.get("valuesFor"));
+			lblValuesFor.setText(LocaleText.get("valuesFor"));
 
 		this.questionDef = questionDef;
 		fieldWidget.setDynamicQuestionDef(questionDef);
@@ -152,9 +177,10 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		if(parentQuestionDef != null)
 			fieldWidget.selectQuestion(parentQuestionDef);
 	}
+	
 
 	/**
-	 * Sets the form definition object that this dynamic list belongs to.
+	 * Sets the form definition object that this dynamic selection list belongs to.
 	 * 
 	 * @param formDef the form definition object.
 	 */
@@ -165,26 +191,35 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		parentQuestionDef = null;
 		optionList = null;
 		dynamicOptionDef = null;
-		clearConditions();
+		clear();
 	}
 
-	private void clearConditions(){
+	
+	/**
+	 * Removes all dynamic selection list values for any previous widget, if any.
+	 */
+	private void clear(){
 		if(questionDef != null)
 			updateDynamicLists();
 
 		questionDef = null;
-		lblAction.setText(LocaleText.get("valuesFor"));
-		lbValue.clear();
+		lblValuesFor.setText(LocaleText.get("valuesFor"));
+		lbOption.clear();
 
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));
 
-		clearValues();
+		clearChildOptions();
 
 		fieldWidget.setQuestion(null);
 	}
 
-	private void clearValues(){
+
+	/**
+	 * Removes all options from the options list table.
+	 */
+	private void clearChildOptions(){
+		//Removes all options apart from the header which is at index 0.
 		while(table.getRowCount() > 1)
 			table.removeRow(1);
 	}
@@ -197,11 +232,12 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 
-		lbValue.setEnabled(enabled);
+		lbOption.setEnabled(enabled);
 
 		if(!enabled)
-			clearConditions();
+			clear();
 	}
+	
 
 	/**
 	 * Checks whether this widget is enabled or not.
@@ -212,71 +248,80 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		return enabled;
 	}
 
+
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 */
 	public void onItemSelected(Object sender, Object item) {
-		if(sender == fieldWidget){
-			lbValue.clear();
-			clearValues();
+		//This is only useful for us when a new parent question has been selected.
+		if(sender != fieldWidget)
+			return;
 
-			parentQuestionDef = (QuestionDef)item;
+		//Clear all parent and child options.
+		lbOption.clear();
+		clearChildOptions();
 
-			int type = parentQuestionDef.getDataType();
-			if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+		parentQuestionDef = (QuestionDef)item;
+
+		//we only allow option lists for single select and single select dynamic types.
+		int type = parentQuestionDef.getDataType();
+		if(!(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+			return;
+
+		//Get the dynamic option definition object for which the selected
+		//question acts as the parent of the relationship.
+		dynamicOptionDef = formDef.getDynamicOptions(parentQuestionDef.getId());
+
+		//As for now, we do not allow the a parent question to map to more
+		//than once child question.
+		if(dynamicOptionDef != null && dynamicOptionDef.getQuestionId() != questionDef.getId())
+			return;
+
+		//Populate the list of parent options from a single select question.
+		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+			if(!(parentQuestionDef.getOptionCount() > 0))
 				return;
 
-			dynamicOptionDef = formDef.getDynamicOptions(parentQuestionDef.getId());
-			
-			//As for now, we do not allow the a parent question to map to more
-			//than once child question.
-			if(dynamicOptionDef != null && dynamicOptionDef.getQuestionId() != questionDef.getId())
-				return;
-
-			if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
-				if(!(parentQuestionDef.getOptionCount() > 0))
-					return;
-
-				List options = parentQuestionDef.getOptions();
-				for(int i=0; i<options.size(); i++){
-					OptionDef optionDef = (OptionDef)options.get(i);
-					lbValue.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));	
-				}
+			List options = parentQuestionDef.getOptions();
+			for(int i=0; i<options.size(); i++){
+				OptionDef optionDef = (OptionDef)options.get(i);
+				lbOption.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));	
 			}
-
-			//dynamicOptionDef = formDef.getDynamicOptions(parentQuestionDef.getId());
-
-			if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
-				DynamicOptionDef options = formDef.getChildDynamicOptions(parentQuestionDef.getId());
-				if(options != null){
-					Iterator<Entry<Integer,List<OptionDef>>> iterator = options.getParentToChildOptions().entrySet().iterator();
-					while(iterator.hasNext()){
-						Entry<Integer,List<OptionDef>> entry = iterator.next();
-						List<OptionDef> list = entry.getValue();
-						for(int index = 0; index < list.size(); index++){
-							OptionDef optionDef = list.get(index);
-							lbValue.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));
-						}
-					} //This is commented out because of reversing the order
-					/*HashMap<Integer, List<OptionDef>> parentToChildOptions = options.getParentToChildOptions();
-					int count = parentToChildOptions.size();
-					Object[] keys = parentToChildOptions.keySet().toArray();
-					for(int index = count -1; index >= 0; index--){
-						List<OptionDef> list = parentToChildOptions.get(keys[index]);
-						for(int i = 0; i < list.size(); i++){
-							OptionDef optionDef = list.get(i);
-							lbValue.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));
-						}
-					}*/
-					
-				}
-			}
-
-			if(lbValue.getSelectedIndex() >= 0)
-				updateValueList();
 		}
+
+		//Populate the list of parent options from a dynamic selection list question.
+		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+			DynamicOptionDef options = formDef.getChildDynamicOptions(parentQuestionDef.getId());
+			if(options != null){
+				Iterator<Entry<Integer,List<OptionDef>>> iterator = options.getParentToChildOptions().entrySet().iterator();
+				while(iterator.hasNext()){
+					Entry<Integer,List<OptionDef>> entry = iterator.next();
+					List<OptionDef> list = entry.getValue();
+					for(int index = 0; index < list.size(); index++){
+						OptionDef optionDef = list.get(index);
+						lbOption.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));
+					}
+				} 
+			}
+		}
+
+		//If there is any selection, update the table of options.
+		if(lbOption.getSelectedIndex() >= 0)
+			updateOptionList();
 	}
 
+	/**
+	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 */
 	public void onStartItemSelection(Object sender){
+
 	}
 
+
+	/**
+	 * Updates the form definition object with the dynamic option definition object
+	 * that is being edited on this widget.
+	 */
 	public void updateDynamicLists(){
 		if(dynamicOptionDef == null || dynamicOptionDef.size() == 0){
 			if(parentQuestionDef != null)
@@ -287,14 +332,19 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		formDef.setDynamicOptionDef(parentQuestionDef.getId(), dynamicOptionDef);
 	}
 
-	public void updateValueList(){
-		clearValues();
+
+	/**
+	 * Populates the table of dynamic options with those options that are allowed
+	 * for the currently selected option for the parent question.
+	 */
+	public void updateOptionList(){
+		clearChildOptions();
 		if(dynamicOptionDef == null){
 			dynamicOptionDef = new DynamicOptionDef();
 			dynamicOptionDef.setQuestionId(questionDef.getId());
 		}
 
-		int optionId = Integer.parseInt(lbValue.getValue(lbValue.getSelectedIndex()));
+		int optionId = Integer.parseInt(lbOption.getValue(lbOption.getSelectedIndex()));
 		optionList = dynamicOptionDef.getOptionList(optionId);
 		if(optionList == null){
 			optionList = new ArrayList<OptionDef>();
@@ -303,89 +353,112 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		for(int index = 0; index < optionList.size(); index++){
 			OptionDef optionDef = optionList.get(index);
-			addValue(optionDef.getText(),optionDef.getVariableName(),table.getRowCount());
+			addOption(optionDef.getText(),optionDef.getVariableName(),table.getRowCount());
 		}
 
 		addAddButton();
 	}
 
+
+	/**
+	 * Called when any of the add new, delete, move up or move down 
+	 * button has been clicked.
+	 * 
+	 * @sender the button which was clicked.
+	 */
 	public void onClick(Widget sender){		
 		if(sender == btnAdd)
 			addNewOption();
 		else{
 			int rowCount = table.getRowCount();
 			for(int row = 1; row < rowCount; row++){
+				//Delete button
 				if(sender == table.getWidget(row, 2)){
 					OptionDef optionDef = optionList.get(row-1);
 					if(!Window.confirm(LocaleText.get("removeRowPrompt") + " [" + optionDef.getText() + " - " + optionDef.getVariableName() + "]"))
 						return;
-					
+
 					table.removeRow(row);
 					optionList.remove(row-1);
-	
+
 					if(optionDef.getControlNode() != null && optionDef.getControlNode().getParentNode() != null)
 						optionDef.getControlNode().getParentNode().removeChild(optionDef.getControlNode());
 					break;
 				}
 				else if(sender == table.getWidget(row, 3)){
+					//Move up button.
 					if(row == 1)
 						return;
 					moveOptionUp(optionList.get(row-1));
-					
+
 					OptionDef optionDef = optionList.get(row-1);
-					addValue(optionDef.getText(),optionDef.getVariableName(),row);
-					
+					addOption(optionDef.getText(),optionDef.getVariableName(),row);
+
 					optionDef = optionList.get(row-2);
-					addValue(optionDef.getText(),optionDef.getVariableName(),row-1);
+					addOption(optionDef.getText(),optionDef.getVariableName(),row-1);
 					break;
 				}
 				else if(sender == table.getWidget(row, 4)){
+					//Move down button.
 					if(row == (rowCount - 2))
 						return;
 					moveOptionDown(optionList.get(row-1));
-					
+
 					OptionDef optionDef = optionList.get(row-1);
-					addValue(optionDef.getText(),optionDef.getVariableName(),row);
-					
+					addOption(optionDef.getText(),optionDef.getVariableName(),row);
+
 					optionDef = optionList.get(row);
-					addValue(optionDef.getText(),optionDef.getVariableName(),row+1);
+					addOption(optionDef.getText(),optionDef.getVariableName(),row+1);
 					break;
 				}
 			}
 		}
 	}
 
+	
 	/**
-	 * Adds a new dynamic list option.
+	 * Adds a new dynamic list option to the table.
 	 */
 	private void addNewOption(){
 		table.removeRow(table.getRowCount() - 1);
-		TextBox textBox = addValue("","",table.getRowCount());
+		TextBox textBox = addOption("","",table.getRowCount());
 		textBox.setFocus(true);
 		textBox.selectAll();
 		addAddButton();
 		addNewOptionDef();
 	}
 
-	private TextBox addValue(String text, String value, int row){
-		TextBox txtName = new TextBox();
-		TextBox txtValue = new TextBox();
 
-		txtName.setText(text);
-		txtValue.setText(value);
+	/**
+	 * Adds a new option to the table of dynamic options list.
+	 * 
+	 * @param text the option text.
+	 * @param binding the option binding.
+	 * @param row the index of the row to add.
+	 * @return the widget for editing text of the new option.
+	 */
+	private TextBox addOption(String text, String binding, int row){
+		TextBox txtText = new TextBox();
+		TextBox txtBinding = new TextBox();
 
-		table.setWidget(row, 0,txtName);
-		table.setWidget(row, 1,txtValue);
+		txtText.setText(text);
+		txtBinding.setText(binding);
+
+		table.setWidget(row, 0,txtText);
+		table.setWidget(row, 1,txtBinding);
 
 		PushButton button = new PushButton(FormDesignerWidget.images.delete().createImage());
+		button.setTitle(LocaleText.get("deleteItem"));
 		button.addClickListener(this);
 		table.setWidget(row, 2,button);
 
 		button = new PushButton(FormDesignerWidget.images.moveup().createImage());
+		button.setTitle(LocaleText.get("moveUp"));
 		button.addClickListener(this);
 		table.setWidget(row, 3,button);
 
 		button = new PushButton(FormDesignerWidget.images.movedown().createImage());
+		button.setTitle(LocaleText.get("moveDown"));
 		button.addClickListener(this);
 		table.setWidget(row, 4,button);
 
@@ -397,13 +470,13 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		table.getWidget(row, 0).setWidth("100%");
 		table.getWidget(row, 1).setWidth("100%");
 
-		txtName.addChangeListener(new ChangeListener(){
+		txtText.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				updateName((TextBox)sender);
+				updateText((TextBox)sender);
 			}
 		});
 
-		txtName.addKeyboardListener(new KeyboardListenerAdapter(){
+		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
 				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
 					moveToNextWidget(sender,0,keyCode == KeyboardListener.KEY_DOWN);
@@ -413,13 +486,13 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		});
 
 
-		txtValue.addChangeListener(new ChangeListener(){
+		txtBinding.addChangeListener(new ChangeListener(){
 			public void onChange(Widget sender){
-				updateValue((TextBox)sender);
+				updateBinding((TextBox)sender);
 			}
 		});
 
-		txtValue.addKeyboardListener(new KeyboardListenerAdapter(){
+		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
 			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
 				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
 					moveToNextWidget(sender,1,keyCode == KeyboardListener.KEY_DOWN);
@@ -428,26 +501,43 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			}
 		});
 
-		return txtName;
+		return txtText;
 	}
 
-	private void updateName(TextBox txtName){
+
+	/**
+	 * Updates the selected object with the new text as typed by the user.
+	 */
+	private void updateText(TextBox txtText){
 		int rowCount = table.getRowCount();
 		for(int row = 1; row < rowCount; row++){
-			if(txtName == table.getWidget(row, 0)){
+			if(txtText == table.getWidget(row, 0)){
 				OptionDef optionDef = null;
 				if(optionList.size() > row-1)
 					optionDef = optionList.get(row-1);
 
 				if(optionDef == null)
 					optionDef = addNewOptionDef();
-				
-				optionDef.setText(txtName.getText());
+
+				optionDef.setText(txtText.getText());
+
+				//automatically set the binding, if empty.
+				TextBox txtBinding = (TextBox)table.getWidget(row, 1);
+				String binding = txtBinding.getText();
+				if(binding == null || binding.trim().length() == 0)
+					txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
+
 				break;
 			}
 		}
 	}
-	
+
+
+	/**
+	 * Adds a new option definition object.
+	 * 
+	 * @return the new option definition object.
+	 */
 	private OptionDef addNewOptionDef(){
 		OptionDef optionDef = new OptionDef(parentQuestionDef);
 		optionDef.setId(dynamicOptionDef.getNextOptionId());
@@ -456,25 +546,29 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		return optionDef;
 	}
 
-	private void updateValue(TextBox txtValue){
+
+	/**
+	 * Updates the selected object with the new binding as typed by the user.
+	 */
+	private void updateBinding(TextBox txtBinding){
 		int rowCount = table.getRowCount();
 		for(int row = 1; row < rowCount; row++){
-			if(txtValue == table.getWidget(row, 1)){
+			if(txtBinding == table.getWidget(row, 1)){
 				OptionDef optionDef = null;
 				if(optionList.size() > row-1)
 					optionDef = optionList.get(row-1);
 
 				if(optionDef == null)
 					optionDef = addNewOptionDef();
-				
-				optionDef.setVariableName(txtValue.getText());
+
+				optionDef.setVariableName(txtBinding.getText());
 				break;
 			}
 		}
 	}
 
 	/**
-	 * Adds the add new button to the widget.
+	 * Adds the add new button to the table widget.
 	 */
 	private void addAddButton(){
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
@@ -484,6 +578,14 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		table.setWidget(row, 0, btnAdd);
 	}
 
+
+	/**
+	 * Moves input focus to the next widget.
+	 * 
+	 * @param sender the widget after which to move the input focus.
+	 * @param col the index of the column which currently has input focus.
+	 * @param sameCol set to true to move to the next widget in the same column.
+	 */
 	private void moveToNextWidget(Widget sender, int col, boolean sameCol){
 		if(sameCol){
 			int rowCount = table.getRowCount();
@@ -518,7 +620,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 							return;
 						col = 1;
 					}
-					
+
 					textBox = ((TextBox)table.getWidget(row, col));
 					textBox.setFocus(true);
 					textBox.selectAll();
@@ -528,8 +630,16 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 	}
 
+	/**
+	 * Moves input focus to the widget before.
+	 * 
+	 * @param sender the widget before which to move the input focus.
+	 * @param col the index of the column which currently has input focus.
+	 */
 	private void moveToPrevWidget(Widget sender, int col){
 		int rowCount = table.getRowCount();
+
+		//Starting from index 1 since 0 is the header row.
 		for(int row = 1; row < rowCount; row++){
 			if(sender == table.getWidget(row, col)){
 				if(row == 1)
@@ -542,7 +652,13 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			}
 		}
 	}
-	
+
+
+	/**
+	 * Moves an option one position upwards.
+	 * 
+	 * @param optionDef the option to move.
+	 */
 	public void moveOptionUp(OptionDef optionDef){
 		List optns = optionList;
 		int index = optns.indexOf(optionDef);
@@ -575,7 +691,13 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 			optns.add(list.get(i));
 		}
 	}
-	
+
+
+	/**
+	 * Moves an option one position downwards.
+	 * 
+	 * @param optionDef the option to move.
+	 */
 	public void moveOptionDown(OptionDef optionDef){
 		List optns = optionList;
 		int index = optns.indexOf(optionDef);	
@@ -619,7 +741,17 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				parentNode.appendChild(optionDef.getControlNode());
 		}
 	}
-	
+
+
+	/**
+	 * Gets the next option which has been converted to xforms and 
+	 * hence attached to an xforms document node, starting at a given 
+	 * index in a list of options.
+	 * 
+	 * @param options the list of options.
+	 * @param index the index to start from in the option list.
+	 * @return the option.
+	 */
 	private OptionDef getNextSavedOption(List options, int index){
 		for(int i=index; i<options.size(); i++){
 			OptionDef optionDef = (OptionDef)options.get(i);

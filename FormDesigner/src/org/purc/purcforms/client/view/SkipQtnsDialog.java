@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 
 /**
+ * Handles selection of multiple questions as targets for a given skip rule.
  * 
  * @author daniel
  *
@@ -37,15 +38,21 @@ public class SkipQtnsDialog  extends DialogBox {
 	
 	/** Widget to select one or more questions. */
 	private Button btnSelect = new Button(">>");
+	
+	/** Widget to remove one or more selected questions. */
 	private Button btnDeselect = new Button("<<");
 	
+	/** Button to commit changes and close this dialog box. */
 	private Button btnOk = new Button(LocaleText.get("ok"));
+	
+	/** Button to cancel changes, if any, and close this dialog box. */
 	private Button btnCancel = new Button(LocaleText.get("cancel"));
 	
+	/** Main or root widget for this dialog box. */
 	private VerticalPanel mainPanel = new VerticalPanel();
-	
-	private List<String> selectedQtns = new ArrayList<String>();
-	
+		
+	/** Call back for communicating to interested parties
+	 *  when user has finished selecting questions. */
 	private QuestionSelectionListener qtnSelListener;
 	
 	
@@ -94,6 +101,12 @@ public class SkipQtnsDialog  extends DialogBox {
 	}
 	
 	
+	/**
+	 * Sets the form and currently selected question for the skip rule.
+	 * 
+	 * @param formDef the form definition object.
+	 * @param questionDef the question definition object.
+	 */
 	public void setData(FormDef formDef,QuestionDef questionDef){
 		lbAllQtns.clear();
 		lbSelQtns.clear();
@@ -103,6 +116,12 @@ public class SkipQtnsDialog  extends DialogBox {
 	}
 	
 	
+	/**
+	 * Loads the all questions list box with questions from a given page.
+	 * 
+	 * @param pageDef the page definition object.
+	 * @param questionDef the question definition object.
+	 */
 	private void loadPageQnts(PageDef pageDef,QuestionDef questionDef){
 		for(int index = 0; index < pageDef.getQuestionCount(); index++){
 			QuestionDef qtnDef = pageDef.getQuestionAt(index);
@@ -113,6 +132,10 @@ public class SkipQtnsDialog  extends DialogBox {
 		}
 	}
 	
+	
+	/**
+	 * Sets up the header labels for the all and selected questions list boxes.
+	 */
 	private void setupHeaderLabels(){
 		HorizontalPanel horzPanel = new HorizontalPanel();
 		Label lblAllQtns = new Label("All Questions");
@@ -128,6 +151,12 @@ public class SkipQtnsDialog  extends DialogBox {
 		mainPanel.add(horzPanel);
 	}
 	
+	
+	/**
+	 * Sets up the select and the remove selection buttons.
+	 * 
+	 * @param parentPanel the panel to contain these buttons.
+	 */
 	private void setupSelectionButtons(HorizontalPanel parentPanel){
 		VerticalPanel vertPanel = new VerticalPanel();
 		vertPanel.add(btnSelect);
@@ -154,6 +183,10 @@ public class SkipQtnsDialog  extends DialogBox {
 		btnDeselect.setEnabled(false);
 	}
 	
+	
+	/**
+	 * Sets up the Ok and Cancel buttons.
+	 */
 	private void setupOkCancelButtons(){
 		btnOk.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
@@ -182,6 +215,11 @@ public class SkipQtnsDialog  extends DialogBox {
 		mainPanel.add(horzPanel);
 	}
 	
+	
+	/**
+	 * Removes selected questions from the all questions list box and puts them in the
+	 * selected questions list box.
+	 */
 	private void selectQuestions(){
 		for(int index = 0; index < lbAllQtns.getItemCount(); index++){
 			if(lbAllQtns.isItemSelected(index)){
@@ -196,6 +234,10 @@ public class SkipQtnsDialog  extends DialogBox {
 	}
 	
 	
+	/**
+	 * Removes selected questions from the selected questions list box and puts
+	 * them in the all questions list box.
+	 */
 	private void deselectQuestions(){
 		for(int index = 0; index < lbSelQtns.getItemCount(); index++){
 			if(lbSelQtns.isItemSelected(index)){
@@ -210,8 +252,13 @@ public class SkipQtnsDialog  extends DialogBox {
 	}
 	
 	
+	/**
+	 * Gets a list of questions which have been selected.
+	 * 
+	 * @return the questions list.
+	 */
 	private List<String> getSelectedQtns(){
-		selectedQtns.clear();
+		List<String> selectedQtns = new ArrayList<String>();
 		
 		for(int index = 0; index < lbSelQtns.getItemCount(); index++)
 			selectedQtns.add(lbSelQtns.getValue(index));

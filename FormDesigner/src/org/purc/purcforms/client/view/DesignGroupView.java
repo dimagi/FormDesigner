@@ -452,6 +452,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		else
 			usingSelection = true;
 
+		List<String> tops = getInputWidgetTops(panel,usingSelection,count);
+		
 		DesignWidgetWrapper widget = null;
 		for(int index =0; index < count; index++){
 			if(usingSelection)
@@ -464,6 +466,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				continue;
 
 			if(widget.getWrappedWidget() instanceof Label){
+				//We do not align labels which are not on the same y pos as at least one input widget.
+				if(!tops.contains(widget.getTop()))
+					continue;
+					
 				if(widget.getElement().getScrollWidth() > longestLabelWidth){
 					longestLabelWidth = widget.getElement().getScrollWidth();
 					longestLabelLeft = FormUtil.convertDimensionToInt(widget.getLeft());
@@ -475,21 +481,46 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				inputs.add(widget);
 		}
 
-		List<String> tops = new ArrayList<String>();
 		int relativeWidth = longestLabelWidth+longestLabelLeft;
 		String left = (relativeWidth+5)+"px";
-		for(int index = 0; index < inputs.size(); index++){
+		for(int index = 0; index < inputs.size(); index++)
 			inputs.get(index).setLeft(left);
-			tops.add(inputs.get(index).getTop());
-		}
 
 		for(int index = 0; index < labels.size(); index++){
 			widget = labels.get(index);
-			//We do not align labels which are not on the same y pos as at least one input widget.
-			if(!tops.contains(widget.getTop()))
-				continue;
 			widget.setLeft((relativeWidth - widget.getElement().getScrollWidth()+"px"));
 		}
+	}
+	
+	
+	/**
+	 * Gets a list of widget top values, in the selected page, which capture user data. 
+	 * These are neither labels, buttons, nor group boxes.
+	 * 
+	 * @param panel the absolute panel for the current page.
+	 * @param usingSelection set to true if you want only selected widgets.
+	 * @param count the number of widgets to traverse.
+	 * @return the widget top value list.
+	 */
+	private List<String> getInputWidgetTops(AbsolutePanel panel, boolean usingSelection, int count){
+		List<String> inputWidgetTops = new ArrayList<String>();
+		
+		DesignWidgetWrapper widget = null;
+		for(int index =0; index < count; index++){
+			if(usingSelection)
+				widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
+			else
+				widget = (DesignWidgetWrapper)panel.getWidget(index);
+
+			if(widget.getWrappedWidget() instanceof Button || 
+					widget.getWrappedWidget() instanceof DesignGroupWidget ||
+					widget.getWrappedWidget() instanceof Label) 
+				continue;
+
+			inputWidgetTops.add(widget.getTop());
+		}
+		
+		return inputWidgetTops;
 	}
 
 
@@ -1872,10 +1903,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			y += selectedPanel.getAbsoluteTop();
 
 		addNewButton(LocaleText.get("addNew"),"addnew",false);
-		x = 150;
+		/*x = 150;
 		if(selectedPanel.getAbsoluteLeft() > 0)
 			x += selectedPanel.getAbsoluteLeft();
-		addNewButton(LocaleText.get("remove"),"remove",false);
+		addNewButton(LocaleText.get("remove"),"remove",false);*/
 
 		selectedDragController.clearSelection();
 

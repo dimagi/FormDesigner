@@ -30,25 +30,51 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ValidationRulesView extends Composite implements IConditionController{
 
+	/** The widget horizontal spacing in horizontal panels. */
 	private static final int HORIZONTAL_SPACING = 5;
+	
+	/** The widget vertical spacing in vertical panels. */
 	private static final int VERTICAL_SPACING = 0;
 	
+	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private Hyperlink addConditionLink = new Hyperlink("< Click here to add new condition >",null);
+	
+	/** Widget for adding new conditions. */
+	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
+	
+	/** Widget for grouping conditions. Has all,any, none, and not all. */
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
 	
+	/** The form definition object that this validation rule belongs to. */
 	private FormDef formDef;
+	
+	/** The question definition object which is the target of the validation rule. */
 	private QuestionDef questionDef;
+	
+	/** The validation rule definition object. */
 	private ValidationRule validationRule;
+	
+	/** Flag determining whether to enable this widget or not. */
 	private boolean enabled;
+	
+	/** Widget for the validation rule error message. */
 	private TextBox txtErrorMessage = new TextBox();
 
-	private Label lblAction = new Label("Question: ");
+	/** Widget for Label "Question: ". */
+	private Label lblAction = new Label(LocaleText.get("question")+": " /*"Question: "*/);
 	
+	
+	/**
+	 * Creates a new instance of the validation rule widget.
+	 */
 	public ValidationRulesView(){
 		setupWidgets();
 	}
 	
+	
+	/**
+	 * Sets up the widgets.
+	 */
 	private void setupWidgets(){
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
@@ -82,6 +108,10 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		initWidget(verticalPanel);
 	}
 	
+	
+	/**
+	 * Adds a new condition.
+	 */
 	public void addCondition(){
 		if(formDef != null && enabled){
 			verticalPanel.remove(addConditionLink);
@@ -98,16 +128,31 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		}
 	}
 	
+	
+	/**
+	 * Supposed to add a bracket or nested set of related conditions which are 
+	 * currently not supported.
+	 */
 	public void addBracket(){
 		
 	}
 	
+	
+	/**
+	 * Deletes a condition.
+	 * 
+	 * @param conditionWidget the widget having the condition to delete.
+	 */
 	public void deleteCondition(ConditionWidget conditionWidget){
 		if(validationRule != null)
 			validationRule.removeCondition(conditionWidget.getCondition());
 		verticalPanel.remove(conditionWidget);
 	}
 	
+	
+	/**
+	 * Sets or updates the values of the validation rule object from the user's widget selections.
+	 */
 	public void updateValidationRule(){
 		if(questionDef == null){
 			validationRule = null;
@@ -147,6 +192,12 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			formDef.addValidationRule(validationRule);
 	}
 	
+	
+	/**
+	 * Sets the question definition object which is the target of the validation rule.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	public void setQuestionDef(QuestionDef questionDef){
 		clearConditions();
 		
@@ -158,9 +209,9 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();*/
 		
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("question")+"  " + questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
+			lblAction.setText(LocaleText.get("question")+":  " + questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
 		else
-			lblAction.setText(LocaleText.get("question")+" ");
+			lblAction.setText(LocaleText.get("question")+": ");
 		
 		this.questionDef = questionDef;
 		
@@ -189,6 +240,12 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		}
 	}
 	
+	
+	/**
+	 * Sets the form definition object to which this validation rule belongs.
+	 * 
+	 * @param formDef the form definition object.
+	 */
 	public void setFormDef(FormDef formDef){
 		updateValidationRule();
 		this.formDef = formDef;
@@ -196,10 +253,16 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		clearConditions();
 	}
 	
+	
+	/**
+	 * Removes all validation rule conditions.
+	 */
 	private void clearConditions(){
 		if(questionDef != null)
 			updateValidationRule();
+		
 		questionDef = null;
+		lblAction.setText(LocaleText.get("question")+": ");
 		
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));
@@ -207,6 +270,12 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		txtErrorMessage.setText(null);
 	}
 	
+	
+	/**
+	 * Sets whether to enable this widget or not.
+	 * 
+	 * @param enabled set to true to enable, else false.
+	 */
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
 		this.groupHyperlink.setEnabled(enabled);
@@ -217,6 +286,10 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			clearConditions();
 	}
 	
+	
+	/**
+	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
+	 */
 	public void onWindowResized(int width, int height){
 		if(width - 700 > 0)
 			txtErrorMessage.setWidth(width - 700 + "px");

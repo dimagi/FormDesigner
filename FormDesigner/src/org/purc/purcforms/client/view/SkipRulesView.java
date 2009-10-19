@@ -35,56 +35,56 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 
 	/** The widget horizontal spacing in horizontal panels. */
 	private static final int HORIZONTAL_SPACING = 5;
-	
+
 	/** The widget vertical spacing in vertical panels. */
 	private static final int VERTICAL_SPACING = 0;
 
 	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	
+
 	/** Widget for adding new conditions. */
 	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
-	
+
 	/** Widget for grouping conditions. Has all,any, none, and not all. */
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
 
 	/** The form definition object that this skip rule belongs to. */
 	private FormDef formDef;
-	
+
 	/** The question definition object which is the target of the skip rule. 
 	 *  As for now, the form designer supports only one skip rule target. But the
 	 *  skip rule object supports an un limited number.
 	 */
 	private QuestionDef questionDef;
-	
+
 	/** The skip rule definition object. */
 	private SkipRule skipRule;
-	
+
 	/** Flag determining whether to enable this widget or not. */
 	private boolean enabled;
-	
+
 	/** Widget for the skip rule action to enable a question. */
 	private RadioButton rdEnable = new RadioButton("action","Enable");
-	
+
 	/** Widget for the skip rule action to disable a question. */
 	private RadioButton rdDisable = new RadioButton("action","Disable");
-	
+
 	/** Widget for the skip rule action to show a question. */
 	private RadioButton rdShow = new RadioButton("action","Show");
-	
+
 	/** Widget for the skip rule action to hide a question. */
 	private RadioButton rdHide = new RadioButton("action","Hide");
-	
+
 	/** Widget for the skip rule action to make a question required. */
 	private CheckBox chkMakeRequired = new CheckBox("Make Required");
-	
-	/** Label "for question". */
+
+	/** Widget for Label "for question". */
 	private Label lblAction = new Label(LocaleText.get("forQuestion"));
 
-	/** Label "and". */
+	/** Widget for Label "and". */
 	private Label lblAnd = new Label(LocaleText.get("and"));
-	
-	
+
+
 	/**
 	 * Creates a new instance of the skip logic widget.
 	 */
@@ -113,13 +113,13 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 				showOtherQuestions();
 			}
 		});
-		
+
 		HorizontalPanel horzPanel = new HorizontalPanel();
 		horzPanel.setSpacing(10);
 		horzPanel.add(lblAction);
 		horzPanel.add(lblAnd);
 		horzPanel.add(hyperlink);
-		
+
 		verticalPanel.add(horzPanel);
 		verticalPanel.add(actionPanel);
 
@@ -234,10 +234,11 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		if(skipRule.getConditions() == null)
 			skipRule = null;
 		else{
-			if(!skipRule.containsActionTarget(questionDef.getId()))
-				skipRule.addActionTarget(questionDef.getId());
 			skipRule.setConditionsOperator(groupHyperlink.getConditionsOperator());
 			skipRule.setAction(getAction());
+			
+			if(!skipRule.containsActionTarget(questionDef.getId()))
+				skipRule.addActionTarget(questionDef.getId());
 		}
 
 		if(skipRule != null && !formDef.containsSkipRule(skipRule))
@@ -292,7 +293,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		clearConditions();
 
 		formDef = questionDef.getParentFormDef();
-		
+
 		if(questionDef != null)
 			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());
 		else
@@ -343,10 +344,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	private void clearConditions(){
 		if(questionDef != null)
 			updateSkipRule();
-		
+
 		questionDef = null;
 		lblAction.setText(LocaleText.get("forQuestion"));
-		
+
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));
 
@@ -365,32 +366,67 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 */
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-		
+
 		groupHyperlink.setEnabled(enabled);
-		
+
 		rdEnable.setEnabled(enabled);
 		rdDisable.setEnabled(enabled);
 		rdShow.setEnabled(enabled);
 		rdHide.setEnabled(enabled);
 		chkMakeRequired.setEnabled(enabled);
-		
+
 		if(!enabled)
 			clearConditions();
 	}
-	
-	
+
+
 	/**
 	 * Shows a list of other questions that are targets of the current skip rule.
 	 */
 	private void showOtherQuestions(){
 		if(enabled){
 			SkipQtnsDialog dialog = new SkipQtnsDialog(this);
-			dialog.setData(formDef,questionDef);
+			dialog.setData(formDef,questionDef,skipRule);
 			dialog.center();
 		}
 	}
-	
+
+
+	/**
+	 * @see org.purc.purcforms.client.controller.QuestionSelectionListener#onQuestionsSelected(List)
+	 */
 	public void onQuestionsSelected(List<String> questions){
+		if(skipRule == null)
+			skipRule = new SkipRule();
+
+		//Check if we have any action targets. If we do not, just add all as new.
+		List<Integer> actnTargets = skipRule.getActionTargets();
+		if(actnTargets == null){
+			for(String varName : questions)
+				skipRule.addActionTarget(formDef.getQuestion(varName).getId());
+			
+			return;
+		}
+
+		//Remove any de selected action targets from the skip rule.
+		for(int index = 0; index < actnTargets.size(); index++){
+			Integer qtnId = actnTargets.get(index);
+
+			QuestionDef qtnDef = formDef.getQuestion(qtnId);
+			if(qtnDef == questionDef)
+				continue; //Ignore the question for which we are editing the skip rule.
+
+			if(qtnDef == null || !questions.contains(qtnDef.getVariableName())){
+				actnTargets.remove(index);
+				index = index - 1;
+			}
+		}
 		
+		//Add any newly added questions as action targets.
+		for(String varName : questions){
+			QuestionDef qtnDef = formDef.getQuestion(varName);
+			if(!skipRule.containsActionTarget(qtnDef.getId()))
+				skipRule.addActionTarget(qtnDef.getId());
+		}
 	}
 }

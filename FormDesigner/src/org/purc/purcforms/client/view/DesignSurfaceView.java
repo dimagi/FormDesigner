@@ -703,7 +703,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	/**
 	 * Loads the default widget layout for a given form.
 	 * 
-	 * @param formDef the form dedinition object.
+	 * @param formDef the form definition object.
 	 */
 	public void setLayout(FormDef formDef){			
 		this.formDef = formDef;
@@ -717,6 +717,10 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				PageDef pageDef = (PageDef)pages.get(i);
 				addNewTab(pageDef.getName());
 				loadPage(pageDef);
+				
+				selectAll();
+				format();
+				clearSelection();
 			}
 
 			//TODO May need to support multiple listeners.
@@ -727,7 +731,6 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			selectedTabIndex = 0;
 			tabs.selectTab(selectedTabIndex);
 		}
-
 	}
 
 	/**
@@ -865,7 +868,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		setHeight(y+40+"px");
 	}
 
-	
+
 	/**
 	 * Adds a new set of check boxes.
 	 * 
@@ -876,7 +879,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	 */
 	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, boolean vertically, int tabIndex){
 		List options = questionDef.getOptions();
-		for(int i=0; i<options.size(); i++){
+		for(int i=0; i < options.size(); i++){
 			/*if(i != 0){
 				y += 40;
 
@@ -896,11 +899,14 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			wrapper.setTitle(optionDef.getText());
 			wrapper.setTabIndex(++tabIndex);
 
-			if(vertically)
-				y += 40;
-			else
-				x += (optionDef.getText().length() * 12);
+			if(i < (options.size() - 1)){
+				if(vertically)
+					y += 40;
+				else
+					x += (optionDef.getText().length() * 12);
+			}
 		}
+
 		return null;
 	}
 
@@ -1093,26 +1099,26 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		});
 	}
-	
+
 	/**
 	 * Gets the y coordinate of the lowest widget on the currently selected page.
 	 * 
 	 * @return the y coordinate in pixels.
 	 */
 	private int getLowestWidgetYPos(){
-		
+
 		int lowestYPos = 0;
-		
+
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			Widget widget = selectedPanel.getWidget(index);
 			int y = widget.getAbsoluteTop() + widget.getOffsetHeight();
 			if(y > lowestYPos)
 				lowestYPos = y;
 		}
-		
+
 		if(lowestYPos > 0)
 			lowestYPos -= selectedPanel.getAbsoluteTop();
-		
+
 		return lowestYPos;
 	}
 
@@ -1132,17 +1138,17 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		//Load the new questions onto the design surface for all pages.
 		for(int index = 0; index < formDef.getPageCount(); index++){
 			List<QuestionDef> newQuestions = new ArrayList<QuestionDef>();
-			
+
 			//Create a list of questions that have not yet been loaded on the design surface
 			//for the current page.
 			fillNewQuestions(formDef.getPageAt(index),newQuestions,bindings);
-			
+
 			//Check if this is a new page whose tab has not yet been added, and then add it
 			if(tabs.getTabBar().getTabCount() < index+1)
 				addNewTab(LocaleText.get("page") + (index+1));
 			else
 				tabs.getTabBar().selectTab(index);
-			
+
 			//Load the new questions onto the design surface for the current page.
 			if(newQuestions.size() > 0)
 				loadQuestions(newQuestions,getLowestWidgetYPos() + 20,selectedPanel.getWidgetCount(),false);

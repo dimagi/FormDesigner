@@ -377,8 +377,11 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		setFormDef(formDef);
 
 		//previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
-		if(layoutXml == null || layoutXml.trim().length() == 0)
-			designSurfaceView.setLayout(formDef);
+		if(layoutXml == null || layoutXml.trim().length() == 0){
+			//This line is commented out because automatic widget formatting does not work well
+			//when originating from this method call for opening an xforms document.
+			;//designSurfaceView.setLayout(formDef);
+		}
 		else
 			designSurfaceView.setLayoutXml(layoutXml,formDef);
 

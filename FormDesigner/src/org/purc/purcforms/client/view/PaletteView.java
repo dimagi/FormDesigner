@@ -2,7 +2,6 @@ package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
 import org.purc.purcforms.client.widget.PaletteWidget;

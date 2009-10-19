@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -164,6 +165,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			for(int index = 0; index < buttons.size(); index++)
 				panel.add(buttons.get(index));
 			verticalPanel.add(panel);
+
+			addDeleteButton(0);
+
 			FormUtil.maximizeWidget(panel);
 		}
 		else{
@@ -172,6 +176,46 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				selectedPanel.add(widget);
 				FormUtil.setWidgetPosition(widget,widget.getLeft(),widget.getTop());
 				//FormUtil.setWidgetPosition(selectedPanel,widget,widget.getLeft(),widget.getTop());
+			}
+		}
+	}
+
+	private void addDeleteButton(int row){
+		PushButton btn = new PushButton(LocaleText.get("deleteItem"));
+		btn.addClickListener(new ClickListener(){
+			public void onClick(Widget sender){
+				removeRow(sender);
+			}
+		});
+		table.setWidget(row, widgets.size(), btn);
+	}
+
+
+	private void removeRow(Widget sender){
+		if(table.getRowCount() == 1){//There should be atleast one row{
+			clearValue();
+			return;
+		}
+
+		for(int row = 1; row < table.getRowCount(); row++){
+			if(sender == table.getWidget(row, widgets.size())){
+				
+				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
+				int y = getHeightInt();
+
+				table.removeRow(row);
+				Element node = dataNodes.get(row-1);
+				node.getParentNode().removeChild(node);
+				dataNodes.remove(node);
+				if(btnAdd != null)
+					btnAdd.setEnabled(true);
+
+				editListener.onRowRemoved(wrapper,y-getHeightInt());
+				
+				RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
+				ValidationRule validationRule = parent.getValidationRule();
+				if(validationRule != null)
+					parent.getQuestionDef().setAnswer(table.getRowCount()+"");
 			}
 		}
 	}
@@ -501,23 +545,23 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			if(binding.equalsIgnoreCase("addnew")){
 				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
 				int y = getHeightInt();
-				
+
 				addNewRow(sender);
-				
+
 				editListener.onRowAdded(wrapper,getHeightInt()-y);
 			}
 			else if(binding.equalsIgnoreCase("remove")){
 				if(table.getRowCount() > 1){//There should be atleast one row{
 					RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
 					int y = getHeightInt();
-					
+
 					table.removeRow(table.getRowCount()-1);
 					Element node = dataNodes.get(dataNodes.size() - 1);
 					node.getParentNode().removeChild(node);
 					dataNodes.remove(node);
 					if(btnAdd != null)
 						btnAdd.setEnabled(true);
-					
+
 					editListener.onRowRemoved(wrapper,y-getHeightInt());
 				}
 
@@ -647,6 +691,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			}
 		}
 
+		addDeleteButton(row);
+
 		btnAdd = (Button)sender;
 		RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
 		ValidationRule validationRule = parent.getValidationRule();
@@ -743,7 +789,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				((RuntimeWidgetWrapper)panel.getWidget(index)).setEnabled(enabled);
 
 			for(int row = 0; row < table.getRowCount(); row++){
-				for(int col = 0; col < table.getCellCount(row); col++)
+				for(int col = 0; col < table.getCellCount(row)-1; col++)
 					((RuntimeWidgetWrapper)table.getWidget(row, col)).setEnabled(enabled);
 			}
 		}
@@ -761,7 +807,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				((RuntimeWidgetWrapper)panel.getWidget(index)).setLocked(locked);
 
 			for(int row = 0; row < table.getRowCount(); row++){
-				for(int col = 0; col < table.getCellCount(row); col++)
+				for(int col = 0; col < table.getCellCount(row)-1; col++)
 					((RuntimeWidgetWrapper)table.getWidget(row, col)).setLocked(locked);
 			}	
 		}
@@ -775,7 +821,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public void saveValue(FormDef formDef){
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
-				for(int col = 0; col < table.getCellCount(row); col++)
+				for(int col = 0; col < table.getCellCount(row)-1; col++)
 					((RuntimeWidgetWrapper)table.getWidget(row, col)).saveValue(formDef);
 			}
 		}
@@ -794,7 +840,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		for(int row = 0; row < table.getRowCount(); row++){
 			boolean answerFound = false;
-			for(int col = 0; col < table.getCellCount(row); col++){
+			for(int col = 0; col < table.getCellCount(row)-1; col++){
 				if(((RuntimeWidgetWrapper)table.getWidget(row, col)).isAnswered()){
 					answerFound = true;
 					break;
@@ -847,7 +893,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			while(table.getRowCount() > 1)
 				table.removeRow(1);
 
-			for(int col = 0; col < table.getCellCount(0); col++)
+			for(int col = 0; col < table.getCellCount(0)-1; col++)
 				((RuntimeWidgetWrapper)table.getWidget(0, col)).clearValue();
 		}
 		else{
@@ -859,7 +905,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public boolean isValid(){
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
-				for(int col = 0; col < table.getCellCount(row); col++){
+				for(int col = 0; col < table.getCellCount(row)-1; col++){
 					boolean valid = ((RuntimeWidgetWrapper)table.getWidget(row, col)).isValid();
 					if(!valid){
 						firstInvalidWidget = (RuntimeWidgetWrapper)table.getWidget(row, col);
@@ -892,7 +938,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public boolean setFocus(){
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
-				for(int col = 0; col < table.getCellCount(row); col++){
+				for(int col = 0; col < table.getCellCount(row)-1; col++){
 					RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)table.getWidget(row, col);
 					if(widget.isFocusable()){
 						widget.setFocus();
@@ -997,7 +1043,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public void onOptionsChanged(QuestionDef sender,List<OptionDef> optionList){
 
 	}
-	
+
 	public int getHeightInt(){
 		return getElement().getOffsetHeight();
 	}

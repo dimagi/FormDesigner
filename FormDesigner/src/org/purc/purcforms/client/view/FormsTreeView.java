@@ -1131,6 +1131,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 
+	
+	/**
+	 * Selected the parent of the selected item.
+	 */
 	public void moveToParent(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
@@ -1144,6 +1148,10 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.ensureSelectedItemVisible();
 	}
 
+	
+	/**
+	 * Selects the child of the selected item.
+	 */
 	public void moveToChild(){
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
@@ -1159,6 +1167,13 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		tree.ensureSelectedItemVisible();
 	}
 
+	
+	/**
+	 * Checks if the selected form is in read only mode. In read only mode
+	 * we can only change the text and help text of items.
+	 * 
+	 * @return true if in read only mode, else false.
+	 */
 	private boolean inReadOnlyMode(){
 		return Context.isStructureReadOnly();
 	}

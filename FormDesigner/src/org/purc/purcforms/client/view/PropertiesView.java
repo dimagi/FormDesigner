@@ -124,7 +124,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	
 	/** Widget for setting the default value property. */
 	private TextBox txtDefaultValue = new TextBox();
-	//private ListBox cbControlType = new ListBox(false);
 	
 	/** Widget for setting the description template property. */
 	private TextBox txtDescTemplate = new TextBox();
@@ -181,7 +180,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(6, 1, chkLocked);
 		table.setWidget(7, 1, chkRequired);
 		table.setWidget(8, 1, txtDefaultValue);
-		//table.setWidget(9, 1, cbControlType);
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(txtDescTemplate);
@@ -221,7 +219,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setWidth("100%");
 		txtDefaultValue.setWidth("100%");
 		cbDataType.setWidth("100%");
-		//cbControlType.setWidth("100%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.add(table);
@@ -252,7 +249,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setTitle(LocaleText.get("questionIdDesc"));
 		txtDefaultValue.setTitle(LocaleText.get("defaultValDesc"));
 		cbDataType.setTitle(LocaleText.get("questionTypeDesc"));
-		//cbControlType.setTitle("The question text.");
 
 		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
 	}
@@ -772,13 +768,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
 
 		cbDataType.setEnabled(enable2);
-		//cbControlType.setEnabled(enable);
 		chkVisible.setEnabled(enable2);
 		chkEnabled.setEnabled(enable2);
 		chkLocked.setEnabled(enable2);
 		chkRequired.setEnabled(enable2);
 		txtDefaultValue.setEnabled(enable2);
-		txtHelpText.setEnabled(enable2);
+		txtHelpText.setEnabled(enabled); //We allow localisation of help text.
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
 		dynamicListsView.setEnabled(enable2);
@@ -850,7 +845,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	public void clearProperties(){
 		cbDataType.setSelectedIndex(DT_INDEX_NONE);
-		//cbControlType.setSelectedIndex(DT_NONE);
 		chkVisible.setChecked(false);
 		chkEnabled.setChecked(false);
 		chkLocked.setChecked(false);

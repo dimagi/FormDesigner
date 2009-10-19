@@ -459,7 +459,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			else
 				widget = (DesignWidgetWrapper)panel.getWidget(index);
 
-			if(widget.getWrappedWidget() instanceof Button)
+			//We do not format buttons and group boxes
+			if(widget.getWrappedWidget() instanceof Button || widget.getWrappedWidget() instanceof DesignGroupWidget)
 				continue;
 
 			if(widget.getWrappedWidget() instanceof Label){
@@ -467,19 +468,26 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					longestLabelWidth = widget.getElement().getScrollWidth();
 					longestLabelLeft = FormUtil.convertDimensionToInt(widget.getLeft());
 				}
+				
 				labels.add(widget);
 			}
 			else
 				inputs.add(widget);
 		}
 
+		List<String> tops = new ArrayList<String>();
 		int relativeWidth = longestLabelWidth+longestLabelLeft;
 		String left = (relativeWidth+5)+"px";
-		for(int index = 0; index < inputs.size(); index++)
+		for(int index = 0; index < inputs.size(); index++){
 			inputs.get(index).setLeft(left);
+			tops.add(inputs.get(index).getTop());
+		}
 
 		for(int index = 0; index < labels.size(); index++){
 			widget = labels.get(index);
+			//We do not align labels which are not on the same y pos as at least one input widget.
+			if(!tops.contains(widget.getTop()))
+				continue;
 			widget.setLeft((relativeWidth - widget.getElement().getScrollWidth()+"px"));
 		}
 	}
@@ -1446,7 +1454,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	/**
-	 * Un selects all selected widgets, if any.
+	 * Un selects all selected widgets, if any, on the current page.
 	 */
 	protected void clearSelection(){
 		selectedDragController.clearSelection();

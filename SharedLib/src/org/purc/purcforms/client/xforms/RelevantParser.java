@@ -26,8 +26,8 @@ public class RelevantParser {
 	private RelevantParser(){
 
 	}
-	
-	
+
+
 	/**
 	 * Builds skip rule object from a list of relevant attribute values.
 	 * 
@@ -38,19 +38,33 @@ public class RelevantParser {
 	public static void addSkipRules(FormDef formDef, HashMap relevants){
 		Vector rules = new Vector();
 
+		HashMap<String,SkipRule> skipRulesMap = new HashMap<String,SkipRule>();
+
 		Iterator keys = relevants.keySet().iterator();
 		int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
-			SkipRule skipRule = buildSkipRule(formDef, qtn.getId(),(String)relevants.get(qtn),++id,XformParserUtil.getAction(qtn));
+			String relevant = (String)relevants.get(qtn);
+
+			//If there is a skip rule with the same relevant as the current
+			//then just add this question as another action target to the skip
+			//rule instead of creating a new skip rule.
+			SkipRule skipRule = skipRulesMap.get(relevant);
 			if(skipRule != null)
-				rules.add(skipRule);
+				skipRule.addActionTarget(qtn.getId());
+			else{
+				skipRule = buildSkipRule(formDef, qtn.getId(),relevant,++id,XformParserUtil.getAction(qtn));
+				if(skipRule != null){
+					rules.add(skipRule);
+					skipRulesMap.put(relevant, skipRule);
+				}
+			}
 		}
 
 		formDef.setSkipRules(rules);
 	}
-	
-	
+
+
 	/**
 	 * Creates a skip rule object from a relevent attribute value.
 	 * 
@@ -81,8 +95,8 @@ public class RelevantParser {
 			return null;
 		return skipRule;
 	}
-	
-	
+
+
 	/**
 	 * Gets a list of conditions for a skip rule as per the relevant attribute value.
 	 * 
@@ -105,8 +119,8 @@ public class RelevantParser {
 
 		return conditions;
 	}
-	
-	
+
+
 	/**
 	 * Creates a skip rule condition object from a portion of the relevant attribute value.
 	 * 

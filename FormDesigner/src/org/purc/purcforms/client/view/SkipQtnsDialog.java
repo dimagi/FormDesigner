@@ -8,6 +8,7 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.ui.Button;
@@ -63,8 +64,8 @@ public class SkipQtnsDialog  extends DialogBox {
 		
 		this.qtnSelListener = qtnSelListener;
 		
-		lbAllQtns.setWidth("200px");
-		lbSelQtns.setWidth("200px");
+		lbAllQtns.setWidth("250px");
+		lbSelQtns.setWidth("250px");
 		lbAllQtns.setHeight("200px");
 		lbSelQtns.setHeight("200px");
 		
@@ -105,14 +106,41 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * Sets the form and currently selected question for the skip rule.
 	 * 
 	 * @param formDef the form definition object.
-	 * @param questionDef the question definition object.
+	 * @param questionDef the question definition object to which the skip rule is being set.
+	 * @param skipRule the current skip rule.
 	 */
-	public void setData(FormDef formDef,QuestionDef questionDef){
+	public void setData(FormDef formDef, QuestionDef questionDef, SkipRule skipRule){
 		lbAllQtns.clear();
 		lbSelQtns.clear();
 		
 		for(int index = 0; index < formDef.getPageCount(); index++)
-			loadPageQnts(formDef.getPageAt(index),questionDef);
+			loadPageQnts(formDef.getPageAt(index),questionDef,skipRule);
+		
+		if(skipRule != null && skipRule.getActionTargets() != null)
+			loadSelQuestions(formDef, questionDef, skipRule.getActionTargets());
+	}
+	
+	
+	/**
+	 * Loads a list of selected questions in the selected questions list box.
+	 * 
+	 * @param formDef the form definition object.
+	 * @param questionDef the question definition object to which the skip rule is being set.
+	 * @param selQuestions the selected questions list.
+	 */
+	private void loadSelQuestions(FormDef formDef, QuestionDef questionDef, List<Integer> selQuestions){
+		for(int index = 0; index < selQuestions.size(); index++){
+			Integer qtnId = selQuestions.get(index);
+			
+			QuestionDef qtnDef = formDef.getQuestion(qtnId);
+			if(qtnDef == null)
+				continue;
+			
+			if(qtnDef == questionDef)
+				continue;
+			
+			lbSelQtns.addItem(qtnDef.getText(), qtnDef.getVariableName());
+		}
 	}
 	
 	
@@ -121,11 +149,15 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * 
 	 * @param pageDef the page definition object.
 	 * @param questionDef the question definition object.
+	 * @param skipRule the current skip rule.
 	 */
-	private void loadPageQnts(PageDef pageDef,QuestionDef questionDef){
+	private void loadPageQnts(PageDef pageDef,QuestionDef questionDef, SkipRule skipRule){
 		for(int index = 0; index < pageDef.getQuestionCount(); index++){
 			QuestionDef qtnDef = pageDef.getQuestionAt(index);
 			if(qtnDef == questionDef)
+				continue;
+			
+			if(skipRule != null && skipRule.containsActionTarget(qtnDef.getId()))
 				continue;
 			
 			lbAllQtns.addItem(qtnDef.getText(), qtnDef.getVariableName());

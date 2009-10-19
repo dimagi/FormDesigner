@@ -51,7 +51,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	/** The panel on the right hand side of the form designer. */
 	private CenterPanel centerPanel;
-	
+
 	/** The panel on the left hand side of the form designer. */
 	private LeftPanel leftPanel;
 
@@ -74,16 +74,16 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	//such that we know which action to execute.
 	/** No current action. */
 	private static final byte CA_NONE = 0;
-	
+
 	/** Action for loading a form definition. */
 	private static final byte CA_LOAD_FORM = 1;
-	
+
 	/** Action for saving form. */
 	private static final byte CA_SAVE_FORM = 2;
-	
+
 	/** Action for refreshing a form. */
 	private static final byte CA_REFRESH_FORM = 3;
-	
+
 	/** Action for setting file contents. */
 	private static final byte CA_SET_FILE_CONTENTS = 4;
 
@@ -99,11 +99,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 *  a reference to proceed with the current action.
 	 */
 	private static FormDesignerController controller;
-	
+
 	/** The object that is being refreshed. */
 	private Object refreshObject;
 
-	
+
 	/**
 	 * Constructs a new instance of the form designer controller.
 	 * 
@@ -374,8 +374,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 					FormUtil.dlg.hide();
 
+					//Save text for the current language
 					if(saveLocaleText)
-						saveLanguageText(false); //Save text for the default language
+						saveTheLanguageText(false);
+						//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -580,7 +582,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		//or the forms tree view is the one which has requested a refresh.
 		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView ||
 				Context.getCurrentMode() == Context.MODE_XFORMS_SOURCE){ //TODO This controller should not know about LeftPanel implementation details.
-			
+
 			if(formId != null){
 				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
 				FormUtil.dlg.center();
@@ -980,57 +982,79 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
-				try{
-					centerPanel.saveLanguageText(selTab);
-					setLocaleText(centerPanel.getFormDef().getId(),Context.getLocale(), centerPanel.getLanguageXml());
-					//languageText.put(Context.getLocale(), centerPanel.getLanguageXml());
-
-					if(formSaveListener != null){
-						FormDef formDef = centerPanel.getFormDef();
-						String langXml = formDef.getLanguageXml();
-						if(langXml != null && langXml.trim().length() > 0){
-							Document doc = XMLParser.parse(langXml);
-							formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
-						}
-					}
-
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
+				saveTheLanguageText(selTab);
 			}
 		});
 	}
+
+
+	/**
+	 * Saves locale text for the selected form, in a non deferred command.
+	 * 
+	 * @param selectTab set to true to select the language tab.
+	 */
+	public void saveTheLanguageText(boolean selTab){
+		try{
+			centerPanel.saveLanguageText(selTab);
+			setLocaleText(centerPanel.getFormDef().getId(),Context.getLocale(), centerPanel.getLanguageXml());
+
+			if(formSaveListener != null){
+				FormDef formDef = centerPanel.getFormDef();
+				String langXml = formDef.getLanguageXml();
+				if(langXml != null && langXml.trim().length() > 0){
+					Document doc = XMLParser.parse(langXml);
+					formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
+				}
+			}
+
+			FormUtil.dlg.hide();
+		}
+		catch(Exception ex){
+			FormUtil.dlg.hide();
+			FormUtil.displayException(ex);
+		}	
+	}
+
 
 	/**
 	 * Reloads forms in a given locale.
 	 * 
 	 * @param locale the locale key.
 	 */
-	public void changeLocale(String locale){
-		
-		//Store the new locale.
-		Context.setLocale(locale);
+	public void changeLocale(final String locale){
 
-		String xml = null;
-		FormDef formDef = centerPanel.getFormDef();
-		if(formDef != null){
-			HashMap<String,String> map = languageText.get(formDef.getId());
-			
-			//Get text for this locale, if we have it. 
-			if(map != null)
-				xml = map.get(locale);
+		final FormDef formDef = centerPanel.getFormDef();
+		if(formDef == null)
+			return;
 
-			//If we don't, then get text for the default locale.
-			if(xml == null && map != null)
-				xml = map.get(Context.getDefaultLocale());
-		}
+		//We need to have saved a form in order to translate it.
+		if(formDef.getDoc() == null)
+			saveForm();
 
-		//Now reload the forms in this selected locale.
-		centerPanel.setLanguageXml(xml, false);
-		openLanguageText();
+		//We need to do the translation in a differed command such that it happens after form saving,
+		//just in case form hadn't yet been saved.
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+
+				//Store the new locale.
+				Context.setLocale(locale);
+
+				HashMap<String,String> map = languageText.get(formDef.getId());
+
+				String xml = null;
+				//Get text for this locale, if we have it. 
+				if(map != null)
+					xml = map.get(locale);
+
+				//If we don't, then get text for the default locale.
+				if(xml == null && map != null)
+					xml = map.get(Context.getDefaultLocale());
+
+				//Now reload the forms in this selected locale.
+				centerPanel.setLanguageXml(xml, false);
+				openLanguageText();
+			}
+		});
 	}
 
 	/**

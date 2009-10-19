@@ -136,6 +136,12 @@ public class SkipRule implements Serializable{
 		actionTargets.add(new Integer(id));
 	}
 	
+	public void clearActionTargets(){
+		if(actionTargets != null)
+			actionTargets.clear();
+	}
+	
+	
 	public  boolean containsActionTarget(int id){
 		if(actionTargets == null)
 			return false;

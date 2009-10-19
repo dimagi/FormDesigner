@@ -868,7 +868,10 @@ public class FormDef implements Serializable{
 	 * @param qtn the question to move.
 	 * @param pageNo the new page number where to take the question.
 	 */
-	public void moveQuestion2Page(QuestionDef qtn, int pageNo){
+	public void moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
+		if(pages.size() < pageNo)
+			pages.add(new PageDef(formDef));
+		
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
 			if(page.contains(qtn)){

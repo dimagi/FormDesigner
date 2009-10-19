@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 

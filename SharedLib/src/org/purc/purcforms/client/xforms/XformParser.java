@@ -322,7 +322,7 @@ public class XformParser {
 				questionDef.setText(nodeContext.getLabel());
 				int pageNo = currentPageNo;
 				if(pageNo == 0) pageNo = 1; //Xform may not have groups for pages.
-				formDef.moveQuestion2Page(questionDef, pageNo);
+				formDef.moveQuestion2Page(questionDef, pageNo, formDef);
 				questionDef.setControlNode(element);
 				questionDef.setLabelNode(nodeContext.getLabelNode());
 				setQuestionDataNode(questionDef,formDef,parentQtn);
@@ -620,7 +620,7 @@ public class XformParser {
 				qtn.setText(nodeContext.getLabel());
 				qtn.setHelpText(nodeContext.getHint());
 				qtn.setRepeatQtnsDef(new RepeatQtnsDef(qtn));
-				formDef.moveQuestion2Page(qtn, currentPageNo);
+				formDef.moveQuestion2Page(qtn, currentPageNo, formDef);
 
 				nodeContext.setLabel("");
 				nodeContext.setHint("");

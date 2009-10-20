@@ -50,6 +50,8 @@ public class Toolbar extends Composite{
 		AbstractImagePrototype samewidth();
 		AbstractImagePrototype sameheight();
 		AbstractImagePrototype samesize();
+		AbstractImagePrototype undo();
+		AbstractImagePrototype redo();
 	}
 	 
 	/** Main widget for this tool bar. */
@@ -75,6 +77,8 @@ public class Toolbar extends Composite{
 	private PushButton btnCopy;
 	private PushButton btnPaste;
 	private PushButton btnRefresh;
+	private PushButton btnUndo;
+	private PushButton btnRedo;
 	
 	/** Widget for separating tool bar buttons from each other. */
 	private Label separatorWidget = new Label("  ");
@@ -130,6 +134,9 @@ public class Toolbar extends Composite{
 		btnPaste = new PushButton(images.paste().createImage());
 		btnRefresh = new PushButton(images.loading().createImage());
 		
+		btnUndo = new PushButton(images.undo().createImage());
+		btnRedo = new PushButton(images.redo().createImage());
+		
 		btnNewForm.setTitle(LocaleText.get("newForm"));
 		btnSaveForm.setTitle(LocaleText.get("save"));
 		
@@ -151,6 +158,9 @@ public class Toolbar extends Composite{
 		btnSameWidth.setTitle(LocaleText.get("makeSameWidth"));
 		btnSameHeight.setTitle(LocaleText.get("makeSameHeight"));
 		btnSameSize.setTitle(LocaleText.get("makeSameSize"));
+		
+		btnUndo.setTitle(LocaleText.get("undo"));
+		btnRedo.setTitle(LocaleText.get("redo"));
 		
 		panel.add(btnNewForm);
 		panel.add(btnOpenForm);
@@ -183,6 +193,10 @@ public class Toolbar extends Composite{
 		panel.add(btnSameWidth);
 		panel.add(btnSameHeight);
 		panel.add(btnSameSize);
+		
+		panel.add(separatorWidget);
+		panel.add(btnUndo);
+		panel.add(btnRedo);
 		
 		Label label = new Label(FormDesignerUtil.getTitle());
 		panel.add(label);

@@ -748,7 +748,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	 * @param questions the list of questions.
 	 */
 	private void loadQuestions(List<QuestionDef> questions){
-		loadQuestions(questions,20,0,tabs.getTabBar().getTabCount() == 1);
+		loadQuestions(questions,20,0,tabs.getTabBar().getTabCount() == 1,false);
 	}
 
 	/**
@@ -760,8 +760,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 	 * @param startY the y coordinate to start at.
 	 * @param tabIndex the tabIndex to start from.
 	 * @param submitCancelBtns set to true to add the submit and cancel buttons
+	 * @param select set to true to select all the created widgets.
 	 */
-	private void loadQuestions(List<QuestionDef> questions, int startY, int tabIndex, boolean submitCancelBtns){
+	private void loadQuestions(List<QuestionDef> questions, int startY, int tabIndex, boolean submitCancelBtns, boolean select){
 		int max = 999999; //FormUtil.convertDimensionToInt(sHeight) - 0 + 150; //40; No longer adding submit button on every page
 		x = 20;
 		y = startY;
@@ -778,6 +779,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				widgetWrapper = addNewLabel(questionDef.getText(),false);
 				widgetWrapper.setBinding(questionDef.getVariableName());
 				widgetWrapper.setTitle(questionDef.getText());
+				
+				if(select)
+					selectedDragController.selectWidget(widgetWrapper);
 			}
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -824,6 +828,9 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 				widgetWrapper.setTitle(helpText);
 				widgetWrapper.setTabIndex(++tabIndex);
+				
+				if(select)
+					selectedDragController.selectWidget(widgetWrapper);
 			}
 
 			x = 20 + selectedPanel.getAbsoluteLeft();
@@ -1150,8 +1157,11 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 				tabs.getTabBar().selectTab(index);
 
 			//Load the new questions onto the design surface for the current page.
-			if(newQuestions.size() > 0)
-				loadQuestions(newQuestions,getLowestWidgetYPos() + 20,selectedPanel.getWidgetCount(),false);
+			if(newQuestions.size() > 0){
+				loadQuestions(newQuestions,getLowestWidgetYPos() + 20,selectedPanel.getWidgetCount(),false, true);
+				format();
+				clearSelection();
+			}
 		}
 	}
 

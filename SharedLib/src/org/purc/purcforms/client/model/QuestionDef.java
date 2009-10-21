@@ -392,8 +392,8 @@ public class QuestionDef implements Serializable{
 		this.dataType = dataType;
 
 		if(changed){
-			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				options = new ArrayList();
+			//if(controlNode != null && (dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE))
+			//	options = new ArrayList();
 			
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onDataTypeChanged(this,dataType);

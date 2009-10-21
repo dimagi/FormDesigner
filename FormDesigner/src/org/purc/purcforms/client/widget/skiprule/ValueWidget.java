@@ -253,9 +253,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			scrollPanel.setHeight("200px");
 			scrollPanel.setWidth((maxSize*11)+"px");*/
 
-			int height = options.size()*38;
-			if(height > 200)
-				height = 200;
+			int height = options.size()*29;
+			if(height > 400)
+				height = 400;
 
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
@@ -264,7 +264,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 			popup = new PopupPanel(true,false);
 			popup.setWidget(scrollPanel);
-			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop());
+			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop() - height);
 			popup.show();
 		}
 		else if( (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE
@@ -304,9 +304,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				panel.add(checkbox);
 			}
 
-			int height = options.size()*38;
-			if(height > 200)
-				height = 200;
+			int height = options.size()*29;
+			if(height > 400)
+				height = 400;
 
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(panel);
@@ -316,7 +316,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			popup = new PopupPanel(true,false);
 			popup.addPopupListener(this);
 			popup.setWidget(scrollPanel);
-			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop());
+			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop() - height);
 			popup.show();
 		}
 		else{

@@ -3,7 +3,7 @@ package org.purc.purcforms.client.controller;
 
 /**
  * This interface is implemented by those interested in listening to form level
- * events.
+ * events to do with data submission and cancelling of data submission.
  * 
  * @author daniel
  *

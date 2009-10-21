@@ -173,7 +173,8 @@ public class FormDef implements Serializable{
 		if(pages == null)
 			pages = new Vector();
 
-		pages.add(new PageDef("Page"+pages.size(),(int)pages.size(),this));
+		int pageno = pages.size() + 1;
+		pages.add(new PageDef("Page"+pageno,pageno,this));
 	}
 
 	/**

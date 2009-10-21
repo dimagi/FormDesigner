@@ -611,14 +611,27 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	 * Submits form data to the server.
 	 */
 	protected void submit(){
+		
+		//Before calling the submit listener, we first check if the user is authenticated
+		//The authentication will call us back and tell us whether to proceed with the
+		//data submission or display the login dialog box.
 		if(formDef != null)
 			FormUtil.isAuthenticated();
 	}
 
+	
+	/**
+	 * Called when one clicks the submit button on the form to submit form data.
+	 */
 	public void onSubmit(){
 		submit();
 	}
 
+	
+	/**
+	 * Called when one clicks the cancel button on the form, meaning that they have
+	 * changed their mind about submitting the form.
+	 */
 	public void onCancel(){
 		if(Window.confirm(LocaleText.get("cancelFormPrompt")))
 			submitListener.onCancel();
@@ -628,6 +641,10 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		//FormUtil.searchExternal(key,widget.getElement(),widget.getElement(),null);
 	}
 
+	
+	/**
+	 * Does the actual submission of form data to the submit listener.
+	 */
 	private void submitData(){
 		if(formDef.getDoc() == null)
 			XformBuilder.fromFormDef2Xform(formDef);
@@ -641,6 +658,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
 		submitListener.onSubmit(xml);
 	}
+	
 
 	/**
 	 * Checks if form data has validation errors.

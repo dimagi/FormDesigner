@@ -138,8 +138,8 @@ public class Condition implements Serializable{
 					}
 					else if(qn.getAnswer() == null || qn.getAnswer().trim().length() == 0){
 						value = tempValue;
-						//return false;
-						return validation; //TODO Do we really need validations to return true when qtn is not answered?
+						return false;
+						//return validation; //TODO Do we really need validations to return true when qtn is not answered?
 					}
 				}
 			}

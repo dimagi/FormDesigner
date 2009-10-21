@@ -143,6 +143,10 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		previewEvents();
 	}
 	
+	
+	/**
+	 * @see com.google.gwt.user.client.DOM#addEventPreview(EventPreview)
+	 */
 	private void previewEvents(){
 
 		DOM.addEventPreview(new EventPreview() { 

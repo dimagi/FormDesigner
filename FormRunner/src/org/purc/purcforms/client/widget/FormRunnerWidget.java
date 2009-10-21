@@ -57,9 +57,18 @@ public class FormRunnerWidget extends Composite{
 		previewEvents();
 	}
 	
+	
+	/**
+	 * Loads a form definition object and uses a given layout xml for its widgets.
+	 * 
+	 * @param formDef the form definition object.
+	 * @param layoutXml the widget layout xml.
+	 * @param externalSourceWidgets list of widgets whose data sources come from outside the xform.
+	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		view.loadForm(formDef, layoutXml,externalSourceWidgets);
 	}
+	
 	
 	/**
 	 * Loads a form with a given id and for a certain entity id.
@@ -81,20 +90,32 @@ public class FormRunnerWidget extends Composite{
 		view.loadForm(XformParser.fromXform2FormDef(xformXml), layoutXml, null);
 	}
 	
-	public void loadForm(int formId, String xformXml, String modelXml,String layoutXml){
-		FormDef formDef = XformParser.fromXform2FormDef(xformXml,modelXml);
-		formDef.setId(formId);
-		view.loadForm(formDef, layoutXml, null);
-	}
 	
+	/**
+	 * Sets the offset height of the form runner. This is useful for GWT
+	 * applications using the form runner as an embedded widget and do not
+	 * want it to take the whole browser space.
+	 * 
+	 * @param offset the offset height in pixels.
+	 */
 	public void setEmbeddedHeightOffset(int offset){
 		view.setEmbeddedHeightOffset(offset);
 	}
 	
+	
+	/**
+	 * Sets the listener to form submission events.
+	 * 
+	 * @param submitListener the listener.
+	 */
 	public void setSubmitListener(SubmitListener submitListener){
 		view.setSubmitListener(submitListener);
 	}
 	
+	
+	/**
+	 * @see com.google.gwt.user.client.DOM#addEventPreview(EventPreview)
+	 */
 	private void previewEvents(){
 		DOM.addEventPreview(new EventPreview() { 
 			public boolean onEventPreview(Event event) 
@@ -105,5 +126,12 @@ public class FormRunnerWidget extends Composite{
 				return true;
 			}
 		});
+	}
+	
+	
+	public void loadForm(int formId, String xformXml, String modelXml,String layoutXml){
+		FormDef formDef = XformParser.fromXform2FormDef(xformXml,modelXml);
+		formDef.setId(formId);
+		view.loadForm(formDef, layoutXml, null);
 	}
 }

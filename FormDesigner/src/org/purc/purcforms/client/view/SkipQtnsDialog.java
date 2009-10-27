@@ -11,8 +11,9 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasAlignment;
@@ -76,14 +77,14 @@ public class SkipQtnsDialog  extends DialogBox {
 		HorizontalPanel horzPanel = new HorizontalPanel();
 		horzPanel.add(lbAllQtns);
 		
-		lbAllQtns.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		lbAllQtns.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				btnSelect.setEnabled(true);
 			}
 		});
 		
-		lbSelQtns.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		lbSelQtns.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				btnDeselect.setEnabled(true);
 			}
 		});

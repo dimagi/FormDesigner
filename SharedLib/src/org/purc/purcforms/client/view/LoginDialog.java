@@ -3,17 +3,19 @@ package org.purc.purcforms.client.view;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -64,9 +66,9 @@ public class LoginDialog extends DialogBox {
 		txtUserName.setWidth("50%");
 		table.setWidget(1, 1, txtUserName);
 		
-		txtUserName.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER)
+		txtUserName.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 					txtPassword.setFocus(true);
 			}
 		});
@@ -79,21 +81,21 @@ public class LoginDialog extends DialogBox {
 		txtPassword.setWidth("50%");
 		table.setWidget(2, 1, txtPassword);
 		
-		txtPassword.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER)
+		txtPassword.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 					login();
 			}
 		});
 		
-		Button btnLogin = new Button(LocaleText.get("login"), new ClickListener(){
-			public void onClick(Widget sender){
+		Button btnLogin = new Button(LocaleText.get("login"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				login();
 			}
 		});
 		
-		Button btnCancel = new Button(LocaleText.get("cancel"), new ClickListener(){
-			public void onClick(Widget sender){
+		Button btnCancel = new Button(LocaleText.get("cancel"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				cancel();
 			}
 		});

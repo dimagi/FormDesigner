@@ -168,7 +168,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	private void updateMakeRequired(){
 		chkMakeRequired.setEnabled(rdEnable.isChecked() || rdShow.isChecked());
 		if(!chkMakeRequired.isEnabled())
-			chkMakeRequired.setChecked(false);
+			chkMakeRequired.setValue(false);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			verticalPanel.add(addConditionLink);
 
 			if(!(rdEnable.isChecked()||rdDisable.isChecked()||rdShow.isChecked()||rdHide.isChecked())){
-				rdEnable.setChecked(true);
+				rdEnable.setValue(true);
 				updateMakeRequired();
 			}
 		}
@@ -275,11 +275,11 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * @param action the skip rule action.
 	 */
 	private void setAction(int action){
-		rdEnable.setChecked((action & ModelConstants.ACTION_ENABLE) != 0);
-		rdDisable.setChecked((action & ModelConstants.ACTION_DISABLE) != 0);
-		rdShow.setChecked((action & ModelConstants.ACTION_SHOW) != 0);
-		rdHide.setChecked((action & ModelConstants.ACTION_HIDE) != 0);
-		chkMakeRequired.setChecked((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0);
+		rdEnable.setValue((action & ModelConstants.ACTION_ENABLE) != 0);
+		rdDisable.setValue((action & ModelConstants.ACTION_DISABLE) != 0);
+		rdShow.setValue((action & ModelConstants.ACTION_SHOW) != 0);
+		rdHide.setValue((action & ModelConstants.ACTION_HIDE) != 0);
+		chkMakeRequired.setValue((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0);
 		updateMakeRequired();
 	}
 
@@ -351,11 +351,11 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		while(verticalPanel.getWidgetCount() > 4)
 			verticalPanel.remove(verticalPanel.getWidget(3));
 
-		rdEnable.setChecked(false);
-		rdDisable.setChecked(false);
-		rdShow.setChecked(false);
-		rdHide.setChecked(false);
-		chkMakeRequired.setChecked(false);
+		rdEnable.setValue(false);
+		rdDisable.setValue(false);
+		rdShow.setValue(false);
+		rdHide.setValue(false);
+		chkMakeRequired.setValue(false);
 		updateMakeRequired();
 	}
 

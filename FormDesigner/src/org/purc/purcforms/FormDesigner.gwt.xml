@@ -1,4 +1,4 @@
-<module>
+<module rename-to='FormDesigner'>
 
       <!-- Inherit the core Web Toolkit stuff.                        -->
       <inherits name='com.google.gwt.user.User'/>
@@ -20,9 +20,9 @@
       <entry-point class='org.purc.purcforms.client.FormDesignerEntryPoint'/>
         
                <!-- Servlets -->
-      <servlet path='/multimedia' class='org.omevac.server.servlet.MultimediaServlet'/>
-      <servlet path='/formsave' class='org.omevac.server.servlet.FormSaveServlet'/>
-      <servlet path='/formopen' class='org.omevac.server.servlet.FormOpenServlet'/>
+      <servlet path='/multimedia' class='org.purcforms.server.MultimediaServlet'/>
+      <servlet path='/formsave' class='org.purcforms.server.FormSaveServlet'/>
+      <servlet path='/formopen' class='org.purcforms.server.FormOpenServlet'/>
       
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='FormDesigner.css' />

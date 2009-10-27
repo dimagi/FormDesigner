@@ -16,16 +16,19 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.widget.skiprule.FieldWidget;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
@@ -42,7 +45,7 @@ import com.google.gwt.xml.client.Node;
  * @author daniel
  *
  */
-public class DynamicListsView extends Composite implements ItemSelectionListener, ClickListener{
+public class DynamicListsView extends Composite implements ItemSelectionListener, ClickHandler{
 
 	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
@@ -116,13 +119,13 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		verticalPanel.add(horizontalPanel);
 		verticalPanel.add(table);
 
-		lbOption.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		lbOption.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateOptionList();
 			}
 		});
 
-		btnAdd.addClickListener(this);
+		btnAdd.addClickHandler(this);
 
 		table.setStyleName("cw-FlexTable");
 		table.setWidget(0, 0,new Label(LocaleText.get("text")));
@@ -366,7 +369,8 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * 
 	 * @sender the button which was clicked.
 	 */
-	public void onClick(Widget sender){		
+	public void onClick(ClickEvent event){	
+		Object sender = event.getSource();
 		if(sender == btnAdd)
 			addNewOption();
 		else{
@@ -449,17 +453,17 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		PushButton button = new PushButton(FormDesignerWidget.images.delete().createImage());
 		button.setTitle(LocaleText.get("deleteItem"));
-		button.addClickListener(this);
+		button.addClickHandler(this);
 		table.setWidget(row, 2,button);
 
 		button = new PushButton(FormDesignerWidget.images.moveup().createImage());
 		button.setTitle(LocaleText.get("moveUp"));
-		button.addClickListener(this);
+		button.addClickHandler(this);
 		table.setWidget(row, 3,button);
 
 		button = new PushButton(FormDesignerWidget.images.movedown().createImage());
 		button.setTitle(LocaleText.get("moveDown"));
-		button.addClickListener(this);
+		button.addClickHandler(this);
 		table.setWidget(row, 4,button);
 
 		table.getFlexCellFormatter().setWidth(row, 0, "45%");
@@ -470,34 +474,36 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		table.getWidget(row, 0).setWidth("100%");
 		table.getWidget(row, 1).setWidth("100%");
 
-		txtText.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
-				updateText((TextBox)sender);
+		txtText.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateText((TextBox)event.getSource());
 			}
 		});
 
-		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
-					moveToNextWidget(sender,0,keyCode == KeyboardListener.KEY_DOWN);
-				else if(keyCode == KeyboardListener.KEY_UP)
-					moveToPrevWidget(sender,0);
+		txtText.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				int keyCode = event.getNativeKeyCode();
+				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN)
+					moveToNextWidget((Widget)event.getSource(),0,keyCode == KeyCodes.KEY_DOWN);
+				else if(keyCode == KeyCodes.KEY_UP)
+					moveToPrevWidget((Widget)event.getSource(),0);
 			}
 		});
 
 
-		txtBinding.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
-				updateBinding((TextBox)sender);
+		txtBinding.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateBinding((TextBox)event.getSource());
 			}
 		});
 
-		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
-					moveToNextWidget(sender,1,keyCode == KeyboardListener.KEY_DOWN);
-				else if(keyCode == KeyboardListener.KEY_UP)
-					moveToPrevWidget(sender,1);
+		txtBinding.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				int keyCode = event.getNativeKeyCode();
+				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN)
+					moveToNextWidget((Widget)event.getSource(),1,keyCode == KeyCodes.KEY_DOWN);
+				else if(keyCode == KeyCodes.KEY_UP)
+					moveToPrevWidget((Widget)event.getSource(),1);
 			}
 		});
 

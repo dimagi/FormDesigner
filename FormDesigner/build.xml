@@ -1,69 +1,63 @@
-<?xml version="1.0"?>
-<!-- ********************************************************* -->
-<!-- ** PurcForms Form Designer                                     ** -->
-<!-- **	                                                    ** -->
-<!-- ** @author Daniel Kayiwa                                   ** -->
-<!-- ** @version 1.0                                        ** -->
-<!-- ********************************************************* -->
-<project name="formdesigner" default="package-jar">
-		
-	<property file="build.properties" /> 
-	
-	<!-- *********************************************************** -->
-	<!-- **                     TARGETS                           ** -->
-	<!-- *********************************************************** -->
-	<target name="init" description="initialization">
-		<path id="classpath">
-			<fileset dir="lib">
-				<include name="**/*.jar"/>
-			</fileset>
-			<fileset dir="../SharedLib/lib">
-				<include name="**/*.jar"/>
-			</fileset>
-		</path>
-	</target>
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="FormDesigner" default="hosted" basedir=".">
+  <!-- Configure path to GWT SDK -->
+  <property name="gwt.sdk" location="../../gwt-1.7.1" />
 
-	<target name="clean" description="Delete build and dist directories">
-		<delete dir="dist" />
-		<delete dir="build" />
-	</target>
+  <!-- SWT on Mac requires the -XstartOFirstThreadFlag. -->
+  <condition property="XstartOnFirstThreadFlag" value="-XstartOnFirstThread"
+    else="-Dgwt.dummy.arg1=">
+    <os family="mac"/>
+  </condition>
 
-	<target name="compile" depends="init" description="Compiles the code">
-		<mkdir dir="build" />
-		
-		<!--  Compile java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
-			<src path="../SharedLib/src/" />
-			<src path="src/" />
-			<include name="**/*.java" />
-		</javac>	
-	</target>
-	
-	<target name="package-jar" depends="compile" description="Packages class files into jar file to be included in other projects">
-		<mkdir dir="dist" />
-		
-		<!-- Create distributable jar file -->
-		<jar destfile="dist/${appname}-${version}.jar">
-			<fileset dir="build" >
-				<include name="**/*.class"/>
-			</fileset>
-			<fileset dir="src">
-				<include name="**/*.gwt.xml"/>
-				<include name="**/*.css"/>
-				<include name="**/*.java"/>
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-			</fileset>
-			<fileset dir="../SharedLib/src/">
-				<include name="**/*.gwt.xml"/>
-				<include name="**/*.css"/>
-				<include name="**/*.java"/>
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-			</fileset>
-		</jar>
-		
-	</target>
+  <!-- SWT on Mac requires the -d32 flag if the VM is 64-bit. -->
+  <condition property="d32Flag" value="-d32" else="-Dgwt.dummy.arg2=">
+    <and>
+      <os family="mac"/>
+      <equals arg1="${sun.arch.data.model}" arg2="64"/>
+    </and>
+  </condition>
+
+  <path id="project.class.path">
+  	<pathelement location="war/WEB-INF/classes" /> 
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
+  	<fileset dir="../SharedLib/lib" includes="gwt-datepicker-r29.jar"/>
+ 	<fileset dir="../FormDesigner/lib" includes="gwt-dnd-2.6.5.jar"/>
+     <!-- Add any additional non-server libs (such as JUnit) -->
+  	<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
+  </path>
+
+  <target name="gwtc" description="GWT compile to JavaScript">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+      	<pathelement location="../SharedLib/src"/>
+        <pathelement location="src"/>
+        <path refid="project.class.path"/>
+      </classpath>
+      <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
+      <jvmarg value="-Xmx256M"/>
+      <jvmarg value="${XstartOnFirstThreadFlag}"/>
+      <jvmarg value="${d32Flag}"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg value="org.purc.purcforms.FormDesigner"/>
+    </java>
+  </target>
+
+  <target name="hosted" description="Run hosted mode">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
+      <classpath>
+      	<pathelement location="../SharedLib/src"/>
+        <pathelement location="src"/>
+        <path refid="project.class.path"/>
+      </classpath>
+      <jvmarg value="-Xmx256M"/>
+      <jvmarg value="${XstartOnFirstThreadFlag}"/>
+      <jvmarg value="${d32Flag}"/>
+      <arg value="-startupUrl"/>
+      <arg value="FormDesigner.html"/>
+      <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+      <arg value="org.purc.purcforms.FormDesigner"/>
+    </java>
+  </target>
 
 </project>
-

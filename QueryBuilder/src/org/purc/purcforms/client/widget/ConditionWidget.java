@@ -53,7 +53,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener,
 
 	private void setupWidgets(AddConditionHyperlink addConditionHyperlink){
 		actionHyperlink = new ConditionActionHyperlink("<>",null,true,depth,addConditionHyperlink,this);
-		chkSelect.setChecked(true);
+		chkSelect.setValue	(true);
 		
 		if(allowFieldSelection)
 			fieldWidget = new FieldWidget(this);

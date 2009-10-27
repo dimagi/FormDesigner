@@ -8,6 +8,13 @@ import org.zenika.widget.client.datePicker.DatePicker;
 import org.zenika.widget.client.datePicker.PopupCalendar;
 import org.zenika.widget.client.util.DateUtil;
 
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -22,7 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class DatePickerWidget extends DatePicker{
+public class DatePickerWidget extends DatePicker implements KeyPressHandler, ClickHandler{
 
 	private PopupCalendar popup;
 	private Date selectedDate;
@@ -50,9 +57,9 @@ public class DatePickerWidget extends DatePicker{
 		super();
 		setText("");	
 		sinkEvents(Event.ONCHANGE | Event.ONKEYPRESS);
-		addClickListener(this);
+		addClickHandler(this);
 		addChangeListener(this);
-		addKeyboardListener(this);
+		addKeyPressHandler(this);
 	}
 
 	/**
@@ -138,7 +145,7 @@ public class DatePickerWidget extends DatePicker{
 	/**
 	 * @see com.google.gwt.user.client.ui.ClickListener#onClick(com.google.gwt.user.client.ui.Widget)
 	 */
-	public void onClick(Widget sender) {
+	public void onClick(ClickEvent event) {
 		showPopup();
 	}
 
@@ -153,13 +160,13 @@ public class DatePickerWidget extends DatePicker{
 	 * @see com.google.gwt.user.client.ui.KeyboardListener#onKeyPress(com.google.gwt.user.client.ui.Widget,
 	 *      char, int)
 	 */
-	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-		switch (keyCode) {
-		case KEY_ENTER:
+	public void onKeyPress(KeyPressEvent event) {
+		switch (event.getCharCode()) {
+		case KeyCodes.KEY_ENTER:
 			parseDate();
 			showPopup();
 			break;
-		case KEY_ESCAPE:
+		case KeyCodes.KEY_ESCAPE:
 			if (popup.isVisible())
 				popup.hidePopupCalendar();
 			break;
@@ -264,12 +271,12 @@ public class DatePickerWidget extends DatePicker{
 	/**
 	 * @see com.google.gwt.user.client.ui.TextBoxBase#addChangeListener(com.google.gwt.user.client.ui.ChangeListener)
 	 */
-	public void addChangeListener(ChangeListener listener) {
-		super.addChangeListener(listener);
-		if (changeListeners == null) {
+	public HandlerRegistration addChangeHandler(ChangeHandler listener) {
+		return super.addChangeHandler(listener);
+		/*if (changeListeners == null) {
 			changeListeners = new ChangeListenerCollection();
 		}
-		changeListeners.add(listener);
+		changeListeners.add(listener);*/
 	}
 
 	/**

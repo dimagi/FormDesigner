@@ -10,13 +10,16 @@ import org.purc.purcforms.client.view.ProgressDialog;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
@@ -111,59 +114,61 @@ public class FormUtil {
 	//TODO These two functions need to be merged.
 	public static void allowNumericOnly(TextBox textBox, boolean allowDecimal){
 		final boolean allowDecimalPoints = allowDecimal;
-		textBox.addKeyboardListener(new KeyboardListenerAdapter() {
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyboardListener.KEY_TAB)
-						&& (keyCode != (char) KeyboardListener.KEY_BACKSPACE) && (keyCode != (char) KeyboardListener.KEY_LEFT)
-						&& (keyCode != (char) KeyboardListener.KEY_UP) && (keyCode != (char) KeyboardListener.KEY_RIGHT)
-						&& (keyCode != (char) KeyboardListener.KEY_DOWN)) {
+		textBox.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				char keyCode = event.getCharCode();
+				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyCodes.KEY_TAB)
+						&& (keyCode != (char) KeyCodes.KEY_BACKSPACE) && (keyCode != (char) KeyCodes.KEY_LEFT)
+						&& (keyCode != (char) KeyCodes.KEY_UP) && (keyCode != (char) KeyCodes.KEY_RIGHT)
+						&& (keyCode != (char) KeyCodes.KEY_DOWN)) {
 
-					if(keyCode == '.' && allowDecimalPoints && !((TextBox)sender).getText().contains("."))
+					if(keyCode == '.' && allowDecimalPoints && !((TextBox)event.getSource()).getText().contains("."))
 						return;
 
-					String text = ((TextBox) sender).getText().trim();
+					String text = ((TextBox) event.getSource()).getText().trim();
 					if(keyCode == '-'){
-						if(text.length() == 0 || ((TextBox)sender).getCursorPos() == 0)
+						if(text.length() == 0 || ((TextBox)event.getSource()).getCursorPos() == 0)
 							return;
 					}
 
-					((TextBox) sender).cancelKey(); 
+					((TextBox) event.getSource()).cancelKey(); 
 				}
 			}
 		});
 
-		textBox.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		textBox.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				try{
 					if(allowDecimalPoints)
-						Double.parseDouble(((TextBox) sender).getText().trim());
+						Double.parseDouble(((TextBox) event.getSource()).getText().trim());
 					else
-						Integer.parseInt(((TextBox) sender).getText().trim());
+						Integer.parseInt(((TextBox) event.getSource()).getText().trim());
 				}
 				catch(Exception ex){
-					((TextBox) sender).setText(null);
+					((TextBox) event.getSource()).setText(null);
 				}
 			}
 		});
 	}
 
-	public static KeyboardListenerAdapter getAllowNumericOnlyKeyboardListener(TextBox textBox, boolean allowDecimal){
+	public static KeyPressHandler getAllowNumericOnlyKeyboardListener(TextBox textBox, boolean allowDecimal){
 		final boolean allowDecimalPoints = allowDecimal;
-		return new KeyboardListenerAdapter() {
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyboardListener.KEY_TAB)
-						&& (keyCode != (char) KeyboardListener.KEY_BACKSPACE) && (keyCode != (char) KeyboardListener.KEY_LEFT)
-						&& (keyCode != (char) KeyboardListener.KEY_UP) && (keyCode != (char) KeyboardListener.KEY_RIGHT)
-						&& (keyCode != (char) KeyboardListener.KEY_DOWN)) {
+		return new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+				char keyCode = event.getCharCode();
+				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyCodes.KEY_TAB)
+						&& (keyCode != (char) KeyCodes.KEY_BACKSPACE) && (keyCode != (char) KeyCodes.KEY_LEFT)
+						&& (keyCode != (char) KeyCodes.KEY_UP) && (keyCode != (char) KeyCodes.KEY_RIGHT)
+						&& (keyCode != (char) KeyCodes.KEY_DOWN)) {
 
-					if(keyCode == '.' && allowDecimalPoints && !((TextBox)sender).getText().contains("."))
+					if(keyCode == '.' && allowDecimalPoints && !((TextBox)event.getSource()).getText().contains("."))
 						return;
 
-					String text = ((TextBox) sender).getText().trim();
-					if((text.length() == 0 && keyCode == '-') || (keyCode == '-' && ((TextBox)sender).getCursorPos() == 0))
+					String text = ((TextBox) event.getSource()).getText().trim();
+					if((text.length() == 0 && keyCode == '-') || (keyCode == '-' && ((TextBox)event.getSource()).getCursorPos() == 0))
 						return;
 
-					((TextBox) sender).cancelKey(); 
+					((TextBox) event.getSource()).cancelKey(); 
 				}
 			}
 		};
@@ -383,12 +388,14 @@ public class FormUtil {
 	}
 
 	public static String getDivValue(String id){
-		RootPanel p = RootPanel.get(id);
+		//RootPanel p = RootPanel.get(id);
+		
+		com.google.gwt.dom.client.Element p = com.google.gwt.dom.client.Document.get().getElementById(id);
 		if(p != null){
-			NodeList nodes = p.getElement().getChildNodes();
+			NodeList nodes = p.getChildNodes();
 			Node node = nodes.getItem(0);
 			String s = node.getNodeValue();
-			p.getElement().removeChild(node);
+			p.removeChild(node);
 			return s;
 		}
 

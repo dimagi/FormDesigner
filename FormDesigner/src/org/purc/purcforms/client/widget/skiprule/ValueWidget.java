@@ -14,7 +14,14 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.SelectItemCommand;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -30,8 +37,6 @@ import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -59,8 +64,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	private Label lblAnd = new Label(BETWEEN_WIDGET_SEPARATOR);
 	private Hyperlink valueHyperlink;
 	private PopupPanel popup;
-	private KeyboardListenerAdapter keyboardListener1;
-	private KeyboardListenerAdapter keyboardListener2;
+	
+	private KeyPressHandler keyboardListener1;
+	private KeyPressHandler keyboardListener2;
+	private HandlerRegistration handlerReg1;
+	private HandlerRegistration handlerReg2;
+	
 	private QuestionDef prevQuestionDef;
 	private CheckBox chkQuestionValue = new CheckBox(LocaleText.get("questionValue"));
 	private FormDef formDef;
@@ -161,13 +170,13 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			});
 
 			//if(txtValue1 instanceof DatePicker){
-			txtValue1.addChangeListener(new ChangeListener(){
-				public void onChange(Widget sender){
+			txtValue1.addChangeHandler(new ChangeHandler(){
+				public void onChange(ChangeEvent event){
 					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
-			txtValue2.addChangeListener(new ChangeListener(){
-				public void onChange(Widget sender){
+			txtValue2.addChangeHandler(new ChangeHandler(){
+				public void onChange(ChangeEvent event){
 					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
@@ -176,7 +185,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	}
 
 	private void setupFieldSelection(){
-		if(chkQuestionValue.isChecked()){
+		if(chkQuestionValue.getValue() == true){
 			if(horizontalPanel.getWidgetIndex(txtValue1) > -1){
 				horizontalPanel.remove(txtValue1);
 				horizontalPanel.remove(chkQuestionValue);
@@ -193,8 +202,11 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 				horizontalPanel.remove(sgstField);
 				horizontalPanel.remove(chkQuestionValue);
 				if(txtValue1.getParent() != null && txtValue1.getParent() instanceof SuggestBox){
-					txtValue1.removeKeyboardListener(keyboardListener1);
-					txtValue2.removeKeyboardListener(keyboardListener2);
+					//txtValue1.removeKeyboardListener(keyboardListener1);
+					//txtValue2.removeKeyboardListener(keyboardListener2);
+					handlerReg1.removeHandler();
+					handlerReg2.removeHandler();
+					
 					txtValue1 = new TextBox();
 					txtValue2 = new TextBox();
 					setupTextListeners();
@@ -300,7 +312,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 
 				CheckBox checkbox = new CheckBox(text);
 				if(InArray(vals,text))
-					checkbox.setChecked(true);
+					checkbox.setValue(true);
 				panel.add(checkbox);
 			}
 
@@ -326,8 +338,10 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			//if(!valueHyperlink.getText().equals(EMPTY_VALUE))
 			//	txtValue1.setText(valueHyperlink.getText());
 
-			txtValue1.removeKeyboardListener(keyboardListener1);
-			txtValue2.removeKeyboardListener(keyboardListener2);
+			//txtValue1.removeKeyboardListener(keyboardListener1);
+			//txtValue2.removeKeyboardListener(keyboardListener2);
+			handlerReg1.removeHandler();
+			handlerReg2.removeHandler();
 
 			/*if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
 				txtValue1 = new DatePickerWidget();
@@ -402,8 +416,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 			keyboardListener1 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue1, questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC ? false : true);
 			keyboardListener2 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue2, questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC ? false : true);
 
-			txtValue1.addKeyboardListener(keyboardListener1);
-			txtValue2.addKeyboardListener(keyboardListener2);
+			handlerReg1 = txtValue1.addKeyPressHandler(keyboardListener1);
+			handlerReg2 = txtValue2.addKeyPressHandler(keyboardListener2);
 		}
 	}
 
@@ -561,7 +575,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 					else
 						sValue = EMPTY_VALUE;
 				}
-				chkQuestionValue.setChecked(true);
+				chkQuestionValue.setValue(true);
 			}
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
@@ -612,13 +626,14 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 	}
 
 	private void setupPopup(){
-		txtValue1.removeKeyboardListener(keyboardListener1);
+		//txtValue1.removeKeyboardListener(keyboardListener1);
+		handlerReg1.removeHandler();
 
 		txtValue1 = new TextBox();
 
-		txtValue1.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER)
+		txtValue1.addKeyPressHandler(new KeyPressHandler(){
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getCharCode() == KeyCodes.KEY_ENTER)
 					stopEdit(true);
 			}
 		});
@@ -631,8 +646,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Pop
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();
 
-		sgstField.addEventHandler(new SuggestionHandler(){
-			public void onSuggestionSelected(SuggestionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler(){
+			public void onSelection(SelectionEvent event){
 				stopEdit(true);
 			}
 		});

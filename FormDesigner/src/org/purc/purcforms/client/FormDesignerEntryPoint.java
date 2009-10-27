@@ -3,21 +3,23 @@ package org.purc.purcforms.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
+public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 
 	/**
 	 * Reference to the form designer widget.
@@ -29,7 +31,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 	 */
 	public void onModuleLoad() {
 		
-		FormUtil.dlg.setText("loading");
+		FormUtil.dlg.setText(LocaleText.get("loading"));
 		FormUtil.dlg.center();
 		
 		publishJS();
@@ -49,8 +51,10 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 
 		try{
 			RootPanel rootPanel = RootPanel.get("purcformsdesigner");
-			if(rootPanel == null)
+			if(rootPanel == null){
+				FormUtil.dlg.hide();
 				return;
+			}
 
 			FormUtil.setupUncaughtExceptionHandler();
 
@@ -94,7 +98,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 			// have been computed by the browser.
 			DeferredCommand.addCommand(new Command() {
 				public void execute() {
-					onWindowResized(Window.getClientWidth(), Window.getClientHeight());
+					designer.onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 					
 					String id = FormUtil.getFormId();
 					if(id == null || id.equals("-1"))
@@ -103,19 +107,16 @@ public class FormDesignerEntryPoint implements EntryPoint ,WindowResizeListener{
 			});
 			
 			// Hook the window resize event, so that we can adjust the UI.
-			Window.addWindowResizeListener(this);
+			Window.addResizeHandler(this);
 		}
 		catch(Exception ex){
 			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
 	}
-
-	/**
-	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
-	 */
-	public void onWindowResized(int width, int height) {
-		designer.onWindowResized(width, height);
+	
+	public void onResize(ResizeEvent event){
+		designer.onWindowResized(event.getWidth(), event.getHeight());
 	}
 	
 	// Set up the JS-callable signature as a global JS function.

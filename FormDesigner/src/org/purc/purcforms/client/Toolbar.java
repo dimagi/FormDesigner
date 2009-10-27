@@ -7,8 +7,9 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -209,9 +210,9 @@ public class Toolbar extends Composite{
 		
 		populateLocales();
 		
-		cbLanguages.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
-				controller.changeLocale(((ListBox)sender).getValue(((ListBox)sender).getSelectedIndex()));
+		cbLanguages.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				controller.changeLocale(((ListBox)event.getSource()).getValue(((ListBox)event.getSource()).getSelectedIndex()));
 			}
 		});
 		

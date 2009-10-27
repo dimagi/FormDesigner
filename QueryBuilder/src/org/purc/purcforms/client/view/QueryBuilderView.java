@@ -6,6 +6,10 @@ import org.purc.purcforms.client.sql.XmlBuilder;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformParser;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -24,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class QueryBuilderView  extends Composite implements WindowResizeListener,TabListener{
+public class QueryBuilderView  extends Composite implements WindowResizeListener,TabListener,ResizeHandler{
 
 	private int selectedTabIndex;
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
@@ -53,7 +57,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		
 		tabs.selectTab(1);
 		
-		Window.addWindowResizeListener(this);
+		Window.addResizeHandler(this);
 
 		//		This is needed for IE
 		DeferredCommand.addCommand(new Command() {
@@ -62,14 +66,14 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 			}
 		});
 		
-		txtXform.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtXform.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				parseXform();
 			}
 		});
 		
-		txtDefXml.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtDefXml.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				parseQueryDef();
 			}
 		});
@@ -261,5 +265,9 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 	public void load(){
 		parseXform();
 		parseQueryDef();
+	}
+	
+	public void onResize(ResizeEvent event){
+		onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 	}
 }

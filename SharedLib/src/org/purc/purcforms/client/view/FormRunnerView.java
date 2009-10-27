@@ -375,7 +375,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
 			if(defaultValue != null && defaultValue.contains(binding))
-				((CheckBox)widget).setChecked(true);
+				((CheckBox)widget).setValue(true);
 
 			if(wrapperSet)
 				wrapper = parentWrapper;
@@ -1018,7 +1018,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		for(CheckBox checkBox : list){
 			checkBox.setEnabled(enabled);
 			if(!enabled)
-				checkBox.setChecked(false);
+				checkBox.setValue(false);
 		}
 	}
 
@@ -1033,7 +1033,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		for(CheckBox checkBox : list){
 			checkBox.setVisible(visible);
 			if(!visible)
-				checkBox.setChecked(false);
+				checkBox.setValue(false);
 		}
 	}
 

@@ -19,7 +19,7 @@
       <entry-point class='org.purc.purcforms.client.FormRunnerEntryPoint'/>
     
          <!-- Servlets -->
-      <servlet path='/multimedia' class='org.omevac.server.servlet.MultimediaServlet'/>
+      <servlet path='/multimedia' class='org.purcforms.server.MultimediaServlet'/>
       
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='FormRunner.css' />

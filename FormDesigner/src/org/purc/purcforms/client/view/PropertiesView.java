@@ -15,21 +15,28 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DescTemplateWidget;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -258,72 +265,76 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void setupEventListeners(){
 		//Check boxes.
-		chkVisible.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){
+		chkVisible.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setVisible(chkVisible.isChecked());
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
-		chkEnabled.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){
+		chkEnabled.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setEnabled(chkEnabled.isChecked());
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
-		chkLocked.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){
+		chkLocked.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setLocked(chkLocked.isChecked());
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
-		chkRequired.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){
+		chkRequired.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setRequired(chkRequired.isChecked());
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		//Text boxes.
-		txtDefaultValue.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtDefaultValue.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateDefaultValue();
 			}
 		});
-		txtDefaultValue.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+		txtDefaultValue.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
 				updateDefaultValue();
 			}
 		});
 
-		txtHelpText.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtHelpText.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateHelpText();
 			}
 		});
-		txtHelpText.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+		txtHelpText.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
 				updateHelpText();
 			}
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN)
+		});
+		
+		txtHelpText.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				int keyCode = event.getNativeKeyCode();
+				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN)
 					cbDataType.setFocus(true);
-				else if(keyCode == KeyboardListener.KEY_UP){
+				else if(keyCode == KeyCodes.KEY_UP){
 					txtText.setFocus(true);
 					txtText.selectAll();
 				}
 			}
 		});
 
-		txtBinding.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtBinding.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateBinding();
 			}
 		});
-		txtBinding.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+		txtBinding.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
 				String s = txtBinding.getText();
 
 				s = s.replace("%", "");
@@ -339,9 +350,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				txtBinding.setText(s);
 				updateBinding();
 			}
-
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_UP){
+		});
+		
+		txtBinding.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_UP){
 					if(cbDataType.isEnabled())
 						cbDataType.setFocus(true);
 					else{
@@ -350,31 +363,33 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 					}
 				}
 			}
-
-			public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+		});
+		
+		txtBinding.addKeyPressHandler(new KeyPressHandler(){
+			public void onKeyPress(KeyPressEvent event) {
 				if(propertiesObj instanceof PageDef){
-					if(!Character.isDigit(keyCode)){
-						((TextBox) sender).cancelKey(); 
+					if(!Character.isDigit(event.getCharCode())){
+						((TextBox) event.getSource()).cancelKey(); 
 						return;
 					}
 				}
 				else if(propertiesObj instanceof FormDef || propertiesObj instanceof QuestionDef){
-					if(((TextBox) sender).getCursorPos() == 0){
-						if(!isAllowedXmlNodeNameStartChar(keyCode)){
-							((TextBox) sender).cancelKey(); 
+					if(((TextBox) event.getSource()).getCursorPos() == 0){
+						if(!isAllowedXmlNodeNameStartChar(event.getCharCode())){
+							((TextBox) event.getSource()).cancelKey(); 
 							return;
 						}
 					}
-					else if(!isAllowedXmlNodeNameChar(keyCode)){
-						((TextBox) sender).cancelKey(); 
+					else if(!isAllowedXmlNodeNameChar(event.getCharCode())){
+						((TextBox) event.getSource()).cancelKey(); 
 						return;
 					}
 				} //else OptionDef varname can be anything
 			}
 		});
 
-		txtText.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtText.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateText();
 
 				if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
@@ -388,12 +403,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 			}
 		});
-		txtText.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+		txtText.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
 				updateText();
 			}
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN){
+		});
+		
+		txtText.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
 					if(txtHelpText.isEnabled())
 						txtHelpText.setFocus(true);
 					else{
@@ -404,35 +422,36 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
-		txtDescTemplate.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		txtDescTemplate.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateDescTemplate();
 			}
 		});
-		txtDescTemplate.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+		txtDescTemplate.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
 				updateDescTemplate();
 			}
 		});
 
 		//Combo boxes
-		cbDataType.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		cbDataType.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				updateDataType();
 			}
 		});
-		cbDataType.addChangeListener(new ChangeListener(){
-			public void onChange(Widget sender){
+		cbDataType.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
 				updateDataType();
 			}
 		});
-		cbDataType.addKeyboardListener(new KeyboardListenerAdapter(){
-			public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-				if(keyCode == KeyboardListener.KEY_ENTER || keyCode == KeyboardListener.KEY_DOWN){
+		cbDataType.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				int keyCode = event.getNativeEvent().getKeyCode();
+				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN){
 					txtBinding.setFocus(true);
 					txtBinding.selectAll();
 				}
-				else if(keyCode == KeyboardListener.KEY_UP){
+				else if(keyCode == KeyCodes.KEY_UP){
 					txtHelpText.setFocus(true);
 					txtHelpText.selectAll();
 				}
@@ -469,14 +488,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private boolean isControlChar(char keyCode){
 		int code = keyCode;
-		return (code == KeyboardListener.KEY_ALT || code == KeyboardListener.KEY_BACKSPACE ||
-				code == KeyboardListener.KEY_CTRL || code == KeyboardListener.KEY_DELETE ||
-				code == KeyboardListener.KEY_DOWN || code == KeyboardListener.KEY_END ||
-				code == KeyboardListener.KEY_ENTER || code == KeyboardListener.KEY_ESCAPE ||
-				code == KeyboardListener.KEY_HOME || code == KeyboardListener.KEY_LEFT ||
-				code == KeyboardListener.KEY_PAGEDOWN || code == KeyboardListener.KEY_PAGEUP ||
-				code == KeyboardListener.KEY_RIGHT || code == KeyboardListener.KEY_SHIFT ||
-				code == KeyboardListener.KEY_TAB || code == KeyboardListener.KEY_UP);
+		return (code == KeyCodes.KEY_ALT || code == KeyCodes.KEY_BACKSPACE ||
+				code == KeyCodes.KEY_CTRL || code == KeyCodes.KEY_DELETE ||
+				code == KeyCodes.KEY_DOWN || code == KeyCodes.KEY_END ||
+				code == KeyCodes.KEY_ENTER || code == KeyCodes.KEY_ESCAPE ||
+				code == KeyCodes.KEY_HOME || code == KeyCodes.KEY_LEFT ||
+				code == KeyCodes.KEY_PAGEDOWN || code == KeyCodes.KEY_PAGEUP ||
+				code == KeyCodes.KEY_RIGHT || code == KeyCodes.KEY_SHIFT ||
+				code == KeyCodes.KEY_TAB || code == KeyCodes.KEY_UP);
 	}
 
 	/**
@@ -725,10 +744,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtHelpText.setText(questionDef.getHelpText());
 		txtDefaultValue.setText(questionDef.getDefaultValue());
 
-		chkVisible.setChecked(questionDef.isVisible());
-		chkEnabled.setChecked(questionDef.isEnabled());
-		chkLocked.setChecked(questionDef.isLocked());
-		chkRequired.setChecked(questionDef.isRequired());
+		chkVisible.setValue(questionDef.isVisible());
+		chkEnabled.setValue(questionDef.isEnabled());
+		chkLocked.setValue(questionDef.isLocked());
+		chkRequired.setValue(questionDef.isRequired());
 
 		setDataType(questionDef.getDataType());
 
@@ -845,10 +864,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	public void clearProperties(){
 		cbDataType.setSelectedIndex(DT_INDEX_NONE);
-		chkVisible.setChecked(false);
-		chkEnabled.setChecked(false);
-		chkLocked.setChecked(false);
-		chkRequired.setChecked(false);
+		chkVisible.setValue(false);
+		chkEnabled.setValue(false);
+		chkLocked.setValue(false);
+		chkRequired.setValue(false);
 		txtDefaultValue.setText(null);
 		txtHelpText.setText(null);
 		txtText.setText(null);
@@ -951,19 +970,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 					formActionListener.addNewItem();
 					DOM.eventPreventDefault(event);
 				}
-				else if(keyCode == KeyboardListener.KEY_RIGHT){
+				else if(keyCode == KeyCodes.KEY_RIGHT){
 					formActionListener.moveToChild();
 					DOM.eventPreventDefault(event);
 				}
-				else if(keyCode == KeyboardListener.KEY_LEFT){
+				else if(keyCode == KeyCodes.KEY_LEFT){
 					formActionListener.moveToParent();
 					DOM.eventPreventDefault(event);
 				}
-				else if(keyCode == KeyboardListener.KEY_UP){
+				else if(keyCode == KeyCodes.KEY_UP){
 					formActionListener.moveUp();
 					DOM.eventPreventDefault(event);
 				}
-				else if(keyCode == KeyboardListener.KEY_DOWN){
+				else if(keyCode == KeyCodes.KEY_DOWN){
 					formActionListener.moveDown();
 					DOM.eventPreventDefault(event);
 				}

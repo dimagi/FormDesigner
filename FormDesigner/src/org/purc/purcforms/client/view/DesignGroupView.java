@@ -39,8 +39,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
@@ -55,7 +53,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class DesignGroupView extends Composite implements WidgetSelectionListener,IWidgetPopupMenuListener,DragDropListener{
 
-	private MouseListenerCollection mouseListeners;
 	protected static final int MOVE_LEFT = 1;
 	protected static final int MOVE_RIGHT = 2;
 	protected static final int MOVE_UP = 3;
@@ -130,19 +127,6 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 */
 	public DesignGroupView(Images images){
 		this.images = images;
-	}
-
-	public void addMouseListener(MouseListener listener) {
-		if (mouseListeners == null) {
-			mouseListeners = new MouseListenerCollection();
-		}
-		mouseListeners.add(listener);
-	}
-
-	public void removeMouseListener(MouseListener listener) {
-		if (mouseListeners != null) {
-			mouseListeners.remove(listener);
-		}
 	}
 
 	public void onDragEnd(Widget widget) {
@@ -1312,7 +1296,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		// Allow multiple widgets to be selected at once using CTRL-click
 		selectedDragController.setBehaviorMultipleSelection(true);
-		selectedDragController.setBehaviorDragStartSensitivity(1);
+		
+		//Un commenting the line below causes flickering during drag and drop
+		//selectedDragController.setBehaviorDragStartSensitivity(1);
+		
 		//selectedDragController.setBehaviorCancelDocumentSelections(true);
 
 		// create a DropController for each drop target on which draggable widgets

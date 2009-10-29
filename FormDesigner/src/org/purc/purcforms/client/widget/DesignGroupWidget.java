@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Element;
@@ -33,7 +32,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class DesignGroupWidget extends DesignGroupView implements DragDropListener,SourcesMouseEvents{
+public class DesignGroupWidget extends DesignGroupView implements DragDropListener{
 
 	private IWidgetPopupMenuListener widgetPopupMenuListener;
 

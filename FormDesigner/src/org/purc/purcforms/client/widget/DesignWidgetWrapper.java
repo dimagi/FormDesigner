@@ -14,6 +14,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -39,11 +40,8 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -58,9 +56,8 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents, QuestionChangeListener, HasAllMouseHandlers{
+public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListener, HasAllMouseHandlers{
 
-	private MouseListenerCollection mouseListeners;
 	private WidgetSelectionListener widgetSelectionListener;
 	private PopupPanel popup;
 	private Element layoutNode;
@@ -109,12 +106,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 	public void onBrowserEvent(Event event) {
 		int type = DOM.eventGetType(event);
-
-		/*if(widget instanceof Label){
-			getParent().getParent().getParent().getParent().onBrowserEvent(event);
-			return;
-		}*/
-
 		if((widget instanceof Label && panel.getWidget(0) instanceof TextBox))
 			return; //Must be in label edit mode.
 
@@ -153,17 +144,23 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
 
-			if (mouseListeners != null) {
+			//if (mouseListeners != null) {
 				if(widget instanceof DesignGroupWidget){
 					if(isRepeated() || !"default".equals(DOM.getStyleAttribute(widget.getElement(), "cursor")))
-						mouseListeners.fireMouseEvent(this, event);
+						//DomEvent.fireNativeEvent(event, this, this.getElement());
+						super.onBrowserEvent(event);
+						//mouseListeners.fireMouseEvent(this, event);
 				}
-				//else if(widget instanceof Label && "100%".equals(getWidth()))
-				//	mouseListeners.fireMouseEvent(getParent().getParent().getParent().getParent(), event);
 				else
-					mouseListeners.fireMouseEvent(this, event);
-			}
-
+					//DomEvent.fireNativeEvent(event, this, this.getElement());
+					super.onBrowserEvent(event);
+					//mouseListeners.fireMouseEvent(this, event);
+			//}
+			
+			//Document.get().createMouseMoveEvent(detail, screenX, screenY, clientX, clientY, ctrlKey, altKey, shiftKey, metaKey, button)
+			
+			//fireEvent(new GwtEvent<MouseMoveEvent>());
+			
 			/*if(type == Event.ONMOUSEDOWN){
 		        	if(!(event.getShiftKey() || event.getCtrlKey()))
 		        		widgetSelectionListener.onWidgetSelected(this);
@@ -179,7 +176,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
 				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY(),3));
-
+			
 			break;
 
 		case Event.ONKEYDOWN:
@@ -196,7 +193,7 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		}
 
 		//This is to prevent ListBox drop down from expanding on mouse down.
-		if(widget instanceof ListBox && mouseListeners != null && type == Event.ONMOUSEDOWN){
+		if(widget instanceof ListBox && type == Event.ONMOUSEDOWN){
 			final com.google.gwt.user.client.Element senderElem = this.getElement();
 		    int x = DOM.eventGetClientX(event)
 		        - DOM.getAbsoluteLeft(senderElem)
@@ -207,7 +204,8 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 		        + DOM.getElementPropertyInt(senderElem, "scrollTop")
 		        + Window.getScrollTop();
 
-			mouseListeners.fireMouseMove(this, x+1, y+1);
+		    //super.onBrowserEvent(event);
+			//mouseListeners.fireMouseMove(this, x+1, y+1);
 			
 			//if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
 			//	widgetSelectionListener.onWidgetSelected(this);
@@ -293,18 +291,6 @@ public class DesignWidgetWrapper extends WidgetEx implements SourcesMouseEvents,
 			return "default";
 
 		return "move";
-	}
-
-	public void addMouseListener(MouseListener listener) {
-		if (mouseListeners == null) 
-			mouseListeners = new MouseListenerCollection();
-
-		mouseListeners.add(listener);
-	}
-
-	public void removeMouseListener(MouseListener listener) {
-		if (mouseListeners != null)
-			mouseListeners.remove(listener);
 	}
 	
 	public String getText(){

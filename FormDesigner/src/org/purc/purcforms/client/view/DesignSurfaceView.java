@@ -24,6 +24,8 @@ import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConstants;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -38,10 +40,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SourcesMouseEvents;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
 import com.google.gwt.user.client.ui.TabBar;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -58,7 +57,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ TabListener,DragDropListener,SourcesMouseEvents,IWidgetPopupMenuListener{
+public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ SelectionHandler<Integer>,DragDropListener,IWidgetPopupMenuListener{
 
 	/** Height in pixels of the selected page. */
 	private String sHeight = "100%"; //"100%";
@@ -95,7 +94,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		tabs.selectTab(0);
 
 		initWidget(tabs);
-		tabs.addTabListener(this);
+		tabs.addSelectionHandler(this);
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.KEYEVENTS);
 
@@ -326,19 +325,13 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		});
 	}
+	
 
 	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
-	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
-		return true;
-	}
-
-	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
-	 */
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex){
-		selectedTabIndex = tabIndex;
+	public void onSelection(SelectionEvent<Integer> event){
+		selectedTabIndex = event.getSelectedItem();
 
 		selectedDragController = dragControllers.elementAt(selectedTabIndex);
 		selectedPanel = selectedDragController.getBoundaryPanel();

@@ -99,7 +99,7 @@ public class PreviewView extends FormRunnerView {
 	}
 
 	@Override
-	protected void submit(){
+	protected void submit(){		
 		if(formDef != null){
 			if(formDef.getDoc() == null)
 				XformBuilder.fromFormDef2Xform(formDef);

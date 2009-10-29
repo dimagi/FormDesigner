@@ -23,19 +23,19 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.CompositeTreeItem;
 import org.purc.purcforms.client.widget.TreeItemWidget;
 
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MouseListenerAdapter;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeImages;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -129,8 +129,8 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		//This is just for solving a wiered behaviour when one changes a node text
 		//and the click another node which gets the same text as the previously
 		//selected text. Just comment it out and you will see what happens.
-		tree.addMouseListener(new MouseListenerAdapter(){
-			public void onMouseDown(Widget sender, int x, int y){
+		tree.addMouseDownHandler(new MouseDownHandler(){
+			public void onMouseDown(MouseDownEvent event){
 				tree.setSelectedItem(tree.getSelectedItem());
 			}
 		});

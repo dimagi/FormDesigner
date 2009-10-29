@@ -21,9 +21,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerCollection;
-import com.google.gwt.user.client.ui.SourcesMouseEvents;
 
 
 /**
@@ -33,14 +30,10 @@ import com.google.gwt.user.client.ui.SourcesMouseEvents;
  * @author daniel
  *
  */
-public class PaletteWidget extends Composite implements SourcesMouseEvents, HasAllMouseHandlers{
+public class PaletteWidget extends Composite implements HasAllMouseHandlers{
 
 	/** The name of the widget. e.g TextBox, CheckBox, Label,Button etc */
 	private String name;
-
-	/** List of mouse listeners. */
-	private MouseListenerCollection mouseListeners;
-
 
 	/**
 	 * Creates a new instance of the palette.
@@ -60,34 +53,6 @@ public class PaletteWidget extends Composite implements SourcesMouseEvents, HasA
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 
 		DOM.setStyleAttribute(getElement(), "cursor", "pointer");
-	}
-
-	@Override
-	public void onBrowserEvent(Event event) {
-		int type = DOM.eventGetType(event);
-
-		switch (type) {
-		case Event.ONMOUSEDOWN:
-		case Event.ONMOUSEUP:
-		case Event.ONMOUSEOVER:
-		case Event.ONMOUSEMOVE:
-		case Event.ONMOUSEOUT:
-			if (mouseListeners != null) 
-				mouseListeners.fireMouseEvent(this, event);
-		}
-	}
-
-	public void addMouseListener(MouseListener listener) {
-		if (mouseListeners == null) {
-			mouseListeners = new MouseListenerCollection();
-		}
-		mouseListeners.add(listener);
-	}
-
-	public void removeMouseListener(MouseListener listener) {
-		if (mouseListeners != null) {
-			mouseListeners.remove(listener);
-		}
 	}
 
 	public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {

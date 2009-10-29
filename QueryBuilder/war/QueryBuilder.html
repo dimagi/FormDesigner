@@ -9,41 +9,32 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="gwt:module" content="purcforms"/>
-    <title>PurcForms FormDesigner</title>
-     <script type="text/javascript" language="javascript" src="FormDesigner/FormDesigner.nocache.js"></script>
-   </head>
+    <!--                                           -->
+    <!-- Any title is fine                         -->
+    <!--                                           -->
+    <title>QueryBuilder</title>
+    
+    <!--                                           -->
+    <!-- This script loads your compiled module.   -->
+    <!-- If you add any GWT meta tags, they must   -->
+    <!-- be added before this line.                -->
+    <!--                                           -->
+    <script type="text/javascript" language="javascript" src="org.purc.purcforms.QueryBuilder.nocache.js"></script>
+  </head>
+
+  <!--                                           -->
+  <!-- The body can have arbitrary html, or      -->
+  <!-- you can leave the body empty if you want  -->
+  <!-- to create a completely dynamic UI.        -->
+  <!--                                           -->
   <body>
+
+    <!-- OPTIONAL: include this if you want history support -->
     <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
-    <div id="purcformsdesigner"><div>
-    <div id="title" style="visibility:hidden;">PurcForms FormDesigner</div>
-    <div id="rubberBand"></div>
-    <!-- <div id="formId" style="visibility:hidden;">18</div> -->
-    <div id="dateTimeSubmitFormat" style="visibility:hidden;">yyyy-MM-dd hh:mm:ss a</div>
-    <div id="dateTimeDisplayFormat" style="visibility:hidden;">dd/MM/yyyy hh:mm:ss a</div>
-    <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
-    <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
-    <div id="dateSubmitFormat" style="visibility:hidden;">yyyy-MM-dd</div>
-    <div id="dateDisplayFormat" style="visibility:hidden;">dd/MM/yyyy</div>
-    <div id="showLanguageTab" style="visibility:hidden;">1</div>
-    <div id="allowBindEdit" style="visibility:hidden;">1</div>
-    
-    <!-- <div id="entityIdName" style="visibility:hidden;">patientId</div> -->
-    <!-- <div id="formIdName" style="visibility:hidden;">formId</div> -->
-    
-    <!-- <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xform&contentType=xml&</div> -->
-    <!-- <div id="formDefUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformUpload.form?target=xform&contentType=xml&</div> -->
-    <!-- <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div> -->
-    
-    <!-- <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&</div> -->
-    <!-- <div id="formDataUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformDataUpload.form</div> -->
-    <!-- <div id="afterSubmitUrlSuffix" style="visibility:hidden;">patientDashboard.form?</div> -->
-    
-    <!-- <div id="loading"><img src="loading.gif">Loading app�</div> -->
-    
-    <div id="localeList" style="visibility:hidden;">en:English,fr:French,gr:German,swa:Swahili,lug:Luganda</div>
-    
-    <script language="javascript">
+
+	<div id="querybuilder"><div>
+
+	<script language="javascript">
     	var PurcformsText = {
     	    	file: "File",
     	    	view: "View",
@@ -239,7 +230,6 @@
     		    fontStyle: "Font Style",
     		    fontSize: "Font Size",
     		    textDecoration: "Text Decoration",
-    		    textAlign: "Text Align",
     		    backgroundColor: "Background Color",
     		    borderStyle: "Border Style",
     		    borderWidth: "Border Width",
@@ -300,32 +290,8 @@
            		searchServer: "Search Server",
            		recording: "Recording",
            		search: "Search",
-           		processingMsg: "Please wait while processing...",
-           		length: "Length",
-           		clickForOtherQuestions: "< Click here for other questions >",
-           		ok: "Ok",
-           		undo: "Undo",
-           		redo: "Redo",
-           		loading: "loading"
- 		  };
-
-		  function isUserAuthenticated(){
-			  return true; //Not expected to be used in the design mode.
-		  }
-
-		  function authenticateUser(username, password){
-			  return true; //Not expected to be used in the design mode.
-		  }
-
-		  function searchExternal(key,value,parentElement,textElement,valueElement){
-
-		  }
-
-		  function initialize(){
-			  //var myObject = new window[PurcformsText]();
-			  //window.alert(myObject);
-		  }
-		  
+           		processingMsg: "Please wait while processing..."
+		  };
     </script>
     
   </body>

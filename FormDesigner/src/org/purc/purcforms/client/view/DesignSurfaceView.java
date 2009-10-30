@@ -1067,6 +1067,17 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 			}
 		});
 	}
+	
+	
+	/**
+	 * Checks if the design surface has any widgets.
+	 * 
+	 * @return true if it has, else false.
+	 */
+	public boolean hasWidgets(){
+		return (tabs.getTabBar().getTabCount() > 0 && selectedPanel != null && selectedPanel.getWidgetCount() > 0);
+	}
+	
 
 	/**
 	 * Loads design surface widgets from layout xml of the current form.

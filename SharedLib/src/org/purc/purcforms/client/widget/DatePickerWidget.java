@@ -8,6 +8,7 @@ import org.zenika.widget.client.datePicker.DatePicker;
 import org.zenika.widget.client.datePicker.PopupCalendar;
 import org.zenika.widget.client.util.DateUtil;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -108,7 +109,9 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 
 		synchronizeFromDate();
 
-		changeListeners.fireChange(this);
+		//onChange(this);
+		//fireEvent(Document.get().createChangeEvent());
+		//changeListeners.fireChange(this);
 	}
 
 	/**
@@ -284,8 +287,8 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 	 */
 	public void removeChangeListener(ChangeListener listener) {
 		super.removeChangeListener(listener);
-		if (changeListeners != null) {
+		/*if (changeListeners != null) {
 			changeListeners.remove(listener);
-		}
+		}*/
 	}
 }

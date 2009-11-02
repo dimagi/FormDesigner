@@ -3,14 +3,15 @@ package org.purc.purcforms.client.widget;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
@@ -59,13 +60,18 @@ public class TreeItemWidget extends Composite{
 	public void onBrowserEvent(Event event) {
 		if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0 /*&& !Context.isStructureReadOnly()*/){	  
-				popup.setPopupPosition(event.getClientX(), event.getClientY());
+				
+				int ypos = event.getClientY();
+				if(Window.getClientHeight() - ypos < 350)
+					ypos = event.getClientY() - 350;
+					
+				popup.setPopupPosition(event.getClientX(), ypos);
 				FormDesignerUtil.disableContextMenu(popup.getElement());
 				popup.show();
 			}
 		}
 		else if(DOM.eventGetType(event) == Event.ONKEYDOWN){
-			if(event.getKeyCode() == KeyboardListener.KEY_DELETE)
+			if(event.getKeyCode() == KeyCodes.KEY_DELETE)
 				formActionListener.deleteSelectedItem();
 		}
 	}

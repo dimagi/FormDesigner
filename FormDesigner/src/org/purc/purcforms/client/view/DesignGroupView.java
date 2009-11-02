@@ -24,6 +24,7 @@ import org.purc.purcforms.client.widget.PaletteWidget;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -34,7 +35,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -940,14 +940,14 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			widget.setHeightInt(endY - widget.getTopInt());
 		}
 
-		if(event.getKeyCode() == KeyboardListener.KEY_UP || event.getKeyCode() == KeyboardListener.KEY_DOWN){
+		if(event.getKeyCode() == KeyCodes.KEY_UP || event.getKeyCode() == KeyCodes.KEY_DOWN){
 			for(int index = 0; index < selectedDragController.getSelectedWidgetCount(); index++){
 				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
 				widget.setHeightInt(endY - widget.getTopInt());
 			}
 		}
 
-		if(event.getKeyCode() == KeyboardListener.KEY_RIGHT || event.getKeyCode() == KeyboardListener.KEY_LEFT){
+		if(event.getKeyCode() == KeyCodes.KEY_RIGHT || event.getKeyCode() == KeyCodes.KEY_LEFT){
 			for(int index = 0; index < selectedDragController.getSelectedWidgetCount(); index++){
 				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(index);
 				widget.setWidthInt(endX - widget.getLeftInt());
@@ -1130,7 +1130,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.
 	 */
 	protected DesignWidgetWrapper addNewCheckBox(boolean select){
-		return addNewWidget(new CheckBox(LocaleText.get("checkBox")),select);
+		DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(LocaleText.get("checkBox")),select);		
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		return wrapper;
 	}
 
 	/**
@@ -1140,7 +1142,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.
 	 */
 	protected DesignWidgetWrapper addNewRadioButton(boolean select){
-		return addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
+		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		return wrapper;
 	}
 
 	/**
@@ -1180,6 +1184,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 */
 	protected DesignWidgetWrapper addNewButton(String label, String binding, boolean select){
 		DesignWidgetWrapper wrapper = addNewWidget(new Button(label),select);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		wrapper.setWidthInt(70);
 		wrapper.setHeightInt(30);
 		wrapper.setBinding(binding);
@@ -1494,13 +1499,13 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		if(this.isVisible()){
 			int keyCode = event.getKeyCode();
-			if(keyCode == KeyboardListener.KEY_LEFT)
+			if(keyCode == KeyCodes.KEY_LEFT)
 				ret = moveWidgets(MOVE_LEFT);
-			else if(keyCode == KeyboardListener.KEY_RIGHT)
+			else if(keyCode == KeyCodes.KEY_RIGHT)
 				ret = moveWidgets(MOVE_RIGHT);
-			else if(keyCode == KeyboardListener.KEY_UP)
+			else if(keyCode == KeyCodes.KEY_UP)
 				ret = moveWidgets(MOVE_UP);
-			else if(keyCode == KeyboardListener.KEY_DOWN)
+			else if(keyCode == KeyCodes.KEY_DOWN)
 				ret = moveWidgets(MOVE_DOWN);  
 			else if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
 				if(!isTextAreaFocus(event)){ //TODO This works only when the textarea is clicked to get focus. Need to make it work even before clicking the text area (as long as it is visible)
@@ -1542,7 +1547,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					ret = true;
 				}
 			}
-			else if(keyCode == KeyboardListener.KEY_DELETE && !isTextBoxFocus(event)){
+			else if(keyCode == KeyCodes.KEY_DELETE && !isTextBoxFocus(event)){
 				if(selectedDragController.isAnyWidgetSelected()){
 					deleteWidgets();
 					ret = true;
@@ -1558,9 +1563,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				boolean textBoxFocus = isTextBoxFocus(event);
 				if(!textBoxFocus || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
 					boolean ret1 = false;
-					if(keyCode != KeyboardListener.KEY_DELETE && editWidget == null)
+					if(keyCode != KeyCodes.KEY_DELETE && editWidget == null)
 						ret1 = handleStartLabelEditing(event);
-					else if(keyCode == KeyboardListener.KEY_ENTER && editWidget != null)
+					else if(keyCode == KeyCodes.KEY_ENTER && editWidget != null)
 						handleStopLabelEditing(true);
 
 					if(ret1) //If handle start label edit is handled, need to signal such that others are not called for the same.
@@ -1654,6 +1659,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			OptionDef optionDef = (OptionDef)options.get(i);
 			DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
 			wrapper.setText(optionDef.getText());
@@ -1667,6 +1673,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
 		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		wrapper.setParentBinding(questionDef.getVariableName());
 		wrapper.setText(optionDef.getText());
 		wrapper.setTitle(optionDef.getText());

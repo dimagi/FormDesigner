@@ -4,19 +4,17 @@ import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 /**
  * Used for letting the user browse for a file to open on the local file system.
@@ -73,8 +71,8 @@ public class OpenFileDialog extends DialogBox{
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button(LocaleText.get("open"), new ClickListener(){
-			public void onClick(Widget sender){
+		horizontalPanel.add(new Button(LocaleText.get("open"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				String action = actionUrl;
 				if(action.contains("?"))
 					action += "&";
@@ -88,8 +86,8 @@ public class OpenFileDialog extends DialogBox{
 			}
 		}));
 		
-		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickListener(){
-			public void onClick(Widget sender){
+		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				hide();
 			}
 		}));
@@ -98,14 +96,10 @@ public class OpenFileDialog extends DialogBox{
 		
 		setWidget(form);
 		
-		form.addFormHandler(new FormHandler(){
-			public void onSubmitComplete(FormSubmitCompleteEvent event){
+		form.addSubmitCompleteHandler(new SubmitCompleteHandler(){
+			public void onSubmitComplete(FormPanel.SubmitCompleteEvent event){
 				eventListener.onSetFileContents(event.getResults());
 				hide();
-			}
-			
-			public void onSubmit(FormSubmitEvent event){
-				
 			}
 		});
 		

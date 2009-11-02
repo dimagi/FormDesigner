@@ -3,13 +3,13 @@ package org.purc.purcforms.client.view;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class ErrorDialog extends DialogBox implements ClickListener {
+public class ErrorDialog extends DialogBox implements ClickHandler {
 	
 	/** This displays the error message of the exception. */
 	private TextArea txtErrorMsg = new TextArea();
@@ -56,7 +56,7 @@ public class ErrorDialog extends DialogBox implements ClickListener {
 	/**
 	 * Called when one clicks the close button.
 	 */
-	public void onClick(Widget sender) {
+	public void onClick(ClickEvent event) {
 		hide();
 		
 		//TODO Some how when an exception is thrown, the progress dialog may stay on. So needs a fix.

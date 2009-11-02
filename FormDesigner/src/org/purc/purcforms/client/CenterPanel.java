@@ -17,6 +17,8 @@ import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
 import org.purc.purcforms.client.view.PropertiesView;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -26,8 +28,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -39,7 +39,7 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class CenterPanel extends Composite implements TabListener, IFormSelectionListener, SubmitListener, LayoutChangeListener{
+public class CenterPanel extends Composite implements SelectionHandler<Integer>, IFormSelectionListener, SubmitListener, LayoutChangeListener{
 
 	/** Index for the properties tab. */
 	private static final int SELECTED_INDEX_PROPERTIES = 0;
@@ -133,7 +133,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 
 		tabs.selectTab(0);
 		initWidget(tabs);
-		tabs.addTabListener(this);
+		tabs.addSelectionHandler(this);
 
 		if(!FormUtil.getShowLanguageTab())
 			this.removeLanguageTab();
@@ -167,6 +167,7 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 			}
 		});
 	}
+	
 
 	/**
 	 * Sets the listener to form item property change events.
@@ -178,22 +179,22 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 	}
 
 	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex){
-		if(tabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+	public void onSelection(SelectionEvent<Integer> event){
+		selectedTabIndex = event.getSelectedItem();
+		
+		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			Context.setCurrentMode(Context.MODE_DESIGN);
-		else if(tabIndex == SELECTED_INDEX_PREVIEW)
+		else if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
 			Context.setCurrentMode(Context.MODE_PREVIEW);
-		else if(tabIndex == SELECTED_INDEX_PROPERTIES)
+		else if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
 			Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
-		else if(tabIndex == SELECTED_INDEX_XFORMS_SOURCE)
+		else if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)
 			Context.setCurrentMode(Context.MODE_XFORMS_SOURCE);
 		else
 			Context.setCurrentMode(Context.MODE_NONE);
 			
-			
-		selectedTabIndex = tabIndex;
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
 			if(formDef != null){
 				if(!previewView.isPreviewing())
@@ -210,13 +211,6 @@ public class CenterPanel extends Composite implements TabListener, IFormSelectio
 		
 		//else if(selectedTabIndex == SELECTED_INDEX_LAYOUT_XML)
 		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
-	}
-	
-	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
-	 */
-	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex){
-		return true;
 	}
 
 	private void loadPreview(){

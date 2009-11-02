@@ -1,13 +1,13 @@
 package org.purc.purcforms.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -45,8 +45,8 @@ public class ReportDesigner implements EntryPoint {
     dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
     dialogVPanel.add(closeButton);
 
-    closeButton.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
+    closeButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
         dialogBox.hide();
       }
     });
@@ -54,8 +54,8 @@ public class ReportDesigner implements EntryPoint {
     // Set the contents of the Widget
     dialogBox.setWidget(dialogVPanel);
     
-    button.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
+    button.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
         dialogBox.center();
         dialogBox.show();
       }

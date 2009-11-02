@@ -25,6 +25,8 @@ import org.purc.purcforms.client.widget.TreeItemWidget;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -35,7 +37,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeImages;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
 
 
 /**
@@ -44,7 +45,7 @@ import com.google.gwt.user.client.ui.TreeListener;
  * @author daniel
  *
  */
-public class FormsTreeView extends Composite implements TreeListener,IFormChangeListener,IFormActionListener{
+public class FormsTreeView extends Composite implements SelectionHandler<TreeItem>,IFormChangeListener,IFormActionListener{
 
 	/**
 	 * Specifies the images that will be bundled for this Composite and specify
@@ -123,7 +124,7 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		initWidget(scrollPanel);
 		FormUtil.maximizeWidget(scrollPanel);
 
-		tree.addTreeListener(this);
+		tree.addSelectionHandler(this);
 		tree.ensureSelectedItemVisible();
 
 		//This is just for solving a wiered behaviour when one changes a node text
@@ -238,10 +239,12 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 
 
 	/**
-	 * @see com.google.gwt.user.client.ui.TreeListener#onTreeItemSelected(TreeItem)
+	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
-	public void onTreeItemSelected(TreeItem item) {
+	public void onSelection(SelectionEvent<TreeItem> event){
 
+		TreeItem item = event.getSelectedItem();
+		
 		//Should not call this more than once for the same selected item.
 		if(item != this.item){
 			Context.setFormDef(FormDef.getFormDef(item.getUserObject()));
@@ -252,13 +255,6 @@ public class FormsTreeView extends Composite implements TreeListener,IFormChange
 		}
 	}
 	
-	/**
-	 * @see com.google.gwt.user.client.ui.TreeListener#onTreeItemStateChanged(TreeItem)
-	 */
-	public void onTreeItemStateChanged(TreeItem item) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * Notifies all form item selection listeners about the currently

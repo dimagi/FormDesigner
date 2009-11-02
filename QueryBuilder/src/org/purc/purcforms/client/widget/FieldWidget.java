@@ -7,16 +7,16 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -55,8 +55,8 @@ public class FieldWidget extends Composite{
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);
 
-		fieldHyperlink.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		fieldHyperlink.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				itemSelectionListener.onStartItemSelection(this);
 				horizontalPanel.remove(fieldHyperlink);
 				horizontalPanel.add(sgstField);
@@ -78,8 +78,8 @@ public class FieldWidget extends Composite{
 			}
 		});*/
 		
-		sgstField.addEventHandler(new SuggestionHandler(){
-			public void onSuggestionSelected(SuggestionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler(){
+			public void onSelection(SelectionEvent event){
 				stopSelection();
 			}
 		});
@@ -112,8 +112,8 @@ public class FieldWidget extends Composite{
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();
 		
-		sgstField.addEventHandler(new SuggestionHandler(){
-			public void onSuggestionSelected(SuggestionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler(){
+			public void onSelection(SelectionEvent event){
 					stopSelection();
 			}
 		});

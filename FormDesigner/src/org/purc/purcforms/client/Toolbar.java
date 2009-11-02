@@ -9,8 +9,9 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -18,7 +19,6 @@ import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This widget is the main tool bar for the form designer.
@@ -227,62 +227,62 @@ public class Toolbar extends Composite{
 	 * Setup button click event handlers.
 	 */
 	private void setupClickListeners(){
-		btnNewForm.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.newForm();}});
+		btnNewForm.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.newForm();}});
 		
-		btnOpenForm.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.openForm();}});
+		btnOpenForm.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.openForm();}});
 		
-		btnSaveForm.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.saveForm();}});
+		btnSaveForm.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.saveForm();}});
 		
-		btnAddNewItem.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.addNewItem();}});
+		btnAddNewItem.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewItem();}});
 		
-		btnAddNewChildItem.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.addNewChildItem();}});
+		btnAddNewChildItem.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewChildItem();}});
 		
-		btnDeleteItem.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.deleteSelectedItem();}});
+		btnDeleteItem.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.deleteSelectedItem();}});
 		
-		btnMoveItemUp.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.moveItemUp();}});
+		btnMoveItemUp.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.moveItemUp();}});
 		
-		btnMoveItemDown.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.moveItemDown();}});
+		btnMoveItemDown.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.moveItemDown();}});
 		
-		btnAlignLeft.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.alignLeft();}});
+		btnAlignLeft.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.alignLeft();}});
 		
-		btnAlignRight.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.alignRight();}});
+		btnAlignRight.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.alignRight();}});
 		
-		btnAlignTop.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.alignTop();}});
+		btnAlignTop.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.alignTop();}});
 		
-		btnAlignBottom.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.alignBottom();}});
+		btnAlignBottom.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.alignBottom();}});
 		
-		btnCut.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.cutItem();}});
+		btnCut.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.cutItem();}});
 		
-		btnCopy.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.copyItem();}});
+		btnCopy.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.copyItem();}});
 		
-		btnPaste.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.pasteItem();}});
+		btnPaste.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.pasteItem();}});
 		
-		btnSameWidth.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.makeSameWidth();}});
+		btnSameWidth.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.makeSameWidth();}});
 		
-		btnSameHeight.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.makeSameHeight();}});
+		btnSameHeight.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.makeSameHeight();}});
 		
-		btnSameSize.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.makeSameSize();}});
+		btnSameSize.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.makeSameSize();}});
 		
-		btnRefresh.addClickListener(new ClickListener(){
-			public void onClick(Widget widget){controller.refresh(this);}});
+		btnRefresh.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.refresh(this);}});
 	}
 	
 	/**

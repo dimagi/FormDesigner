@@ -10,17 +10,14 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
-import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -28,7 +25,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class QueryBuilderView  extends Composite implements WindowResizeListener,TabListener,ResizeHandler{
+public class QueryBuilderView  extends Composite implements SelectionHandler<Integer>,ResizeHandler{
 
 	private int selectedTabIndex;
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
@@ -52,7 +49,7 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		tabs.add(txtDefXml,"Definition XML");
 		tabs.add(txtSql,"SQL");
 		
-		tabs.addTabListener(this);
+		tabs.addSelectionHandler(this);
 		initWidget(tabs);
 		
 		tabs.selectTab(1);
@@ -84,19 +81,12 @@ public class QueryBuilderView  extends Composite implements WindowResizeListener
 		//txtDefXml.setText(getTestQueryDef());
 		//parseQueryDef();
 	}
-	
-	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
-	 */
-	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-		return true;
-	}
 
 	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
+	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-		selectedTabIndex = tabIndex;
+	public void onSelection(SelectionEvent<Integer> event){
+		selectedTabIndex = event.getSelectedItem();
 		
 		FormUtil.dlg.setText("Building " + (selectedTabIndex == 3 ? "Query Definition" : "SQL")); //LocaleText.get("???????")
 		FormUtil.dlg.center();

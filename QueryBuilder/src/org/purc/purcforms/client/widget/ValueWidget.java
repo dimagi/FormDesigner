@@ -62,12 +62,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private Label lblAnd = new Label(BETWEEN_WIDGET_SEPARATOR);
 	private Hyperlink valueHyperlink;
 	private PopupPanel popup;
-	
+
 	private KeyPressHandler keyboardListener1;
 	private KeyPressHandler keyboardListener2;
 	private HandlerRegistration handlerReg1;
 	private HandlerRegistration handlerReg2;
-	
+
 	private FormDef formDef;
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;
@@ -286,8 +286,10 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 			//txtValue1.removeKeyboardListener(keyboardListener1);
 			//txtValue2.removeKeyboardListener(keyboardListener2);
-			handlerReg1.removeHandler();
-			handlerReg2.removeHandler();
+			if(handlerReg1 != null){
+				handlerReg1.removeHandler();
+				handlerReg2.removeHandler();
+			}
 
 			if(questionDef.getDataType() ==  QuestionDef.QTN_TYPE_DATE){
 				txtValue1 = new DatePicker();
@@ -309,9 +311,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 			addNumericKeyboardListener();
 
-				txtValue1.setFocus(true);
-				txtValue1.setFocus(true);
-			
+			txtValue1.setFocus(true);
+			txtValue1.setFocus(true);
+
 			txtValue1.selectAll();
 
 			if(operator ==  ModelConstants.OPERATOR_BETWEEN ||
@@ -416,7 +418,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		int count = panel.getWidgetCount();
 		for(int i=0; i<count; i++){
 			CheckBox checkbox = (CheckBox)panel.getWidget(i);
-			if(checkbox.isChecked()){
+			if(checkbox.getValue() == true){
 				if(value.length() > 0)
 					value += LIST_SEPARATOR;
 				value += checkbox.getText();
@@ -546,8 +548,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 	private void setupPopup(){
 		//txtValue1.removeKeyboardListener(keyboardListener1);
-		handlerReg1.removeHandler();
-		
+		if(handlerReg1 != null)
+			handlerReg1.removeHandler();
+
 		txtValue1 = new TextBox();
 
 		txtValue1.addKeyPressHandler(new KeyPressHandler(){

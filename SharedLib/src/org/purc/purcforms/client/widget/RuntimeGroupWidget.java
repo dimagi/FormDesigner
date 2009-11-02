@@ -19,12 +19,13 @@ import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -182,9 +183,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 	private void addDeleteButton(int row){
 		PushButton btn = new PushButton(LocaleText.get("deleteItem"));
-		btn.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
-				removeRow(sender);
+		btn.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
+				removeRow((Widget)event.getSource());
 			}
 		});
 		table.setWidget(row, widgets.size(), btn);
@@ -481,9 +482,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
 					binding.equals("browse")||binding.equals("clear")||binding.equals("cancel")||binding.equals("search")){
-				((Button)widget).addClickListener(new ClickListener(){
-					public void onClick(Widget sender){
-						execute(sender);
+				((Button)widget).addClickHandler(new ClickHandler(){
+					public void onClick(ClickEvent event){
+						execute((Widget)event.getSource());
 					}
 				});
 			}
@@ -961,6 +962,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	public boolean onMoveToNextWidget(Widget widget) {
+		//TODO Handle tabbing for repeats within the flex table
 		int index = selectedPanel.getWidgetIndex(widget);
 		return moveToNextWidget(index);
 	}

@@ -92,7 +92,6 @@ public class PreviewView extends FormRunnerView {
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 				setHeight(getHeight());
 			}
 		});

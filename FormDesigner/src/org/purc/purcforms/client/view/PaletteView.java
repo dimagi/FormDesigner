@@ -6,7 +6,6 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
 import org.purc.purcforms.client.widget.PaletteWidget;
 
-import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;

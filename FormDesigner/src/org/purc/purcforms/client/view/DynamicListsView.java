@@ -372,7 +372,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	public void onClick(ClickEvent event){	
 		Object sender = event.getSource();
 		if(sender == btnAdd)
-			addNewOption();
+			addNewOption().setFocus(true);
 		else{
 			int rowCount = table.getRowCount();
 			for(int row = 1; row < rowCount; row++){
@@ -423,13 +423,14 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	/**
 	 * Adds a new dynamic list option to the table.
 	 */
-	private void addNewOption(){
+	private TextBox addNewOption(){
 		table.removeRow(table.getRowCount() - 1);
 		TextBox textBox = addOption("","",table.getRowCount());
 		textBox.setFocus(true);
 		textBox.selectAll();
 		addAddButton();
 		addNewOptionDef();
+		return textBox;
 	}
 
 
@@ -530,8 +531,10 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				//automatically set the binding, if empty.
 				TextBox txtBinding = (TextBox)table.getWidget(row, 1);
 				String binding = txtBinding.getText();
-				if(binding == null || binding.trim().length() == 0)
+				if(binding == null || binding.trim().length() == 0){
 					txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
+					optionDef.setVariableName(txtBinding.getText());
+				}
 
 				break;
 			}
@@ -678,7 +681,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 
 		OptionDef currentOptionDef;
-		List list = new ArrayList();
+		List<OptionDef> list = new ArrayList<OptionDef>();
 
 		//Remove all from index before selected all the way downwards
 		while(optns.size() >= index){
@@ -717,7 +720,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 
 		OptionDef currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
+		List<OptionDef> list = new ArrayList<OptionDef>();
 
 		//Remove all otions below selected index
 		while(optns.size() > 0 && optns.size() > index){

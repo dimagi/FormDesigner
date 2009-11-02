@@ -29,6 +29,10 @@ import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -39,7 +43,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -49,8 +52,6 @@ import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SourcesTabEvents;
-import com.google.gwt.user.client.ui.TabListener;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -67,7 +68,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class FormRunnerView extends Composite implements /*WindowResizeListener,*/TabListener, EditListener,QuestionChangeListener{
+public class FormRunnerView extends Composite implements SelectionHandler<Integer>, EditListener,QuestionChangeListener{
 
 	public interface Images extends ImageBundle {
 		AbstractImagePrototype error();
@@ -147,7 +148,7 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		FormUtil.maximizeWidget(tabs);
 
 		initWidget(tabs);
-		tabs.addTabListener(this);
+		tabs.addSelectionHandler(this);
 
 		//This is needed for IE which does not seem to set the height properly.
 		DeferredCommand.addCommand(new Command() {
@@ -200,6 +201,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	}
 
 	protected void moveToNextWidget(int index){
+		
+		//If we have reached end of tab order, just wrap around to the first widget.
+		if(index > selectedPanel.getWidgetCount() - 2)
+			index = 0;
+		
 		while(++index < selectedPanel.getWidgetCount()){
 			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus())
 				break;
@@ -541,7 +547,6 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 		if(loadWidget)
 			wrapper.loadQuestion();
 
-		//if(wrapper.getWrappedWidget() instanceof Label)
 		WidgetEx.loadLabelProperties(node,wrapper);
 
 		wrapper.setTabIndex(tabIndex);
@@ -555,23 +560,23 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 
 		if(widget instanceof Button && binding != null){
 			if(binding.equals("submit")){
-				((Button)widget).addClickListener(new ClickListener(){
-					public void onClick(Widget sender){
+				((Button)widget).addClickHandler(new ClickHandler(){
+					public void onClick(ClickEvent event){
 						submit();
 					}
 				});
 			}
 			else if(binding.equals("cancel")){
-				((Button)widget).addClickListener(new ClickListener(){
-					public void onClick(Widget sender){
+				((Button)widget).addClickHandler(new ClickHandler(){
+					public void onClick(ClickEvent event){
 						onCancel();
 					}
 				});
 			}
 			else if(binding.equals("search") && parentBinding != null){
-				((Button)widget).addClickListener(new ClickListener(){
-					public void onClick(Widget sender){
-						onSearch(null,sender);
+				((Button)widget).addClickHandler(new ClickHandler(){
+					public void onClick(ClickEvent event){
+						onSearch(null,(Widget)event.getSource());
 					}
 				});
 			}
@@ -750,18 +755,11 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
 	}
 
 	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onBeforeTabSelected(SourcesTabEvents, int)
+	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
-	public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-		return true;
-	}
-
-	/**
-	 * @see com.google.gwt.user.client.ui.TabListener#onTabSelected(SourcesTabEvents, int)
-	 */
-	public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
-		selectedTabIndex = tabIndex;
-		selectedPanel = (AbsolutePanel)tabs.getWidget(tabIndex);
+	public void onSelection(SelectionEvent<Integer> event){
+		selectedTabIndex = event.getSelectedItem();
+		selectedPanel = (AbsolutePanel)tabs.getWidget(selectedTabIndex);
 		moveToFirstWidget();
 	}
 
@@ -788,10 +786,18 @@ public class FormRunnerView extends Composite implements /*WindowResizeListener,
      */
 	public void onMoveToNextWidget(Widget widget) {
 		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
+			//Non repeating widgets in a group box
 			if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToNextWidget(widget))
 				return;
 			else
 				widget = widget.getParent().getParent().getParent().getParent();
+		}
+		else if(widget.getParent().getParent().getParent() instanceof RuntimeGroupWidget){
+			//Repeating widgets.
+			if(((RuntimeGroupWidget)widget.getParent().getParent().getParent()).onMoveToNextWidget(widget))
+				return;
+			else
+				widget = widget.getParent().getParent().getParent().getParent().getParent();
 		}
 
 		int index = selectedPanel.getWidgetIndex(widget);

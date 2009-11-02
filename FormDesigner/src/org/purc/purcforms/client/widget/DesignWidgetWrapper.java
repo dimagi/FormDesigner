@@ -14,7 +14,6 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -218,6 +217,23 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				storePosition();
 				panel.remove(0);
 				panel.add(txtEdit);
+				
+				if(fontFamily != null && fontFamily.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "fontFamily", fontFamily);
+				if(fontSize != null && fontSize.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "fontSize", fontSize);
+				if(textDecoration != null && textDecoration.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "textDecoration", textDecoration);
+				if(textAlign != null && textAlign.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "textAlign", textAlign);
+				if(color != null && color.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "color", color);
+				if(fontWeight != null && fontWeight.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "fontWeight", fontWeight);
+				if(fontStyle != null && fontStyle.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "fontStyle", fontStyle);
+				if(backgroundColor != null && backgroundColor.trim().length() > 0)
+					DOM.setStyleAttribute(txtEdit.getElement(), "backgroundColor", backgroundColor);
 			}
 
 			String text = null;

@@ -41,7 +41,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 
@@ -164,8 +163,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		btnDescTemplate = new DescTemplateWidget(this);
 
-		//chkVisible.setStyleName("gwt-CheckBox");
-
 		table.setWidget(0, 0, new Label(LocaleText.get("text")));
 		table.setWidget(1, 0, new Label(LocaleText.get("helpText")));
 		table.setWidget(2, 0, new Label(LocaleText.get("type")));
@@ -175,7 +172,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(6, 0, new Label(LocaleText.get("locked")));
 		table.setWidget(7, 0, new Label(LocaleText.get("required")));
 		table.setWidget(8, 0, new Label(LocaleText.get("defaultValue")));
-		//table.setWidget(9, 0, new Label("Control Type"));
 		table.setWidget(9, 0, new Label(LocaleText.get("descriptionTemplate")));
 
 		table.setWidget(0, 1, txtText);
@@ -264,31 +260,31 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Sets up event listeners.
 	 */
 	private void setupEventListeners(){
-		//Check boxes.
+		//Check boxes.k
 		chkVisible.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				((QuestionDef)propertiesObj).setVisible(chkVisible.isChecked());
+				((QuestionDef)propertiesObj).setVisible(chkVisible.getValue() == true);
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkEnabled.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				((QuestionDef)propertiesObj).setEnabled(chkEnabled.isChecked());
+				((QuestionDef)propertiesObj).setEnabled(chkEnabled.getValue() == true);
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkLocked.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				((QuestionDef)propertiesObj).setLocked(chkLocked.isChecked());
+				((QuestionDef)propertiesObj).setLocked(chkLocked.getValue() == true);
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkRequired.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				((QuestionDef)propertiesObj).setRequired(chkRequired.isChecked());
+				((QuestionDef)propertiesObj).setRequired(chkRequired.getValue() == true);
 				formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});

@@ -14,8 +14,9 @@ import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.widget.skiprule.ConditionWidget;
 import org.purc.purcforms.client.widget.skiprule.GroupHyperlink;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -108,8 +109,8 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		actionPanel.setSpacing(5);
 
 		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),null);
-		hyperlink.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		hyperlink.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				showOtherQuestions();
 			}
 		});
@@ -130,29 +131,29 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 
 		verticalPanel.add(addConditionLink);
 
-		addConditionLink.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		addConditionLink.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				addCondition();
 			}
 		});
 
-		rdEnable.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		rdEnable.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				updateMakeRequired();
 			}
 		});
-		rdDisable.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		rdDisable.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				updateMakeRequired();
 			}
 		});
-		rdShow.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		rdShow.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				updateMakeRequired();
 			}
 		});
-		rdHide.addClickListener(new ClickListener(){
-			public void onClick(Widget sender){
+		rdHide.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){
 				updateMakeRequired();
 			}
 		});
@@ -166,7 +167,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * else disables and unticks it.
 	 */
 	private void updateMakeRequired(){
-		chkMakeRequired.setEnabled(rdEnable.isChecked() || rdShow.isChecked());
+		chkMakeRequired.setEnabled(rdEnable.getValue() == true || rdShow.getValue() == true);
 		if(!chkMakeRequired.isEnabled())
 			chkMakeRequired.setValue(false);
 	}
@@ -181,7 +182,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 
-			if(!(rdEnable.isChecked()||rdDisable.isChecked()||rdShow.isChecked()||rdHide.isChecked())){
+			if(!(rdEnable.getValue() == true||rdDisable.getValue() == true||rdShow.getValue() == true||rdHide.getValue() == true)){
 				rdEnable.setValue(true);
 				updateMakeRequired();
 			}
@@ -252,16 +253,16 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 */
 	private int getAction(){
 		int action = 0;
-		if(rdEnable.isChecked())
+		if(rdEnable.getValue() == true)
 			action |= ModelConstants.ACTION_ENABLE;
-		else if(rdShow.isChecked())
+		else if(rdShow.getValue() == true)
 			action |= ModelConstants.ACTION_SHOW;
-		else if(rdHide.isChecked())
+		else if(rdHide.getValue() == true)
 			action |= ModelConstants.ACTION_HIDE;
 		else
 			action |= ModelConstants.ACTION_DISABLE;
 
-		if(chkMakeRequired.isChecked())
+		if(chkMakeRequired.getValue() == true)
 			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else
 			action |= ModelConstants.ACTION_MAKE_OPTIONAL;

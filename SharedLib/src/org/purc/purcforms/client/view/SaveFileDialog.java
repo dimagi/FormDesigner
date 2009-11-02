@@ -2,20 +2,18 @@ package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.locale.LocaleText;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 
 /**
@@ -58,8 +56,8 @@ public class SaveFileDialog extends DialogBox{
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button(LocaleText.get("save"), new ClickListener(){
-			public void onClick(Widget sender){
+		horizontalPanel.add(new Button(LocaleText.get("save"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				String fileName = txtName.getText();
 				if(fileName != null && fileName.trim().length() > 0){
 					String action = actionUrl;
@@ -76,8 +74,8 @@ public class SaveFileDialog extends DialogBox{
 			}
 		}));
 
-		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickListener(){
-			public void onClick(Widget sender){
+		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickHandler(){
+			public void onClick(ClickEvent event){
 				hide();
 			}
 		}));
@@ -86,13 +84,10 @@ public class SaveFileDialog extends DialogBox{
 
 		setWidget(form);
 
-		form.addFormHandler(new FormHandler(){
-			public void onSubmitComplete(FormSubmitCompleteEvent event){
+		form.addSubmitCompleteHandler(new SubmitCompleteHandler(){
+			public void onSubmitComplete(FormPanel.SubmitCompleteEvent event){
 				hide();
 				Window.Location.replace(form.getAction());
-			}
-
-			public void onSubmit(FormSubmitEvent event){
 			}
 		});
 

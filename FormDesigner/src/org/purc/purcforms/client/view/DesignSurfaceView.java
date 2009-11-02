@@ -57,7 +57,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author daniel
  *
  */
-public class DesignSurfaceView extends DesignGroupView implements /*WindowResizeListener,*/ SelectionHandler<Integer>,DragDropListener,IWidgetPopupMenuListener{
+public class DesignSurfaceView extends DesignGroupView implements SelectionHandler<Integer>,DragDropListener,IWidgetPopupMenuListener{
 
 	/** Height in pixels of the selected page. */
 	private String sHeight = "100%"; //"100%";
@@ -178,7 +178,6 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 				setHeight(getHeight());
 			}
 		});
@@ -893,6 +892,7 @@ public class DesignSurfaceView extends DesignGroupView implements /*WindowResize
 
 			OptionDef optionDef = (OptionDef)options.get(i);
 			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
+			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
 			wrapper.setText(optionDef.getText());

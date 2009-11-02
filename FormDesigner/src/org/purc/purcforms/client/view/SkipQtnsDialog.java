@@ -13,15 +13,15 @@ import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -99,7 +99,7 @@ public class SkipQtnsDialog  extends DialogBox {
 		
 		mainPanel.setSpacing(5);
 		
-		setText("Other Questions");
+		setText(LocaleText.get("otherQuestions"));
 	}
 	
 	
@@ -171,8 +171,8 @@ public class SkipQtnsDialog  extends DialogBox {
 	 */
 	private void setupHeaderLabels(){
 		HorizontalPanel horzPanel = new HorizontalPanel();
-		Label lblAllQtns = new Label("All Questions");
-		Label lblSelQtns = new Label("Selected Questions");
+		Label lblAllQtns = new Label(LocaleText.get("allQuestions"));
+		Label lblSelQtns = new Label(LocaleText.get("selectedQuestions"));
 		
 		horzPanel.add(lblAllQtns);
 		horzPanel.add(lblSelQtns);
@@ -200,14 +200,14 @@ public class SkipQtnsDialog  extends DialogBox {
 		
 		parentPanel.add(vertPanel);
 		
-		btnSelect.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		btnSelect.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				selectQuestions();
 			}
 		});
 		
-		btnDeselect.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		btnDeselect.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				deselectQuestions();
 			}
 		});
@@ -221,15 +221,15 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * Sets up the Ok and Cancel buttons.
 	 */
 	private void setupOkCancelButtons(){
-		btnOk.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		btnOk.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				hide();
 				qtnSelListener.onQuestionsSelected(getSelectedQtns());
 			}
 		});
 		
-		btnCancel.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		btnCancel.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
 				hide();
 			}
 		});

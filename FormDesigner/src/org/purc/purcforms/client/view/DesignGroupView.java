@@ -1567,6 +1567,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 						ret1 = handleStartLabelEditing(event);
 					else if(keyCode == KeyCodes.KEY_ENTER && editWidget != null)
 						handleStopLabelEditing(true);
+					else if(keyCode == KeyCodes.KEY_ESCAPE && editWidget != null){
+						txtEdit.setText(editWidget.getText());
+						handleStopLabelEditing(true);
+					}
 
 					if(ret1) //If handle start label edit is handled, need to signal such that others are not called for the same.
 						ret = true;

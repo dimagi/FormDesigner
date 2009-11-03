@@ -133,11 +133,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			event.preventDefault();
 
 		int type = DOM.eventGetType(event);
-		if(type == Event.ONMOUSEUP && widget instanceof CheckBox && questionDef != null){
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
-				if(((CheckBox)widget).getValue() == true)
+		if(type == Event.ONMOUSEUP && widget instanceof RadioButton /*&& questionDef != null*/){
+			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+				if(((CheckBox)widget).getValue() == true){
+					event.preventDefault();
+					event.stopPropagation();
 					((CheckBox)widget).setValue(false);
-			}
+				}
+			//}
 		}
 	}
 

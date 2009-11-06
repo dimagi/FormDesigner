@@ -53,4 +53,8 @@ public class QueryBuilderWidget extends Composite{
 	public void load(){
 		view.load();
 	}
+	
+	public void hideDebugTabs(){
+		view.hideDebugTabs();
+	}
 }

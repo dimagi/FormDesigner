@@ -157,7 +157,7 @@ public class WidgetEx extends Composite{
 	
 	protected void copyWidget(WidgetEx widget){
 		if(widget.widget instanceof RadioButton)
-			this.widget = new RadioButton(((RadioButton)widget.widget).getName(),((RadioButton)widget.widget).getText());
+			this.widget = new RadioButtonWidget(((RadioButtonWidget)widget.widget).getName(),((RadioButtonWidget)widget.widget).getText());
 		else if(widget.widget instanceof CheckBox)
 			this.widget = new CheckBox(((CheckBox)widget.widget).getText());
 		else if(widget.widget instanceof Button)

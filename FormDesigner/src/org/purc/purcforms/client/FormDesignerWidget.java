@@ -408,4 +408,8 @@ public class FormDesignerWidget extends Composite{
 	public void removeLanguageTab(){
 		centerPanel.removeLanguageTab();
 	}
+	
+	public void populateLocales(){
+		toolbar.populateLocales();
+	}
 }

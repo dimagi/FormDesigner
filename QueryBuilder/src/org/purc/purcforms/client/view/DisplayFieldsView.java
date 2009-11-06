@@ -104,6 +104,9 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 	private void clearConditions(){
 		while(columnPanel.getWidgetCount() > 1)
 			columnPanel.remove(columnPanel.getWidget(1));
+		
+		while(sortPanel.getWidgetCount() > 1)
+			sortPanel.remove(sortPanel.getWidget(1));
 	}
 
 	public void moveColumnUp(Widget sender){

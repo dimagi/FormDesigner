@@ -288,7 +288,9 @@ public class Toolbar extends Composite{
 	/**
 	 * Populates the locale drop down with a list of locales supported by the form designer.
 	 */
-	private void populateLocales(){
+	public void populateLocales(){
+		cbLanguages.clear();
+		
 		List<Locale> locales = Context.getLocales();
 		if(locales == null)
 			return;

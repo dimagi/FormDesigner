@@ -12,12 +12,14 @@ import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -29,6 +31,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -131,16 +134,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public void onBrowserEvent(Event event) {
 		if(locked)
 			event.preventDefault();
-
-		int type = DOM.eventGetType(event);
-		if(type == Event.ONMOUSEUP && widget instanceof RadioButton /*&& questionDef != null*/){
-			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
-				if(((CheckBox)widget).getValue() == true){
-					event.preventDefault();
-					event.stopPropagation();
-					((CheckBox)widget).setValue(false);
-				}
-			//}
+		
+		if(widget instanceof RadioButton && DOM.eventGetType(event) == Event.ONMOUSEUP){
+			if(((RadioButton)widget).getValue() == true){
+				event.stopPropagation();
+				event.preventDefault();
+				((RadioButton)widget).setValue(false);
+				return;
+			}
 		}
 	}
 
@@ -245,7 +246,16 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			public void onKeyUp(KeyUpEvent event) {
 				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 					questionDef.setAnswer(getTextBoxAnswer());
+					
+					//boolean hasErrors = false;
+					//if(panel.getWidgetCount() > 1)
+					//	hasErrors = true;
+					
 					isValid();
+					
+					//if(hasErrors)
+					//	panel.add(errorImage);
+					
 					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 				}
 			}
@@ -493,6 +503,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		catch(Exception ex){
 			//If we get a problem parsing date, just return null.
 			value = null;
+			
+			if(panel.getWidgetCount() < 2)
+				panel.add(errorImage);
+
+			errorImage.setTitle("wrong format");
 		}
 
 		return value;
@@ -654,6 +669,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		((CheckBox)childWidget.getWrappedWidget()).addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
+				/*if(((CheckBox)event.getSource()).getValue() == true){
+					((CheckBox)event.getSource()).setValue(false);
+					return;
+				}*/
+				
 				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
 					questionDef.setAnswer(((RuntimeWidgetWrapper)((Widget)event.getSource()).getParent().getParent()).getBinding());
 				else{

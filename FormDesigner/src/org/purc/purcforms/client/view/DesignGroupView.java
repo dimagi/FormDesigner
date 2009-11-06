@@ -1715,6 +1715,11 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			addNewRadioButtonSet(questionDef,vertically);
 		else
 			addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
+	
+		//increase height if the last widget is beyond our current y coordinate.
+		int height = FormUtil.convertDimensionToInt(getHeight());
+		if((height + getAbsoluteTop()) < y)
+			setHeight(y+"px");
 	}
 	
 	/**

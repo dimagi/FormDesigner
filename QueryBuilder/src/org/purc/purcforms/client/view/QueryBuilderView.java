@@ -260,4 +260,10 @@ public class QueryBuilderView  extends Composite implements SelectionHandler<Int
 	public void onResize(ResizeEvent event){
 		onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 	}
+	
+	public void hideDebugTabs(){
+		tabs.remove(0);
+		tabs.remove(2);
+		tabs.remove(2);
+	}
 }

@@ -80,24 +80,25 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 	/** The tabs where we lay various page panels. */
 	protected DecoratedTabPanel tabs = new DecoratedTabPanel();
-	
+
 	/** The currently selected tab index. */
 	protected int selectedTabIndex;
-	
+
 	/** The currently selected tab panel. */
 	protected AbsolutePanel selectedPanel;
-	
+
 	/** The height of the currently selected tab panel. */
 	protected String sHeight = "100%";
-	
+
 	/** Reference to the form definition. */
 	protected FormDef formDef;
-	
+
 	/** Listener to form submit events. */
 	protected SubmitListener submitListener;
-	
-	protected HashMap<String,RuntimeWidgetWrapper> widgetMap;
-	
+
+	/** A map of parent binding text and one of the widgets that reference it. */
+	protected HashMap<String,RuntimeWidgetWrapper> parentBindingWidgetMap;
+
 	/** 
 	 * The first invalid widget. This is used when we validate more than one widget in a group
 	 * and at the end of the list we want to set focus to the first widget that we found invalid.
@@ -105,17 +106,32 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	protected RuntimeWidgetWrapper firstInvalidWidget;
 
 	/** 
-	 * Used when we are used as an emebeded widgets in another GWT application
-	 * and the user wants to control the space in which to embbed us.
+	 * Used when we are used as an embedded widget in another GWT application
+	 * and the user wants to control the space in which to embed us.
 	 */
 	protected int embeddedHeightOffset = 0;
 
-	protected HashMap<QuestionDef,List<Widget>> labelMap;
-	protected HashMap<Widget,String> labelText;
-	protected HashMap<Widget,String> labelReplaceText;
+	/** A map of a questions and its list of Label widgets.
+	 *  Labels in this list are only those which have portions of its text
+	 *  that are to be replaced with answers from some questions.
+	 */
+	protected HashMap<QuestionDef,List<Label>> labelMap;
 
+	/** A map of a label widget and its text.
+	 *  Labels in this map are only those which have portions of its text
+	 *  that are to be replaced with answers from some questions.
+	 */
+	protected HashMap<Label,String> labelText;
+
+	/** A map of a label widget and its template text (eg ${/newform1/name}$) which is to be 
+	 * replaced by answers to some questions. Labels in this map are only those which have 
+	 * portions of its text that are to be replaced with answers from some questions.
+	 */
+	protected HashMap<Label,String> labelReplaceText;
+
+	/** A map of a question and its list of CheckBox widgets. */
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap;
-	
+
 	/** 
 	 * A map where the key widget's value change requires a list of other widgets to
 	 * run their validation rules. Eg key qtn: Total No of kids born and dependant qtn: how many are male?
@@ -130,14 +146,14 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * submit data, we use this dialog to logon the server.
 	 */
 	private static LoginDialog loginDlg = new LoginDialog();
-	
+
 	/**
 	 * Reference to this very view. We need this static reference because the javascript login
 	 * callback method is static and will need this view to submit the data on successful login.
 	 */
 	private static FormRunnerView formRunnerView;
-	
-	
+
+
 	/**
 	 * Constructs an instance of the form runner.
 	 *
@@ -172,7 +188,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 */
 	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		FormUtil.initialize();
-		
+
 		if(externalSourceWidgets == null){
 			//Here we must be in preview mode where we need to create a new copy of the formdef
 			//such that we dont set preview values as default formdef values.
@@ -189,7 +205,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			addNewTab("Page1");
 			return;
 		}
-		
+
 		loadLayout(layoutXml,externalSourceWidgets);
 		moveToFirstWidget();
 	}
@@ -201,44 +217,58 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		moveToNextWidget(-1);
 	}
 
+	
+	/**
+	 * Sets focus to the focusable widget whose tab index is next to a given index.
+	 * 
+	 * @param index the given tab index.
+	 */
 	protected void moveToNextWidget(int index){
-		
+
 		//If we have reached end of tab order, just wrap around to the first widget.
 		if(index > selectedPanel.getWidgetCount() - 2)
 			index = 0;
-		
+
 		while(++index < selectedPanel.getWidgetCount()){
 			if(((RuntimeWidgetWrapper)selectedPanel.getWidget(index)).setFocus())
 				break;
 		}
 	}
 
+	
+	/**
+	 * Loads widgets in a given layout xml and populates a list of widgets whose source of
+	 * allowed option is external to the xform.
+	 * 
+	 * @param xml the layout xml.
+	 * @param externalSourceWidgets the list of external source widgets.
+	 */
 	public void loadLayout(String xml, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		tabs.clear();
 
 		if(formDef != null)
 			formDef.clearChangeListeners();
 
-		widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
-		labelMap = new HashMap<QuestionDef,List<Widget>>();
-		labelText = new HashMap<Widget,String>();
-		labelReplaceText = new HashMap<Widget,String>();
+		parentBindingWidgetMap = new HashMap<String,RuntimeWidgetWrapper>();
+		labelMap = new HashMap<QuestionDef,List<Label>>();
+		labelText = new HashMap<Label,String>();
+		labelReplaceText = new HashMap<Label,String>();
 		checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
 		validationWidgetsMap = new HashMap<RuntimeWidgetWrapper,List<RuntimeWidgetWrapper>>();
-		
+
 		//A list of widgets with validation rules.
 		List<RuntimeWidgetWrapper> validationRuleWidgets = new ArrayList<RuntimeWidgetWrapper>();
-		
+
 		//A map of parent validation widgets keyed by their QuestionDef.
 		//A parent validation widget is one whose QuestionDef is contained in any condition
 		//of any validation rule.
 		HashMap<QuestionDef,RuntimeWidgetWrapper> qtnParentValidationWidgetMap = new HashMap<QuestionDef,RuntimeWidgetWrapper>();
-		
+
 		//A list of questions for parent validation widgets.
 		List<QuestionDef> parentValidationWidgetQtns = new ArrayList<QuestionDef>();
-		
+
 		initValidationWidgetsMap(parentValidationWidgetQtns);
-		
+
 		com.google.gwt.xml.client.Document doc = XMLParser.parse(xml);
 		Element root = doc.getDocumentElement();
 		NodeList pages = root.getChildNodes();
@@ -252,15 +282,9 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
 			setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
 
-			/*selectedPanel.setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
-			selectedPanel.setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
-			try{
-				DOM.setStyleAttribute(selectedPanel.getElement(), "backgroundColor", node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
-			}catch(Exception ex){}*/
-
 			loadPage(node.getChildNodes(),externalSourceWidgets,parentValidationWidgetQtns,validationRuleWidgets,qtnParentValidationWidgetMap);
 		}
-		
+
 		setValidationWidgetsMap(validationRuleWidgets,qtnParentValidationWidgetMap);
 
 		if(formDef != null)
@@ -272,6 +296,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			tabs.selectTab(0);
 	}
 
+	
+	/**
+	 * Sets up the main panel widget.
+	 */
 	protected void initPanel(){
 		AbsolutePanel panel = new AbsolutePanel();
 		FormUtil.maximizeWidget(panel);
@@ -280,7 +308,6 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
-				//onWindowResized(Window.getClientWidth(), Window.getClientHeight());
 				setHeight(getHeight());
 			}
 		});
@@ -310,6 +337,16 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		});
 	}
 
+
+	/**
+	 * Loads widgets contained in a list of nodes for a page.
+	 * 
+	 * @param nodes the node list
+	 * @param externalSourceWidgets
+	 * @param validationQtns
+	 * @param validationWidgets
+	 * @param qtnWidgetMap a map keyed by the QuestionDef object for each loaded widget.
+	 */
 	protected void loadPage(NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets,List<QuestionDef> validationQtns,List<RuntimeWidgetWrapper> validationWidgets,HashMap<QuestionDef,RuntimeWidgetWrapper> qtnWidgetMap){
 		HashMap<Integer,RuntimeWidgetWrapper> widgets = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
@@ -363,10 +400,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
 			widget = new RadioButtonWidget(parentBinding,node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 
-			if(widgetMap.get(parentBinding) == null)
+			if(parentBindingWidgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
-			parentWrapper = getParentWrapper(widget,node);
+			parentWrapper = getParentBindingWrapper(widget,parentBinding);
 			((RadioButton)widget).setTabIndex(tabIndex);
 
 			if(wrapperSet)
@@ -374,10 +411,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
-			if(widgetMap.get(parentBinding) == null)
+			if(parentBindingWidgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
-			parentWrapper = getParentWrapper(widget,node);
+			parentWrapper = getParentBindingWrapper(widget,parentBinding);
 			((CheckBox)widget).setTabIndex(tabIndex);
 
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
@@ -418,20 +455,20 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			int pos2 = text.indexOf("}$");
 			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
 				String varname = text.substring(pos1+2,pos2);
-				labelText.put(widget, text);
-				labelReplaceText.put(widget, "${"+varname+"}$");
+				labelText.put((Label)widget, text);
+				labelReplaceText.put((Label)widget, "${"+varname+"}$");
 
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
 				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
 					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
 
 				QuestionDef qtnDef = formDef.getQuestion(varname);
-				List<Widget> labels = labelMap.get(qtnDef);
+				List<Label> labels = labelMap.get(qtnDef);
 				if(labels == null){
-					labels = new ArrayList<Widget>();
+					labels = new ArrayList<Label>();
 					labelMap.put(qtnDef, labels);
 				}
-				labels.add(widget);
+				labels.add((Label)widget);
 			}
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_GROUPBOX)||s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
@@ -447,10 +484,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,this,repeated);
 			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
 			//((RuntimeGroupWidget)widget).setTabIndex(tabIndex);
-			getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
-			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
-			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
-			getCheckBoxGroupMap(((RuntimeGroupWidget)widget).getCheckBoxGroupMap());
+			copyLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
+			copyLabelText(((RuntimeGroupWidget)widget).getLabelText());
+			copyLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
+			copyCheckBoxGroupMap(((RuntimeGroupWidget)widget).getCheckBoxGroupMap());
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
@@ -495,12 +532,12 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			wrapper.setValidationRule(validationRule);
 			if(validationRule != null && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				questionDef.setAnswer("0");
-			
+
 			if(validationQtns.contains(questionDef) && isValidationWidget(wrapper)){
 				validationWidgetsMap.put(wrapper, new ArrayList<RuntimeWidgetWrapper>());
 				qtnWidgetMap.put(questionDef, wrapper);
 			}
-			
+
 			if(validationRule != null && isValidationWidget(wrapper))
 				validationWidgets.add(wrapper);
 		}
@@ -585,21 +622,36 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		return tabIndex;
 	}
-	
+
+
+	/**
+	 * Check if a widget can have a validation rule.
+	 * 
+	 * @param wrapper the widget
+	 * @return true if it can have, else false.
+	 */
 	private boolean isValidationWidget(RuntimeWidgetWrapper wrapper){
 		return !((wrapper.getWrappedWidget() instanceof Label)||
 				(wrapper.getWrappedWidget() instanceof HTML) || (wrapper.getWrappedWidget() instanceof Hyperlink) ||
 				(wrapper.getWrappedWidget() instanceof Button));
 	}
 
-	protected RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
-		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+	
+	/**
+	 * Gets a widget that has a given parent binding value as that of a given widget.
+	 * 
+	 * @param widget the given widget.
+	 * @param parentBinding the parent binding value.
+	 * @return the widget that has the same parent binding.
+	 */
+	protected RuntimeWidgetWrapper getParentBindingWrapper(Widget widget, String parentBinding){
+		RuntimeWidgetWrapper parentWrapper = parentBindingWidgetMap.get(parentBinding);
 		if(parentWrapper == null){
-			QuestionDef qtn = formDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+			QuestionDef qtn = formDef.getQuestion(parentBinding);
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
 				parentWrapper.setQuestionDef(qtn,true);
-				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
+				parentBindingWidgetMap.put(parentBinding, parentWrapper);
 				//selectedPanel.add(parentWrapper);		//will be added by the caller		
 				qtn.addChangeListener(this);
 				List<CheckBox> list = new ArrayList<CheckBox>();
@@ -617,7 +669,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * Submits form data to the server.
 	 */
 	protected void submit(){
-		
+
 		//Before calling the submit listener, we first check if the user is authenticated
 		//The authentication will call us back and tell us whether to proceed with the
 		//data submission or display the login dialog box.
@@ -625,7 +677,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			FormUtil.isAuthenticated();
 	}
 
-	
+
 	/**
 	 * Called when one clicks the submit button on the form to submit form data.
 	 */
@@ -633,7 +685,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		submit();
 	}
 
-	
+
 	/**
 	 * Called when one clicks the cancel button on the form, meaning that they have
 	 * changed their mind about submitting the form.
@@ -642,12 +694,12 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		if(Window.confirm(LocaleText.get("cancelFormPrompt")))
 			submitListener.onCancel();
 	}
-	
+
 	public void onSearch(String key,Widget widget){
 		//FormUtil.searchExternal(key,widget.getElement(),widget.getElement(),null);
 	}
 
-	
+
 	/**
 	 * Does the actual submission of form data to the submit listener.
 	 */
@@ -664,7 +716,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
 		submitListener.onSubmit(xml);
 	}
-	
+
 
 	/**
 	 * Checks if form data has validation errors.
@@ -731,18 +783,24 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	}
 
 	/**
-     * @see org.purc.purcforms.client.widget.EditListener#onValueChanged(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
-     */
+	 * @see org.purc.purcforms.client.widget.EditListener#onValueChanged(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+	 */
 	public void onValueChanged(RuntimeWidgetWrapper widget) {
 		onValueChanged(widget.getQuestionDef());
 		fireParentQtnValidationRules(widget);
 	}
+
 	
+	/**
+	 * Called when the value or answer of a question changes.
+	 * 
+	 * @param questionDef the question definition object.
+	 */
 	private void onValueChanged(QuestionDef questionDef){
 		fireSkipRules();
 		updateDynamicOptions(questionDef);
 
-		List<Widget> labels = labelMap.get(questionDef);
+		List<Label> labels = labelMap.get(questionDef);
 		if(labels != null){
 			for(Widget widget : labels)
 				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), questionDef.getAnswer()));
@@ -783,8 +841,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	}
 
 	/**
-     * @see org.purc.purcforms.client.widget.EditListener#onMoveToNextWidget(com.google.gwt.user.client.ui.Widget)
-     */
+	 * @see org.purc.purcforms.client.widget.EditListener#onMoveToNextWidget(com.google.gwt.user.client.ui.Widget)
+	 */
 	public void onMoveToNextWidget(Widget widget) {
 		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
 			//Non repeating widgets in a group box
@@ -806,8 +864,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	}
 
 	/**
-     * @see org.purc.purcforms.client.widget.EditListener#onMoveToPrevWidget(com.google.gwt.user.client.ui.Widget)
-     */
+	 * @see org.purc.purcforms.client.widget.EditListener#onMoveToPrevWidget(com.google.gwt.user.client.ui.Widget)
+	 */
 	public void onMoveToPrevWidget(Widget widget){
 		boolean moved = false;
 
@@ -857,7 +915,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	public void setFormDef(FormDef formDef){
 		if(this.formDef != formDef){
 			tabs.clear();
-			addNewTab("Page1");
+			addNewTab(LocaleText.get("page") + "1");
 		}
 	}
 
@@ -900,6 +958,11 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
 	}
 
+	
+	/**
+	 * Updates dynamic selection lists in all pages of the form to their values as determined
+	 * by the selected option of their parent questions.
+	 */
 	private void updateDynamicOptions(){
 		if(formDef.getPages() == null)
 			return;
@@ -911,31 +974,55 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	private void getLabelMap(HashMap<QuestionDef,List<Widget>> labelMap){
-		Iterator<Entry<QuestionDef,List<Widget>>> iterator = labelMap.entrySet().iterator();
+	
+	/**
+	 * Copies from a given label map to our class level one.
+	 * 
+	 * @param labelMap the label map to copy from.
+	 */
+	private void copyLabelMap(HashMap<QuestionDef,List<Label>> labelMap){
+		Iterator<Entry<QuestionDef,List<Label>>> iterator = labelMap.entrySet().iterator();
 		while(iterator.hasNext()){
-			Entry<QuestionDef,List<Widget>> entry = iterator.next();
+			Entry<QuestionDef,List<Label>> entry = iterator.next();
 			this.labelMap.put(entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void getLabelText(HashMap<Widget,String> labelText){
-		Iterator<Entry<Widget,String>> iterator = labelText.entrySet().iterator();
+	
+	/**
+	 * Copies from a given label text map to our class level one.
+	 * 
+	 * @param labelText the label text map to copy from.
+	 */
+	private void copyLabelText(HashMap<Label,String> labelText){
+		Iterator<Entry<Label,String>> iterator = labelText.entrySet().iterator();
 		while(iterator.hasNext()){
-			Entry<Widget,String> entry = iterator.next();
+			Entry<Label,String> entry = iterator.next();
 			this.labelText.put(entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void getLabelReplaceText(HashMap<Widget,String> labelReplaceText){
-		Iterator<Entry<Widget,String>> iterator = labelReplaceText.entrySet().iterator();
+	
+	/**
+	 * Copies from a given label replace text map to our class level one.
+	 * 
+	 * @param labelReplaceText the label replace text map to copy from.
+	 */
+	private void copyLabelReplaceText(HashMap<Label,String> labelReplaceText){
+		Iterator<Entry<Label,String>> iterator = labelReplaceText.entrySet().iterator();
 		while(iterator.hasNext()){
-			Entry<Widget,String> entry = iterator.next();
+			Entry<Label,String> entry = iterator.next();
 			this.labelReplaceText.put(entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void getCheckBoxGroupMap(HashMap<QuestionDef,List<CheckBox>> labelMap){
+	
+	/**
+	 * Copies from a given check box group map to our class level one.
+	 * 
+	 * @param labelMap the check box group map to copy from.
+	 */
+	private void copyCheckBoxGroupMap(HashMap<QuestionDef,List<CheckBox>> labelMap){
 		Iterator<Entry<QuestionDef,List<CheckBox>>> iterator = labelMap.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<QuestionDef,List<CheckBox>> entry = iterator.next();
@@ -1085,7 +1172,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * @param authenticated true o
 	 */
 	private static void authenticationCallback(boolean authenticated) {	
-		
+
 		if(authenticated){
 			loginDlg.hide();
 			formRunnerView.submitData();
@@ -1093,42 +1180,42 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		else
 			loginDlg.center();
 	}
-	
+
 	/**
-     * @see org.purc.purcforms.client.widget.EditListener#onRowAdded(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
-     */
+	 * @see org.purc.purcforms.client.widget.EditListener#onRowAdded(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+	 */
 	public void onRowAdded(RuntimeWidgetWrapper rptWidget, int increment){
-		
+
 		//Get the current bottom y position of the repeat widget.
 		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
-		
+
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper currentWidget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
 			if(currentWidget == rptWidget)
 				continue;
-			
+
 			int top = currentWidget.getTopInt();
 			if(top >= bottomYpos)
 				currentWidget.setTopInt(top + increment);
 		}
-		
+
 		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()+increment+"px");	
 	}
-	
+
 	/**
-     * @see org.purc.purcforms.client.widget.EditListener#onRowRemoved(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
-     */
+	 * @see org.purc.purcforms.client.widget.EditListener#onRowRemoved(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
+	 */
 	public void onRowRemoved(RuntimeWidgetWrapper rptWidget, int decrement){
-		
+
 		//Get the current bottom y position of the repeat widget.
 		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
-		
+
 		//Move widgets which are below the bottom of the repeat widget.
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper currentWidget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
 			if(currentWidget == rptWidget)
 				continue;
-			
+
 			int top = currentWidget.getTopInt();
 			if(top >= bottomYpos)
 				currentWidget.setTopInt(top - decrement);
@@ -1136,7 +1223,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()-decrement+"px");
 	}
-	
+
 	/**
 	 * Gets the height of the currently selected page.
 	 * 
@@ -1145,71 +1232,78 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	private int getHeightInt(){
 		return FormUtil.convertDimensionToInt(DOM.getStyleAttribute(selectedPanel.getElement(), "height"));
 	}
-	
+
 	/**
-	 * Fires all validation rules that are dependant on the value of a certain widget.
+	 * Fires all validation rules that are dependent on the value of a certain widget.
 	 * In other wards the value in this widget is referenced in one or more conditions
 	 * or one or more validation rules. These are cross field validation rules. eg Total no
 	 * of kids should be less than those that are born as male.
 	 * 
-	 * @param widget the widget whose value change requires refiring of other rules.
+	 * @param widget the widget whose value change requires re firing of other rules.
 	 */
 	private void fireParentQtnValidationRules(RuntimeWidgetWrapper widget){
 		List<RuntimeWidgetWrapper> widgets  = validationWidgetsMap.get(widget);
 		if(widgets == null)
 			return;
-		
+
 		for(RuntimeWidgetWrapper wgt : widgets)
 			wgt.isValid();
 	}
-	
+
 	/**
 	 * 
-	 * @param validationQtns
+	 * @param parentValidationWidgetQtns
 	 */
 	private void initValidationWidgetsMap(List<QuestionDef> parentValidationWidgetQtns){
 		int count = formDef.getValidationRuleCount();
 		for(int index = 0; index < count; index++){
 			ValidationRule rule = formDef.getValidationRuleAt(index);
-			List<QuestionDef> qtns = rule.getQuestions(formDef);
+			List<QuestionDef> qtns = rule.getValueQuestions(formDef);
 			for(QuestionDef questionDef : qtns){
 				if(!parentValidationWidgetQtns.contains(questionDef))
 					parentValidationWidgetQtns.add(questionDef);
 			}
 		}
 	}
-	
+
 	/**
 	 * 
-	 * @param validationWidgets a list of widgets with validation rules
-	 * @param qtnWidgetMap
+	 * @param validationRuleWidgets a list of widgets with validation rules
+	 * @param qtnParentValidationWidgetMap
 	 */
 	private void setValidationWidgetsMap(List<RuntimeWidgetWrapper> validationRuleWidgets,HashMap<QuestionDef,RuntimeWidgetWrapper> qtnParentValidationWidgetMap){
 		for(RuntimeWidgetWrapper widget : validationRuleWidgets){
 			ValidationRule rule = widget.getValidationRule();
-			List<QuestionDef> qtns = rule.getQuestions(formDef);
+			List<QuestionDef> qtns = rule.getValueQuestions(formDef);
 			for(QuestionDef questionDef : qtns){
 				RuntimeWidgetWrapper wgt = qtnParentValidationWidgetMap.get(questionDef);
 				if(wgt == null)
 					continue;
-				
+
 				List<RuntimeWidgetWrapper> widgets = validationWidgetsMap.get(wgt);
 				if(widgets == null)
 					continue;
-				
+
 				widgets.add(widget);
 			}
 		}
 	}
-	
+
+
+	/**
+	 * Processes global keyboard events.
+	 * 
+	 * @param event the event.
+	 * @return false if processed, else true.
+	 */
 	public boolean handleKeyBoardEvent(Event event){
 		if(event.getCtrlKey() && event.getKeyCode() == 'S'){
 			onSubmit();
-			
+
 			//Returning false such that firefox does not try to save the page.
 			return false;
 		}
-		
+
 		return true;
 	}
 }

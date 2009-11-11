@@ -67,9 +67,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	private Button btnAdd;
 	private RuntimeWidgetWrapper firstInvalidWidget;
 
-	protected HashMap<QuestionDef,List<Widget>> labelMap = new HashMap<QuestionDef,List<Widget>>();;
-	protected HashMap<Widget,String> labelText = new HashMap<Widget,String>();
-	protected HashMap<Widget,String> labelReplaceText = new HashMap<Widget,String>();
+	protected HashMap<QuestionDef,List<Label>> labelMap = new HashMap<QuestionDef,List<Label>>();;
+	protected HashMap<Label,String> labelText = new HashMap<Label,String>();
+	protected HashMap<Label,String> labelReplaceText = new HashMap<Label,String>();
 
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
 
@@ -319,20 +319,20 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			int pos2 = text.indexOf("}$");
 			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1)){
 				String varname = text.substring(pos1+2,pos2);
-				labelText.put(widget, text);
-				labelReplaceText.put(widget, "${"+varname+"}$");
+				labelText.put((Label)widget, text);
+				labelReplaceText.put((Label)widget, "${"+varname+"}$");
 
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
 				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
 					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
 
 				QuestionDef qtnDef = formDef.getQuestion(varname);
-				List<Widget> labels = labelMap.get(qtnDef);
+				List<Label> labels = labelMap.get(qtnDef);
 				if(labels == null){
-					labels = new ArrayList<Widget>();
+					labels = new ArrayList<Label>();
 					labelMap.put(qtnDef, labels);
 				}
-				labels.add(widget);
+				labels.add((Label)widget);
 			}
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
@@ -986,15 +986,15 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		return false;
 	}
 
-	public HashMap<QuestionDef,List<Widget>> getLabelMap(){
+	public HashMap<QuestionDef,List<Label>> getLabelMap(){
 		return labelMap;
 	}
 
-	public HashMap<Widget,String> getLabelText(){
+	public HashMap<Label,String> getLabelText(){
 		return labelText;
 	}
 
-	public HashMap<Widget,String> getLabelReplaceText(){
+	public HashMap<Label,String> getLabelReplaceText(){
 		return labelReplaceText;
 	}
 

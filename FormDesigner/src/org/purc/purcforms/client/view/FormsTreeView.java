@@ -28,6 +28,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
@@ -252,6 +253,13 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 			
 			fireFormItemSelected(item.getUserObject());
 			this.item = item;
+			
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					scrollPanel.scrollToLeft();
+				}
+			});	
+			
 		}
 	}
 	
@@ -797,6 +805,9 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 		if(item == null)
 			return; //How can this happen?
 
+		if(item.getUserObject() != formItem)
+			return;
+		
 		if(formItem instanceof QuestionDef){
 			QuestionDef questionDef = (QuestionDef)formItem;
 			item.setWidget(new TreeItemWidget(images.lookup(), questionDef.getDisplayText(),popup,this));

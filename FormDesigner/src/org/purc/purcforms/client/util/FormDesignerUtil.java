@@ -112,7 +112,7 @@ public class FormDesignerUtil {
 			if(!dynamicOptions && refQuestion == questionDef)
 				continue;
 			
-			oracle.add(questionDef.getText());	
+			oracle.add(questionDef.getDisplayText());	
 			
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.

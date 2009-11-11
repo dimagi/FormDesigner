@@ -93,6 +93,9 @@ public class XformBuilder {
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 
+		if(formDef.getDescriptionTemplate() != null && formDef.getDescriptionTemplate().trim().length() > 0)
+			formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, formDef.getDescriptionTemplate());
+
 		//Check if we have any pages.
 		if(formDef.getPages() == null)
 			return;

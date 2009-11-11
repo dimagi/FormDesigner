@@ -162,9 +162,15 @@ public class ValidationRule implements Serializable{
 		}
 	}
 	
+	/**
+	 * Checks if this validation rule is valid.
+	 * 
+	 * @return true if valid, else false.
+	 */
 	public boolean isValid(){
 		return isValid(formDef);
 	}
+	
 
 	/** 
 	 * Checks conditions of a rule and executes the corresponding actions
@@ -219,6 +225,13 @@ public class ValidationRule implements Serializable{
 			getConditionAt(index).updateValue(origValue, newValue);
 	}
 	
+	
+	/**
+	 * Creates the locale translation xpath expressions for the validation text in this rule.
+	 * 
+	 * @param formDef the definition object to which this rule belongs.
+	 * @param parentNode the parent node for the locale xpath expressions document.
+	 */
 	public void buildLanguageNodes(FormDef formDef, Element parentNode){
 		QuestionDef questionDef = formDef.getQuestion(questionId);
 		if(questionDef == null || questionDef.getBindNode() == null)
@@ -268,7 +281,7 @@ public class ValidationRule implements Serializable{
 	}
 	
 	/**
-	 * Checks of a validation rule references a particualar question in any of its conditions.
+	 * Checks of a validation rule references a particular question in any of its conditions.
 	 * 
 	 * @param questionDef the question to be referenced.
 	 * @return true if it does, else false.
@@ -287,7 +300,13 @@ public class ValidationRule implements Serializable{
 	}
 	
 	//TODO Why does the validation rule have a value of formDef different from the one passed in as parameter?
-	public List<QuestionDef> getQuestions(FormDef formDef){
+	/**
+	 * Gets the list of questions referenced by any value of any condition in this rule.
+	 * 
+	 * @param formDef the form definition object that this rule belongs to.
+	 * @return the list of questions.
+	 */
+	public List<QuestionDef> getValueQuestions(FormDef formDef){
 		if(conditions == null)
 			return null;
 		

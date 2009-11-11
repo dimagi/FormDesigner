@@ -55,107 +55,107 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** List box index for no selected data type. */
 	private static final byte DT_INDEX_NONE = -1;
-	
+
 	/** List box index for text data type. */
 	private static final byte DT_INDEX_TEXT = 0;
-	
+
 	/** List box index for number data type. */
 	private static final byte DT_INDEX_NUMBER = 1;
-	
+
 	/** List box index for decimal data type. */
 	private static final byte DT_INDEX_DECIMAL = 2;
-	
+
 	/** List box index for date data type. */
 	private static final byte DT_INDEX_DATE = 3;
-	
+
 	/** List box index for time data type. */
 	private static final byte DT_INDEX_TIME = 4;
-	
+
 	/** List box index for dateTime data type. */
 	private static final byte DT_INDEX_DATE_TIME = 5;
-	
+
 	/** List box index for boolean data type. */
 	private static final byte DT_INDEX_BOOLEAN = 6;
-	
+
 	/** List box index for single select data type. */
 	private static final byte DT_INDEX_SINGLE_SELECT = 7;
-	
+
 	/** List box index for multiple select data type. */
 	private static final byte DT_INDEX_MULTIPLE_SELECT = 8;
-	
+
 	/** List box index for repeat data type. */
 	private static final byte DT_INDEX_REPEAT = 9;
-	
+
 	/** List box index for image data type. */
 	private static final byte DT_INDEX_IMAGE = 10;
-	
+
 	/** List box index for video data type. */
 	private static final byte DT_INDEX_VIDEO = 11;
-	
+
 	/** List box index for audio data type. */
 	private static final byte DT_INDEX_AUDIO = 12;
-	
+
 	/** List box index for single select dynamic data type. */
 	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 13;
-	
+
 	/** List box index for gps data type. */
 	private static final byte DT_INDEX_GPS = 14;
 
 	/** Table used for organising widgets in a table format. */
 	private FlexTable table = new FlexTable();
-	
+
 	/** Widget for displaying the list of data types. */
 	private ListBox cbDataType = new ListBox(false);
-	
+
 	/** Widget for setting the visibility property. */
 	private CheckBox chkVisible = new CheckBox();
-	
+
 	/** Widget for setting the enabled property. */
 	private CheckBox chkEnabled = new CheckBox();
-	
+
 	/** Widget for setting the locked property. */
 	private CheckBox chkLocked = new CheckBox();
-	
+
 	/** Widget for setting the required property. */
 	private CheckBox chkRequired = new CheckBox();
-	
+
 	/** Widget for setting the text property. */
 	private TextBox txtText = new TextBox();
-	
+
 	/** Widget for setting the help text property. */
 	private TextBox txtHelpText = new TextBox();
-	
+
 	/** Widget for setting the binding property. */
 	private TextBox txtBinding = new TextBox();
-	
+
 	/** Widget for setting the default value property. */
 	private TextBox txtDefaultValue = new TextBox();
-	
+
 	/** Widget for setting the description template property. */
 	private TextBox txtDescTemplate = new TextBox();
-	
+
 	/** Widget for selecting fields which define the description template. */
 	private DescTemplateWidget btnDescTemplate; // = new Button("Create/Edit");
 
 	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private Object propertiesObj;
-	
+
 	/** Listener to form change events. */
 	private IFormChangeListener formChangeListener;
-	
+
 	/** Widget for defining skip rules. */
 	private SkipRulesView skipRulesView = new SkipRulesView();
-	
+
 	/** Widget for defining validation rules. */
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
-	
+
 	/** Widget for defining dynamic selection lists. */
 	private DynamicListsView dynamicListsView = new DynamicListsView();
-	
+
 	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
 
-	
+
 	/**
 	 * Creates a new instance of the properties view widget.
 	 */
@@ -311,7 +311,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				updateHelpText();
 			}
 		});
-		
+
 		txtHelpText.addKeyDownHandler(new KeyDownHandler(){
 			public void onKeyDown(KeyDownEvent event) {
 				int keyCode = event.getNativeKeyCode();
@@ -347,7 +347,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				updateBinding();
 			}
 		});
-		
+
 		txtBinding.addKeyDownHandler(new KeyDownHandler(){
 			public void onKeyDown(KeyDownEvent event) {
 				if(event.getNativeKeyCode() == KeyCodes.KEY_UP){
@@ -360,7 +360,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 			}
 		});
-		
+
 		txtBinding.addKeyPressHandler(new KeyPressHandler(){
 			public void onKeyPress(KeyPressEvent event) {
 				if(propertiesObj instanceof PageDef){
@@ -390,12 +390,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 				if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
 					String name = FormDesignerUtil.getXmlTagName(txtText.getText());
-					if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform"))
+					if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform")){
 						((FormDef)propertiesObj).setVariableName(name);
-					else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().startsWith("question"))
+						txtBinding.setText(name);
+					}
+					else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().startsWith("question")){
 						((QuestionDef)propertiesObj).setVariableName(name);
-					else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().startsWith("option"))
+						txtBinding.setText(name);
+					}
+					else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().startsWith("option")){
 						((OptionDef)propertiesObj).setVariableName(name);
+						txtBinding.setText(name);
+					}
 				}
 			}
 		});
@@ -404,7 +410,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				updateText();
 			}
 		});
-		
+
 		txtText.addKeyDownHandler(new KeyDownHandler(){
 			public void onKeyDown(KeyDownEvent event) {
 				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
@@ -732,8 +738,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void setQuestionProperties(QuestionDef questionDef){
 		enableQuestionOnlyProperties(true);
+		
 		txtDescTemplate.setEnabled(false);
-		btnDescTemplate.setEnabled(false);
 
 		txtText.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getVariableName());
@@ -792,6 +798,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
 		dynamicListsView.setEnabled(enable2);
+		
+		btnDescTemplate.setEnabled(enable2);
 
 		clearProperties();
 	}
@@ -931,9 +939,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof DescTemplateWidget){
-			txtDescTemplate.setText(txtDescTemplate.getText() + item);
-			updateDescTemplate(); //Added for IE which does not properly throw change events for the desc template textbox
-			txtDescTemplate.setFocus(true);
+			if(propertiesObj instanceof QuestionDef){
+				txtText.setText(txtText.getText() + " " + txtDescTemplate.getText() + item);
+				updateText();
+				txtText.setFocus(true);
+			}
+			else{
+				txtDescTemplate.setText(txtDescTemplate.getText() + item);
+				updateDescTemplate(); //Added for IE which does not properly throw change events for the desc template textbox
+				txtDescTemplate.setFocus(true);
+			}
 		}
 	}
 

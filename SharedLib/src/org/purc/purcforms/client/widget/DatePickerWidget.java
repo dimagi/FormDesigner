@@ -12,13 +12,18 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
 import com.google.gwt.user.client.ui.Widget;
@@ -137,12 +142,26 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 		switch (DOM.eventGetType(event)) {
 		case Event.ONBLUR:
 			popup.hidePopupCalendar();
+			fireChangeEvent(this);
 			break;
 		default:
 			break;
 
 		}
 		super.onBrowserEvent(event);
+	}
+	
+	public void fireChangeEvent(final HasHandlers handlerSource) {
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				Timer t = new Timer() {
+					public void run() {
+						DomEvent.fireNativeEvent(Document.get().createChangeEvent(), handlerSource);
+					}
+				};
+				t.schedule(300);
+			}
+		});
 	}
 
 	/**

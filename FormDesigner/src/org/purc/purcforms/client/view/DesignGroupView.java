@@ -1672,7 +1672,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(vertically)
 				y += 40;
 			else
-				x += (optionDef.getText().length() * 12);
+				x += (optionDef.getText().length() * 14);
 		}
 
 		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);

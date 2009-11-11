@@ -115,7 +115,11 @@ public class Condition implements Serializable{
 	}
 
 	/**
-	 * Test if a condition is true or false.
+	 * Checks if this condition is true or false.
+	 * 
+	 * @param formDef the form definition object.
+	 * @param validation set to true if this is a validation rule condition, else false if skip rule condition.
+	 * @return true if the condition is true, else false.
 	 */
 	public boolean isTrue(FormDef formDef, boolean validation){
 		String tempValue = value;
@@ -189,7 +193,7 @@ public class Condition implements Serializable{
 	 * Check to see if a condition, attached to a numeric question, is true.
 	 * 
 	 * @param qtn the question whose answer we are using to test the condition
-	 * @param validation has value of true if we are dealing with validation logic, else false if skip logic.
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
 	 * @return true if the condition is true, else false.
 	 */
 	private boolean isNumericTrue(QuestionDef qtn, boolean validation){
@@ -234,6 +238,13 @@ public class Condition implements Serializable{
 	}
 
 	//TODO Should this test be case sensitive?
+	/**
+	 * Check to see if a condition, attached to a text question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isTextTrue(QuestionDef qtn, boolean validation){
 		String answer = qtn.getAnswer();
 
@@ -294,10 +305,11 @@ public class Condition implements Serializable{
 	}
 
 	/**
-	 * Tests if the passed parameter date value is equal to the value of the condition.
+	 * Check to see if a condition, attached to a date question, is true.
 	 * 
-	 * @param data - passed parameter date value.
-	 * @return - true when the two values are the same, else false.
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
 	 */
 	private boolean isDateTrue(QuestionDef qtn, boolean validation){
 		//return value.equals(qtn.getAnswer());
@@ -355,14 +367,38 @@ public class Condition implements Serializable{
 			return FormUtil.getDateSubmitFormat();
 	}
 
+	
+	/**
+	 * Check to see if a condition, attached to a date and time question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isDateTimeTrue(QuestionDef qtn, boolean validation){
 		return isDateTrue(qtn,validation);
 	}
 
+	
+	/**
+	 * Check to see if a condition, attached to a time question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isTimeTrue(QuestionDef qtn, boolean validation){
 		return isDateTrue(qtn,validation);
 	}
 
+	
+	/**
+	 * Check to see if a condition, attached to a multiple select question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isListMultipleTrue(QuestionDef qtn, boolean validation){
 		//if(qtn.answerContainsValue(value))
 		//	return true;
@@ -395,6 +431,14 @@ public class Condition implements Serializable{
 		return false;
 	}
 
+	
+	/**
+	 * Check to see if a condition, attached to a single select question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isListExclusiveTrue(QuestionDef qtn, boolean validation){
 
 		try{
@@ -426,6 +470,14 @@ public class Condition implements Serializable{
 		return false;
 	}
 
+	
+	/**
+	 * Check to see if a condition, attached to a decimal question, is true.
+	 * 
+	 * @param qtn the question whose answer we are using to test the condition
+	 * @param validation has value of true if this is a validation logic condition, else false if skip logic one.
+	 * @return true if the condition is true, else false.
+	 */
 	private boolean isDecimalTrue(QuestionDef qtn, boolean validation){
 		//return value.equals(qtn.getAnswer());
 
@@ -468,6 +520,14 @@ public class Condition implements Serializable{
 		return false;
 	}
 
+	
+	/**
+	 * Gets the value for this condition. If the value references another question,
+	 * it returns the answer of that question.
+	 * 
+	 * @param formDef the form definition object that this condition belongs to.
+	 * @return the text value.
+	 */
 	public String getValue(FormDef formDef){	
 		if(value.startsWith(formDef.getVariableName()+"/")){
 			QuestionDef qn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
@@ -477,6 +537,12 @@ public class Condition implements Serializable{
 		return value;
 	}
 
+	/**
+	 * Sets the new value of the condition.
+	 * 
+	 * @param origValue the original value.
+	 * @param newValue the new value.
+	 */
 	public void updateValue(String origValue, String newValue){
 		if(origValue.equals(value))
 			value = newValue;
@@ -491,7 +557,7 @@ public class Condition implements Serializable{
 	}
 
 	/**
-	 * Checks if a condition references an answer of a particular question.
+	 * Checks if this condition references an answer of a particular question.
 	 * 
 	 * @param questionDef the question whose answer is referenced.
 	 * @param formDef the form being filled.

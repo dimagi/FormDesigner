@@ -238,11 +238,15 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	private void initDesignSurface(){
 		tabs.add(scrollPanelDesign, LocaleText.get("designSurface"));
 
-		designSurfaceView.setWidth("100%"); //1015px
-		designSurfaceView.setHeight("700px"); //707px
+		designSurfaceView.setWidth("1500px"); //100% //1015px
+		designSurfaceView.setHeight("1500px"); //707px
 		designSurfaceView.setLayoutChangeListener(this);
 
 		scrollPanelDesign.setWidget(designSurfaceView);
+		
+		tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
+		
+		updateScrollPos();
 	}
 
 	/**

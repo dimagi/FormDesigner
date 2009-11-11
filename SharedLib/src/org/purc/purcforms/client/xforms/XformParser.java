@@ -72,10 +72,17 @@ public class XformParser {
 	public static FormDef copyFormDef(FormDef formDef){
 		if(formDef.getDoc() == null)
 			return new FormDef(formDef);
+		else //Value of false creates bugs where repeat widgets are not loaded properly on data preview
+			formDef.updateDoc(true); //formDef.updateDoc(false);
+
+		return fromXform2FormDef(XformUtil.normalizeNameSpace(formDef.getDoc(),XmlUtil.fromDoc2String(formDef.getDoc())));
+
+		/*if(formDef.getDoc() == null)
+			return new FormDef(formDef);
 		else
 			formDef.updateDoc(false);
 
-		return fromXform2FormDef(XformUtil.normalizeNameSpace(formDef.getDoc(),XmlUtil.fromDoc2String(formDef.getDoc())));
+		return fromXform2FormDef(XformUtil.normalizeNameSpace(formDef.getDoc(),XmlUtil.fromDoc2String(formDef.getDoc())));*/
 	}
 
 

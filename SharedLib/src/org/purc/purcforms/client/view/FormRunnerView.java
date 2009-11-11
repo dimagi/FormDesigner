@@ -202,7 +202,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		tabs.clear();
 		if(formDef == null || layoutXml == null || layoutXml.trim().length() == 0){
-			addNewTab("Page1");
+			addNewTab(LocaleText.get("page") + "1");
 			return;
 		}
 
@@ -321,7 +321,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	protected void addNewTab(String name){
 		initPanel();
 		if(name == null)
-			name = "Page"+tabs.getWidgetCount();
+			name = LocaleText.get("page")+tabs.getWidgetCount();
 		if(name.indexOf("</") > 0)
 			name = name.substring(name.indexOf(">")+1,name.indexOf("</"));
 		tabs.add(selectedPanel, name);

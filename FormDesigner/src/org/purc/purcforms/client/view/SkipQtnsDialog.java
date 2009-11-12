@@ -140,7 +140,7 @@ public class SkipQtnsDialog  extends DialogBox {
 			if(qtnDef == questionDef)
 				continue;
 			
-			lbSelQtns.addItem(qtnDef.getText(), qtnDef.getVariableName());
+			lbSelQtns.addItem(qtnDef.getDisplayText(), qtnDef.getVariableName());
 		}
 	}
 	
@@ -161,7 +161,7 @@ public class SkipQtnsDialog  extends DialogBox {
 			if(skipRule != null && skipRule.containsActionTarget(qtnDef.getId()))
 				continue;
 			
-			lbAllQtns.addItem(qtnDef.getText(), qtnDef.getVariableName());
+			lbAllQtns.addItem(qtnDef.getDisplayText(), qtnDef.getVariableName());
 		}
 	}
 	

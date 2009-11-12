@@ -207,6 +207,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 
 		loadLayout(layoutXml,externalSourceWidgets);
+		isValid(true);
 		moveToFirstWidget();
 	}
 
@@ -709,7 +710,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		saveValues();
 
-		if(!isValid())
+		if(!isValid(false))
 			return;
 
 		String xml = XformUtil.getInstanceDataDoc(formDef.getDoc()).toString();
@@ -721,14 +722,15 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	/**
 	 * Checks if form data has validation errors.
 	 * 
+	 * @param fireValueChanged set to true to fire the value changed event, else false.
 	 * @return true if form has no validation errors, else false.
 	 */
-	protected boolean isValid(){
+	protected boolean isValid(boolean fireValueChanged){
 		boolean valid = true;
 		int pageNo = -1;
 		firstInvalidWidget = null;
 		for(int index=0; index<tabs.getWidgetCount(); index++){
-			if(!isValid((AbsolutePanel)tabs.getWidget(index))){
+			if(!isValid((AbsolutePanel)tabs.getWidget(index),fireValueChanged)){
 				valid = false;
 				if(pageNo == -1)
 					pageNo = index;
@@ -748,9 +750,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * Checks if widgets on a panel or page have validation errors.
 	 * 
 	 * @param panel the panel whose widgets to check.
+	 * @param fireValueChanged set to true to fire the value changed event, else false.
 	 * @return true if the panel widgets have no errors, else false.
 	 */
-	private boolean isValid(AbsolutePanel panel){
+	private boolean isValid(AbsolutePanel panel, boolean fireValueChanged){
 		boolean valid = true;
 		for(int index=0; index<panel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)panel.getWidget(index);
@@ -759,6 +762,9 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				if(firstInvalidWidget == null && widget.isFocusable())
 					firstInvalidWidget = widget.getInvalidWidget();
 			}
+			
+			if(fireValueChanged && widget.getQuestionDef() != null)
+				onValueChanged(widget);
 		}
 		return valid;
 	}
@@ -802,8 +808,12 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		List<Label> labels = labelMap.get(questionDef);
 		if(labels != null){
-			for(Widget widget : labels)
-				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), questionDef.getAnswer()));
+			for(Widget widget : labels){
+				String replaceText = questionDef.getAnswer();
+				if(replaceText == null)
+					replaceText = "";
+				((Label)widget).setText(labelText.get(widget).replace(labelReplaceText.get(widget), replaceText));
+			}
 		}
 
 		List<CheckBox> list = checkBoxGroupMap.get(questionDef);

@@ -37,6 +37,8 @@ public class DescTemplateWidget extends Composite{
 	private MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 	private boolean enabled = false;
 	private ItemSelectionListener itemSelectionListener;
+	
+	private int questionCount = 0;
 
 	public DescTemplateWidget(ItemSelectionListener itemSelectionListener){
 		this.itemSelectionListener = itemSelectionListener;
@@ -46,6 +48,9 @@ public class DescTemplateWidget extends Composite{
 		fieldHyperlink.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				if(enabled){
+					if(questionCount == 0)
+						setFormDef(formDef);
+					
 					horizontalPanel.remove(fieldHyperlink);
 					horizontalPanel.add(sgstField);
 					sgstField.setText(fieldHyperlink.getText());
@@ -60,6 +65,9 @@ public class DescTemplateWidget extends Composite{
 
 	public void setFormDef(FormDef formDef){
 		this.formDef = formDef;
+		
+		questionCount = formDef.getQuestionCount();
+		
 		oracle.clear();
 
 		for(int i=0; i<formDef.getPageCount(); i++)

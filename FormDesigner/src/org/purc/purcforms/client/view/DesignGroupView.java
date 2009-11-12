@@ -21,6 +21,7 @@ import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.PaletteWidget;
+import org.purc.purcforms.client.widget.RadioButtonWidget;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
@@ -40,7 +41,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -1142,7 +1142,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.
 	 */
 	protected DesignWidgetWrapper addNewRadioButton(boolean select){
-		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton("RadioButton",LocaleText.get("radioButton")),select);
+		DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget("RadioButton",LocaleText.get("radioButton")),select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		return wrapper;
 	}
@@ -1662,7 +1662,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}*/
 
 			OptionDef optionDef = (OptionDef)options.get(i);
-			DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+			DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget(optionDef.getText()),false);
 			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
@@ -1676,7 +1676,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		}
 
 		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
-		DesignWidgetWrapper wrapper = addNewWidget(new RadioButton(optionDef.getText()),false);
+		DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget(optionDef.getText()),false);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		wrapper.setParentBinding(questionDef.getVariableName());
 		wrapper.setText(optionDef.getText());

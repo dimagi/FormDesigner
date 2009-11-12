@@ -12,14 +12,12 @@ import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -31,7 +29,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -404,7 +401,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			questionDef.setAnswer("0");
 
-		isValid();
+		//TODO Looks like this should be at the end after all widgets are loaded
+		//isValid();
 
 		if(!questionDef.isEnabled())
 			setEnabled(false);
@@ -507,7 +505,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
 
-			errorImage.setTitle("wrong format");
+			String format = FormUtil.getDateDisplayFormat().getPattern();
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME)
+				format = FormUtil.getTimeDisplayFormat().getPattern();
+			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
+				format = FormUtil.getDateTimeDisplayFormat().getPattern();
+
+			errorImage.setTitle(LocaleText.get("wrongFormat") + " " + format);
 		}
 
 		return value;
@@ -748,6 +752,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(!rule.isValid(formDef)){
 
 		}*/
+		
+		//Date, Time & DateTime parse text input and give an answer of null if the entered
+		//value is not valid and hence we need to show the error flag.
+		if(widget instanceof TextBox && questionDef.getAnswer() == null && ((TextBox)widget).getText().trim().length() > 0){
+			if(panel.getWidgetCount() < 2)
+				panel.add(errorImage);
+			return false;
+		}
 
 		if(panel.getWidgetCount() > 1)
 			panel.remove(errorImage);

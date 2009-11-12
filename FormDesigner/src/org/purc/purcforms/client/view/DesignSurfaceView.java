@@ -21,6 +21,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+import org.purc.purcforms.client.widget.RadioButtonWidget;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConstants;
 
@@ -39,7 +40,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -548,7 +548,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON))
-			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new RadioButtonWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX))
 			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON))

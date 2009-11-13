@@ -132,14 +132,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(locked)
 			event.preventDefault();
 		
-		if(widget instanceof RadioButton && DOM.eventGetType(event) == Event.ONMOUSEUP){
+		/*if(widget instanceof RadioButton && DOM.eventGetType(event) == Event.ONMOUSEUP){
 			if(((RadioButton)widget).getValue() == true){
 				event.stopPropagation();
 				event.preventDefault();
 				((RadioButton)widget).setValue(false);
 				return;
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -673,13 +673,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		((CheckBox)childWidget.getWrappedWidget()).addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				/*if(((CheckBox)event.getSource()).getValue() == true){
-					((CheckBox)event.getSource()).setValue(false);
-					return;
-				}*/
-				
-				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
-					questionDef.setAnswer(((RuntimeWidgetWrapper)((Widget)event.getSource()).getParent().getParent()).getBinding());
+				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+					if(((CheckBox)event.getSource()).getValue() == true)
+						questionDef.setAnswer(((RuntimeWidgetWrapper)((Widget)event.getSource()).getParent().getParent()).getBinding());
+					else
+						questionDef.setAnswer(null);
+				}
 				else{
 					String answer = "";
 					for(int index=0; index < childWidgets.size(); index++){

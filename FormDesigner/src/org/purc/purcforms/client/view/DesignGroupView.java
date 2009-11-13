@@ -1403,7 +1403,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
 				updatePopup();
-				popup.setPopupPosition(event.getClientX(), event.getClientY());
+				
+				int ypos = event.getClientY();
+				if(Window.getClientHeight() - ypos < 220)
+					ypos = event.getClientY() - 220;
+				
+				popup.setPopupPosition(event.getClientX(), ypos);
 				FormDesignerUtil.disableContextMenu(popup.getElement());
 				popup.show();
 			}
@@ -1675,12 +1680,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				x += (optionDef.getText().length() * 14);
 		}
 
-		OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
+		/*OptionDef optionDef = new OptionDef(0,LocaleText.get("noSelection"),null,questionDef);
 		DesignWidgetWrapper wrapper = addNewWidget(new RadioButtonWidget(optionDef.getText()),false);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 		wrapper.setParentBinding(questionDef.getVariableName());
 		wrapper.setText(optionDef.getText());
-		wrapper.setTitle(optionDef.getText());
+		wrapper.setTitle(optionDef.getText());*/
 
 		return null;
 	}

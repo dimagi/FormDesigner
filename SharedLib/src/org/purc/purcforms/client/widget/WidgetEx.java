@@ -41,6 +41,8 @@ public class WidgetEx extends Composite{
 	public static final String WIDGET_TYPE_DATEPICKER = "DatePicker";
 	public static final String WIDGET_TYPE_IMAGE = "Picture";
 	public static final String WIDGET_TYPE_VIDEO_AUDIO = "VideoAudio";
+	public static final String WIDGET_TYPE_TIME = "TimeWidget";
+	public static final String WIDGET_TYPE_DATETIME = "DateTimeWidget";
 	
 	public static final String WIDGET_PROPERTY_TOP = "Top";
 	public static final String WIDGET_PROPERTY_LEFT = "Left";
@@ -168,6 +170,10 @@ public class WidgetEx extends Composite{
 			this.widget = new TextArea();
 		else if(widget.widget instanceof DatePicker)
 			this.widget = new DatePickerWidget();
+		else if(widget.widget instanceof DateTimeWidget)
+			this.widget = new DateTimeWidget();
+		else if(widget.widget instanceof TimeWidget)
+			this.widget = new TimeWidget();
 		else if(widget.widget instanceof TextBox)
 			this.widget = new TextBox();
 		else if(widget.widget instanceof Label){
@@ -205,6 +211,8 @@ public class WidgetEx extends Composite{
 			return ((TextBox)widget).getText();
 		else if(widget instanceof Hyperlink)
 			return ((Hyperlink)widget).getText();
+		else if(widget instanceof DateTimeWidget)
+			return ((DateTimeWidget)widget).getText();
 		return null;
 	}
 	

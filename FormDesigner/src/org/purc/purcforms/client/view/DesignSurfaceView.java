@@ -19,9 +19,11 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DatePickerWidget;
+import org.purc.purcforms.client.widget.DateTimeWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.RadioButtonWidget;
+import org.purc.purcforms.client.widget.TimeWidget;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformConstants;
 
@@ -40,6 +42,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -216,6 +219,12 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker(true);}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("dateTimeWidget")),true,new Command(){
+			public void execute() {popup.hide(); addNewDateTimeWidget(true);}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("timeWidget")),true,new Command(){
+			public void execute() {popup.hide(); addNewTimeWidget(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewGroupBox(true);}});
@@ -563,6 +572,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			widget = new Hyperlink(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT),null);
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER))
 			widget = new DatePickerWidget();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TIME))
+			widget = new TimeWidget();
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATETIME))
+			widget = new DateTimeWidget();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX))
 			widget = new TextBox();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL))
@@ -767,6 +780,9 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
 			int type = questionDef.getDataType();
 
+			if(type == QuestionDef.QTN_TYPE_REPEAT && questionDef.getRepeatQtnsDef().getQuestions() == null)
+				continue;
+			
 			if(!(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_IMAGE)){
 				widgetWrapper = addNewLabel(questionDef.getText(),false);
 				widgetWrapper.setBinding(questionDef.getVariableName());
@@ -791,6 +807,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 				widgetWrapper = addNewDropdownList(false);
 			else if(type == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
+			else if(type == QuestionDef.QTN_TYPE_DATE_TIME)
+				widgetWrapper = addNewDateTimeWidget(false);
+			else if(type == QuestionDef.QTN_TYPE_TIME)
+				widgetWrapper = addNewTimeWidget(false);
 			else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 				widgetWrapper = addNewCheckBoxSet(questionDef,true,tabIndex);
 				tabIndex += questionDef.getOptions().size();
@@ -864,7 +884,12 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			addCancelButton(false);
 		}
 
+		y += ((ScrollPanel)getParent()).getScrollPosition();
+		
 		setHeight(y+40+"px");
+		
+		if(FormUtil.convertDimensionToInt(getWidth()) < 100)
+			setWidth("900px");
 	}
 
 
@@ -978,6 +1003,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 				widgetWrapper = addNewDropdownList(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE)
 				widgetWrapper = addNewDatePicker(false);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME)
+				widgetWrapper = addNewDateTimeWidget(false);
+			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_TIME)
+				widgetWrapper = addNewTimeWidget(false);
 			else if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 				widgetWrapper = addNewCheckBoxSet(qtn,false,index);
 				index += qtn.getOptions().size();

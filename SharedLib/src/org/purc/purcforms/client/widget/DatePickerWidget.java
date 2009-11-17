@@ -26,6 +26,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -117,6 +118,8 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 		//onChange(this);
 		//fireEvent(Document.get().createChangeEvent());
 		//changeListeners.fireChange(this);
+		
+		DomEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
 	}
 
 	/**
@@ -139,6 +142,11 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 	 * @see com.google.gwt.user.client.ui.TextBoxBase#onBrowserEvent(com.google.gwt.user.client.Event)
 	 */
 	public void onBrowserEvent(Event event) {
+		if(getParent().getParent() instanceof RuntimeWidgetWrapper &&
+				((RuntimeWidgetWrapper)getParent().getParent()).isLocked()){
+			return;
+		}
+		
 		switch (DOM.eventGetType(event)) {
 		case Event.ONBLUR:
 			popup.hidePopupCalendar();
@@ -309,5 +317,10 @@ public class DatePickerWidget extends DatePicker implements KeyPressHandler, Cli
 		/*if (changeListeners != null) {
 			changeListeners.remove(listener);
 		}*/
+	}
+	
+	public void close(){
+		if(RootPanel.get().getWidgetCount() > 0)
+			RootPanel.get().remove(0);
 	}
 }

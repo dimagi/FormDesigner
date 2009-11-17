@@ -19,11 +19,15 @@ import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.widget.CheckBoxWidget;
 import org.purc.purcforms.client.widget.DatePickerWidget;
+import org.purc.purcforms.client.widget.DateTimeWidget;
 import org.purc.purcforms.client.widget.EditListener;
+import org.purc.purcforms.client.widget.ListBoxWidget;
 import org.purc.purcforms.client.widget.RadioButtonWidget;
 import org.purc.purcforms.client.widget.RuntimeGroupWidget;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
+import org.purc.purcforms.client.widget.TimeWidget;
 import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformParser;
@@ -218,7 +222,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		moveToNextWidget(-1);
 	}
 
-	
+
 	/**
 	 * Sets focus to the focusable widget whose tab index is next to a given index.
 	 * 
@@ -236,7 +240,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	
+
 	/**
 	 * Loads widgets in a given layout xml and populates a list of widgets whose source of
 	 * allowed option is external to the xform.
@@ -297,7 +301,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			tabs.selectTab(0);
 	}
 
-	
+
 	/**
 	 * Sets up the main panel widget.
 	 */
@@ -411,7 +415,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				wrapper = parentWrapper;
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
-			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new CheckBoxWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			if(parentBindingWidgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
@@ -430,7 +434,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			((Button)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LISTBOX)){
-			widget = new ListBox(false);
+			widget = new ListBoxWidget(false);
 			((ListBox)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA)){
@@ -440,6 +444,14 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
 			widget = new DatePickerWidget();
 			((DatePicker)widget).setTabIndex(tabIndex);
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATETIME)){
+			widget = new DateTimeWidget();
+			((DateTimeWidget)widget).setTabIndex(tabIndex);
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TIME)){
+			widget = new TimeWidget();
+			((TimeWidget)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX)){
 			widget = new TextBox();
@@ -520,8 +532,18 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		else
 			return tabIndex;
 
-		if(!wrapperSet)
+		if(!wrapperSet){
 			wrapper = new RuntimeWidgetWrapper(widget,images.error(),this);
+
+			if(parentWrapper != null){ //Check box or radio button
+				if(!parentWrapper.getQuestionDef().isVisible())
+					wrapper.setVisible(false);
+				if(!parentWrapper.getQuestionDef().isEnabled())
+					wrapper.setEnabled(false);
+				if(parentWrapper.getQuestionDef().isLocked())
+					wrapper.setLocked(true);
+			}
+		}
 
 		boolean loadWidget = true;
 
@@ -637,7 +659,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				(wrapper.getWrappedWidget() instanceof Button));
 	}
 
-	
+
 	/**
 	 * Gets a widget that has a given parent binding value as that of a given widget.
 	 * 
@@ -762,7 +784,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				if(firstInvalidWidget == null && widget.isFocusable())
 					firstInvalidWidget = widget.getInvalidWidget();
 			}
-			
+
 			if(fireValueChanged && widget.getQuestionDef() != null)
 				onValueChanged(widget);
 		}
@@ -796,7 +818,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		fireParentQtnValidationRules(widget);
 	}
 
-	
+
 	/**
 	 * Called when the value or answer of a question changes.
 	 * 
@@ -854,19 +876,21 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * @see org.purc.purcforms.client.widget.EditListener#onMoveToNextWidget(com.google.gwt.user.client.ui.Widget)
 	 */
 	public void onMoveToNextWidget(Widget widget) {
-		if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
-			//Non repeating widgets in a group box
-			if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToNextWidget(widget))
-				return;
-			else
-				widget = widget.getParent().getParent().getParent().getParent();
-		}
-		else if(widget.getParent().getParent().getParent() instanceof RuntimeGroupWidget){
-			//Repeating widgets.
-			if(((RuntimeGroupWidget)widget.getParent().getParent().getParent()).onMoveToNextWidget(widget))
-				return;
-			else
-				widget = widget.getParent().getParent().getParent().getParent().getParent();
+		if(widget.getParent().getParent() != null){
+			if(widget.getParent().getParent() instanceof RuntimeGroupWidget){
+				//Non repeating widgets in a group box
+				if(((RuntimeGroupWidget)widget.getParent().getParent()).onMoveToNextWidget(widget))
+					return;
+				else
+					widget = widget.getParent().getParent().getParent().getParent();
+			}
+			else if(widget.getParent().getParent().getParent() instanceof RuntimeGroupWidget){
+				//Repeating widgets.
+				if(((RuntimeGroupWidget)widget.getParent().getParent().getParent()).onMoveToNextWidget(widget))
+					return;
+				else
+					widget = widget.getParent().getParent().getParent().getParent().getParent();
+			}
 		}
 
 		int index = selectedPanel.getWidgetIndex(widget);
@@ -968,7 +992,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
 	}
 
-	
+
 	/**
 	 * Updates dynamic selection lists in all pages of the form to their values as determined
 	 * by the selected option of their parent questions.
@@ -984,7 +1008,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	
+
 	/**
 	 * Copies from a given label map to our class level one.
 	 * 
@@ -998,7 +1022,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	
+
 	/**
 	 * Copies from a given label text map to our class level one.
 	 * 
@@ -1012,7 +1036,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	
+
 	/**
 	 * Copies from a given label replace text map to our class level one.
 	 * 
@@ -1026,7 +1050,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 	}
 
-	
+
 	/**
 	 * Copies from a given check box group map to our class level one.
 	 * 

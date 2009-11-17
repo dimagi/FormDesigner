@@ -253,7 +253,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);*/
 
-			widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new RadioButtonWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 
 			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
 				wrapperSet = true;
@@ -269,7 +269,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			parentWrapper = getParentWrapper(widget,node);
 			((CheckBox)widget).setTabIndex(tabIndex);*/
 
-			widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new CheckBoxWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
 				wrapperSet = true;
 
@@ -288,7 +288,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			((Button)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LISTBOX)){
-			widget = new ListBox(false);
+			widget = new ListBoxWidget(false);
 			((ListBox)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA)){
@@ -298,11 +298,14 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
 			widget = new DatePickerWidget();
 			((DatePicker)widget).setTabIndex(tabIndex);
-			/*((DatePicker)widget).addFocusListener(new FocusListenerAdapter(){
-				 public void onLostFocus(Widget sender){
-					 //((DatePicker)sender).selectAll();
-				 }
-			 });*/
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATETIME)){
+			widget = new DateTimeWidget();
+			((DateTimeWidget)widget).setTabIndex(tabIndex);
+		}
+		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TIME)){
+			widget = new TimeWidget();
+			((TimeWidget)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTBOX)){
 			widget = new TextBox();
@@ -381,15 +384,25 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		}
 
 		/*else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_REPEATSECTION)){
-			//Not dealing with nexted repeats
+			//Not dealing with nested repeats
 			//widget = new RunTimeGroupWidget();
 			//((RunTimeGroupWidget)widget).setTabIndex(tabIndex);
 		}*/
 		else
 			return tabIndex;
 
-		if(!wrapperSet)
+		if(!wrapperSet){
 			wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
+			
+			if(parentWrapper != null){ //Check box or radio button
+				if(!parentWrapper.getQuestionDef().isVisible())
+					wrapper.setVisible(false);
+				if(!parentWrapper.getQuestionDef().isEnabled())
+					wrapper.setEnabled(false);
+				if(parentWrapper.getQuestionDef().isLocked())
+					wrapper.setLocked(true);
+			}
+		}
 
 		//RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 		boolean loadWidget = true;

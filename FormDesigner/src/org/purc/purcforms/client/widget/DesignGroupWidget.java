@@ -165,6 +165,12 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("datePicker")),true,new Command(){
 			public void execute() {popup.hide(); addNewDatePicker(true);}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("dateTimeWidget")),true,new Command(){
+			public void execute() {popup.hide(); addNewDateTimeWidget(true);}});
+		
+		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("timeWidget")),true,new Command(){
+			public void execute() {popup.hide(); addNewTimeWidget(true);}});
 
 		addControlMenu.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("groupBox")),true,new Command(){
 			public void execute() {popup.hide(); addNewGroupBox(true);}});
@@ -352,6 +358,14 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			if("true".equals(element.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL))){
 				setHeaderLabel(widget);
 				widget.setBinding(((DesignWidgetWrapper)getParent().getParent()).getBinding());
+			}
+			
+			//Load all kids if this is a DesignGroupWidget
+			if(widget != null && (widget.getWrappedWidget() instanceof DesignGroupWidget)){
+				((DesignGroupWidget)widget.getWrappedWidget()).loadWidgets(element,formDef);
+				((DesignGroupWidget)widget.getWrappedWidget()).setWidgetSelectionListener(currentWidgetSelectionListener); //TODO CHECK
+				if(!widget.isRepeated())
+					selectedDragController.makeDraggable(widget, ((DesignGroupWidget)widget.getWrappedWidget()).getHeaderLabel());
 			}
 		}
 	}

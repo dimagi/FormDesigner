@@ -173,8 +173,13 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			//if(widget instanceof ListBox)
 			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
 
-			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/))
-				DOM.setStyleAttribute(widget.getElement(), "cursor", getDesignCursor(event.getClientX(),event.getClientY(),3));
+			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/)){
+				String cursorval = getDesignCursor(event.getClientX(),event.getClientY(),3);
+				DOM.setStyleAttribute(widget.getElement(), "cursor", cursorval);
+				
+				if(widget instanceof DateTimeWidget)
+					((DateTimeWidget)widget).setStyle("cursor", cursorval);
+			}
 
 			break;
 
@@ -388,6 +393,10 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return WidgetEx.WIDGET_TYPE_TEXTAREA;
 		else if(widget instanceof DatePicker)
 			return WidgetEx.WIDGET_TYPE_DATEPICKER;
+		else if(widget instanceof DateTimeWidget)
+			return WidgetEx.WIDGET_TYPE_DATETIME;
+		else if(widget instanceof TimeWidget)
+			return WidgetEx.WIDGET_TYPE_TIME;
 		else if(widget instanceof TextBox)
 			return WidgetEx.WIDGET_TYPE_TEXTBOX;
 		else if(widget instanceof Label)
@@ -440,6 +449,8 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return ((TextArea)widget).getTabIndex();
 		else if(widget instanceof DatePicker)
 			return ((DatePicker)widget).getTabIndex();
+		else if(widget instanceof DateTimeWidget)
+			return ((DateTimeWidget)widget).getTabIndex();
 		else if(widget instanceof TextBox)
 			return ((TextBox)widget).getTabIndex();
 		else if(widget instanceof DesignGroupWidget)
@@ -462,6 +473,8 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			((TextArea)widget).setTabIndex(index);
 		else if(widget instanceof DatePicker)
 			((DatePicker)widget).setTabIndex(index);
+		else if(widget instanceof DateTimeWidget)
+			((DateTimeWidget)widget).setTabIndex(index);
 		else if(widget instanceof TextBox)
 			((TextBox)widget).setTabIndex(index);
 		else if(widget instanceof DesignGroupWidget)
@@ -723,11 +736,29 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		if(widget instanceof Label)
 			return; //We do not change labels into data input widgets.
 
-		if(dataType == QuestionDef.QTN_TYPE_DATE || dataType == QuestionDef.QTN_TYPE_DATE_TIME){
+		if(dataType == QuestionDef.QTN_TYPE_DATE){
 			if(!(widget instanceof DatePicker)){
 				storePosition();
 				panel.remove(widget);
 				widget = new DatePickerWidget();
+				panel.add(widget);
+				refreshSize();
+			}
+		}
+		else if(dataType == QuestionDef.QTN_TYPE_DATE_TIME){
+			if(!(widget instanceof DateTimeWidget)){
+				storePosition();
+				panel.remove(widget);
+				widget = new DateTimeWidget();
+				panel.add(widget);
+				refreshSize();
+			}
+		}
+		else if(dataType == QuestionDef.QTN_TYPE_TIME){
+			if(!(widget instanceof TimeWidget)){
+				storePosition();
+				panel.remove(widget);
+				widget = new TimeWidget();
 				panel.add(widget);
 				refreshSize();
 			}

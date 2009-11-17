@@ -904,8 +904,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			setPageProperties((PageDef)formItem);
 		else if(formItem instanceof QuestionDef)
 			setQuestionProperties((QuestionDef)formItem);
-		else if(formItem instanceof OptionDef)
+		else if(formItem instanceof OptionDef){
 			setQuestionOptionProperties((OptionDef)formItem);
+			
+			//Since option bindings are not xml node names, we may allow their
+			//edits as they are not structure breaking.
+			txtBinding.setEnabled(!Context.isStructureReadOnly());
+		}
 	}
 
 	/**

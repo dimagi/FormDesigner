@@ -21,18 +21,26 @@ public class RadioButtonWidget extends RadioButton{
 	
 	public RadioButtonWidget(String name){
 		super(name);
+		
+		sinkEvents(Event.getTypeInt(ClickEvent.getType().getName()));
+		
 		addClickHandler(this);
 	}
 
 	public RadioButtonWidget(String name, String label){
 		super(name,label);
+		
 		addClickHandler(this);
 	}
 	
 	private void addClickHandler(final RadioButtonWidget widget){
 		addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				if(((CheckBox)event.getSource()).getValue() == true && checked)
+				if(getParent().getParent() instanceof RuntimeWidgetWrapper &&
+						((RuntimeWidgetWrapper)getParent().getParent()).isLocked()){
+					setValue(checked);
+				}
+				else if(((CheckBox)event.getSource()).getValue() == true && checked)
 					((CheckBox)event.getSource()).setValue(false);	
 			}
 		});
@@ -42,6 +50,15 @@ public class RadioButtonWidget extends RadioButton{
 	public void onBrowserEvent(Event event){
 		if(DOM.eventGetType(event) == Event.ONMOUSEUP)
 			checked = getValue();
+		else if(DOM.eventGetType(event) == Event.ONCLICK){
+			
+			if(getParent().getParent() instanceof RuntimeWidgetWrapper &&
+					((RuntimeWidgetWrapper)getParent().getParent()).isLocked()){
+				event.preventDefault();
+				event.stopPropagation();
+				return;
+			}
+		}
 		
 		super.onBrowserEvent(event);
 	}

@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.TextBox;
 
 
 /**
+ * The widget for editing DateTime question types.
  * 
  * @author daniel
  *
@@ -27,6 +28,10 @@ public class DateTimeWidget extends Composite{
 	private DatePickerWidget dateWidget = new DatePickerWidget();
 	private TimeWidget timeWidget = new TimeWidget();
 
+	
+	/**
+	 * Creates a new instance of the date and time widget.
+	 */
 	public DateTimeWidget(){
 
 		initWidget(panel);
@@ -109,10 +114,19 @@ public class DateTimeWidget extends Composite{
 		}
 	}
 
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.FocusWidget#setFocus(boolean)
+	 */
 	public void setFocus(boolean focused){
 		dateWidget.setFocus(true);
 	}
 
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.FocusWidget#setEnabled(boolean)
+	 * @param enabled
+	 */
 	public void setEnabled(boolean enabled){
 		dateWidget.setEnabled(enabled);
 		timeWidget.setEnabled(enabled);

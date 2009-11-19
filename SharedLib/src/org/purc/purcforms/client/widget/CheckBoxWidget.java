@@ -15,6 +15,11 @@ import com.google.gwt.user.client.ui.CheckBox;
  */
 public class CheckBoxWidget extends CheckBox{
 	
+	/**
+	 * Creates a new instance of the check box widget.
+	 * 
+	 * @param label the text or label for the check box.
+	 */
 	public CheckBoxWidget(String label){
 		super(label);
 

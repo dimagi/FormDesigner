@@ -21,6 +21,9 @@ public class TimeWidget extends TextBox{
 	private boolean settingSelRange = false;
 
 
+	/**
+	 * Creates a new instance of the time widget.
+	 */
 	public TimeWidget(){
 		setText(MASK);
 		addKeyPressHandler();

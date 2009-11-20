@@ -17,22 +17,35 @@ import com.google.gwt.user.client.ui.RadioButton;
  */
 public class RadioButtonWidget extends RadioButton{
 
+	/** Flag to tell whether this radio button is checked or not. */
 	private boolean checked = false;
 	
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.RadioButton#RadioButton(String)
+	 */
 	public RadioButtonWidget(String name){
 		super(name);
-		
 		sinkEvents(Event.getTypeInt(ClickEvent.getType().getName()));
-		
 		addClickHandler(this);
 	}
+	
 
+	/**
+	 * @see com.google.gwt.user.client.ui.RadioButton#RadioButton(String, String)
+	 */
 	public RadioButtonWidget(String name, String label){
 		super(name,label);
 		
 		addClickHandler(this);
 	}
 	
+	
+	/**
+	 * Adds the click event handler for a radio button widget.
+	 * 
+	 * @param widget the widget to add the handler for.
+	 */
 	private void addClickHandler(final RadioButtonWidget widget){
 		addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){

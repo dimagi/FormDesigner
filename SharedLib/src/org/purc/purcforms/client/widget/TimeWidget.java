@@ -16,8 +16,10 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class TimeWidget extends TextBox{
 
+	/** The input mask. */
 	private String MASK = "--:-- --";
 
+	/** Flag to tell whether we are setting selection range or not. */
 	private boolean settingSelRange = false;
 
 
@@ -31,6 +33,9 @@ public class TimeWidget extends TextBox{
 	}
 
 
+	/**
+	 * Adds handler for key board events.
+	 */
 	private void addKeyPressHandler(){
 		addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
@@ -46,6 +51,13 @@ public class TimeWidget extends TextBox{
 		});
 	}
 
+	
+	/**
+	 * Handles a key board event.
+	 * 
+	 * @param source the sender of the event.
+	 * @param keyCode the key code.
+	 */
 	private void handleKeyEvent(TextBox source, char keyCode){
 		String text = source.getText().trim();
 		int pos = source.getCursorPos();
@@ -122,6 +134,11 @@ public class TimeWidget extends TextBox{
 	}
 
 
+	/**
+	 * Sets the widget text.
+	 * 
+	 * @param text the text to set.
+	 */
 	public void setText(String text){
 		if(text == null || text.trim().length() == 0)
 			text = MASK;
@@ -129,6 +146,11 @@ public class TimeWidget extends TextBox{
 		super.setText(text);
 	}
 
+	/**
+	 * Gets the widget text without the inpiut mask.
+	 * 
+	 * @return the text.
+	 */
 	public String getText(){
 		String text = super.getText();
 
@@ -138,14 +160,19 @@ public class TimeWidget extends TextBox{
 		return text;
 	}
 	
+	/**
+	 * Gets the widget text including the input mask.
+	 * 
+	 * @return the widget text.
+	 */
 	public String getTextWithMask(){
 		return super.getText();
 	}
 
-	public void sellectAll(){
-
-	}
-
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.FocusWidget#setFocus(boolean)
+	 */
 	public void setFocus(boolean focused){
 		super.setFocus(focused);
 
@@ -156,6 +183,10 @@ public class TimeWidget extends TextBox{
 
 	}
 
+	
+	/**
+	 * @see com.google.gwt.user.client.ui.TextBoxBase#setSelectionRange(int, int)
+	 */
 	public void setSelectionRange(int pos, int length) {
 		settingSelRange = true;
 		super.setSelectionRange(pos, length);

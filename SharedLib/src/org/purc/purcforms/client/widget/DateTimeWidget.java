@@ -57,7 +57,10 @@ public class DateTimeWidget extends Composite{
 	}
 
 
-	public void addEventHandlers(){
+	/**
+	 * Adds the event handlers for this widget.
+	 */
+	private void addEventHandlers(){
 		((TextBox)dateWidget).addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(getParent().getParent() instanceof RuntimeWidgetWrapper)
@@ -86,15 +89,32 @@ public class DateTimeWidget extends Composite{
 		super.onBrowserEvent(event);
 	}
 
+	
+	/**
+	 * Sets the widget tab index.
+	 * 
+	 * @param index the tab index to set.
+	 */
 	public void setTabIndex(int index) {
 		dateWidget.setTabIndex(index);
 		timeWidget.setTabIndex(index);
 	}
 
+	
+	/**
+	 * Gets the widget tab index;
+	 * 
+	 * @return the tab index
+	 */
 	public int getTabIndex(){
 		return dateWidget.getTabIndex();
 	}
 
+	/**
+	 * Gets the display text for the widget.
+	 * 
+	 * @return the text.
+	 */
 	public String getText(){
 		if(dateWidget.getText().trim().length() == 0 && timeWidget.getText().trim().length() == 0)
 			return "";
@@ -102,6 +122,12 @@ public class DateTimeWidget extends Composite{
 		return dateWidget.getText() + " " + timeWidget.getTextWithMask();
 	}
 
+	
+	/**
+	 * Sets the display text for the widget.
+	 * 
+	 * @param text the text to set.
+	 */
 	public void setText(String text){
 		if(text == null || text.trim().length() == 0){
 			dateWidget.setText(null);
@@ -132,11 +158,20 @@ public class DateTimeWidget extends Composite{
 		timeWidget.setEnabled(enabled);
 	}
 	
+	/**
+	 * Sets any css style for the widget.
+	 * 
+	 * @param name the style name.
+	 * @param value the style value.
+	 */
 	public void setStyle(String name, String value){
 		DOM.setStyleAttribute(dateWidget.getElement(), "cursor", value);
 		DOM.setStyleAttribute(timeWidget.getElement(), "cursor", value);
 	}
 	
+	/**
+	 * @see com.google.gwt.user.client.ui.FocusWidget#isEnabled()
+	 */
 	public boolean isEnabled(){
 		return dateWidget.isEnabled();
 	}

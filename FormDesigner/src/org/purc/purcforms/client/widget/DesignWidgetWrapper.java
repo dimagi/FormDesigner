@@ -87,7 +87,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		if(!(widget instanceof TabBar)){
 			panel.add(widget);
 			initWidget(panel);
-			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU /*| Event.KEYEVENTS*/);
+			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
 		}
 	}
 
@@ -109,14 +109,30 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return; //Must be in label edit mode.
 
 		switch (type) {
+		/*case Event.ONKEYDOWN:
+		case Event.ONKEYUP:
+		case Event.ONKEYPRESS:
+			if(widget instanceof TextBox){
+				event.preventDefault();
+				event.stopPropagation();
+				return;
+			}
+			break;*/
 		case Event.ONCONTEXTMENU:
 			if(popup != null){
 				if(!event.getCtrlKey())
 					widgetSelectionListener.onWidgetSelected(null,true); //clear current selection. Multiple sel is given a value of true because right click does not turn off other selections
 
+				int ypos = event.getClientY();
+				if(Window.getClientHeight() - ypos < 150)
+					ypos = event.getClientY() - 150;
+				
 				widgetSelectionListener.onWidgetSelected(this,true);
-				popup.setPopupPosition(event.getClientX(), event.getClientY());
+				popup.setPopupPosition(event.getClientX(), ypos);
 				popup.show();
+				
+				event.preventDefault();
+				event.stopPropagation();
 			}
 			break;
 		case Event.ONMOUSEDOWN:
@@ -181,9 +197,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 					((DateTimeWidget)widget).setStyle("cursor", cursorval);
 			}
 
-			break;
-
-		case Event.ONKEYDOWN:
 			break;
 		}
 

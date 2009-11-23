@@ -473,6 +473,9 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	public void setLocked(boolean locked){
 		this.locked = locked;
 
+		//Give a visual clue that this widget is locked.
+		DOM.setStyleAttribute(widget.getElement(), "opacity", locked ? "0.6" : "100");
+		
 		if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).setLocked(locked);
 	}

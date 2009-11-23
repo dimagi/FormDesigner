@@ -1281,7 +1281,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			//if(event != null && DOM.eventGetType(event) == Event.ONCONTEXTMENU){
 			if(selectedPanel.getWidgetIndex(widget) > -1){
 				if(!ctrlKey){
-					if(selectedDragController.getSelectedWidgetCount() == 1)
+					if(!selectedDragController.isWidgetSelected(widget)/*selectedDragController.getSelectedWidgetCount() == 1*/)
 						selectedDragController.clearSelection();
 					selectedDragController.selectWidget(widget);
 				}

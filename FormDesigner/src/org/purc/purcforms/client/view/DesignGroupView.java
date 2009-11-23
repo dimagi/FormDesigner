@@ -170,7 +170,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					//	selectedDragController.clearSelection();
 				}
 
-				if(!multipleSel && selectedDragController.getSelectedWidgetCount() == 1)
+				if(!multipleSel && !selectedDragController.isWidgetSelected(widget)/*selectedDragController.getSelectedWidgetCount() == 1*/)
 					selectedDragController.clearSelection();
 
 				//Deselect and stop editing of any widget in group boxes
@@ -1484,7 +1484,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 			//if(selectedPanel.getWidgetCount() > 0)
 			stopRubberBand(event);
-			if(selectionXPos != -1 && mouseMoved)
+			if(selectionXPos > 0 && mouseMoved)
 				selectWidgets(event);
 			mouseMoved = false;
 			DOM.releaseCapture(getElement()); //Mouse could have been captured in startRubberBand and so release it.

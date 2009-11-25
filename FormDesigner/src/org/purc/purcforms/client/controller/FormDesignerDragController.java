@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.PaletteWidget;
@@ -148,6 +149,10 @@ public class FormDesignerDragController extends AbstractDragController{
 
 	@Override
 	public void dragEnd() {
+		
+		if(Context.getLockWidgets())
+			return;
+		
 		assert context.finalDropController == null == (context.vetoException != null);
 		if (context.vetoException != null) {
 			if (!getBehaviorDragProxy())
@@ -171,6 +176,10 @@ public class FormDesignerDragController extends AbstractDragController{
 	}
 
 	public void dragMove() {
+		
+		if(Context.getLockWidgets())
+			return;
+		
 		int desiredLeft = context.desiredDraggableX - boundaryOffsetX;
 		int desiredTop = context.desiredDraggableY - boundaryOffsetY;
 		if (getBehaviorConstrainedToBoundaryPanel()) {
@@ -288,6 +297,9 @@ public class FormDesignerDragController extends AbstractDragController{
 	@Override
 	public void dragStart() {
 
+		if(Context.getLockWidgets())
+			return;
+		
 		if(context.draggable instanceof DesignWidgetWrapper && "100%".equals(((DesignWidgetWrapper)context.draggable).getWidth())){
 			context.draggable = context.draggable;//.getParent().getParent().getParent().getParent();
 		}
@@ -422,6 +434,10 @@ public class FormDesignerDragController extends AbstractDragController{
 	public void previewDragEnd() throws VetoDragException {
 		assert context.finalDropController == null;
 		assert context.vetoException == null;
+		
+		if(Context.getLockWidgets())
+			return;
+		
 		try {
 			try {
 				// may throw VetoDragException

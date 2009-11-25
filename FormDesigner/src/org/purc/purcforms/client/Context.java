@@ -58,6 +58,9 @@ public class Context {
 	/** The form having focus. */
 	private static FormDef formDef;
 	
+	/** Flag telling whether widgets and locked and hence allow no movement. */
+	private static boolean lockWidgets = false;
+	
 	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
 	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	
@@ -197,5 +200,13 @@ public class Context {
 	 */
 	public static void setCurrentMode(byte currentMode){
 		Context.currentMode = currentMode;
+	}
+	
+	public static boolean getLockWidgets(){
+		return lockWidgets;
+	}
+	
+	public static void setLockWidgets(boolean lockWidgets){
+		Context.lockWidgets = lockWidgets;
 	}
 }

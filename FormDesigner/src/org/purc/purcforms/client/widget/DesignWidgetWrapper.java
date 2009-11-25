@@ -2,6 +2,7 @@ package org.purc.purcforms.client.widget;
 
 import java.util.List;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
@@ -107,7 +108,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		int type = DOM.eventGetType(event);
 		if((widget instanceof Label && panel.getWidget(0) instanceof TextBox))
 			return; //Must be in label edit mode.
-
+		
 		switch (type) {
 		/*case Event.ONKEYDOWN:
 		case Event.ONKEYUP:
@@ -190,7 +191,11 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
 
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/)){
+				
 				String cursorval = getDesignCursor(event.getClientX(),event.getClientY(),3);
+				if(Context.getLockWidgets())
+					cursorval = "pointer";
+				
 				DOM.setStyleAttribute(widget.getElement(), "cursor", cursorval);
 				
 				if(widget instanceof DateTimeWidget)

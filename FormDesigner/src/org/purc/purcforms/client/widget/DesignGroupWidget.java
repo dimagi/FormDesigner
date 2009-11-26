@@ -67,6 +67,8 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.KEYEVENTS);
 
+		setupPopup();
+		
 		widgetPopup = new PopupPanel(true,true);
 		MenuBar menuBar = new MenuBar(true);
 		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
@@ -79,17 +81,15 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			public void execute() {widgetPopup.hide(); deleteWidgets();}});
 
 		menuBar.addSeparator(); //LocaleText.get("??????")?????????
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget H"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("changeWidgetH")),true, new Command(){
 			public void execute() {widgetPopup.hide(); changeWidget(false);}});
 
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),"Change Widget V"),true, new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("changeWidgetV")),true, new Command(){
 			public void execute() {widgetPopup.hide(); changeWidget(true);}});
 
 		widgetPopup.setWidget(menuBar);
 
 		rubberBand.addStyleName("rubberBand");
-		
-		setupPopup();
 	}
 
 	public DesignGroupWidget(DesignGroupWidget designGroupWidget, Images images,IWidgetPopupMenuListener widgetPopupMenuListener){

@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -141,7 +142,16 @@ public class PreviewView extends FormRunnerView {
 		case Event.ONMOUSEDOWN:
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
 				if(event.getTarget().getClassName().length() == 0){
-					popup.setPopupPosition(event.getClientX(), event.getClientY());
+					
+					int ypos = event.getClientY();
+					if(Window.getClientHeight() - ypos < 100)
+						ypos = event.getClientY() - 100;
+					
+					int xpos = event.getClientX();
+					if(Window.getClientWidth() - xpos < 110)
+						xpos = event.getClientX() - 110;
+					
+					popup.setPopupPosition(xpos, ypos);
 					popup.show();
 					FormDesignerUtil.disableContextMenu(popup.getElement());
 				}

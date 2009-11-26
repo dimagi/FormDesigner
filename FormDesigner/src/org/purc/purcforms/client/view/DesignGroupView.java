@@ -1439,8 +1439,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				int ypos = event.getClientY();
 				if(Window.getClientHeight() - ypos < 220)
 					ypos = event.getClientY() - 220;
+				
+				int xpos = event.getClientX();
+				if(Window.getClientWidth() - xpos < 170)
+					xpos = event.getClientX() - 170;
 
-				popup.setPopupPosition(event.getClientX(), ypos);
+				popup.setPopupPosition(xpos, ypos);
 				FormDesignerUtil.disableContextMenu(popup.getElement());
 				popup.show();
 			}

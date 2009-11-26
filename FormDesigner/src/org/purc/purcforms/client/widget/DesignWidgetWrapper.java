@@ -128,8 +128,12 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				if(Window.getClientHeight() - ypos < 150)
 					ypos = event.getClientY() - 150;
 				
+				int xpos = event.getClientX();
+				if(Window.getClientWidth() - xpos < 170)
+					xpos = event.getClientX() - 170;
+					
 				widgetSelectionListener.onWidgetSelected(this,true);
-				popup.setPopupPosition(event.getClientX(), ypos);
+				popup.setPopupPosition(xpos, ypos);
 				popup.show();
 				
 				event.preventDefault();

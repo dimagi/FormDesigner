@@ -168,8 +168,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
-		leftPanel.deleteSelectedItem();	
-		centerPanel.deleteSelectedItem();
+		if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
+			leftPanel.deleteSelectedItem();	
+		else
+			centerPanel.deleteSelectedItem();
 	}
 
 	/**
@@ -536,8 +538,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void copyItem() {
 		if(!Context.isStructureReadOnly()){
-			leftPanel.copyItem();
-			centerPanel.copyItem();
+			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
+				leftPanel.copyItem();
+			else
+				centerPanel.copyItem();
 		}
 	}
 
@@ -546,8 +550,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void cutItem() {
 		if(!Context.isStructureReadOnly()){
-			leftPanel.cutItem();
-			centerPanel.cutItem();
+			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
+				leftPanel.cutItem();
+			else
+				centerPanel.cutItem();
 		}
 	}
 
@@ -556,8 +562,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void pasteItem() {
 		if(!Context.isStructureReadOnly()){
-			leftPanel.pasteItem();
-			centerPanel.pasteItem();
+			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
+				leftPanel.pasteItem();
+			else
+				centerPanel.pasteItem();
 		}
 	}
 

@@ -86,6 +86,8 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			// Finally, add the designer widget to the RootPanel, so that it will be displayed.
 			rootPanel.add(designer);
 			
+			updateTabs();
+			
 			//If a form id has been specified in the html host page, load the form
 			//with that id in the designer.
 			s = FormUtil.getFormId();
@@ -113,6 +115,24 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
+	}
+	
+	private void updateTabs(){
+		String s = FormUtil.getDivValue("showXformsSourceTab");
+		if(!("1".equals(s) || "true".equals(s)))
+			designer.removeXformSourceTab();
+		
+		s = FormUtil.getDivValue("showLayoutXmlTab");
+		if(!("1".equals(s) || "true".equals(s)))
+			designer.removeLayoutXmlTab();
+		
+		s = FormUtil.getDivValue("showLanguageTab");
+		if(!("1".equals(s) || "true".equals(s)))
+			designer.removeLanguageTab();
+		
+		s = FormUtil.getDivValue("showModelXmlTab");
+		if(!("1".equals(s) || "true".equals(s)))
+			designer.removeModelXmlTab();
 	}
 	
 	public void onResize(ResizeEvent event){

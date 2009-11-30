@@ -20,6 +20,7 @@ import org.purc.purcforms.client.model.SkipRule;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.CheckBoxWidget;
+import org.purc.purcforms.client.widget.DatePickerEx;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DateTimeWidget;
 import org.purc.purcforms.client.widget.EditListener;
@@ -32,7 +33,6 @@ import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
-import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -443,7 +443,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
 			widget = new DatePickerWidget();
-			((DatePicker)widget).setTabIndex(tabIndex);
+			((DatePickerEx)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATETIME)){
 			widget = new DateTimeWidget();

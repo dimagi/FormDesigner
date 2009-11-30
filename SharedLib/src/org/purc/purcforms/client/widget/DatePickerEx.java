@@ -2,42 +2,39 @@ package org.purc.purcforms.client.widget;
 
 import java.util.Date;
 
-import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.util.FormUtil;
-import org.zenika.widget.client.datePicker.DatePicker;
-import org.zenika.widget.client.datePicker.PopupCalendar;
 import org.zenika.widget.client.util.DateUtil;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Widget;
 
 
-/**
- * The date picker widget.
- * 
- * @author daniel
- *
- */
-public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, ClickHandler{
 
+/**
+ * Main class of the DatePicker. It extends the TextBox widget and manages a Date object.
+ * When it is clicked, it opens a PopupCalendar on which we can select a new date. <br>
+ * Example of use :  <br>
+ * <code>
+ * DatePicker datePicker = new DatePicker();<br>
+ * RootPanel.get().add(datePicker);<br>
+ * </code>
+ * You can specify a theme (see the CSS file DatePickerStyle.css) and
+ * the date to initialize the date picker.
+ * Enjoy xD
+ * 
+ * Modified later by James to include change listening
+ * @author Nicolas Wetzel (nicolas.wetzel@zenika.com)
+ * @author Jean-Philippe Dournel
+ * @author Loïc Bertholet
+ * @author James Heggs (jheggs@axonbirch.com)
+ * 
+ */
+public class DatePickerEx extends TextBoxWidget implements ClickListener, ChangeListener, KeyboardListener {
 	private PopupCalendarEx popup;
 	private Date selectedDate;
 	// the oldest date that can be selected
@@ -45,13 +42,11 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	// the youngest date that can be selected
 	private Date youngestDate;
 	private DateTimeFormat dateFormatter;
-
+	
 	private ChangeListenerCollection changeListeners;
+	
 	{
-		DateTimeFormat dateTimeFormat = FormUtil.getDateDisplayFormat();
-		if(dateTimeFormat == null)
-			dateTimeFormat = DateUtil.getDateTimeFormat();
-		dateFormatter = dateTimeFormat;
+		dateFormatter = DateUtil.getDateTimeFormat();
 		popup = new PopupCalendarEx(this);
 		changeListeners = new ChangeListenerCollection();
 	}
@@ -60,40 +55,40 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	 * Default constructor. It creates a DatePicker which shows the current
 	 * month.
 	 */
-	public DatePickerWidget() {
+	public DatePickerEx() {
 		super();
 		setText("");	
 		sinkEvents(Event.ONCHANGE | Event.ONKEYPRESS);
-		addClickHandler(this);
+		addClickListener(this);
 		addChangeListener(this);
-		addKeyPressHandler(this);
+		addKeyboardListener(this);
 	}
 
 	/**
 	 * Create a DatePicker which show a specific Date.
 	 * @param selectedDate Date to show
 	 */
-	public DatePickerWidget(Date selectedDate) {
+	public DatePickerEx(Date selectedDate) {
 		this();
 		this.selectedDate = selectedDate;
 		synchronizeFromDate();
 	}
-
+	
 	/**
 	 * Create a DatePicker which uses a specific theme.
 	 * @param theme Theme name
 	 */
-	public DatePickerWidget(String theme) {
+	public DatePickerEx(String theme) {
 		this();
 		setTheme(theme);
 	}
-
+	
 	/**
 	 * Create a DatePicker which specifics date and theme.
 	 * @param selectedDate Date to show
 	 * @param theme Theme name
 	 */
-	public DatePickerWidget(Date selectedDate, String theme) {
+	public DatePickerEx(Date selectedDate, String theme) {
 		this(selectedDate);
 		setTheme(theme);
 	}
@@ -115,11 +110,7 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 
 		synchronizeFromDate();
 
-		//onChange(this);
-		//fireEvent(Document.get().createChangeEvent());
-		//changeListeners.fireChange(this);
-		
-		DomEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
+		changeListeners.fireChange(this);
 	}
 
 	/**
@@ -142,15 +133,9 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	 * @see com.google.gwt.user.client.ui.TextBoxBase#onBrowserEvent(com.google.gwt.user.client.Event)
 	 */
 	public void onBrowserEvent(Event event) {
-		if(getParent().getParent() instanceof RuntimeWidgetWrapper &&
-				((RuntimeWidgetWrapper)getParent().getParent()).isLocked()){
-			return;
-		}
-		
 		switch (DOM.eventGetType(event)) {
 		case Event.ONBLUR:
 			popup.hidePopupCalendar();
-			fireChangeEvent(this);
 			break;
 		default:
 			break;
@@ -159,24 +144,11 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 		super.onBrowserEvent(event);
 	}
 	
-	public void fireChangeEvent(final HasHandlers handlerSource) {
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				Timer t = new Timer() {
-					public void run() {
-						DomEvent.fireNativeEvent(Document.get().createChangeEvent(), handlerSource);
-					}
-				};
-				t.schedule(300);
-			}
-		});
-	}
-
 	/**
 	 * @see com.google.gwt.user.client.ui.ClickListener#onClick(com.google.gwt.user.client.ui.Widget)
 	 */
-	public void onClick(ClickEvent event) {
-		//showPopup();
+	public void onClick(Widget sender) {
+		showPopup();
 	}
 
 	/**
@@ -190,13 +162,13 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	 * @see com.google.gwt.user.client.ui.KeyboardListener#onKeyPress(com.google.gwt.user.client.ui.Widget,
 	 *      char, int)
 	 */
-	public void onKeyPress(KeyPressEvent event) {
-		switch (event.getCharCode()) {
-		case KeyCodes.KEY_ENTER:
+	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
+		switch (keyCode) {
+		case KEY_ENTER:
 			parseDate();
 			showPopup();
 			break;
-		case KeyCodes.KEY_ESCAPE:
+		case KEY_ESCAPE:
 			if (popup.isVisible())
 				popup.hidePopupCalendar();
 			break;
@@ -234,23 +206,37 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	 * Display the PopupCalendar.
 	 */
 	private void showPopup() {
-		if(getParent().getParent() instanceof RuntimeWidgetWrapper){
-			QuestionDef questionDef = ((RuntimeWidgetWrapper)getParent().getParent()).getQuestionDef();
-			if(questionDef != null && !questionDef.isLocked()){
-				if (this.selectedDate != null)
-					popup.setDisplayedMonth(this.selectedDate);
-				popup.setPopupPosition(this.getAbsoluteLeft()+150, this.getAbsoluteTop());
-				popup.displayMonth();
-				doAfterShowPopup(popup);
-			}
+		if (this.selectedDate != null) {
+			popup.setDisplayedMonth(this.selectedDate);
 		}
+		popup.setPopupPosition(this.getAbsoluteLeft()+150, this.getAbsoluteTop());
+		popup.displayMonth();
+		doAfterShowPopup(popup);
+	}
+	
+	/**
+	 * Call when the calendar pop-up is shown. Can be overwritten.
+	 * @param popup
+	 */
+	protected void doAfterShowPopup(PopupCalendarEx popup) {
+		// nothing special to do
+		
+		// popup position can be updated so that it is displayed "above" the TexrBox
+		// popup.setPopupPosition(popup.getPopupLeft(), popup.getPopupTop() - 150);
+		
+		// there is also a known bug if the DatePicker is in a modal MyGWT Dialog
+		// DOM.setIntStyleAttribute(popup.getElement(), "zIndex", MyDOM.getZIndex());
+		// Element p = DOM.getParent(popup.getElement());
+		// int index = DOM.getChildIndex(p, popup.getElement());
+		// p = DOM.getChild(p, --index);
+		// DOM.setIntStyleAttribute(p, "zIndex", MyDOM.getZIndex() - 2);
 	}
 
 	/**
 	 * Parse the date entered in the DatePicker.
 	 */
 	private void parseDate() {
-		if (getText() == null || getText().trim().length() == 0) {
+		if (getText() == null || getText().length() == 0) {
 			selectedDate = null;
 		} else {
 			try {
@@ -263,7 +249,7 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 		}
 		synchronizeFromDate();
 	}
-
+	
 	/**
 	 * Return true if the selectedDay is between datepicker's interval dates.
 	 * 
@@ -297,16 +283,16 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	public void setYoungestDate(Date youngestDate) {
 		this.youngestDate = youngestDate;
 	}
-
+	
 	/**
 	 * @see com.google.gwt.user.client.ui.TextBoxBase#addChangeListener(com.google.gwt.user.client.ui.ChangeListener)
 	 */
-	public HandlerRegistration addChangeHandler(ChangeHandler listener) {
-		return super.addChangeHandler(listener);
-		/*if (changeListeners == null) {
+	public void addChangeListener(ChangeListener listener) {
+		super.addChangeListener(listener);
+		if (changeListeners == null) {
 			changeListeners = new ChangeListenerCollection();
 		}
-		changeListeners.add(listener);*/
+		changeListeners.add(listener);
 	}
 
 	/**
@@ -314,13 +300,8 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	 */
 	public void removeChangeListener(ChangeListener listener) {
 		super.removeChangeListener(listener);
-		/*if (changeListeners != null) {
+		if (changeListeners != null) {
 			changeListeners.remove(listener);
-		}*/
-	}
-	
-	public void close(){
-		if(RootPanel.get().getWidgetCount() > 0)
-			RootPanel.get().remove(0);
+		}
 	}
 }

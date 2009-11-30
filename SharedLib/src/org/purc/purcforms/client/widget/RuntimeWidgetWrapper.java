@@ -148,10 +148,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	 * Sets up events listeners.
 	 */
 	private void setupEventListeners(){
-		if(widget instanceof DatePicker){
-			((DatePicker)widget).addBlurHandler(new BlurHandler(){
+		if(widget instanceof DatePickerEx){
+			((DatePickerEx)widget).addBlurHandler(new BlurHandler(){
 				public void onBlur(BlurEvent event){
-					((DatePicker)widget).selectAll();
+					((DatePickerEx)widget).selectAll();
 				}
 			});
 		}
@@ -506,8 +506,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		
 		try{
 			if(questionDef.isDate() && value != null && value.trim().length() > 0){
-				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME)
+				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME){
 					value = FormUtil.getTimeSubmitFormat().format(FormUtil.getTimeDisplayFormat().parse(value));
+				
+					// ISO 8601 requires a colon in time zone offset (Java doesn't
+					// include the colon, so we need to insert it
+					if("yyyy-MM-dd'T'HH:mm:ssZ".equals(FormUtil.getTimeSubmitFormat().getPattern()))
+						value = value.substring(0, 22) + ":" + value.substring(22);
+				}
 				else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME){
 					value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
 				
@@ -870,8 +876,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			((TextArea)widget).setText(null);
 		else if(widget instanceof TextBox)
 			((TextBox)widget).setText(null);
-		else if(widget instanceof DatePicker)
-			((DatePicker)widget).setText(null);
+		else if(widget instanceof DatePickerEx)
+			((DatePickerEx)widget).setText(null);
 		else if(widget instanceof DateTimeWidget)
 			((DateTimeWidget)widget).setText(null);
 		else if(widget instanceof Image)
@@ -988,7 +994,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	 */
 	public boolean isFocusable(){
 		Widget wg = getWrappedWidget();
-		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePicker ||
+		return (wg instanceof TextBox || wg instanceof TextArea || wg instanceof DatePickerEx ||
 				wg instanceof CheckBox || wg instanceof RadioButton || 
 				wg instanceof RuntimeGroupWidget || wg instanceof ListBox
 				|| wg instanceof DateTimeWidget);

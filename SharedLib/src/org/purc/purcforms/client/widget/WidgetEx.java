@@ -168,12 +168,14 @@ public class WidgetEx extends Composite{
 			this.widget = new ListBox(((ListBox)widget.widget).isMultipleSelect());
 		else if(widget.widget instanceof TextArea)
 			this.widget = new TextArea();
-		else if(widget.widget instanceof DatePicker)
+		else if(widget.widget instanceof DatePickerEx)
 			this.widget = new DatePickerWidget();
 		else if(widget.widget instanceof DateTimeWidget)
 			this.widget = new DateTimeWidget();
 		else if(widget.widget instanceof TimeWidget)
 			this.widget = new TimeWidget();
+		else if(widget.widget instanceof TextBoxWidget)
+			this.widget = new TextBoxWidget();
 		else if(widget.widget instanceof TextBox)
 			this.widget = new TextBox();
 		else if(widget.widget instanceof Label){

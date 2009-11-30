@@ -13,7 +13,6 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
-import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -88,7 +87,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		if(!(widget instanceof TabBar)){
 			panel.add(widget);
 			initWidget(panel);
-			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
+			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS | Event.ONCHANGE);
 		}
 	}
 
@@ -116,6 +115,17 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			if(widget instanceof TextBox){
 				event.preventDefault();
 				event.stopPropagation();
+				DOM.eventCancelBubble(event, true); 
+				DOM.eventPreventDefault(event);
+				return;
+			}
+			break;
+		case Event.ONCHANGE:
+			if(widget instanceof TextBox){
+				event.preventDefault();
+				event.stopPropagation();
+				DOM.eventCancelBubble(event, true); 
+				DOM.eventPreventDefault(event);
 				return;
 			}
 			break;*/
@@ -124,6 +134,11 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				if(!event.getCtrlKey())
 					widgetSelectionListener.onWidgetSelected(null,true); //clear current selection. Multiple sel is given a value of true because right click does not turn off other selections
 
+				/*event.preventDefault();
+				event.stopPropagation();
+				DOM.eventCancelBubble(event, true); 
+				DOM.eventPreventDefault(event);*/
+				
 				int ypos = event.getClientY();
 				if(Window.getClientHeight() - ypos < 150)
 					ypos = event.getClientY() - 150;
@@ -136,8 +151,10 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				popup.setPopupPosition(xpos, ypos);
 				popup.show();
 				
-				event.preventDefault();
-				event.stopPropagation();
+				if(widget instanceof TextBox)
+					((TextBox)widget).setFocus(false);
+				else if(widget instanceof DateTimeWidget)
+					((DateTimeWidget)widget).setFocus(false);
 			}
 			break;
 		case Event.ONMOUSEDOWN:
@@ -163,7 +180,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
-
+			
 			//if (mouseListeners != null) {
 			if(widget instanceof DesignGroupWidget){
 				if(isRepeated() || !"default".equals(DOM.getStyleAttribute(widget.getElement(), "cursor")))
@@ -174,17 +191,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			else
 				//DomEvent.fireNativeEvent(event, this, this.getElement());
 				super.onBrowserEvent(event);
-			//mouseListeners.fireMouseEvent(this, event);
-			//}
-
-			//Document.get().createMouseMoveEvent(detail, screenX, screenY, clientX, clientY, ctrlKey, altKey, shiftKey, metaKey, button)
-
-			//fireEvent(new GwtEvent<MouseMoveEvent>());
-
-			/*if(type == Event.ONMOUSEDOWN){
-		        	if(!(event.getShiftKey() || event.getCtrlKey()))
-		        		widgetSelectionListener.onWidgetSelected(this);
-		        }*/
 
 			//if(type == Event.ONMOUSEDOWN || type == Event.ONMOUSEUP){
 			if(widget instanceof RadioButton)
@@ -229,12 +235,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			- DOM.getAbsoluteTop(senderElem)
 			+ DOM.getElementPropertyInt(senderElem, "scrollTop")
 			+ Window.getScrollTop();
-
-			//super.onBrowserEvent(event);
-			//mouseListeners.fireMouseMove(this, x+1, y+1);
-
-			//if(event.getCtrlKey()) //specifically turned on for design surface view to get widget selection when ctrl is pressed
-			//	widgetSelectionListener.onWidgetSelected(this);
 		}
 	}
 
@@ -398,7 +398,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			html = URL.decode(html);
 		if(html.indexOf("</") > 0)
 			html = html.substring(html.indexOf(">")+1,html.indexOf("</"));
-		//s = URL.decode(s);
+		
 		return html;
 	}
 
@@ -413,7 +413,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return WidgetEx.WIDGET_TYPE_LISTBOX;
 		else if(widget instanceof TextArea)
 			return WidgetEx.WIDGET_TYPE_TEXTAREA;
-		else if(widget instanceof DatePicker)
+		else if(widget instanceof DatePickerEx)
 			return WidgetEx.WIDGET_TYPE_DATEPICKER;
 		else if(widget instanceof DateTimeWidget)
 			return WidgetEx.WIDGET_TYPE_DATETIME;
@@ -469,8 +469,8 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return ((ListBox)widget).getTabIndex();
 		else if(widget instanceof TextArea)
 			return ((TextArea)widget).getTabIndex();
-		else if(widget instanceof DatePicker)
-			return ((DatePicker)widget).getTabIndex();
+		else if(widget instanceof DatePickerEx)
+			return ((DatePickerEx)widget).getTabIndex();
 		else if(widget instanceof DateTimeWidget)
 			return ((DateTimeWidget)widget).getTabIndex();
 		else if(widget instanceof TextBox)
@@ -493,8 +493,8 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			((ListBox)widget).setTabIndex(index);
 		else if(widget instanceof TextArea)
 			((TextArea)widget).setTabIndex(index);
-		else if(widget instanceof DatePicker)
-			((DatePicker)widget).setTabIndex(index);
+		else if(widget instanceof DatePickerEx)
+			((DatePickerEx)widget).setTabIndex(index);
 		else if(widget instanceof DateTimeWidget)
 			((DateTimeWidget)widget).setTabIndex(index);
 		else if(widget instanceof TextBox)
@@ -759,7 +759,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			return; //We do not change labels into data input widgets.
 
 		if(dataType == QuestionDef.QTN_TYPE_DATE){
-			if(!(widget instanceof DatePicker)){
+			if(!(widget instanceof DatePickerEx)){
 				storePosition();
 				panel.remove(widget);
 				widget = new DatePickerWidget();
@@ -786,7 +786,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			}
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_TEXT || dataType == QuestionDef.QTN_TYPE_NUMERIC || dataType == QuestionDef.QTN_TYPE_DECIMAL){
-			if(( !(widget instanceof TextBox || widget instanceof TextArea) || (widget instanceof DatePicker)) ){
+			if(( !(widget instanceof TextBox || widget instanceof TextArea) || (widget instanceof DatePickerEx)) ){
 				storePosition();
 				panel.remove(widget);
 				widget = new TextBox();

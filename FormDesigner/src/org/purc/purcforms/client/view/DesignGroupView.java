@@ -17,14 +17,15 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.StyleUtil;
+import org.purc.purcforms.client.widget.DatePickerEx;
 import org.purc.purcforms.client.widget.DatePickerWidget;
 import org.purc.purcforms.client.widget.DateTimeWidget;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.PaletteWidget;
 import org.purc.purcforms.client.widget.RadioButtonWidget;
+import org.purc.purcforms.client.widget.TextBoxWidget;
 import org.purc.purcforms.client.widget.TimeWidget;
-import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.allen_sauer.gwt.dnd.client.drop.DropController;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -1109,7 +1110,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.s
 	 */
 	protected DesignWidgetWrapper addNewTextBox(boolean select){
-		TextBox tb = new TextBox();
+		TextBoxWidget tb = new TextBoxWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		return addNewWidget(tb,select);
@@ -1122,7 +1123,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.
 	 */
 	protected DesignWidgetWrapper addNewDatePicker(boolean select){
-		DatePicker tb = new DatePickerWidget();
+		DatePickerEx tb = new DatePickerWidget();
 		DOM.setStyleAttribute(tb.getElement(), "height","25px");
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		return addNewWidget(tb,select);

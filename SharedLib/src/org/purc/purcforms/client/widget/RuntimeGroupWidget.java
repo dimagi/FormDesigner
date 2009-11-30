@@ -17,7 +17,6 @@ import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
 import org.purc.purcforms.client.xforms.XmlUtil;
-import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -297,7 +296,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER)){
 			widget = new DatePickerWidget();
-			((DatePicker)widget).setTabIndex(tabIndex);
+			((DatePickerEx)widget).setTabIndex(tabIndex);
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATETIME)){
 			widget = new DateTimeWidget();

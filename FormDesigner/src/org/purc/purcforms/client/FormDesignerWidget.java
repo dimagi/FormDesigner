@@ -412,4 +412,18 @@ public class FormDesignerWidget extends Composite{
 	public void populateLocales(){
 		toolbar.populateLocales();
 	}
+	
+	public void removeXformSourceTab(){
+		centerPanel.removeXformSourceTab();
+	}
+	
+	
+	public void removeLayoutXmlTab(){
+		centerPanel.removeLayoutXmlTab();
+	}
+	
+	
+	public void removeModelXmlTab(){
+		centerPanel.removeModelXmlTab();
+	}
 }

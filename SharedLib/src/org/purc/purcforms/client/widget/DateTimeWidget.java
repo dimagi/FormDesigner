@@ -145,7 +145,7 @@ public class DateTimeWidget extends Composite{
 	 * @see com.google.gwt.user.client.ui.FocusWidget#setFocus(boolean)
 	 */
 	public void setFocus(boolean focused){
-		dateWidget.setFocus(true);
+		dateWidget.setFocus(focused);
 	}
 
 	

@@ -36,19 +36,19 @@ public class FormUtil {
 
 	/** The date time format used in the xforms model xml. */
 	private static DateTimeFormat dateTimeSubmitFormat;
-	
+
 	/** The date time format used for display purposes. */
 	private static DateTimeFormat dateTimeDisplayFormat;
-	
+
 	/** The date format used in the xforms model xml. */
 	private static DateTimeFormat dateSubmitFormat;
-	
+
 	/** The date format used for display purposes. */
 	private static DateTimeFormat dateDisplayFormat;
-	
+
 	/** The time format used in the xforms model xml. */
 	private static DateTimeFormat timeSubmitFormat;
-	
+
 	/** The time format used for display purposes. */
 	private static DateTimeFormat timeDisplayFormat;
 
@@ -60,7 +60,7 @@ public class FormUtil {
 	private static String formDefRefreshUrlSuffix;
 	private static String externalSourceUrlSuffix;
 	private static String multimediaUrlSuffix;
-	
+
 	/** 
 	 * The url to navigate to when one closes the form designer by selecting
 	 * Close from the file menu. 
@@ -69,13 +69,13 @@ public class FormUtil {
 
 	/** The name for the formId field. */
 	private static String formIdName;
-	
+
 	/** The name for the entityId field. */
 	private static String entityIdName;
 
 	/** The form identifier. */
 	private static String formId;
-	
+
 	/** The entity identifier. eg patientId, individualId. */
 	private static String entityId;
 
@@ -90,7 +90,7 @@ public class FormUtil {
 	/** 
 	 * Flag determining whether to display the language xml tab or not.
 	 */
-	private static boolean showLanguageTab = false;
+	//private static boolean showLanguageTab = false;
 
 	/**
 	 * Flag determining whether to display the form submitted successfully message or not.
@@ -375,26 +375,28 @@ public class FormUtil {
 			appendEntityIdAfterSubmit = false;
 		else
 			appendEntityIdAfterSubmit = !s.equals("0");
-		
+
 		s = getDivValue("showSubmitSuccessMsg");
 		if("1".equals(s) || "true".equals(s))
 			showSubmitSuccessMsg = true;
 
-		s = getDivValue("showLanguageTab");
+		/*s = getDivValue("showLanguageTab");
 		if("1".equals(s) || "true".equals(s))
-			showLanguageTab = true;
+			showLanguageTab = true;*/
 	}
 
 	public static String getDivValue(String id){
 		//RootPanel p = RootPanel.get(id);
-		
+
 		com.google.gwt.dom.client.Element p = com.google.gwt.dom.client.Document.get().getElementById(id);
 		if(p != null){
-			NodeList nodes = p.getChildNodes();
-			Node node = nodes.getItem(0);
-			String s = node.getNodeValue();
-			p.removeChild(node);
-			return s;
+			NodeList<Node> nodes = p.getChildNodes();
+			if(nodes != null && nodes.getLength() > 0){
+				Node node = nodes.getItem(0);
+				String s = node.getNodeValue();
+				p.removeChild(node);
+				return s;
+			}
 		}
 
 		return null;
@@ -500,9 +502,9 @@ public class FormUtil {
 		return entityId;
 	}
 
-	public static boolean getShowLanguageTab(){
+	/*public static boolean getShowLanguageTab(){
 		return showLanguageTab;
-	}
+	}*/
 
 	public static String getHostPageBaseURL(){
 		//return "http://127.0.0.1:8080/openmrs/";
@@ -531,7 +533,7 @@ public class FormUtil {
 	public static boolean appendEntityIdAfterSubmit(){
 		return appendEntityIdAfterSubmit;
 	}
-	
+
 	public static boolean showSubmitSuccessMsg(){
 		return showSubmitSuccessMsg;
 	}
@@ -543,7 +545,7 @@ public class FormUtil {
 	 */
 	public static void displayException(Throwable ex){
 		FormUtil.dlg.hide(); //TODO Some how when an exception is thrown, this may stay on. So needs a fix.
-		
+
 		ex.printStackTrace();
 
 		String text = LocaleText.get("uncaughtException");
@@ -605,7 +607,7 @@ public class FormUtil {
 
 		return path;
 	}
-	
+
 	/**
 	 * Gets the xpath expression pointing to a node starting from a given parent node.
 	 * 
@@ -649,7 +651,7 @@ public class FormUtil {
 	public static String getNodeName(Element node){
 		return removePrefix(node.getNodeName());
 	}
-	
+
 	/**
 	 * Tells form runner or designer widget user that we are done displaying the widgets
 	 * and hence they can do initialization stuff if they have any.
@@ -661,7 +663,7 @@ public class FormUtil {
 	public static native void searchExternal(String key,String value,com.google.gwt.user.client.Element parentElement, com.google.gwt.user.client.Element textElement, com.google.gwt.user.client.Element valueElement) /*-{
 		return $wnd.searchExternal(key,value,parentElement.parentNode.parentNode,textElement,valueElement);
 	}-*/;
-	
+
 	/**
 	 * Checks if the current used is authenticated by the server.
 	 * This method is called every time a user tries to submit form data in non preview mode.

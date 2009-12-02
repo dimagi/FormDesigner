@@ -121,7 +121,7 @@ public class FormDesignerWidget extends Composite{
 		dockPanel.add(panel, DockPanel.CENTER);
 		
 		FormUtil.maximizeWidget(dockPanel);
-		FormUtil.maximizeWidget(hsplitClient);
+		//FormUtil.maximizeWidget(hsplitClient);
 
 		initWidget(dockPanel);
 		

@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -26,11 +25,6 @@ public class PaletteView extends Composite {
 
 	/** The panel to contain the palette widgets. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	
-	/** The panel to enable scrolling when the number of widgets is greater
-	 * than can be contained in the visible region of this widget.
-	 */
-	private ScrollPanel scrollPanel = new ScrollPanel();
 	
 	/** The palette images. */
 	private final Images images;
@@ -71,10 +65,8 @@ public class PaletteView extends Composite {
 		
 		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("searchServer"))));
 
-		scrollPanel.setWidget(verticalPanel);
-
-		initWidget(scrollPanel);
-		FormUtil.maximizeWidget(scrollPanel);
+		initWidget(verticalPanel);
+		FormUtil.maximizeWidget(verticalPanel);
 	}
 	
 	/**

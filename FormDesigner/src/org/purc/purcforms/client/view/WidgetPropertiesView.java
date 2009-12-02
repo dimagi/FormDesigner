@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextBox;
@@ -51,9 +50,6 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 	/** Widget for organising widgets in a tabular format. */
 	private FlexTable table = new FlexTable();
-
-	/** Panel for scrolling when the the loaded widgets can't fit in the visible region. */
-	private ScrollPanel scrollPanel = new ScrollPanel();
 
 	/** The currently selected widget which derives from DesignGroupView */
 	private DesignGroupView viewWidget;
@@ -270,8 +266,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		for(int i=0; i<table.getRowCount(); i++)
 			cellFormatter.setHorizontalAlignment(i, 0, HasHorizontalAlignment.ALIGN_RIGHT);
 
-		scrollPanel.setWidget(table);
-		initWidget(scrollPanel);
+		initWidget(table);
 		setupEvents();
 		txtChildBinding.setEnabled(false);
 

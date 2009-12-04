@@ -95,19 +95,19 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	//TODO The code below needs great refactoring together with PreviewView
-	private RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node){
-		RuntimeWidgetWrapper parentWrapper = widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+	private RuntimeWidgetWrapper getParentWrapper(Widget widget, Element node, String parentBinding){
+		RuntimeWidgetWrapper parentWrapper = widgetMap.get(parentBinding);
 		if(parentWrapper == null){
 			QuestionDef qtn = null;
 			if(repeatQtnsDef != null)
-				qtn = repeatQtnsDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+				qtn = repeatQtnsDef.getQuestion(parentBinding);
 			else
-				qtn = formDef.getQuestion(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+				qtn = formDef.getQuestion(parentBinding);
 
 			if(qtn != null){
 				parentWrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 				parentWrapper.setQuestionDef(qtn,true);
-				widgetMap.put(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING), parentWrapper);
+				widgetMap.put(parentBinding, parentWrapper);
 				//addWidget(parentWrapper); //Misplaces first widget (with tabindex > 0) of a group (CheckBox and RadioButtons)
 
 				qtn.addChangeListener(this);
@@ -228,7 +228,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		QuestionDef questionDef = null;
 		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
-
+		String parentBinding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING);
+		
 		if(isRepeated){
 			if(binding != null && binding.trim().length() > 0 && repeatQtnsDef != null){
 				questionDef = repeatQtnsDef.getQuestion(binding);
@@ -248,20 +249,22 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		boolean wrapperSet = false;
 		Widget widget = null;
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_RADIOBUTTON)){
-			/*widget = new RadioButton(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			/*widget = new RadioButton(parentBinding,node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 			parentWrapper = getParentWrapper(widget,node);
 			((RadioButton)widget).setTabIndex(tabIndex);*/
 
-			widget = new RadioButtonWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING),node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			widget = new RadioButtonWidget(parentBinding,node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
 
-			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+			if(widgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
-			parentWrapper = getParentWrapper(widget,node);
+			parentWrapper = getParentWrapper(widget,node,parentBinding);
 			((RadioButton)widget).setTabIndex(tabIndex);
-
-			if(wrapperSet)
+			
+			if(wrapperSet){
 				wrapper = parentWrapper;
+				questionDef = formDef.getQuestion(parentBinding);
+			}
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
 			/*widget = new CheckBox(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -269,18 +272,20 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			((CheckBox)widget).setTabIndex(tabIndex);*/
 
 			widget = new CheckBoxWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
-			if(widgetMap.get(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING)) == null)
+			if(widgetMap.get(parentBinding) == null)
 				wrapperSet = true;
 
-			parentWrapper = getParentWrapper(widget,node);
+			parentWrapper = getParentWrapper(widget,node,parentBinding);
 			((CheckBox)widget).setTabIndex(tabIndex);
 
 			String defaultValue = parentWrapper.getQuestionDef().getDefaultValue();
 			if(defaultValue != null && defaultValue.contains(binding))
 				((CheckBox)widget).setValue(true);
 
-			if(wrapperSet)
+			if(wrapperSet){
 				wrapper = parentWrapper;
+				questionDef = formDef.getQuestion(parentBinding);
+			}
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -479,7 +484,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		WidgetEx.loadLabelProperties(node,wrapper);
 
 		wrapper.setTabIndex(tabIndex);
-		wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+		//wrapper.setParentBinding(parentBinding);
 
 		if(tabIndex > 0 && !(wrapper.getWrappedWidget() instanceof Button))
 			widgets.put(new Integer(tabIndex), wrapper);
@@ -490,7 +495,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			;//FormUtil.setWidgetPosition(wrapper,left,top);
 
 		if(widget instanceof Button && binding != null){
-			//wrapper.setParentBinding(node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING));
+			//wrapper.setParentBinding(parentBinding);
 
 			if(binding.equals("addnew")||binding.equals("remove") || binding.equals("submit") ||
 					binding.equals("browse")||binding.equals("clear")||binding.equals("cancel")||binding.equals("search")){

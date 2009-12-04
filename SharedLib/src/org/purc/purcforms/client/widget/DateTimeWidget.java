@@ -8,6 +8,9 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
@@ -174,5 +177,17 @@ public class DateTimeWidget extends Composite{
 	 */
 	public boolean isEnabled(){
 		return dateWidget.isEnabled();
+	}
+	
+	
+	public void addChangeHandler(ChangeHandler handler) {
+		dateWidget.addChangeHandler(handler);
+		timeWidget.addChangeHandler(handler);
+	}
+	
+	
+	public void addKeyUpHandler(KeyUpHandler handler) {
+		dateWidget.addKeyUpHandler(handler);
+		timeWidget.addKeyUpHandler(handler);
 	}
 }

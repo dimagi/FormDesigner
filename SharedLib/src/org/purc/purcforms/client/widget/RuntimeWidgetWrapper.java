@@ -10,7 +10,6 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.ValidationRule;
 import org.purc.purcforms.client.util.FormUtil;
-import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -158,6 +157,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		if(widget instanceof TextBox)
 			setupTextBoxEventListeners();
+		else if(widget instanceof DateTimeWidget)
+			setupDateTimeEventListeners();
 		else if(widget instanceof CheckBox){
 			((CheckBox)widget).addKeyDownHandler(new KeyDownHandler(){
 				public void onKeyDown(KeyDownEvent event) {
@@ -282,6 +283,39 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
+	
+	/**
+	 * Sets up date time event listeners.
+	 */
+	private void setupDateTimeEventListeners(){
+		((DateTimeWidget)widget).addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				//questionDef.setAnswer(((TextBox)widget).getText());
+				if(questionDef != null){
+					questionDef.setAnswer(getTextBoxAnswer());
+					isValid();
+					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
+				}
+
+				if(widget instanceof DatePickerWidget)
+					editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+			}
+		});
+
+		((DateTimeWidget)widget).addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
+					questionDef.setAnswer(getTextBoxAnswer());
+
+					isValid();
+
+					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
+				}
+			}
+		});
+	}
+	
+
 	/**
 	 * Sets the question for the widget.
 	 * 
@@ -368,7 +402,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 		else if(type == QuestionDef.QTN_TYPE_DATE_TIME && widget instanceof DateTimeWidget)
 			((DateTimeWidget)widget).setText(defaultValue);
-		
+
 
 		if(widget instanceof TextBoxBase){
 			((TextBoxBase)widget).setText(""); //first init just incase we have default value
@@ -475,7 +509,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		//Give a visual clue that this widget is locked.
 		DOM.setStyleAttribute(widget.getElement(), "opacity", locked ? "0.6" : "100");
-		
+
 		if(widget instanceof RuntimeGroupWidget)
 			((RuntimeGroupWidget)widget).setLocked(locked);
 	}
@@ -503,12 +537,12 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			value = ((TimeWidget)widget).getText();
 		else if(widget instanceof DateTimeWidget)
 			value = ((DateTimeWidget)widget).getText();
-		
+
 		try{
 			if(questionDef.isDate() && value != null && value.trim().length() > 0){
 				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME){
 					value = FormUtil.getTimeSubmitFormat().format(FormUtil.getTimeDisplayFormat().parse(value));
-				
+
 					// ISO 8601 requires a colon in time zone offset (Java doesn't
 					// include the colon, so we need to insert it
 					if("yyyy-MM-dd'T'HH:mm:ssZ".equals(FormUtil.getTimeSubmitFormat().getPattern()))
@@ -516,7 +550,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				}
 				else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME){
 					value = FormUtil.getDateTimeSubmitFormat().format(FormUtil.getDateTimeDisplayFormat().parse(value));
-				
+
 					// ISO 8601 requires a colon in time zone offset (Java doesn't
 					// include the colon, so we need to insert it
 					if("yyyy-MM-dd'T'HH:mm:ssZ".equals(FormUtil.getDateTimeSubmitFormat().getPattern()))
@@ -796,7 +830,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if((widget instanceof TextBox && questionDef.getAnswer() == null && ((TextBox)widget).getText().trim().length() > 0) ||
 				(widget instanceof TimeWidget && questionDef.getAnswer() == null && ((TimeWidget)widget).getText().trim().length() > 0) ||
 				(widget instanceof DateTimeWidget && questionDef.getAnswer() == null && ((DateTimeWidget)widget).getText().trim().length() > 0)){
-			
+
 			if(panel.getWidgetCount() < 2)
 				panel.add(errorImage);
 			return false;
@@ -1000,7 +1034,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				|| wg instanceof DateTimeWidget);
 	}
 
-	
+
 	public void moveToNextWidget(){
 		editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 	}

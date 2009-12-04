@@ -411,8 +411,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			parentWrapper = getParentBindingWrapper(widget,parentBinding);
 			((RadioButton)widget).setTabIndex(tabIndex);
 
-			if(wrapperSet)
+			if(wrapperSet){
 				wrapper = parentWrapper;
+				questionDef = formDef.getQuestion(parentBinding);
+			}
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_CHECKBOX)){
 			widget = new CheckBoxWidget(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -426,8 +428,11 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			if(defaultValue != null && defaultValue.contains(binding))
 				((CheckBox)widget).setValue(true);
 
-			if(wrapperSet)
+			if(wrapperSet){
 				wrapper = parentWrapper;
+				questionDef = formDef.getQuestion(parentBinding);
+			}
+				
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -839,7 +844,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 
 		List<CheckBox> list = checkBoxGroupMap.get(questionDef);
-		if(list != null && questionDef.isRequired()){
+		if(list != null /*&& questionDef.isRequired()*/){
 			for(CheckBox checkBox : list)
 				((RuntimeWidgetWrapper)checkBox.getParent().getParent()).isValid();
 		}

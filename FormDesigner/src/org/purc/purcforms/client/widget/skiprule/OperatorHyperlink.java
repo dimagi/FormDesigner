@@ -44,6 +44,9 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 	/** The operator text: is null */
 	public static final String OP_TEXT_NULL = LocaleText.get("isNull");
 	
+	/** The operator text: is null */
+	public static final String OP_TEXT_NOT_NULL = LocaleText.get("isNotNull");
+	
 	/** The operator text: is in list */
 	public static final String OP_TEXT_IN_LIST = LocaleText.get("isInList");
 	
@@ -153,6 +156,7 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 		}
 			  
 		menuBar.addItem(OP_TEXT_NULL,true, new SelectItemCommand(OP_TEXT_NULL,this));
+		menuBar.addItem(OP_TEXT_NOT_NULL,true, new SelectItemCommand(OP_TEXT_NOT_NULL,this));
  		
 		if(dataType == QuestionDef.QTN_TYPE_TEXT ){	  
 			menuBar.addItem(OP_TEXT_STARTS_WITH,true,new SelectItemCommand(OP_TEXT_STARTS_WITH,this));	  
@@ -162,7 +166,7 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			count += 4;
 		}
 		 
-		int height = count*38;
+		int height = count*42;
 		if(height > 200)
 			height = 200;
 		
@@ -209,6 +213,8 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			return ModelConstants.OPERATOR_GREATER_EQUAL;
 		else if(text.equals(OP_TEXT_NULL))
 			return ModelConstants.OPERATOR_IS_NULL;
+		else if(text.equals(OP_TEXT_NOT_NULL))
+			return ModelConstants.OPERATOR_IS_NOT_NULL;
 		else if(text.equals(OP_TEXT_IN_LIST))
 			return ModelConstants.OPERATOR_IN_LIST;
 		else if(text.equals(OP_TEXT_NOT_IN_LIST))
@@ -257,6 +263,8 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 			operatorText = OP_TEXT_GREATER_THAN_EQUAL;
 		else if(operator == ModelConstants.OPERATOR_IS_NULL)
 			operatorText = OP_TEXT_NULL;
+		else if(operator == ModelConstants.OPERATOR_IS_NOT_NULL)
+			operatorText = OP_TEXT_NOT_NULL;
 		else if(operator == ModelConstants.OPERATOR_IN_LIST)
 			operatorText = OP_TEXT_IN_LIST;
 		else if(operator == ModelConstants.OPERATOR_NOT_IN_LIST)

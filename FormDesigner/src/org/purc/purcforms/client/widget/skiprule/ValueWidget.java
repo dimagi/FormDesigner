@@ -88,7 +88,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 	public void setOperator(int operator){
 		if(this.operator != operator){ 
-			if(this.operator == ModelConstants.OPERATOR_IS_NULL)
+			if(this.operator == ModelConstants.OPERATOR_IS_NULL || this.operator == ModelConstants.OPERATOR_IS_NOT_NULL)
 				valueHyperlink.setText(EMPTY_VALUE);
 
 			/*if((this.operator == PurcConstants.OPERATOR_IN_LIST || this.operator == PurcConstants.OPERATOR_NOT_IN_LIST) &&
@@ -98,7 +98,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 		this.operator = operator;
 
-		if(operator == ModelConstants.OPERATOR_IS_NULL)
+		if(operator == ModelConstants.OPERATOR_IS_NULL || operator == ModelConstants.OPERATOR_IS_NOT_NULL)
 			valueHyperlink.setText("");
 		else if(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)
 			valueHyperlink.setText(EMPTY_VALUE + BETWEEN_VALUE_SEPARATOR + EMPTY_VALUE);
@@ -506,6 +506,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		String val = valueHyperlink.getText();
 		if(val.equals(EMPTY_VALUE))
 			return null;
+		else if(val == null || val.trim().length() == 0)
+			return val; //could be IS NULL or IS NOT NULL
 
 		if(chkQuestionValue.getValue() == true){
 			valueQtnDef = formDef.getQuestionWithText(val);

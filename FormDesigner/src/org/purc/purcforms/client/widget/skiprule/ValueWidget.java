@@ -231,7 +231,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 			popup = new PopupPanel(true,false);
 			popup.setWidget(menuBar);
-			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop());
+			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop() - 50);
 			popup.show();
 		}
 		else if( (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE
@@ -261,6 +261,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 					maxSize = size;
 				menuBar.addItem(text,true, new SelectItemCommand(optionDef,this));
 			}
+			
+			maxSize*=12;
 
 			/*ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
@@ -270,15 +272,20 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			int height = options.size()*29;
 			if(height > 400)
 				height = 400;
-
+			
+			if(maxSize < 50)
+				maxSize = 50;
+			if(height < 50)
+				height = 50;
+			
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
 			scrollPanel.setHeight(height+"px"); //"200px"
-			scrollPanel.setWidth((maxSize*12)+"px");
+			scrollPanel.setWidth((maxSize)+"px");
 
 			popup = new PopupPanel(true,false);
 			popup.setWidget(scrollPanel);
-			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop() - height);
+			popup.setPopupPosition(valueHyperlink.getAbsoluteLeft(), valueHyperlink.getAbsoluteTop() - height); //- height makes it fly upwards
 			popup.show();
 		}
 		else if( (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE
@@ -317,15 +324,22 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 					checkbox.setValue(true);
 				panel.add(checkbox);
 			}
+			
+			maxSize*=12;
 
 			int height = options.size()*29;
 			if(height > 400)
 				height = 400;
 
+			if(maxSize < 50)
+				maxSize = 50;
+			if(height < 50)
+				height = 50;
+			
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(panel);
 			scrollPanel.setHeight(height+"px"); //"200px"
-			scrollPanel.setWidth((maxSize*12)+"px");
+			scrollPanel.setWidth((maxSize)+"px");
 
 			popup = new PopupPanel(true,false);
 			popup.addCloseHandler(this);

@@ -270,6 +270,11 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 
 			fireFormItemSelected(item.getUserObject());
 			this.item = item;
+			
+			//Expand if has kids such that users do not have to click the plus
+			//sign to expand. Besides, some are not even aware of that.
+			//if(item.getChildCount() > 0)
+			//	item.setState(true);
 		}
 	}
 

@@ -156,7 +156,7 @@ public class Menu extends Composite {
 			public void execute() {controller.showHelpContents();}});
 
 		helpMenu.addSeparator();
-		helpMenu.addItem(LocaleText.get("about") + FormDesignerUtil.getTitle(), new Command(){
+		helpMenu.addItem(LocaleText.get("about") + " " + FormDesignerUtil.getTitle(), new Command(){
 			public void execute() {controller.showAboutInfo();}});
 
 

@@ -882,10 +882,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	/**
-	 * Moves widgets in a given dirrection due to movement of the keyboard arrow keys.
+	 * Moves widgets in a given direction due to movement of the keyboard arrow keys.
 	 * 
-	 * @param dirrection the move
-	 * @return
+	 * @param dirrection the move dirrection.
+	 * @return true if any widget was moved, else false.
 	 */
 	protected boolean moveWidgets(int dirrection){
 		List<Widget> widgets = selectedDragController.getSelectedWidgets();
@@ -912,6 +912,34 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				pos = FormUtil.convertDimensionToInt(widget.getTop());
 				widget.setTop(pos+1+"px");
 			}
+		}
+
+		return widgets.size() > 0;
+	}
+	
+	/**
+	 * Resizes widgets in a given direction due to movement of the keyboard arrow keys.
+	 * 
+	 * @param Event the current event object.
+	 * @return true if any widget was resized, else false.
+	 */
+	protected boolean resizeWidgets(Event event){
+		List<Widget> widgets = selectedDragController.getSelectedWidgets();
+		if(widgets == null)
+			return false;
+
+		int keycode = event.getKeyCode();
+		for(int index = 0; index < widgets.size(); index++){
+			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
+
+			if(keycode == KeyCodes.KEY_LEFT)
+				widget.setWidthInt(widget.getWidthInt()-1);
+			else if(keycode == KeyCodes.KEY_RIGHT)
+				widget.setWidthInt(widget.getWidthInt()+1);
+			else if(keycode == KeyCodes.KEY_UP)
+				widget.setHeightInt(widget.getHeightInt()-1);
+			else if(keycode == KeyCodes.KEY_DOWN)
+				widget.setHeightInt(widget.getHeightInt()+1);
 		}
 
 		return widgets.size() > 0;
@@ -1543,7 +1571,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		if(this.isVisible()){
 			int keyCode = event.getKeyCode();
-			if(keyCode == KeyCodes.KEY_LEFT)
+			if(event.getShiftKey())
+				ret = resizeWidgets(event);
+			else if(keyCode == KeyCodes.KEY_LEFT)
 				ret = moveWidgets(MOVE_LEFT);
 			else if(keyCode == KeyCodes.KEY_RIGHT)
 				ret = moveWidgets(MOVE_RIGHT);

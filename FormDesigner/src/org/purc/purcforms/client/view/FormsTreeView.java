@@ -595,7 +595,7 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 
 	public void addNewForm(){
 		int id = ++nextFormId;
-		addNewForm(LocaleText.get("newForm")+id,"newform"+id,id);
+		addNewForm(LocaleText.get("newForm")+id,"new_form"+id,id);
 
 		//Automatically add a new page
 		addNewChildItem(false);

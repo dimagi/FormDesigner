@@ -940,6 +940,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				widget.setHeightInt(widget.getHeightInt()-1);
 			else if(keycode == KeyCodes.KEY_DOWN)
 				widget.setHeightInt(widget.getHeightInt()+1);
+			else 
+				return false; //Shift press when not in combination with arrow keys is ignored.
 		}
 
 		return widgets.size() > 0;

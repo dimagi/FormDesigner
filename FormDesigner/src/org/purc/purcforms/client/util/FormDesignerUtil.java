@@ -237,6 +237,8 @@ public class FormDesignerUtil {
 		swapChars.put("/", "slash");
 		swapChars.put("\\\\", "backslash");
 		
+		s = s.replace("'", "");
+		
 		// start by cleaning whitespace and converting to lowercase
 		s = s.replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll("\\s+", "_").toLowerCase();
 		

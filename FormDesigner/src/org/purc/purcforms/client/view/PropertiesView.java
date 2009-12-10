@@ -386,28 +386,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		txtText.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
+				String orgText = getSelObjetOriginalText();
 				updateText();
-
-				if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
-					String name = FormDesignerUtil.getXmlTagName(txtText.getText());
-					if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().startsWith("newform")){
-						((FormDef)propertiesObj).setVariableName(name);
-						txtBinding.setText(name);
-					}
-					else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().startsWith("question")){
-						((QuestionDef)propertiesObj).setVariableName(name);
-						txtBinding.setText(name);
-					}
-					else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().startsWith("option")){
-						((OptionDef)propertiesObj).setVariableName(name);
-						txtBinding.setText(name);
-					}
-				}
+				updateSelObjBinding(orgText);
 			}
 		});
 		txtText.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
+				String orgText = getSelObjetOriginalText();
 				updateText();
+				updateSelObjBinding(orgText);
 			}
 		});
 
@@ -461,6 +449,59 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		});
 	}
 
+	private String getSelObjetOriginalText(){
+		if(propertiesObj instanceof FormDef)
+			return ((FormDef)propertiesObj).getName();
+		else if(propertiesObj instanceof QuestionDef)
+			return ((QuestionDef)propertiesObj).getText();
+		else if(propertiesObj instanceof OptionDef )
+			return ((OptionDef)propertiesObj).getText();
+		return null;
+	}
+	
+	private void updateSelObjBinding(String orgText){
+		
+		if(orgText == null)
+			return;
+		
+		String orgTextDefBinding = FormDesignerUtil.getXmlTagName(getTextWithoutDecTemplate(orgText));
+		
+		if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
+			String text = getTextWithoutDecTemplate(txtText.getText().trim());
+			String name = FormDesignerUtil.getXmlTagName(text);
+			if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*startsWith("newform")*/){
+				((FormDef)propertiesObj).setVariableName(name);
+				txtBinding.setText(name);
+			}
+			else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*startsWith("question")*/){
+				((QuestionDef)propertiesObj).setVariableName(name);
+				txtBinding.setText(name);
+			}
+			else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*.startsWith("option")*/){
+				((OptionDef)propertiesObj).setVariableName(name);
+				txtBinding.setText(name);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Gets text without the description template, for a given text.
+	 * 
+	 * @param text the text to parse.
+	 * @return the text without the description template.
+	 */
+	private String getTextWithoutDecTemplate(String text){
+		if(text.contains("${")){
+			if(text.indexOf("}$") < text.length() - 2)
+				text = text.substring(0,text.indexOf("${")) + text.substring(text.indexOf("}$") + 2);
+			else
+				text = text.substring(0,text.indexOf("${"));
+		}
+		return text;
+	}
+	
+	
 	/**
 	 * Checks if a given character is allowed to begin an xml node name.
 	 * 

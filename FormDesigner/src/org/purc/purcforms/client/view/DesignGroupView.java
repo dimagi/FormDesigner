@@ -916,7 +916,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		return widgets.size() > 0;
 	}
-	
+
 	/**
 	 * Resizes widgets in a given direction due to movement of the keyboard arrow keys.
 	 * 
@@ -928,9 +928,15 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		if(widgets == null)
 			return false;
 
+		int resizedCount = 0;
+
 		int keycode = event.getKeyCode();
 		for(int index = 0; index < widgets.size(); index++){
 			DesignWidgetWrapper widget = (DesignWidgetWrapper)widgets.get(index);
+			if(!widget.isResizable())
+				continue;
+
+			resizedCount++;
 
 			if(keycode == KeyCodes.KEY_LEFT)
 				widget.setWidthInt(widget.getWidthInt()-1);
@@ -944,7 +950,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				return false; //Shift press when not in combination with arrow keys is ignored.
 		}
 
-		return widgets.size() > 0;
+		return resizedCount > 0;
 	}
 
 	/**
@@ -1014,7 +1020,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			visible = true;
 		pasteSeparator.setVisible(visible);
 		pasteMenu.setVisible(visible); 
-		
+
 		lockWidgetsMenu.setHTML(FormDesignerUtil.createHeaderHTML(images.add(),Context.getLockWidgets() ? LocaleText.get("unLockWidgets") : LocaleText.get("lockWidgets")));
 	}
 
@@ -1158,7 +1164,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		return addNewWidget(tb,select);
 	}
-	
+
 	/**
 	 * Adds a new date time widget to the selected page.
 	 * 
@@ -1171,7 +1177,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		DOM.setStyleAttribute(tb.getElement(), "width","200px");
 		return addNewWidget(tb,select);
 	}
-	
+
 	/**
 	 * Adds a new time widget to the selected page.
 	 * 
@@ -1470,7 +1476,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				int ypos = event.getClientY();
 				if(Window.getClientHeight() - ypos < 220)
 					ypos = event.getClientY() - 220;
-				
+
 				int xpos = event.getClientX();
 				if(Window.getClientWidth() - xpos < 170)
 					xpos = event.getClientX() - 170;
@@ -1573,7 +1579,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		if(this.isVisible()){
 			int keyCode = event.getKeyCode();
-			if(event.getShiftKey())
+			if(event.getShiftKey() || event.getCtrlKey())
 				ret = resizeWidgets(event);
 			else if(keyCode == KeyCodes.KEY_LEFT)
 				ret = moveWidgets(MOVE_LEFT);
@@ -1583,19 +1589,26 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				ret = moveWidgets(MOVE_UP);
 			else if(keyCode == KeyCodes.KEY_DOWN)
 				ret = moveWidgets(MOVE_DOWN);  
-			else if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
+
+			if(event.getCtrlKey() && (keyCode == 'A' || keyCode == 'a')){
 				if(!isTextAreaFocus(event)){ //TODO This works only when the textarea is clicked to get focus. Need to make it work even before clicking the text area (as long as it is visible)
 					//As for now, Ctrl+A selects all widgets on the design surface's current tab
 					//If one wants to select all widgets within a DesignGroupWidget, they should
 					//right click and select all
-					if(this instanceof DesignSurfaceView)
-						((DesignSurfaceView)this).selectAll();
-					else if(this instanceof DesignGroupWidget && ((DesignGroupWidget)this).editWidget != null)
-						((DesignGroupWidget)this).txtEdit.selectAll();
-					else if(widgetSelectionListener instanceof DesignSurfaceView)
-						((DesignSurfaceView)widgetSelectionListener).selectAll();
-
-					DOM.eventPreventDefault(event);
+					if(isTextBoxFocus(event)){
+						if(this instanceof DesignGroupWidget && ((DesignGroupWidget)this).editWidget != null)
+							((DesignGroupWidget)this).txtEdit.selectAll();
+						
+						DOM.eventPreventDefault(event);
+					}
+					else{
+						if(this instanceof DesignSurfaceView)
+							((DesignSurfaceView)this).selectAll();
+						else if(widgetSelectionListener instanceof DesignSurfaceView)
+							((DesignSurfaceView)widgetSelectionListener).selectAll();
+						
+						DOM.eventPreventDefault(event);
+					}
 				}
 				ret = true;
 			}
@@ -2210,7 +2223,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		return widget;
 	}
-	
+
 	protected void lockWidgets(){
 		Context.setLockWidgets(!Context.getLockWidgets());
 	}

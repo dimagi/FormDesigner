@@ -23,6 +23,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -490,7 +492,15 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					moveToPrevWidget((Widget)event.getSource(),0);
 			}
 		});
-
+		
+		txtText.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				int keyCode = event.getNativeKeyCode();
+				if(!(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN ||
+						keyCode == KeyCodes.KEY_DOWN || keyCode == KeyCodes.KEY_UP))
+					updateText((TextBox)event.getSource());
+			}
+		});
 
 		txtBinding.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
@@ -526,12 +536,15 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				if(optionDef == null)
 					optionDef = addNewOptionDef();
 
+				String orgTextDefBinding = FormDesignerUtil.getXmlTagName(optionDef.getText());
+				
 				optionDef.setText(txtText.getText());
 
 				//automatically set the binding, if empty.
 				TextBox txtBinding = (TextBox)table.getWidget(row, 1);
 				String binding = txtBinding.getText();
-				if(binding == null || binding.trim().length() == 0){
+				//if(binding == null || binding.trim().length() == 0){
+				if(binding == null || binding.trim().length() == 0 || binding.equals(orgTextDefBinding)){
 					txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
 					optionDef.setVariableName(txtBinding.getText());
 				}
@@ -622,12 +635,19 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 							return;
 						}
 						row++;
-						col = 0;
+						col = 1; //0;
 					}
 					else{
 						if(textBox.getText() == null || textBox.getText().trim().length() == 0)
 							return;
-						col = 1;
+						else if(row == (rowCount - 2)){
+							addNewOption();
+							return;
+						}
+						else
+							row++;
+						
+						col = 0; //1;
 					}
 
 					textBox = ((TextBox)table.getWidget(row, col));

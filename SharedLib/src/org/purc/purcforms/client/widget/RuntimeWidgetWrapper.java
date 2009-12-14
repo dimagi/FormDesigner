@@ -951,7 +951,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(!(widget instanceof Label)){
 			if(!required && panel.getWidgetCount() > 1)
 				panel.remove(errorImage);
-			else if(required && panel.getWidgetCount() < 2)
+			else if(required && panel.getWidgetCount() < 2 && !isAnswered())
 				panel.add(errorImage);
 		}
 	}

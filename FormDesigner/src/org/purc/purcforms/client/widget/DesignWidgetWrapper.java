@@ -320,6 +320,10 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button ||
 				widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof TabBar*/);
 	}
+	
+	public boolean isResizable(){
+		return !(widget instanceof Label || widget instanceof Hyperlink || widget instanceof CheckBox);
+	}
 
 	public boolean stopEditMode(){
 		if(hasLabelEdidting()){

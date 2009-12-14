@@ -189,8 +189,20 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
 			Context.setCurrentMode(Context.MODE_DESIGN);
-		else if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
+		else if(selectedTabIndex == SELECTED_INDEX_PREVIEW){
+			if(formDef != null && formDef.getQuestionCount() > 0 && !designSurfaceView.hasWidgets()){
+				tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
+				
+				DeferredCommand.addCommand(new Command(){
+					public void execute() {
+						tabs.selectTab(SELECTED_INDEX_PREVIEW);
+					}
+				});
+				return;
+			}
+			
 			Context.setCurrentMode(Context.MODE_PREVIEW);
+		}
 		else if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
 			Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
 		else if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)

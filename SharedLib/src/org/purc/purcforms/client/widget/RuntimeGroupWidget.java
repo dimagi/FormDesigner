@@ -427,6 +427,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		if(binding != null)
 			wrapper.setBinding(binding);
+		
+		if(parentBinding != null)
+			wrapper.setParentBinding(parentBinding);
 
 		if(parentWrapper != null)
 			parentWrapper.addChildWidget(wrapper);
@@ -625,6 +628,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			}
 			else if(binding.equalsIgnoreCase("browse")){
 				RuntimeWidgetWrapper wrapper = getCurrentMultimediWrapper(sender);
+				if(wrapper == null)
+					return;
 
 				if(wrapper.getWrappedWidget() instanceof Image)
 					image = (Image)wrapper.getWrappedWidget();

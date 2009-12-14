@@ -572,6 +572,9 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		if(binding != null)
 			wrapper.setBinding(binding);
+		
+		if(parentBinding != null)
+			wrapper.setParentBinding(parentBinding);
 
 		if(parentWrapper != null)
 			parentWrapper.addChildWidget(wrapper);

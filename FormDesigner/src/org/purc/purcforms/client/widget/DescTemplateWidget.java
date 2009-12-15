@@ -31,7 +31,7 @@ public class DescTemplateWidget extends Composite{
 	private FormDef formDef;
 
 	private SuggestBox sgstField = new SuggestBox();
-	private Hyperlink fieldHyperlink = new Hyperlink(LocaleText.get("addField"),null);
+	private Hyperlink fieldHyperlink = new Hyperlink(LocaleText.get("addField"),"");
 	private TextBox txtField = new TextBox();
 
 	private MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();

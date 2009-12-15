@@ -44,10 +44,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	private VerticalPanel verticalPanel = new VerticalPanel();
 
 	/** Widget for adding new conditions. */
-	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),null);
+	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),"");
 
 	/** Widget for grouping conditions. Has all,any, none, and not all. */
-	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null);
+	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"");
 
 	/** The form definition object that this skip rule belongs to. */
 	private FormDef formDef;
@@ -108,7 +108,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		actionPanel.add(chkMakeRequired);
 		actionPanel.setSpacing(5);
 
-		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),null);
+		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),"");
 		hyperlink.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				showOtherQuestions();

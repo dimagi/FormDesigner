@@ -7,6 +7,7 @@ import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.LayoutChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
+import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
@@ -912,5 +913,10 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			tabs.remove(SELECTED_INDEX_MODEL_XML);
 			showModelXml = false;
 		}
+	}
+	
+	
+	public WidgetPropertyChangeListener getWidgetPropertyChangeListener(){
+		return designSurfaceView;
 	}
 }

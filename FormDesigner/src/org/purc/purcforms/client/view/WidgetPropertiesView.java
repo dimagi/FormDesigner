@@ -3,6 +3,8 @@ package org.purc.purcforms.client.view;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
+import org.purc.purcforms.client.controller.WidgetPropertySetter;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
@@ -161,6 +163,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 	/** The question definition object for the currently selected widget. */
 	QuestionDef questionDef;
+
+	private WidgetPropertyChangeListener widgetPropertyChangeListener;
 
 
 	/**
@@ -467,12 +471,16 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setForeColor(txtForeColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FORE_COLOR, txtForeColor.getText());
 			}
 		});
 		sgstForeColor.addSelectionHandler(new SelectionHandler(){
 			public void onSelection(SelectionEvent event){
 				if(widget != null)
 					widget.setForeColor(txtForeColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FORE_COLOR, txtForeColor.getText());
 			}
 		});
 		txtBackgroundColor.addChangeHandler(new ChangeHandler(){
@@ -481,22 +489,28 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widget.setBackgroundColor(txtBackgroundColor.getText());
 				else if(viewWidget != null)
 					viewWidget.setBackgroundColor(txtBackgroundColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BACKGROUND_COLOR, txtBackgroundColor.getText());
 			}
 		});
 		sgstBackgroundColor.addSelectionHandler(new SelectionHandler(){
 			public void onSelection(SelectionEvent event){
-				if(widget != null)
+				if(widget != null)			
 					widget.setBackgroundColor(txtBackgroundColor.getText());
 				else if(viewWidget != null)
 					viewWidget.setBackgroundColor(txtBackgroundColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BACKGROUND_COLOR, txtBackgroundColor.getText());
 			}
 		});
 		txtBorderColor.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				if(widget != null)
+				if(widget != null)	
 					widget.setBorderColor(txtBorderColor.getText());
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
 					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderColor(txtBorderColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_COLOR, txtBorderColor.getText());
 			}
 		});
 		sgstBorderColor.addSelectionHandler(new SelectionHandler(){
@@ -505,70 +519,92 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widget.setBorderColor(txtBorderColor.getText());
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
 					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderColor(txtBorderColor.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_COLOR, txtBorderColor.getText());
 			}
 		});
 		txtFontSize.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setFontSize(txtFontSize.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText());
 			}
 		});
 		txtFontSize.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
 				if(widget != null)
 					widget.setFontSize(txtFontSize.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText());
 			}
 		});
 		txtFontFamily.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setFontFamily(txtFontFamily.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_FAMILY, txtFontFamily.getText());
 			}
 		});
 		txtFontFamily.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
 				if(widget != null)
 					widget.setFontFamily(txtFontFamily.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_FAMILY, txtFontFamily.getText());
 			}
 		});
 		txtBorderWidth.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				if(widget != null)
+				if(widget != null)	
 					widget.setBorderWidth(txtBorderWidth.getText());
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
 					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderWidth(txtBorderWidth.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_WIDTH, txtBorderWidth.getText());
 			}
 		});
 		txtBorderWidth.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
-				if(widget != null)
+				if(widget != null)	
 					widget.setBorderWidth(txtBorderWidth.getText());
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
 					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderWidth(txtBorderWidth.getText());
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_WIDTH, txtBorderWidth.getText());
 			}
 		});
 		lbTextDecoration.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setTextDecoration(lbTextDecoration.getItemText(lbTextDecoration.getSelectedIndex()));
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_TEXT_DECORATION, lbTextDecoration.getItemText(lbTextDecoration.getSelectedIndex()));
 			}
 		});
 		lbTextAlign.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setTextAlign(lbTextAlign.getItemText(lbTextAlign.getSelectedIndex()));
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_TEXT_ALIGN, lbTextAlign.getItemText(lbTextAlign.getSelectedIndex()));
 			}
 		});
 		lbFontStyle.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setFontStyle(lbFontStyle.getItemText(lbFontStyle.getSelectedIndex()));
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_STYLE, lbFontStyle.getItemText(lbFontStyle.getSelectedIndex()));
 			}
 		});
 		lbFontWeight.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
 					widget.setFontWeight(lbFontWeight.getItemText(lbFontWeight.getSelectedIndex()));
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_WEIGHT, lbFontWeight.getItemText(lbFontWeight.getSelectedIndex()));
 			}
 		});
 		lbBorderStyle.addChangeHandler(new ChangeHandler(){
@@ -577,6 +613,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widget.setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
 					((DesignWidgetWrapper)viewWidget.getParent().getParent()).setBorderStyle(lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
+				else
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_STYLE, lbBorderStyle.getItemText(lbBorderStyle.getSelectedIndex()));
 			}
 		});
 	}
@@ -708,7 +746,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	 */
 	private void updateWidth(){
 		if(txtWidth.getText().trim().length() > 0){
-			if(widget != null)
+			if(widget != null)		
 				widget.setWidth(txtWidth.getText()+"px");
 			else if(viewWidget != null){
 				if(viewWidget instanceof DesignSurfaceView)
@@ -716,6 +754,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				else
 					viewWidget.setWidth(txtWidth.getText()+"px");
 			}
+			else
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_WIDTH, txtWidth.getText()+"px");
 		}
 	}
 
@@ -732,6 +772,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				else
 					viewWidget.setHeight(txtHeight.getText()+"px");
 			}
+			else
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_HEIGHT, txtHeight.getText()+"px");
 		}
 	}
 
@@ -739,26 +781,36 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	 * Updates the selected widget with the new left as typed by the user.
 	 */
 	private void updateLeft(){
-		if(widget != null && txtLeft.getText().trim().length() > 0)
-			widget.setLeft(txtLeft.getText()+"px");
+		if(txtLeft.getText().trim().length() > 0){
+			if(widget != null)
+				widget.setLeft(txtLeft.getText()+"px");
+			else
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_LEFT, txtLeft.getText()+"px");
+		}
 	}
 
 	/**
 	 * Updates the selected widget with the new top as typed by the user.
 	 */
 	private void updateTop(){
-		if(widget != null && txtTop.getText().trim().length() > 0)
-			widget.setTop(txtTop.getText()+"px");
+		if(txtTop.getText().trim().length() > 0){
+			if(widget != null)
+				widget.setTop(txtTop.getText()+"px");
+			else
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_TOP, txtTop.getText()+"px");
+		}
 	}
 
 	/**
 	 * Updates the selected widget with the new tab index as typed by the user.
 	 */
 	private void updateTabIndex(){
-		if(widget != null && txtTabIndex.getText().trim().length() > 0)
-			widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
-		else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
-			((DesignWidgetWrapper)viewWidget.getParent().getParent()).setTabIndex(Integer.parseInt(txtTabIndex.getText()));
+		if(txtTabIndex.getText().trim().length() > 0){
+			if(widget != null)
+				widget.setTabIndex(Integer.parseInt(txtTabIndex.getText()));
+			else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)
+				((DesignWidgetWrapper)viewWidget.getParent().getParent()).setTabIndex(Integer.parseInt(txtTabIndex.getText()));
+		}
 	}
 
 	/**
@@ -1089,5 +1141,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtBorderWidth.setText(null);
 			txtBorderColor.setText(null);
 		}
+	}
+
+	public void setWidgetPropertyChangeListener(WidgetPropertyChangeListener widgetPropertyChangeListener){
+		this.widgetPropertyChangeListener = widgetPropertyChangeListener;
 	}
 }

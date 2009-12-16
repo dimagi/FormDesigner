@@ -10,6 +10,8 @@ import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
 import org.purc.purcforms.client.controller.FormDesignerDropController;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
+import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
+import org.purc.purcforms.client.controller.WidgetPropertySetter;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.OptionDef;
@@ -54,7 +56,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class DesignGroupView extends Composite implements WidgetSelectionListener,IWidgetPopupMenuListener,DragDropListener{
+public class DesignGroupView extends Composite implements WidgetSelectionListener,IWidgetPopupMenuListener,DragDropListener,WidgetPropertyChangeListener{
 
 	protected static final int MOVE_LEFT = 1;
 	protected static final int MOVE_RIGHT = 2;
@@ -970,7 +972,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			if(selectedPanel.getWidget(i) instanceof  DesignWidgetWrapper){
 				DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedPanel.getWidget(i);
 				if(widget.isWidgetInRect(selectionXPos, selectionYPos, endX, endY))
-					this.selectedDragController.selectWidget(widget);
+					selectedDragController.selectWidget(widget);
 			}
 		}
 
@@ -993,6 +995,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				widget.setWidthInt(endX - widget.getLeftInt());
 			}
 		}
+
+		if(selectedDragController.getSelectedWidgetCount() > 0)
+			widgetSelectionListener.onWidgetSelected(null, false);
 	}
 
 	/**
@@ -1598,7 +1603,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 					if(isTextBoxFocus(event)){
 						if(this instanceof DesignGroupWidget && ((DesignGroupWidget)this).editWidget != null)
 							((DesignGroupWidget)this).txtEdit.selectAll();
-						
+
 						DOM.eventPreventDefault(event);
 					}
 					else{
@@ -1606,7 +1611,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 							((DesignSurfaceView)this).selectAll();
 						else if(widgetSelectionListener instanceof DesignSurfaceView)
 							((DesignSurfaceView)widgetSelectionListener).selectAll();
-						
+
 						DOM.eventPreventDefault(event);
 					}
 				}
@@ -2224,7 +2229,30 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
+	
 	protected void lockWidgets(){
 		Context.setLockWidgets(!Context.getLockWidgets());
+	}
+
+	
+	public boolean onWidgetPropertyChanged(byte property, String value){
+		if(WidgetPropertySetter.setProperty(property, selectedDragController, value))
+			return true;
+
+		int count  = selectedPanel.getWidgetCount();
+		for(int index = 0; index < count; index++){
+			Widget widget = selectedPanel.getWidget(index);
+			if(!(widget instanceof DesignWidgetWrapper))
+				continue;
+
+			DesignWidgetWrapper wrapper = (DesignWidgetWrapper)widget;
+			if(!(wrapper.getWrappedWidget() instanceof DesignGroupWidget))
+				continue;
+
+			if(((DesignGroupWidget)wrapper.getWrappedWidget()).onWidgetPropertyChanged(property, value))
+				return true;
+		}
+
+		return false;
 	}
 }

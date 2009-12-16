@@ -144,6 +144,8 @@ public interface IFormDesignerListener extends IFormActionListener{
 	 */
 	public void saveAsXhtml();
 	
+	public void saveAsPurcForm();
+	
 	/**
 	 * Prints the currently selected page of the xform.
 	 */

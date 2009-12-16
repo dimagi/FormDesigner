@@ -89,6 +89,9 @@ public class Menu extends Composite {
 		fileMenu.addSeparator();
 		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("saveAsXhtml")),true, new Command(){
 			public void execute() {controller.saveAsXhtml();}});
+		
+		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("saveAsPurcForm")),true, new Command(){
+			public void execute() {controller.saveAsPurcForm();}});
 
 		fileMenu.addSeparator();
 		fileMenu.addItem(LocaleText.get("close"), new Command(){

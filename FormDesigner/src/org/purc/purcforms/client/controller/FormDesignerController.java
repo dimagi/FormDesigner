@@ -20,6 +20,7 @@ import org.purc.purcforms.client.view.LocalesDialog;
 import org.purc.purcforms.client.view.LoginDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
+import org.purc.purcforms.client.xforms.PurcFormBuilder;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
@@ -379,7 +380,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					//Save text for the current language
 					if(saveLocaleText)
 						saveTheLanguageText(false);
-						//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
+					//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();
@@ -1121,35 +1122,69 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * Embeds the selected xform into xhtml.
 	 */
 	public void saveAsXhtml(){
-		if(isOfflineMode()){
-			final Object obj = leftPanel.getSelectedForm();
-			if(obj == null){
-				Window.alert(LocaleText.get("selectSaveItem"));
-				return;
-			}
+		if(!isOfflineMode())
+			return;
 
-			FormUtil.dlg.setText(LocaleText.get("savingForm"));
-			FormUtil.dlg.center();
-
-			DeferredCommand.addCommand(new Command(){
-				public void execute() {
-					try{
-						String xml = null;
-						FormDef formDef = new FormDef((FormDef)obj);
-						formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
-						xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);
-						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
-						FormUtil.dlg.hide();
-					}
-					catch(Exception ex){
-						FormUtil.dlg.hide();
-						FormUtil.displayException(ex);
-					}	
-				}
-			});
+		final Object obj = leftPanel.getSelectedForm();
+		if(obj == null){
+			Window.alert(LocaleText.get("selectSaveItem"));
+			return;
 		}
+
+		FormUtil.dlg.setText(LocaleText.get("savingForm"));
+		FormUtil.dlg.center();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				try{
+					FormDef formDef = new FormDef((FormDef)obj);
+					formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
+					String xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);
+					xml = FormDesignerUtil.formatXml(xml);
+					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.dlg.hide();
+					FormUtil.displayException(ex);
+				}	
+			}
+		});
 	}
+
+
+	public void saveAsPurcForm(){
+		if(!isOfflineMode())
+			return;
+
+		saveTheForm();
+
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				
+				FormUtil.dlg.setText(LocaleText.get("savingForm"));
+				FormUtil.dlg.center();
+
+				DeferredCommand.addCommand(new Command(){
+					public void execute() {
+						try{
+							FormDef formDef = leftPanel.getSelectedForm();
+							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
+							xml = FormDesignerUtil.formatXml(xml);
+							centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+							FormUtil.dlg.hide();
+						}
+						catch(Exception ex){
+							FormUtil.dlg.hide();
+							FormUtil.displayException(ex);
+						}	
+					}
+				});
+
+			}
+		});
+	}
+
 
 	/**
 	 * This is called from the server after an attempt to authenticate the current

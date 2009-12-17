@@ -11,6 +11,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
@@ -83,6 +84,62 @@ public class XformParser {
 			formDef.updateDoc(false);
 
 		return fromXform2FormDef(XformUtil.normalizeNameSpace(formDef.getDoc(),XmlUtil.fromDoc2String(formDef.getDoc())));*/
+	}
+
+	/**
+	 * Converts an xml document to a form definition object.
+	 * 
+	 * @param xml the document xml.
+	 * @return the form definition object.
+	 */
+	public static FormDef fromXform2FormDef(String xml, HashMap<Integer,HashMap<String,String>> languageText){
+		Document doc = XmlUtil.getDocument(xml);
+
+		String layoutXml = null; NodeList nodes = null;
+		Element root = doc.getDocumentElement();
+		if(root.getNodeName().equals("PurcForm")){
+			nodes = root.getElementsByTagName("Xform");
+			assert(nodes.getLength() > 0);
+			xml = getChildElement(nodes.item(0)).toString();
+			doc = XmlUtil.getDocument(xml);
+
+			nodes = root.getElementsByTagName("Layout");
+			if(nodes.getLength() > 0)
+				layoutXml = FormUtil.formatXml(getChildElement(nodes.item(0)).toString());
+
+			nodes = root.getElementsByTagName("LanguageText"); 
+			assert(nodes.getLength() > 0);
+		}
+
+		FormDef formDef = getFormDef(doc);
+
+		if(layoutXml != null)
+			formDef.setLayoutXml(FormUtil.formatXml(layoutXml));
+
+		if(nodes != null){
+			for(int index = 0; index < nodes.getLength(); index++){
+				Element node = (Element)nodes.item(index);
+				HashMap<String,String> map = new HashMap<String,String>();
+				map.put(node.getAttribute("lang"), FormUtil.formatXml(node.toString()));
+				languageText.put(formDef.getId(), map);
+			}
+			
+			formDef.setXformXml(FormUtil.formatXml(xml));
+		}
+
+		return formDef;
+	}
+	
+	
+	private static Node getChildElement(Node node){
+		NodeList nodes = node.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() == Node.ELEMENT_NODE)
+				return (Element)child;
+		}
+		
+		return node;
 	}
 
 
@@ -231,10 +288,10 @@ public class XformParser {
 			//		|| tagname.equals(NODE_NAME_INPUT_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) {
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
 					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
-				
+
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);
 				questionDef = parseUiElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns,nodeContext);
-			
+
 				label = nodeContext.getLabel();
 				hint = nodeContext.getHint();
 				value = nodeContext.getValue();
@@ -250,10 +307,10 @@ public class XformParser {
 			}
 			//else if(tagname.equals(NODE_NAME_LABEL)||tagname.equals(NODE_NAME_LABEL_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_LABEL_MINUS_PREFIX)){
-				
+
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);;
 				parseLabelElement(formDef, child, questionDef, nodeContext);
-			
+
 				label = nodeContext.getLabel();
 				hint = nodeContext.getHint();
 				value = nodeContext.getValue();
@@ -263,10 +320,10 @@ public class XformParser {
 			}
 			//else if (tagname.equals(NODE_NAME_HINT)||tagname.equals(NODE_NAME_HINT_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_HINT_MINUS_PREFIX)){
-				
+
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);;
 				parseHintElement(formDef, child, questionDef, nodeContext);
-			
+
 				label = nodeContext.getLabel();
 				hint = nodeContext.getHint();
 				value = nodeContext.getValue();
@@ -291,18 +348,18 @@ public class XformParser {
 
 		NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);;
 		setLabelValueNode(formDef, element, questionDef, parentQtn, nodeContext);
-		
+
 		label = nodeContext.getLabel();
 		hint = nodeContext.getHint();
 		value = nodeContext.getValue();
 		labelNode = nodeContext.getLabelNode();
 		hintNode = nodeContext.getHintNode();
 		valueNode = nodeContext.getValueNode();
-		
+
 		return questionDef;
 	}
 
-	
+
 	/**
 	 * Sets the label and value nodes of the current object being parsed.
 	 * 
@@ -341,7 +398,7 @@ public class XformParser {
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Sets the xforms instance data node child of a given question definition object.
@@ -450,8 +507,8 @@ public class XformParser {
 
 		return qtn.getVariableName();
 	}
-	
-	
+
+
 	/**
 	 * Parses the instance node of an xforms document.
 	 * 
@@ -469,19 +526,19 @@ public class XformParser {
 				formDef.setDataNode(dataNode);
 			}
 		}
-		
+
 		formDef.setVariableName(XmlUtil.getNodeName(dataNode));
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE) != null)
 			formDef.setDescriptionTemplate(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE));
-		
+
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null)
 			formDef.setId(Integer.parseInt(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID)));
-		
+
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME) != null)
 			formDef.setName(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME));
 	}
 
-	
+
 	/**
 	 * Parses a group element of an xforms document.
 	 * 
@@ -511,8 +568,8 @@ public class XformParser {
 		}
 		parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 	}
-	
-	
+
+
 	/**
 	 * Parses a bind element of an xforms document.
 	 * 
@@ -558,7 +615,7 @@ public class XformParser {
 
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT) != null)
 			constraints.put(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT));
-		
+
 		if(qtn.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(qtn);
 			qtn.setRepeatQtnsDef(repeatQtnsDef);
@@ -566,11 +623,11 @@ public class XformParser {
 
 			//questionDef = qtn;
 		}
-		
+
 		return qtn;
 	}
 
-	
+
 	/**
 	 * Parses a UI element of an xforms document.
 	 * 
@@ -598,7 +655,7 @@ public class XformParser {
 		String varName = (String)id2VarNameMap.get(((ref != null) ? ref : bind));
 
 		String tagname = child.getNodeName();
-		
+
 		//if(tagname.equals(NODE_NAME_REPEAT) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX))
 		//	map.put(bind, bind); //TODO Not very sure about this
 
@@ -631,10 +688,10 @@ public class XformParser {
 
 				nodeContext.setLabel("");
 				nodeContext.setHint("");
-				
+
 				qtn.setLabelNode(nodeContext.getLabelNode());
 				qtn.setHintNode(nodeContext.getHintNode());
-				
+
 				qtn.setControlNode(child);
 				int pageNo = currentPageNo;
 				if(pageNo == 0) pageNo = 1; //Xform may not have groups for pages.
@@ -664,11 +721,11 @@ public class XformParser {
 			questionDef = qtn;
 			parseElement(formDef, child, id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 		}
-		
+
 		return questionDef;
 	}
-	
-	
+
+
 	/**
 	 * Parses a label element of an xforms document.
 	 * 
@@ -701,8 +758,8 @@ public class XformParser {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Parses a hint element of an xforms document.
 	 * 

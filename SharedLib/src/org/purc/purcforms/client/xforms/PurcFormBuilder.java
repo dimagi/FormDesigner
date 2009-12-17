@@ -37,8 +37,8 @@ public class PurcFormBuilder {
 			node = (Element)XmlUtil.getDocument(xml).getDocumentElement().cloneNode(true);
 			doc.importNode(node, true);
 			layoutNode.appendChild(node);
+			purcFormNode.appendChild(layoutNode);
 		}
-		purcFormNode.appendChild(layoutNode);
 
 
 		Element languageNode = doc.createElement("Language");

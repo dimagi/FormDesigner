@@ -50,7 +50,7 @@ public class FieldWidget extends Composite{
 	}
 	
 	private void setupWidgets(){
-		fieldHyperlink = new Hyperlink("",null); //Field 1
+		fieldHyperlink = new Hyperlink("",""); //Field 1
 		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);

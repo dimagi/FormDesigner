@@ -166,6 +166,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 	private WidgetPropertyChangeListener widgetPropertyChangeListener;
 
+	private boolean loadedBindings = false;
+	
 
 	/**
 	 * Creates a new instance of the widget properties view.
@@ -823,6 +825,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			prevBinding = sgstBinding.getText().trim();
 			this.widget = (DesignWidgetWrapper)widget;
 			viewWidget = null;
+			
+			if(!loadedBindings && formDef != null)
+				setupFormDef(formDef);
 		}
 		else{
 			viewWidget = (DesignGroupView)widget;
@@ -1061,6 +1066,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		oracle.add("clear");
 		oracle.add("cancel");
 		oracle.add("search");
+		
+		loadedBindings = (formDef.getQuestionCount() > 0);
 	}
 
 	/**

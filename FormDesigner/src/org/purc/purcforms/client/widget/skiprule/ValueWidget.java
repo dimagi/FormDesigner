@@ -113,7 +113,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueHyperlink = new Hyperlink(EMPTY_VALUE,null);
+		valueHyperlink = new Hyperlink(EMPTY_VALUE,"");
 		horizontalPanel.add(valueHyperlink);
 
 		valueHyperlink.addClickHandler(new ClickHandler(){
@@ -159,7 +159,6 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(!(operator == ModelConstants.OPERATOR_BETWEEN || operator == ModelConstants.OPERATOR_NOT_BETWEEN)){
 			txtValue1.addBlurHandler(new BlurHandler(){
 				public void onBlur(BlurEvent event){
-
 					//stopEdit(true);
 				}
 			});
@@ -172,12 +171,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			//if(txtValue1 instanceof DatePicker){
 			txtValue1.addChangeHandler(new ChangeHandler(){
 				public void onChange(ChangeEvent event){
-					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
+					stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
 			txtValue2.addChangeHandler(new ChangeHandler(){
 				public void onChange(ChangeEvent event){
-					;//stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
+					stopEdit(true); //TODO One has to explicitly press ENTER because of the bug we currently have on ticking the question value checkbox
 				}
 			});
 			//}

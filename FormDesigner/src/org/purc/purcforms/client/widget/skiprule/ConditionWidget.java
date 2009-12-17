@@ -88,13 +88,13 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	 * Creates the condition widgets.
 	 */
 	private void setupWidgets(){
-		actionHyperlink = new ActionHyperlink("<>",null,this,allowFieldSelection);
+		actionHyperlink = new ActionHyperlink("<>","",this,allowFieldSelection);
 
 		if(allowFieldSelection)
 			fieldWidget = new FieldWidget(this);
 
-		operatorHyperlink = new OperatorHyperlink(OperatorHyperlink.OP_TEXT_EQUAL,null,this);
-		funcHyperlink = new FunctionHyperlink(FunctionHyperlink.FUNCTION_TEXT_VALUE,null,this);
+		operatorHyperlink = new OperatorHyperlink(OperatorHyperlink.OP_TEXT_EQUAL,"",this);
+		funcHyperlink = new FunctionHyperlink(FunctionHyperlink.FUNCTION_TEXT_VALUE,"",this);
 		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
@@ -124,7 +124,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	public void onItemSelected(Object sender, Object item) {
 		if(sender == fieldWidget /*fieldHyperlink*/){
 			questionDef = (QuestionDef)item;
-			operatorHyperlink.setDataType(questionDef.getDataType());
+			//operatorHyperlink.setDataType(questionDef.getDataType());
+			setOperatorDataType(questionDef);
 			valueWidget.setQuestionDef(questionDef);
 		}
 		else if(sender == operatorHyperlink){
@@ -137,7 +138,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		else if(sender == funcHyperlink){
 			function = ((Integer)item).intValue();
 			valueWidget.setFunction(function);
-			operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
+			setOperatorDataType(questionDef);
+			//operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
 		}
 		else if(sender == valueWidget){
 			
@@ -222,16 +224,19 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	public void setQuestionDef(QuestionDef questionDef){
 		this.questionDef = questionDef;
 		
-		operatorHyperlink.setDataType(questionDef.getDataType());
+		/*//operatorHyperlink.setDataType(questionDef.getDataType());
+		setOperatorDataType(questionDef);*/
 		
 		//if(allowFieldSelection)
 			valueWidget.setQuestionDef(questionDef);
 		
-		operatorHyperlink.setDataType(questionDef.getDataType());
+		/*//operatorHyperlink.setDataType(questionDef.getDataType());
+		setOperatorDataType(questionDef);*/
 
 		if(condition != null){
 			operator = condition.getOperator();
 			function = condition.getFunction();
+			setOperatorDataType(questionDef);
 
 			if(allowFieldSelection)
 				fieldWidget.setQuestion(questionDef);
@@ -242,5 +247,10 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			valueWidget.setValueQtnDef(condition.getValueQtnDef()); //Should be set before value such that value processing finds it.
 			valueWidget.setValue(condition.getValue());
 		}
+	}
+	
+	
+	private void setOperatorDataType(QuestionDef questionDef){
+		operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
 	}
 }

@@ -247,14 +247,24 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml);
+						FormDef formDef = XformParser.fromXform2FormDef(xml,languageText);
 						formDef.setReadOnly(tempReadonly);
 
 						if(tempFormId != ModelConstants.NULL_ID)
 							formDef.setId(tempFormId);
 
-						formDef.setXformXml(centerPanel.getXformsSource());
-						formDef.setLayoutXml(centerPanel.getLayoutXml());
+						if(formDef.getLayoutXml() != null){
+							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
+							
+							HashMap<String,String> locales = languageText.get(formDef.getId());
+							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
+							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
+						}
+						else{
+							formDef.setXformXml(centerPanel.getXformsSource());
+							formDef.setLayoutXml(centerPanel.getLayoutXml());
+						}
+						
 						leftPanel.loadForm(formDef);
 						centerPanel.loadForm(formDef,formDef.getLayoutXml());
 						centerPanel.format();

@@ -1107,7 +1107,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	protected DesignWidgetWrapper addNewVideoAudio(String text, boolean select){
 		if(text == null)
 			text = LocaleText.get("clickToPlay");
-		Hyperlink link = new Hyperlink(text,null);
+		Hyperlink link = new Hyperlink(text,"");
 
 		DesignWidgetWrapper wrapper = addNewWidget(link,select);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());

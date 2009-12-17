@@ -275,7 +275,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	private DesignWidgetWrapper addNewVideoAudio(String text){
 		if(text == null)
 			text = LocaleText.get("clickToPlay");
-		Hyperlink link = new Hyperlink(text,null);
+		Hyperlink link = new Hyperlink(text,"");
 
 		DesignWidgetWrapper wrapper = addNewWidget(link);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());

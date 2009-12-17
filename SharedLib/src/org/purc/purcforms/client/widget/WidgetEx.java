@@ -190,7 +190,7 @@ public class WidgetEx extends Composite{
 			//((Image)this.widget).setVisibleRect(image.getOriginLeft(),image.getOriginTop(),image.getWidth(),image.getHeight());
 		}
 		else if(widget.widget instanceof Hyperlink)
-			this.widget = new Hyperlink(((Hyperlink)widget.widget).getText(),null);
+			this.widget = new Hyperlink(((Hyperlink)widget.widget).getText(),"");
 
 		if(height != null)
 			widget.setHeight(height);

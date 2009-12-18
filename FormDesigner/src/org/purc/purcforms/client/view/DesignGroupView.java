@@ -1582,6 +1582,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		boolean ret = false;
 
+		if(isTextBoxFocus(event) && editWidget == null)
+			return true;  //could be on widget properties pane.
+
 		if(this.isVisible()){
 			int keyCode = event.getKeyCode();
 			if(event.getShiftKey() || event.getCtrlKey())
@@ -1654,8 +1657,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			}
 
 			if(!ret){
-				boolean textBoxFocus = isTextBoxFocus(event);
-				if(!textBoxFocus || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
+				if(!isTextBoxFocus(event) || (editWidget != null /*&& event.getCurrentTarget() == editWidget.getElement()*/)){
 					boolean ret1 = false;
 					if(keyCode != KeyCodes.KEY_DELETE && editWidget == null)
 						ret1 = handleStartLabelEditing(event);
@@ -2229,12 +2231,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		return widget;
 	}
 
-	
+
 	protected void lockWidgets(){
 		Context.setLockWidgets(!Context.getLockWidgets());
 	}
 
-	
+
 	public boolean onWidgetPropertyChanged(byte property, String value){
 		if(WidgetPropertySetter.setProperty(property, selectedDragController, value))
 			return true;

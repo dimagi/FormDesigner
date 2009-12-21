@@ -2,12 +2,13 @@ package org.purc.purcforms.client.widget;
 
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -38,7 +39,7 @@ public class TreeItemWidget extends Composite{
 	 * @param popup the pop up panel for context menu.
 	 * @param formActionListener listener to form action events.
 	 */
-	public TreeItemWidget(AbstractImagePrototype imageProto, String caption, PopupPanel popup,IFormActionListener formActionListener){
+	public TreeItemWidget(ImageResource imageProto, String caption, PopupPanel popup,IFormActionListener formActionListener){
 
 		this.popup = popup;
 		this.formActionListener = formActionListener;
@@ -47,7 +48,7 @@ public class TreeItemWidget extends Composite{
 		hPanel.setSpacing(0);
 
 		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		hPanel.add(imageProto.createImage());
+		hPanel.add(FormUtil.createImage(imageProto));
 		HTML headerText = new HTML(caption);
 		hPanel.add(headerText);
 		hPanel.setStyleName("gwt-noWrap");

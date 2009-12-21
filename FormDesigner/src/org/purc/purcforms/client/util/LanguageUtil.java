@@ -1,9 +1,11 @@
 package org.purc.purcforms.client.util;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
@@ -25,6 +27,9 @@ public class LanguageUtil {
 
 	private static final String NODE_NAME_XFORM = "xform";
 	private static final String NODE_NAME_FORM = "Form";
+	
+	public static final String NODE_NAME_LANGUAGE_TEXT = "LanguageText";
+	
 
 	/**
 	 * Translates xforms or layout text into a locale or language as in the locale xml.
@@ -197,5 +202,15 @@ public class LanguageUtil {
 		}
 
 		return null;
+	}
+	
+	
+	public static void loadLanguageText(Integer formId, String xml, HashMap<Integer,HashMap<String,String>> languageText){
+		if(xml == null || xml.trim().length() == 0)
+			return;
+		
+		NodeList nodes = XmlUtil.getDocument(xml).getDocumentElement().getElementsByTagName(NODE_NAME_LANGUAGE_TEXT);
+		if(nodes != null)
+			XformParser.loadLanguageText(formId, nodes, languageText);
 	}
 }

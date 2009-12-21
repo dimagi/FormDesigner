@@ -23,9 +23,9 @@ public class FormRunnerEntryPoint implements EntryPoint{
 
 	/**
 	 * Instantiate an application-level image bundle. This object will provide
-	 * programmatic access to all the images needed by widgets.
+	 * programatic access to all the images needed by widgets.
 	 */
-	private static final Images images = (Images) GWT.create(Images.class);
+	public static final Images images = (Images) GWT.create(Images.class);
 
 
 	/**

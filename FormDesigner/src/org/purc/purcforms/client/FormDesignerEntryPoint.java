@@ -65,6 +65,8 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 				Context.setAllowBindEdit(false);
 
 			FormUtil.retrieveUserDivParameters();
+			
+			Context.setOfflineModeStatus();
 
 			// Get rid of scrollbars, and clear out the window's built-in margin,
 			// because we want to take advantage of the entire client area.

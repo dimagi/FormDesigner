@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
 
@@ -63,6 +64,8 @@ public class Context {
 	
 	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
 	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
+	
+	private static boolean offlineMode = true;
 	
 	
 	/**
@@ -208,5 +211,18 @@ public class Context {
 	
 	public static void setLockWidgets(boolean lockWidgets){
 		Context.lockWidgets = lockWidgets;
+	}
+	
+	public static boolean isOfflineMode(){
+		return offlineMode;
+	}
+	
+	public static void setOfflineModeStatus(){
+		try{
+			String formId = FormUtil.getFormId();
+			if(formId != null && Integer.parseInt(formId) >= 0)
+				offlineMode = false;
+		}
+		catch(Exception ex){}
 	}
 }

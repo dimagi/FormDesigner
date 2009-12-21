@@ -1,7 +1,7 @@
 package org.purc.purcforms.client;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ImageBundle;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
 
 /**
@@ -9,6 +9,6 @@ import com.google.gwt.user.client.ui.ImageBundle;
  * @author daniel
  *
  */
-public interface FormDesignerImages extends ImageBundle {
-	  AbstractImagePrototype picture();
+public interface FormDesignerImages extends ClientBundle {
+	ImageResource picture();
 }

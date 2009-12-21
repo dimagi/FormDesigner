@@ -1,12 +1,7 @@
 package org.purc.purcforms.client.controller;
 
-import java.util.List;
-
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
-
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**

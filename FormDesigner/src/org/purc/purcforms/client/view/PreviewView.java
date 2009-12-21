@@ -9,13 +9,13 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformUtil;
 
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 public class PreviewView extends FormRunnerView {
 
 	public interface Images extends FormRunnerView.Images,Toolbar.Images {
-		AbstractImagePrototype error();
+		ImageResource error();
 	}
 
 	/** Popup for displaying the context menu for the preview. */
@@ -48,7 +48,7 @@ public class PreviewView extends FormRunnerView {
 	 * @param images the images for the preview context menu.
 	 */
 	public PreviewView(Images images){
-		super(images);
+		//super(images);
 
 		popup = new PopupPanel(true,true);
 		MenuBar menuBar = new MenuBar(true);

@@ -40,19 +40,30 @@ public class PurcFormBuilder {
 			purcFormNode.appendChild(layoutNode);
 		}
 
+		purcFormNode.appendChild(getLanguageNode(doc,localeText));
 
+		return XmlUtil.fromDoc2String(doc);
+	}
+	
+	
+	private static Element getLanguageNode(Document doc, HashMap<String,String> localeText){
 		Element languageNode = doc.createElement("Language");
 		
 		Set<String> locales = localeText.keySet();
 		for(String locale : locales){
-			node = (Element)XmlUtil.getDocument(localeText.get(locale)).getDocumentElement().cloneNode(true);
+			Element node = (Element)XmlUtil.getDocument(localeText.get(locale)).getDocumentElement().cloneNode(true);
 			doc.importNode(node, true);
 			languageNode.appendChild(node);
 		}
 		
-		purcFormNode.appendChild(languageNode);
-
-
+		return languageNode;
+	}
+	
+	
+	public static String getCombinedLanguageText(HashMap<String,String> localeText){
+		Document doc = XMLParser.createDocument();
+		doc.appendChild(getLanguageNode(doc,localeText));
+		
 		return XmlUtil.fromDoc2String(doc);
 	}
 }

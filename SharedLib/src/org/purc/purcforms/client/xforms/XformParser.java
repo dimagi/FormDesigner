@@ -117,19 +117,27 @@ public class XformParser {
 			formDef.setLayoutXml(FormUtil.formatXml(layoutXml));
 
 		if(nodes != null){
-			for(int index = 0; index < nodes.getLength(); index++){
-				Element node = (Element)nodes.item(index);
-				HashMap<String,String> map = new HashMap<String,String>();
-				map.put(node.getAttribute("lang"), FormUtil.formatXml(node.toString()));
-				languageText.put(formDef.getId(), map);
-			}
-			
+			loadLanguageText(formDef.getId(),nodes,languageText);
 			formDef.setXformXml(FormUtil.formatXml(xml));
 		}
 
 		return formDef;
 	}
 	
+	
+	public static void loadLanguageText(Integer formId, NodeList nodes, HashMap<Integer,HashMap<String,String>> languageText){
+		for(int index = 0; index < nodes.getLength(); index++){
+			Element node = (Element)nodes.item(index);
+			
+			HashMap<String,String> map = languageText.get(formId);
+			if(map == null){
+				map = new HashMap<String,String>();
+				languageText.put(formId, map);
+			}
+			
+			map.put(node.getAttribute("lang"), FormUtil.formatXml(node.toString()));
+		}
+	}
 	
 	private static Node getChildElement(Node node){
 		NodeList nodes = node.getChildNodes();

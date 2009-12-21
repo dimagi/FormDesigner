@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView.Images;
 
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
@@ -46,7 +47,7 @@ public class PaletteWidget extends Composite implements HasAllMouseHandlers{
 
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.setSpacing(5);
-		hPanel.add(images.add().createImage());
+		hPanel.add(FormUtil.createImage(images.add()));
 		hPanel.add(html);
 		initWidget(hPanel);
 

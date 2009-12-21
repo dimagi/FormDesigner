@@ -1,8 +1,10 @@
 package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -22,7 +24,11 @@ public class ProgressDialog extends DialogBox{
 	public ProgressDialog(){
 		super(false,true);
 
-		setWidget(label);
+		HorizontalPanel panel = new HorizontalPanel();
+		panel.add(FormUtil.createImage(FormRunnerView.images.loading()));
+		panel.add(label);
+		
+		setWidget(panel);
 	}
 
 	/**

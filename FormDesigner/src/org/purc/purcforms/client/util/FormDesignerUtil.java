@@ -7,11 +7,11 @@ import java.util.Map.Entry;
 
 import org.purc.purcforms.client.model.QuestionDef;
 
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -39,14 +39,14 @@ public class FormDesignerUtil {
 	 * @param caption the group caption
 	 * @return the header HTML fragment
 	 */
-	public static String createHeaderHTML(AbstractImagePrototype imageProto, String caption) {
+	public static String createHeaderHTML(ImageResource imageProto, String caption) {
 
 		//Add the image and text to a horizontal panel
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.setSpacing(0);
 
 		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		hPanel.add(imageProto.createImage());
+		hPanel.add(FormUtil.createImage(imageProto));
 		HTML headerText = new HTML(caption);
 		hPanel.add(headerText);
 

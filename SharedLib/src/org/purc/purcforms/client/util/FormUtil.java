@@ -16,7 +16,10 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -685,4 +688,9 @@ public class FormUtil {
 	public static native boolean authenticate(String username, String password) /*-{
 		return $wnd.authenticateUser(username,password);
 	}-*/;
+	
+	
+	public static Image createImage(ImageResource resource){
+		return AbstractImagePrototype.create(resource).createImage();
+	}
 }

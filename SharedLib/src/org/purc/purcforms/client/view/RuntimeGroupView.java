@@ -12,13 +12,13 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 
 import com.google.gwt.http.client.URL;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -29,8 +29,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class RuntimeGroupView extends Composite implements OpenFileDialogEventListener,QuestionChangeListener{
 
-	public interface Images extends ImageBundle {
-		AbstractImagePrototype error();
+	public interface Images extends ClientBundle {
+		ImageResource error();
 	}
 
 	/** Images reference where we get the error icon for widgets with errors. */

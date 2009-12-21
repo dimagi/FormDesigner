@@ -573,7 +573,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_TEXTAREA))
 			widget = new TextArea();
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE))
-			widget = images.picture().createImage();
+			widget = FormUtil.createImage(images.picture());
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO))
 			widget = new Hyperlink(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT),"");
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_DATEPICKER))

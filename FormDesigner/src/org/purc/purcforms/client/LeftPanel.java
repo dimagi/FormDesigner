@@ -16,7 +16,7 @@ import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.PaletteView;
 import org.purc.purcforms.client.view.WidgetPropertiesView;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,8 +36,8 @@ public class LeftPanel extends Composite {
 	 * images needed in child widgets.
 	 */
 	public interface Images extends FormsTreeView.Images,FormDesignerImages{
-		AbstractImagePrototype tasksgroup();
-		AbstractImagePrototype filtersgroup();
+		ImageResource tasksgroup();
+		ImageResource filtersgroup();
 	}
 
 	/** The GWT stack panel which serves as the main or root widget. */
@@ -100,7 +100,7 @@ public class LeftPanel extends Composite {
 		return formsTreeView;
 	}
 
-	private void add(Images images, Widget widget, AbstractImagePrototype imageProto,String caption) {
+	private void add(Images images, Widget widget, ImageResource imageProto,String caption) {
 		stackPanel.add(widget, FormDesignerUtil.createHeaderHTML(imageProto, caption), true);
 	}
 

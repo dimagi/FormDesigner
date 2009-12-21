@@ -4,8 +4,6 @@ import java.util.Date;
 
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
-import org.zenika.widget.client.datePicker.DatePicker;
-import org.zenika.widget.client.datePicker.PopupCalendar;
 import org.zenika.widget.client.util.DateUtil;
 
 import com.google.gwt.dom.client.Document;

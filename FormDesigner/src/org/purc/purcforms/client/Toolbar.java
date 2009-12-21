@@ -6,16 +6,18 @@ import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.FormRunnerView;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
@@ -31,28 +33,27 @@ public class Toolbar extends Composite{
 	/**
 	 * Tool bar images.
 	 */
-	public interface Images extends ImageBundle {
-		AbstractImagePrototype newform();
-		AbstractImagePrototype open();
-		AbstractImagePrototype save();
-		AbstractImagePrototype moveup();
-		AbstractImagePrototype movedown();
-		AbstractImagePrototype add();
-		AbstractImagePrototype addchild();
-		AbstractImagePrototype delete();
-		AbstractImagePrototype justifyleft();
-		AbstractImagePrototype justifyright();
-		AbstractImagePrototype cut();
-		AbstractImagePrototype copy();
-		AbstractImagePrototype paste();
-		AbstractImagePrototype loading();
-		AbstractImagePrototype alignTop();
-		AbstractImagePrototype alignBottom();
-		AbstractImagePrototype samewidth();
-		AbstractImagePrototype sameheight();
-		AbstractImagePrototype samesize();
-		AbstractImagePrototype undo();
-		AbstractImagePrototype redo();
+	public interface Images extends ClientBundle,FormRunnerView.Images {
+		ImageResource newform();
+		ImageResource open();
+		ImageResource save();
+		ImageResource moveup();
+		ImageResource movedown();
+		ImageResource add();
+		ImageResource addchild();
+		ImageResource delete();
+		ImageResource justifyleft();
+		ImageResource justifyright();
+		ImageResource cut();
+		ImageResource copy();
+		ImageResource paste();
+		ImageResource alignTop();
+		ImageResource alignBottom();
+		ImageResource samewidth();
+		ImageResource sameheight();
+		ImageResource samesize();
+		ImageResource undo();
+		ImageResource redo();
 	}
 	 
 	/** Main widget for this tool bar. */
@@ -112,31 +113,31 @@ public class Toolbar extends Composite{
 	 * Sets up the tool bar.
 	 */
 	private void setupToolbar(){
-		btnNewForm = new PushButton(images.newform().createImage());
-		btnOpenForm = new PushButton(images.open().createImage());
-		btnSaveForm = new PushButton(images.save().createImage());
+		btnNewForm = new PushButton(FormUtil.createImage(images.newform()));
+		btnOpenForm = new PushButton(FormUtil.createImage(images.open()));
+		btnSaveForm = new PushButton(FormUtil.createImage(images.save()));
 		
-		btnAddNewItem = new PushButton(images.add().createImage());
-		btnAddNewChildItem = new PushButton(images.addchild().createImage());
-		btnDeleteItem = new PushButton(images.delete().createImage());
-		btnMoveItemUp = new PushButton(images.moveup().createImage());
-		btnMoveItemDown = new PushButton(images.movedown().createImage());
+		btnAddNewItem = new PushButton(FormUtil.createImage(images.add()));
+		btnAddNewChildItem = new PushButton(FormUtil.createImage(images.addchild()));
+		btnDeleteItem = new PushButton(FormUtil.createImage(images.delete()));
+		btnMoveItemUp = new PushButton(FormUtil.createImage(images.moveup()));
+		btnMoveItemDown = new PushButton(FormUtil.createImage(images.movedown()));
 		
-		btnAlignLeft = new PushButton(images.justifyleft().createImage());
-		btnAlignRight = new PushButton(images.justifyright().createImage());
-		btnAlignTop = new PushButton(images.alignTop().createImage());
-		btnAlignBottom = new PushButton(images.alignBottom().createImage());
-		btnSameWidth = new PushButton(images.samewidth().createImage());
-		btnSameHeight = new PushButton(images.sameheight().createImage());
-		btnSameSize = new PushButton(images.samesize().createImage());
+		btnAlignLeft = new PushButton(FormUtil.createImage(images.justifyleft()));
+		btnAlignRight = new PushButton(FormUtil.createImage(images.justifyright()));
+		btnAlignTop = new PushButton(FormUtil.createImage(images.alignTop()));
+		btnAlignBottom = new PushButton(FormUtil.createImage(images.alignBottom()));
+		btnSameWidth = new PushButton(FormUtil.createImage(images.samewidth()));
+		btnSameHeight = new PushButton(FormUtil.createImage(images.sameheight()));
+		btnSameSize = new PushButton(FormUtil.createImage(images.samesize()));
 		
-		btnCut = new PushButton(images.cut().createImage());
-		btnCopy = new PushButton(images.copy().createImage());
-		btnPaste = new PushButton(images.paste().createImage());
-		btnRefresh = new PushButton(images.loading().createImage());
+		btnCut = new PushButton(FormUtil.createImage(images.cut()));
+		btnCopy = new PushButton(FormUtil.createImage(images.copy()));
+		btnPaste = new PushButton(FormUtil.createImage(images.paste()));
+		btnRefresh = new PushButton(FormUtil.createImage(images.loading()));
 		
-		btnUndo = new PushButton(images.undo().createImage());
-		btnRedo = new PushButton(images.redo().createImage());
+		btnUndo = new PushButton(FormUtil.createImage(images.undo()));
+		btnRedo = new PushButton(FormUtil.createImage(images.redo()));
 		
 		btnNewForm.setTitle(LocaleText.get("newForm"));
 		btnSaveForm.setTitle(LocaleText.get("save"));
@@ -163,8 +164,11 @@ public class Toolbar extends Composite{
 		btnUndo.setTitle(LocaleText.get("undo"));
 		btnRedo.setTitle(LocaleText.get("redo"));
 		
-		panel.add(btnNewForm);
-		panel.add(btnOpenForm);
+		if(Context.isOfflineMode()){
+			panel.add(btnNewForm);
+			panel.add(btnOpenForm);
+		}
+		
 		panel.add(btnSaveForm);
 		
 		panel.add(separatorWidget);

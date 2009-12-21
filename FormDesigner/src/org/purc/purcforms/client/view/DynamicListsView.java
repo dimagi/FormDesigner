@@ -14,6 +14,7 @@ import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.skiprule.FieldWidget;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -454,17 +455,17 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		table.setWidget(row, 0,txtText);
 		table.setWidget(row, 1,txtBinding);
 
-		PushButton button = new PushButton(FormDesignerWidget.images.delete().createImage());
+		PushButton button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.delete()));
 		button.setTitle(LocaleText.get("deleteItem"));
 		button.addClickHandler(this);
 		table.setWidget(row, 2,button);
 
-		button = new PushButton(FormDesignerWidget.images.moveup().createImage());
+		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.moveup()));
 		button.setTitle(LocaleText.get("moveUp"));
 		button.addClickHandler(this);
 		table.setWidget(row, 3,button);
 
-		button = new PushButton(FormDesignerWidget.images.movedown().createImage());
+		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.movedown()));
 		button.setTitle(LocaleText.get("moveDown"));
 		button.addClickHandler(this);
 		table.setWidget(row, 4,button);

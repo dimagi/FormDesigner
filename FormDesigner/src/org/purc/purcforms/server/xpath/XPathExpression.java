@@ -53,6 +53,13 @@ public class XPathExpression implements Serializable
 		*/
 		for(int start = 0, end = 0; end < expression.length()-1 && end!=-1; start = end+1) {
 			end = expression.indexOf("/", start);
+			
+			if(end != -1){
+				String token = expression.substring(start,end);
+				if(token.indexOf('@') >= 0 && token.indexOf(']') < 0)
+					end = -1;
+			}
+			
 			//System.out.println("start = "+start+" end = "+end);
 			String s = new String(expression.toCharArray(), start, 
 					(end!=-1?end:expression.length())-start);

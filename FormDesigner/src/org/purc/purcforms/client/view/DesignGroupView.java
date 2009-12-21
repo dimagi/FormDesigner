@@ -1138,7 +1138,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @return the newly added widget.
 	 */
 	protected DesignWidgetWrapper addNewPicture(boolean select){
-		Image image = images.picture().createImage();
+		Image image = FormUtil.createImage(images.picture());
 		DOM.setStyleAttribute(image.getElement(), "height","155px");
 		DOM.setStyleAttribute(image.getElement(), "width","185px");
 		return addNewWidget(image,select);
@@ -1583,7 +1583,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		boolean ret = false;
 
 		if(isTextBoxFocus(event) && editWidget == null)
-			return true;  //could be on widget properties pane.
+			return false;  //could be on widget properties pane.
 
 		if(this.isVisible()){
 			int keyCode = event.getKeyCode();

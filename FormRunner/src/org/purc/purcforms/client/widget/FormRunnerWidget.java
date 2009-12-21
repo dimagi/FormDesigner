@@ -42,7 +42,7 @@ public class FormRunnerWidget extends Composite{
 	 */
 	public FormRunnerWidget(Images images){
 		
-		view = new FormRunnerView(images);
+		view = new FormRunnerView(/*images*/);
 		
 		dockPanel.add(view, DockPanel.CENTER);
 		

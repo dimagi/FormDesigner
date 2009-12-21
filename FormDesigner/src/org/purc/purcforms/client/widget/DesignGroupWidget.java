@@ -283,7 +283,7 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 	}
 
 	private DesignWidgetWrapper addNewPicture(){
-		Image image = images.picture().createImage();
+		Image image = FormUtil.createImage(images.picture());
 		DOM.setStyleAttribute(image.getElement(), "height","150px");
 		DOM.setStyleAttribute(image.getElement(), "width","185px");
 		return addNewWidget(image);

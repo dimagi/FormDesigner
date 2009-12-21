@@ -34,18 +34,20 @@ import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -53,7 +55,6 @@ import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.ImageBundle;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -75,12 +76,13 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class FormRunnerView extends Composite implements SelectionHandler<Integer>, EditListener,QuestionChangeListener{
 
-	public interface Images extends ImageBundle {
-		AbstractImagePrototype error();
+	public interface Images extends ClientBundle {
+		ImageResource error();
+		ImageResource loading();
 	}
 
 	/** Images reference where we get the error icon for widgets with errors. */
-	protected final Images images;
+	public static final Images images = (Images) GWT.create(Images.class);
 
 	/** The tabs where we lay various page panels. */
 	protected DecoratedTabPanel tabs = new DecoratedTabPanel();
@@ -163,8 +165,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 *
 	 * @param images reference to images used in the application.
 	 */
-	public FormRunnerView(Images images){
-		this.images = images;
+	public FormRunnerView(/*Images images*/){
+		//this.images = images;
 
 		FormUtil.maximizeWidget(tabs);
 

@@ -29,17 +29,16 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeImages;
 import com.google.gwt.user.client.ui.TreeItem;
 
 
@@ -55,12 +54,12 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 	 * Specifies the images that will be bundled for this Composite and specify
 	 * that tree's images should also be included in the same bundle.
 	 */
-	public interface Images extends Toolbar.Images, TreeImages {
-		AbstractImagePrototype drafts();
-		AbstractImagePrototype markRead();
-		AbstractImagePrototype templates();
-		AbstractImagePrototype note();
-		AbstractImagePrototype lookup();
+	public interface Images extends Toolbar.Images, Tree.Resources {
+		ImageResource drafts();
+		ImageResource markRead();
+		ImageResource templates();
+		ImageResource note();
+		ImageResource lookup();
 	}
 
 	/** The main or root widget for displaying the list of forms and their contents
@@ -231,7 +230,7 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 	 * @param root the tree item to which the new item will be added.
 	 * @param title the text associated with this item.
 	 */
-	private TreeItem addImageItem(TreeItem root, String title,AbstractImagePrototype imageProto, Object userObj,String helpText) {
+	private TreeItem addImageItem(TreeItem root, String title,ImageResource imageProto, Object userObj,String helpText) {
 		TreeItem item = new CompositeTreeItem(new TreeItemWidget(imageProto, title,popup,this));
 		item.setUserObject(userObj);
 		item.setTitle(helpText);
@@ -241,17 +240,6 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 			tree.addItem(item);
 		return item;
 	}
-
-	/**
-	 * Generates HTML for a tree item with an attached icon.
-	 * 
-	 * @param imageUrl the url of the icon image
-	 * @param title the title of the item
-	 * @return the resultant HTML
-	 */
-	/*private String imageItemHTML(AbstractImagePrototype imageProto, String title) {
-	    return "<span>" + imageProto.getHTML() + title + "</span>";
-	  }*/
 
 
 	/**

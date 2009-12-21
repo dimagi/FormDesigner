@@ -2,7 +2,6 @@ package org.purc.purcforms.client.widget;
 
 import java.util.Date;
 
-import org.zenika.widget.client.datePicker.PopupCalendar;
 import org.zenika.widget.client.util.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;

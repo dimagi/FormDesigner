@@ -26,9 +26,9 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -61,7 +61,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	/** Listener to edit events. */
 	protected EditListener editListener;
 
-	private AbstractImagePrototype errorImageProto;
+	private ImageResource errorImageProto;
 
 	/** Flag that tells whether this widget is locked and hence doesn't allow editing. */
 	private boolean locked = false;
@@ -78,7 +78,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		super(widget);
 
 		editListener = widget.getEditListener();
-		errorImage = widget.getErrorImage().createImage();
+		errorImage = FormUtil.createImage(widget.getErrorImage());
 		errorImageProto = widget.getErrorImage();
 		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
 
@@ -99,10 +99,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 	}
 
-	public RuntimeWidgetWrapper(Widget widget,AbstractImagePrototype errorImageProto,EditListener editListener){
+	public RuntimeWidgetWrapper(Widget widget,ImageResource errorImageProto,EditListener editListener){
 		this.widget = widget;
 		this.errorImageProto = errorImageProto;
-		this.errorImage = errorImageProto.createImage();
+		this.errorImage = FormUtil.createImage(errorImageProto);
 		this.editListener = editListener;
 
 		panel.add(widget);
@@ -113,7 +113,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS /*| Event.ONCONTEXTMENU | Event.KEYEVENTS*/);
 	}
 
-	public AbstractImagePrototype getErrorImage(){
+	public ImageResource getErrorImage(){
 		return errorImageProto;
 	}
 

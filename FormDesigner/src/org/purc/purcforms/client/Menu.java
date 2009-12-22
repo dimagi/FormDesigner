@@ -107,7 +107,7 @@ public class Menu extends Composite {
 
 		//Set up the view menu.
 		MenuBar viewMenu = new MenuBar(true);
-		viewMenu.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true, new Command(){
+		viewMenu.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true, new Command(){
 			public void execute() {controller.refresh(this);}});
 
 
@@ -142,7 +142,7 @@ public class Menu extends Composite {
 			public void execute() {controller.pasteItem();}});
 
 		itemMenu.addSeparator();
-		itemMenu.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true, new Command(){
+		itemMenu.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true, new Command(){
 			public void execute() {controller.refreshItem();}});
 
 

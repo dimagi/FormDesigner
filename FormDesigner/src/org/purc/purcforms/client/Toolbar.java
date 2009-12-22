@@ -54,6 +54,7 @@ public class Toolbar extends Composite{
 		ImageResource samesize();
 		ImageResource undo();
 		ImageResource redo();
+		ImageResource refresh();
 	}
 	 
 	/** Main widget for this tool bar. */
@@ -134,7 +135,7 @@ public class Toolbar extends Composite{
 		btnCut = new PushButton(FormUtil.createImage(images.cut()));
 		btnCopy = new PushButton(FormUtil.createImage(images.copy()));
 		btnPaste = new PushButton(FormUtil.createImage(images.paste()));
-		btnRefresh = new PushButton(FormUtil.createImage(images.loading()));
+		btnRefresh = new PushButton(FormUtil.createImage(images.refresh()));
 		
 		btnUndo = new PushButton(FormUtil.createImage(images.undo()));
 		btnRedo = new PushButton(FormUtil.createImage(images.redo()));

@@ -302,7 +302,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			public void execute() {popup.hide(); selectAll();}});
 
 		menuBar.addSeparator();
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.loading(),LocaleText.get("refresh")),true,new Command(){
+		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true,new Command(){
 			public void execute() {popup.hide(); refresh();}});
 
 		menuBar.addSeparator();

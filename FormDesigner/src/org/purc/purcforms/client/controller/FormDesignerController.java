@@ -1106,15 +1106,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * 
 	 * @param locale the locale key.
 	 */
-	public void changeLocale(final String locale){
+	public boolean changeLocale(final String locale){
 
 		final FormDef formDef = centerPanel.getFormDef();
 		if(formDef == null)
-			return;
+			return false;
 
 		//We need to have saved a form in order to translate it.
 		if(formDef.getDoc() == null)
 			saveForm();
+		else if(!Window.confirm(LocaleText.get("localeChangePrompt")))
+			return false;
 
 		//We need to do the translation in a differed command such that it happens after form saving,
 		//just in case form hadn't yet been saved.
@@ -1140,6 +1142,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				openLanguageText();
 			}
 		});
+		
+		return true;
 	}
 
 	/**

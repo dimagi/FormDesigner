@@ -217,7 +217,9 @@ public class Toolbar extends Composite{
 		
 		cbLanguages.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				controller.changeLocale(((ListBox)event.getSource()).getValue(((ListBox)event.getSource()).getSelectedIndex()));
+				int index = getCurrentLocaleIndex();
+				if(!controller.changeLocale(((ListBox)event.getSource()).getValue(((ListBox)event.getSource()).getSelectedIndex())))
+					cbLanguages.setSelectedIndex(index);
 			}
 		});
 		
@@ -302,5 +304,21 @@ public class Toolbar extends Composite{
 		
 		for(Locale locale : locales)
 			cbLanguages.addItem(locale.getName(), locale.getKey());
+	}
+	
+	
+	private int getCurrentLocaleIndex(){
+		String localeKey = Context.getLocale();
+		
+		List<Locale> locales = Context.getLocales();
+		assert(locales != null);
+		
+		for(int index = 0; index < locales.size(); index++){
+			Locale locale = locales.get(index);
+			if(locale.getKey().equals(localeKey))
+				return index;
+		}
+		
+		return 0;
 	}
 }

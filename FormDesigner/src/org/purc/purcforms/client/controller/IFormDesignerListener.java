@@ -137,7 +137,7 @@ public interface IFormDesignerListener extends IFormActionListener{
 	 * 
 	 * @param locale the locale to change to.
 	 */
-	public void changeLocale(String locale);
+	public boolean changeLocale(String locale);
 	
 	/**
 	 * Embeds the xform into xhtml.

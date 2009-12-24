@@ -21,8 +21,8 @@ public class XmlUtil {
 	private XmlUtil(){
 
 	}
-	
-	
+
+
 	/**
 	 * Checks if a node name equals a particular name, regardless of prefix.
 	 * NOTE: If checking names containing subsets of others using case or if else statements,
@@ -37,7 +37,7 @@ public class XmlUtil {
 		return nodeName.equals(name) || nodeName.contains(":"+name);
 
 	}
-	
+
 	/**
 	 * Gets the text value of a node.
 	 * 
@@ -104,8 +104,8 @@ public class XmlUtil {
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Gets a node name without the namespace prefix.
 	 * 
@@ -121,8 +121,8 @@ public class XmlUtil {
 		}
 		return name;
 	}
-	
-	
+
+
 	/**
 	 * Gets a child element of a parent node with a given name.
 	 * 
@@ -141,6 +141,14 @@ public class XmlUtil {
 			Element child = (Element)parent.getChildNodes().item(i);
 			if(XmlUtil.getNodeName(child).equals(name))
 				return child;
+			else if(name.contains("/")){
+				String parentName = name.substring(0,name.indexOf('/'));
+				if(XmlUtil.getNodeName(child).equals(parentName)){
+					child = getNode(child,name.substring(name.indexOf('/') + 1));
+					if(child != null)
+						return child;
+				}
+			}
 
 			child = getNode(child,name);
 			if(child != null)
@@ -150,7 +158,7 @@ public class XmlUtil {
 		return null;
 	}
 
-	
+
 	/**
 	 * Gets the text value of a node with a given name.
 	 * 
@@ -165,8 +173,8 @@ public class XmlUtil {
 			return XmlUtil.getTextValue(node);
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Creates an xml document object from its text xml.
 	 * 
@@ -176,8 +184,8 @@ public class XmlUtil {
 	public static Document getDocument(String xml){
 		return XMLParser.parse(xml);
 	}
-	
-	
+
+
 	/**
 	 * Converts an xml document to a string.
 	 * 
@@ -187,8 +195,8 @@ public class XmlUtil {
 	public static String fromDoc2String(Document doc){
 		return doc.toString();
 	}
-	
-	
+
+
 	/**
 	 * Gets the next sibling of a node whose type is Node.ELEMENT_NODE
 	 * 

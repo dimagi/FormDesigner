@@ -150,9 +150,14 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		if(isRepeated){
 			RuntimeWidgetWrapper widget = this.widgets.get(0);
 			if(!(widget.getQuestionDef() == null || widget.getQuestionDef().getDataNode() == null)){
-				Element dataNode = (Element)widget.getQuestionDef().getDataNode().getParentNode();
+				/*Element dataNode = (Element)widget.getQuestionDef().getDataNode().getParentNode();
 				Element parent = (Element)dataNode.getParentNode();
-				NodeList nodeList = parent.getElementsByTagName(dataNode.getNodeName());
+				NodeList nodeList = parent.getElementsByTagName(dataNode.getNodeName());*/
+				
+				Element repeatDataNode = getParentNode(widget.getQuestionDef().getDataNode(),(widget.getWrappedWidget() instanceof CheckBox) ? widget.getParentBinding() : widget.getBinding());
+				Element parent = (Element)repeatDataNode.getParentNode();
+				NodeList nodeList = parent.getElementsByTagName(repeatDataNode.getNodeName());
+				
 				for(int index = 1; index < nodeList.getLength(); index++)
 					addNewRow((Element)nodeList.item(index));
 			}
@@ -742,6 +747,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			setDataNode(copyWidget,dataNode,copyWidget.getBinding(),true);
 		}
+		
+		addDeleteButton(row);
 	}
 
 	private Element getParentNode(Node node, String binding){	

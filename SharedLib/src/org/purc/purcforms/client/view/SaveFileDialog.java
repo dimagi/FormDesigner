@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -39,7 +40,9 @@ public class SaveFileDialog extends DialogBox{
 		form.setMethod(FormPanel.METHOD_POST);
 
 		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.setSpacing(20);
+		verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		verticalPanel.setSpacing(10);
 		form.add(verticalPanel);
 
 		txtArea = new TextArea();
@@ -50,13 +53,17 @@ public class SaveFileDialog extends DialogBox{
 		txtName = new TextBox();
 		txtName.setText(fileName);
 		txtName.setName("filename");
-		txtName.setWidth("200px");
+		txtName.setWidth("250px");
+		
 		verticalPanel.add(txtName);
 		verticalPanel.add(txtArea);
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button(LocaleText.get("save"), new ClickHandler(){
+		horizontalPanel.setWidth("100%");
+		horizontalPanel.setHeight("100%");
+		horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		
+		Button button = new Button(LocaleText.get("save"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				String fileName = txtName.getText();
 				if(fileName != null && fileName.trim().length() > 0){
@@ -72,13 +79,19 @@ public class SaveFileDialog extends DialogBox{
 					form.submit();
 				}
 			}
-		}));
+		});
+		
+		horizontalPanel.add(button);
+		horizontalPanel.setCellHorizontalAlignment(button, HasHorizontalAlignment.ALIGN_LEFT);
 
-		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickHandler(){
+		button = new Button(LocaleText.get("cancel"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				hide();
 			}
-		}));
+		});
+		
+		horizontalPanel.add(button);
+		horizontalPanel.setCellHorizontalAlignment(button, HasHorizontalAlignment.ALIGN_RIGHT);
 
 		verticalPanel.add(horizontalPanel);
 

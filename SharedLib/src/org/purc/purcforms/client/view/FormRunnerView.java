@@ -514,7 +514,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath));
+			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
 			String answer = questionDef.getAnswer();
@@ -532,7 +532,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 					contentType += "&name="+questionDef.getVariableName()+".3gp";
 
-					((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+					((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 				}
 			}
 		}

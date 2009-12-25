@@ -784,8 +784,11 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		DesignWidgetWrapper widgetWrapper = null;
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
+			
+			if(!questionDef.isVisible() || (questionDef.isRequired() && (questionDef.isLocked() || !questionDef.isEnabled())) )
+				continue;
+			
 			int type = questionDef.getDataType();
-
 			if(type == QuestionDef.QTN_TYPE_REPEAT && questionDef.getRepeatQtnsDef().getQuestions() == null)
 				continue;
 			

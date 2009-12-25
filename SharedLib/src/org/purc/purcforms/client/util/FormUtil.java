@@ -63,6 +63,9 @@ public class FormUtil {
 	private static String formDefRefreshUrlSuffix;
 	private static String externalSourceUrlSuffix;
 	private static String multimediaUrlSuffix;
+	private static String fileOpenUrlSuffix;
+	private static String fileSaveUrlSuffix;
+	
 
 	/** 
 	 * The url to navigate to when one closes the form designer by selecting
@@ -329,6 +332,8 @@ public class FormUtil {
 		formDefRefreshUrlSuffix = getDivValue("formDefRefreshUrlSuffix");
 		externalSourceUrlSuffix = getDivValue("externalSourceUrlSuffix");
 		multimediaUrlSuffix = getDivValue("multimediaUrlSuffix");
+		fileOpenUrlSuffix = getDivValue("fileOpenUrlSuffix");
+		fileSaveUrlSuffix = getDivValue("fileSaveUrlSuffix");
 		closeUrl = getDivValue("closeUrl");
 
 		if(multimediaUrlSuffix == null || multimediaUrlSuffix.trim().length() == 0)
@@ -481,8 +486,16 @@ public class FormUtil {
 		return externalSourceUrlSuffix;
 	}
 
-	public static String getMultimediaUrlSuffix(){
+	public static String getMultimediaUrl(){
 		return getHostPageBaseURL()+ multimediaUrlSuffix;
+	}
+	
+	public static String getFileOpenUrl(){
+		return getHostPageBaseURL()+ fileOpenUrlSuffix;
+	}
+	
+	public static String getFileSaveUrl(){
+		return getHostPageBaseURL()+ fileSaveUrlSuffix;
 	}
 
 	public static String getCloseUrl(){

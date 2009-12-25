@@ -352,7 +352,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			String xpath = binding;
 			if(!xpath.startsWith(formDef.getVariableName()))
 				xpath = "/" + formDef.getVariableName() + "/" + binding;
-			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
+			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
 			widget = new HTML();
@@ -368,7 +368,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			contentType += "&name="+questionDef.getVariableName()+".3gp";
 
-			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
+			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 
 			String answer = questionDef.getAnswer();
 			if(answer == null || answer.trim().length() == 0 )
@@ -649,7 +649,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				contentType += "&name="+wrapper.getQuestionDef().getVariableName()+".3gp";
 
 				//TODO What if the multimedia url suffix already has a ?
-				String url = FormUtil.getMultimediaUrlSuffix()+"?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime();
+				String url = FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime();
 				OpenFileDialog dlg = new OpenFileDialog(this,url);
 				dlg.center();
 			}
@@ -900,7 +900,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
 
 			if(image != null)
-				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
+				image.setUrl(FormUtil.getMultimediaUrl()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
 			else{
 				String extension = "";//.3gp ".mpeg";
 				String contentType = "&contentType=video/3gpp";
@@ -911,7 +911,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
 
 				html.setVisible(true);
-				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
+				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
 			}
 
 			widgetWrapper.getQuestionDef().setAnswer(contents);

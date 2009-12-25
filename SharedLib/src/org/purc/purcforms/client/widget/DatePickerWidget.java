@@ -148,7 +148,7 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 		switch (DOM.eventGetType(event)) {
 		case Event.ONBLUR:
 			popup.hidePopupCalendar();
-			fireChangeEvent(this);
+			//fireChangeEvent(this); //Commented out because it puts focus to widget next to date whenever a form does validation 
 			break;
 		default:
 			break;

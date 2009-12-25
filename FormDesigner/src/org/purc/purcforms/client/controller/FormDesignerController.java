@@ -201,14 +201,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#showAboutInfo()
 	 */
 	public void openForm() {
-		if(isOfflineMode()){
+		//if(isOfflineMode()){
 			String xml = centerPanel.getXformsSource();
 
 			//Only load layout if in layout mode and no xforms source is supplied.
 			if(centerPanel.isInLayoutMode() && (xml == null || xml.trim().length() == 0)){
 				xml = centerPanel.getLayoutXml();
 				if(xml == null || xml.trim().length() == 0){
-					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
+					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
 					dlg.center();
 				}
 			}
@@ -219,14 +219,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					if(formDef != null)
 						refreshFormDeffered();
 					else
-						openFormDeffered(ModelConstants.NULL_ID,false);
+						openFormDeffered(isOfflineMode() ? ModelConstants.NULL_ID : formId,false);
 				}
 				else{
-					OpenFileDialog dlg = new OpenFileDialog(this,"formopen");
+					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
 					dlg.center();
 				}
 			}
-		}
+		//}
 	}
 
 	/**
@@ -437,6 +437,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				}
 			});
 		}
+		else
+			saveAs();
 	}
 
 	/**
@@ -925,7 +927,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	private void setFileContents() {
 
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,"formopen");
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,FormUtil.getFileOpenUrl());
 
 		try{
 			builder.sendRequest(null, new RequestCallback(){
@@ -965,7 +967,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			if(centerPanel.isInLayoutMode())
 				fileName += "-" + LocaleText.get("layout");
 
-			SaveFileDialog dlg = new SaveFileDialog("formsave",data,fileName);
+			SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(),data,fileName);
 			dlg.center();
 		}
 		catch(Exception ex){
@@ -1142,7 +1144,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				openLanguageText();
 			}
 		});
-		
+
 		return true;
 	}
 
@@ -1234,10 +1236,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 
 	public void saveAsPurcForm(){
-		if(!isOfflineMode())
-			return;
+		//if(!isOfflineMode())
+		//	return;
 
-		saveTheForm();
+		if(isOfflineMode())
+			saveTheForm();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
@@ -1251,8 +1254,15 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							FormDef formDef = leftPanel.getSelectedForm();
 							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
 							xml = FormDesignerUtil.formatXml(xml);
-							centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+
 							FormUtil.dlg.hide();
+
+							if(isOfflineMode())
+								centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+							else{
+								SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(),xml,formDef.getName());
+								dlg.center();
+							}
 						}
 						catch(Exception ex){
 							FormUtil.dlg.hide();

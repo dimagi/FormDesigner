@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -66,12 +67,13 @@ public class OpenFileDialog extends DialogBox{
 		fileUpload = new FileUpload();
 		fileUpload.setName("filecontents");
 		verticalPanel.add(fileUpload);
-		TextBox txt = new TextBox();
-		txt.setText(GWT.getModuleBaseURL());
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		horizontalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel.add(new Button(LocaleText.get("open"), new ClickHandler(){
+		horizontalPanel.setWidth("100%");
+		horizontalPanel.setHeight("100%");
+		horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		
+		Button button = new Button(LocaleText.get("open"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				String action = actionUrl;
 				if(action.contains("?"))
@@ -84,13 +86,19 @@ public class OpenFileDialog extends DialogBox{
 				form.setAction(action);
 				form.submit();
 			}
-		}));
+		});
 		
-		horizontalPanel.add(new Button(LocaleText.get("cancel"), new ClickHandler(){
+		horizontalPanel.add(button);
+		horizontalPanel.setCellHorizontalAlignment(button, HasHorizontalAlignment.ALIGN_LEFT);
+		
+		button = new Button(LocaleText.get("cancel"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				hide();
 			}
-		}));
+		});
+		
+		horizontalPanel.add(button);
+		horizontalPanel.setCellHorizontalAlignment(button, HasHorizontalAlignment.ALIGN_RIGHT);
 		
 		verticalPanel.add(horizontalPanel);
 		

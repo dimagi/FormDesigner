@@ -21,8 +21,8 @@
         
                <!-- Servlets -->
       <servlet path='/multimedia' class='org.purcforms.server.MultimediaServlet'/>
-      <servlet path='/formsave' class='org.purcforms.server.FormSaveServlet'/>
-      <servlet path='/formopen' class='org.purcforms.server.FormOpenServlet'/>
+      <servlet path='/formSave' class='org.purcforms.server.FileSaveServlet'/>
+      <servlet path='/formOpen' class='org.purcforms.server.FileOpenServlet'/>
       
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='FormDesigner.css' />

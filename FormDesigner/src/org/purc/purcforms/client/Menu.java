@@ -60,16 +60,17 @@ public class Menu extends Composite {
 		if(Context.isOfflineMode()){
 			fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.newform(),LocaleText.get("newForm")),true, new Command(){
 				public void execute() {controller.newForm();}});
-
-			fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),LocaleText.get("open")),true, new Command(){
-				public void execute() {controller.openForm();}});
-
-			fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),LocaleText.get("print")),true, new Command(){
-				public void execute() {controller.printForm();}});
-
-			fileMenu.addSeparator();
 		}
-		
+
+		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),LocaleText.get("open")),true, new Command(){
+			public void execute() {controller.openForm();}});
+
+		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.open(),LocaleText.get("print")),true, new Command(){
+			public void execute() {controller.printForm();}});
+
+		fileMenu.addSeparator();
+
+
 		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true, new Command(){
 			public void execute() {controller.saveForm();}});
 
@@ -94,10 +95,11 @@ public class Menu extends Composite {
 			fileMenu.addSeparator();
 			fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("saveAsXhtml")),true, new Command(){
 				public void execute() {controller.saveAsXhtml();}});
-
-			fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("saveAsPurcForm")),true, new Command(){
-				public void execute() {controller.saveAsPurcForm();}});
 		}
+
+		fileMenu.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("saveAsPurcForm")),true, new Command(){
+			public void execute() {controller.saveAsPurcForm();}});
+
 
 		fileMenu.addSeparator();
 		fileMenu.addItem(LocaleText.get("close"), new Command(){

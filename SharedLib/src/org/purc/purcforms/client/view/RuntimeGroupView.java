@@ -80,7 +80,7 @@ public class RuntimeGroupView extends Composite implements OpenFileDialogEventLi
 				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
 
 			if(image != null)
-				image.setUrl(FormUtil.getMultimediaUrlSuffix()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
+				image.setUrl(FormUtil.getMultimediaUrl()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);
 			else{
 				String extension = "";//.3gp ".mpeg";
 				String contentType = "&contentType=video/3gpp";
@@ -91,7 +91,7 @@ public class RuntimeGroupView extends Composite implements OpenFileDialogEventLi
 				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
 
 				html.setVisible(true);
-				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrlSuffix()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
+				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				
 			}
 
 			widgetWrapper.getQuestionDef().setAnswer(contents);

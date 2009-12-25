@@ -165,10 +165,10 @@ public class Toolbar extends Composite{
 		btnUndo.setTitle(LocaleText.get("undo"));
 		btnRedo.setTitle(LocaleText.get("redo"));
 		
-		if(Context.isOfflineMode()){
+		if(Context.isOfflineMode())
 			panel.add(btnNewForm);
-			panel.add(btnOpenForm);
-		}
+		
+		panel.add(btnOpenForm);
 		
 		panel.add(btnSaveForm);
 		

@@ -933,6 +933,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	public boolean isValid(){
+		firstInvalidWidget = null;
+		
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
 				for(int col = 0; col < table.getCellCount(row)-1; col++){

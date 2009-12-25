@@ -405,6 +405,11 @@ public class XformParser {
 				pageDef.setPageNo(getNextPageNo());
 			}
 		}
+		else if(!nodeContext.getLabel().equals("") && questionDef == null){
+			PageDef pageDef = formDef.setPageName(nodeContext.getLabel());
+			pageDef.setLabelNode(nodeContext.getLabelNode());
+			pageDef.setPageNo(getNextPageNo());
+		}
 	}
 
 

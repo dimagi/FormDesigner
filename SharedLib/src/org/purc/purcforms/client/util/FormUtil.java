@@ -6,6 +6,7 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.view.ErrorDialog;
 import org.purc.purcforms.client.view.ProgressDialog;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Node;
@@ -636,8 +637,18 @@ public class FormUtil {
 
 		if(node.getNodeType() == Node.ELEMENT_NODE){
 			com.google.gwt.xml.client.Node parent = node.getParentNode();
-			while(parent != null && !parent.getNodeName().equals(parentNode.getNodeName()) && !(parent instanceof Document)){
-				path = removePrefix(parent.getNodeName()) + "/" + path;
+			while(parent != null && !(parent instanceof Document)){
+				if(parent.getNodeName().equals(parentNode.getNodeName())){
+					if(parent.toString().equals(parentNode.toString()))
+						break;
+				}
+				
+				String tempPath = "";
+				String id = ((Element)parent).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+				if(id != null && id.trim().length() > 0)
+					tempPath = "[@id='" + id + "']";
+				
+				path = removePrefix(parent.getNodeName()) + tempPath + "/" + path;
 				parent = parent.getParentNode();
 			}
 		}

@@ -55,7 +55,7 @@ public class XPathExpression implements Serializable
 			if(end != -1){
 				String token = expression.substring(start,end);
 				if(token.indexOf('@') >= 0 && token.indexOf(']') < 0)
-					end = -1;
+					end = expression.indexOf("/", end + 1);
 			}
 			
 			//System.out.println("start = "+start+" end = "+end);

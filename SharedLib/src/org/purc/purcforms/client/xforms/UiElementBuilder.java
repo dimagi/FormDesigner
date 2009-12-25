@@ -200,6 +200,8 @@ public class UiElementBuilder {
 		Element node = doc.createElement(name);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
+		else
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getVariableName());
 
 		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 		//	node.setAttribute("selection", "closed");

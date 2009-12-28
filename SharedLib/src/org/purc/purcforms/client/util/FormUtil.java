@@ -583,7 +583,7 @@ public class FormUtil {
 		//This check is a temporary workaround for firefox 3.5 which
 		//throws this error on certain mouse moves which i have not
 		//yet got the exact cause for.
-		if(!(s != null && s.contains("(NS_ERROR_DOM_NOT_SUPPORTED_ERR):"))){
+		if(!(s != null && (s.contains("(NS_ERROR_DOM_NOT_SUPPORTED_ERR):") || s.contains("(Error): Permission denied for <file://> to get property ")))){
 			ErrorDialog dialogBox = new ErrorDialog();
 			dialogBox.setText(LocaleText.get("unexpectedFailure"));
 			dialogBox.setErrorMessage(s);

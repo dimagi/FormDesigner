@@ -526,19 +526,19 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 
-		/*value = getBinding();
+		value = getBinding();
 		if(value == null || value.trim().length() == 0)	{
 			//Widgets should have unique bindings to get unique xpath expressions for locale translation
 			setBinding("LEFT"+getLeft()+"TOP"+getTop());
 			value = getBinding();
 		}
-		node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);*/
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);
 		
-		value = getBinding();
+		/*value = getBinding();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);
 		else
-			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);*/
 
 		value = getParentBinding();
 		if(value != null && value.trim().length() > 0)
@@ -611,6 +611,9 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		String xpathRoot = xpath;
 		if(binding != null && binding.trim().length() > 0)
 			xpathRoot +=  "Binding='" + binding + "' and @";
+		
+		if(parentBinding != null && parentBinding.trim().length() > 0)
+			xpathRoot +=  "ParentBinding='" + parentBinding + "' and @";
 
 		xpathRoot += WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName()+ "'][@";
 
@@ -622,7 +625,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 
 		if(getWrappedWidget() instanceof DesignGroupWidget){
 			if(binding != null && binding.trim().length() > 0)
-				xpath += binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@";
+				xpath += "Binding='" + binding + "' and @"+ WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@";
 			else
 				xpath += WidgetEx.WIDGET_PROPERTY_WIDGETTYPE + "='" + getWidgetName() + "']/Item[@";
 

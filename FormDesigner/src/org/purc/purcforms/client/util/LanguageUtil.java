@@ -9,6 +9,7 @@ import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -83,6 +84,16 @@ public class LanguageUtil {
 
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null){
+				
+				//TODO We need to uniquely identify nodes and so each xpath should
+				//point to no more than one node.
+				if(result.size() > 1){
+					Window.alert(result.size()+"..........."+xpath+"............"+value);
+					continue;
+				}
+				else if(result.size() == 0)
+					Window.alert(result.size()+"..........."+xpath+"............"+value);
+				
 				for(int item = 0; item < result.size(); item++){
 					Element targetNode = (Element)result.get(item);
 					int pos = xpath.lastIndexOf('@');
@@ -118,6 +129,16 @@ public class LanguageUtil {
 
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null && result.size() > 0){
+				
+				//TODO We need to uniquely identify nodes and so each xpath should
+				//point to no more than one node.
+				if(result.size() > 1){
+					Window.alert(result.size()+"..........."+xpath+"............"+value);
+					continue;
+				}
+				else if(result.size() == 0)
+					Window.alert(result.size()+"..........."+xpath+"............"+value);
+				
 				Element targetNode = (Element)result.get(0);
 				int pos = xpath.lastIndexOf('@');
 				if(pos > 0 && xpath.indexOf('=',pos) < 0){

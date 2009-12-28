@@ -317,6 +317,10 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 			Widget widget = selectedPanel.getWidget(i);
 			if(!(widget instanceof DesignWidgetWrapper))
 				continue;
+			
+			//if(getHeaderLabel() == widget)
+			//	xpath += WidgetEx.WIDGET_PROPERTY_HEADER_LABEL + "='true' and @";
+			
 			((DesignWidgetWrapper)widget).buildLanguageXml(doc,parentNode, xpath);
 		}
 	}

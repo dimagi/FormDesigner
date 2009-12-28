@@ -54,8 +54,10 @@ public class XPathExpression implements Serializable
 			
 			if(end != -1){
 				String token = expression.substring(start,end);
-				if(token.indexOf('@') >= 0 && token.indexOf(']') < 0)
-					end = expression.indexOf("/", end + 1);
+				if(token.indexOf('@') >= 0 && token.indexOf(']') < 0){
+					//end = expression.indexOf("/", end + 1);
+					end = expression.indexOf("]", end + 1) + 1;
+				}
 			}
 			
 			//System.out.println("start = "+start+" end = "+end);
@@ -103,7 +105,7 @@ public class XPathExpression implements Serializable
 	private void addAttributeSteps(String step,Vector list){
 		int posBeg = 0;
 		int posEnd = step.indexOf(" and ");
-		if(posEnd > 0){
+		/*if(posEnd > 0){ //TODO Need to support more than two and expressions
 			list.addElement(step.substring(posBeg, posEnd+1).trim() + "]");
 			
 			posBeg = posEnd + 5;
@@ -113,7 +115,7 @@ public class XPathExpression implements Serializable
 			posBeg = posEnd + 1;
 			posEnd = step.indexOf(']',posBeg);
 		}
-		else
+		else*/
 			posEnd = step.indexOf(']',posBeg);
 		
 		while(posEnd > 0){

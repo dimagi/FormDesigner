@@ -38,6 +38,12 @@ public class LanguageUtil {
 
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null){
+				
+				//TODO We need to uniquely identify nodes and so each xpath should
+				//point to no more than one node.
+				if(result.size() > 1)
+					continue;
+				
 				for(int item = 0; item < result.size(); item++){
 					Element targetNode = (Element)result.get(item);
 					int pos = xpath.lastIndexOf('@');

@@ -872,8 +872,10 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			value = this.widget.getTitle();
 			if(value != null && value.trim().length() > 0)
 				txtHelpText.setText(value);
-			else
+			else{
 				txtHelpText.setText(txtText.getText());
+				updateHelpText();
+			}
 
 			value = this.widget.getExternalSource();
 			if(value != null && value.trim().length() > 0)

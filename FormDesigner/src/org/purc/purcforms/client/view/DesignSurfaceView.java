@@ -969,6 +969,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 				x += 210;
 			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
 			label.setBinding(qtn.getVariableName());
+			label.setTitle(qtn.getText());
 			label.setTextDecoration("underline");
 		}
 

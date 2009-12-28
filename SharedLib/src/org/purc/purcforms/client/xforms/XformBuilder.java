@@ -166,7 +166,7 @@ public class XformBuilder {
 
 		//Set the identifier of the group node to be used for localisation.
 		groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getPageNo()+"");
-
+		
 		//Check if we have any questions in this page.
 		Vector questions = pageDef.getQuestions();
 		if(questions == null)

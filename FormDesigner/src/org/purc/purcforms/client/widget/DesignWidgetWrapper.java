@@ -107,7 +107,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		int type = DOM.eventGetType(event);
 		if((widget instanceof Label && panel.getWidget(0) instanceof TextBox))
 			return; //Must be in label edit mode.
-		
+
 		switch (type) {
 		/*case Event.ONKEYDOWN:
 		case Event.ONKEYUP:
@@ -138,19 +138,19 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				event.stopPropagation();
 				DOM.eventCancelBubble(event, true); 
 				DOM.eventPreventDefault(event);*/
-				
+
 				int ypos = event.getClientY();
 				if(Window.getClientHeight() - ypos < 150)
 					ypos = event.getClientY() - 150;
-				
+
 				int xpos = event.getClientX();
 				if(Window.getClientWidth() - xpos < 170)
 					xpos = event.getClientX() - 170;
-					
+
 				widgetSelectionListener.onWidgetSelected(this,true);
 				popup.setPopupPosition(xpos, ypos);
 				popup.show();
-				
+
 				if(widget instanceof TextBox)
 					((TextBox)widget).setFocus(false);
 				else if(widget instanceof DateTimeWidget)
@@ -180,7 +180,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		case Event.ONMOUSEOVER:
 		case Event.ONMOUSEMOVE:
 		case Event.ONMOUSEOUT:
-			
+
 			//if (mouseListeners != null) {
 			if(widget instanceof DesignGroupWidget){
 				if(isRepeated() || !"default".equals(DOM.getStyleAttribute(widget.getElement(), "cursor")))
@@ -201,13 +201,13 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			//	widget.onBrowserEvent(event);//FormDesignerUtil.disableClick(widget.getElement());
 
 			if(!(widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof Label*/ /*|| widget instanceof Hyperlink*/)){
-				
+
 				String cursorval = getDesignCursor(event.getClientX(),event.getClientY(),3);
 				if(Context.getLockWidgets())
 					cursorval = "pointer";
-				
+
 				DOM.setStyleAttribute(widget.getElement(), "cursor", cursorval);
-				
+
 				if(widget instanceof DateTimeWidget)
 					((DateTimeWidget)widget).setStyle("cursor", cursorval);
 			}
@@ -276,22 +276,22 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		if(fontFamily != null && fontFamily.trim().length() > 0)
 			value = fontFamily;
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontFamily", value);
-		
+
 		value = "";
 		if(fontSize != null && fontSize.trim().length() > 0)
 			value = fontSize;
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontSize", value);
-		
+
 		value = "";
 		if(textDecoration != null && textDecoration.trim().length() > 0)
 			value = textDecoration;
 		DOM.setStyleAttribute(txtEdit.getElement(), "textDecoration", value);
-		
+
 		value = "";
 		if(textAlign != null && textAlign.trim().length() > 0)
 			value = textAlign;
 		DOM.setStyleAttribute(txtEdit.getElement(), "textAlign", value);
-		
+
 		value = "";
 		if(color != null && color.trim().length() > 0)
 			value = color;
@@ -306,12 +306,12 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		if(fontStyle != null && fontStyle.trim().length() > 0)
 			value = fontStyle;
 		DOM.setStyleAttribute(txtEdit.getElement(), "fontStyle", value);
-		
+
 		value = "";
 		if(backgroundColor != null && backgroundColor.trim().length() > 0)
 			value = backgroundColor;
 		DOM.setStyleAttribute(txtEdit.getElement(), "backgroundColor", value);
-		
+
 		if("100%".equals(width))
 			DOM.setStyleAttribute(txtEdit.getElement(), "width", width);
 	}
@@ -320,7 +320,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		return (widget instanceof Label || widget instanceof Hyperlink || widget instanceof Button ||
 				widget instanceof CheckBox || widget instanceof RadioButton /*|| widget instanceof TabBar*/);
 	}
-	
+
 	public boolean isResizable(){
 		return !(widget instanceof Label || widget instanceof Hyperlink || widget instanceof CheckBox);
 	}
@@ -402,7 +402,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			html = URL.decode(html);
 		if(html.indexOf("</") > 0)
 			html = html.substring(html.indexOf(">")+1,html.indexOf("</"));
-		
+
 		return html;
 	}
 
@@ -526,6 +526,14 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 
+		/*value = getBinding();
+		if(value == null || value.trim().length() == 0)	{
+			//Widgets should have unique bindings to get unique xpath expressions for locale translation
+			setBinding("LEFT"+getLeft()+"TOP"+getTop());
+			value = getBinding();
+		}
+		node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);*/
+		
 		value = getBinding();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);

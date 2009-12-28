@@ -16,11 +16,14 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.FormRunnerView.Images;
+import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -123,7 +126,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	public void loadWidgets(FormDef formDef,NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets){
-		HashMap<Integer,RuntimeWidgetWrapper> widgets = new HashMap<Integer,RuntimeWidgetWrapper>();
+		HashMap<Integer,RuntimeWidgetWrapper> widgetMap = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
 		for(int i=0; i<nodes.getLength(); i++){
@@ -131,7 +134,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(formDef,node,widgets,externalSourceWidgets);
+				int index = loadWidget(formDef,node,widgetMap,externalSourceWidgets);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -142,25 +145,37 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		//We are adding widgets to the panel according to the tab index.
 		for(int index = 0; index <= maxTabIndex; index++){
-			RuntimeWidgetWrapper widget = widgets.get(new Integer(index));
+			RuntimeWidgetWrapper widget = widgetMap.get(new Integer(index));
 			if(widget != null)
 				addWidget(widget);
 		}
 
 		if(isRepeated){
-			RuntimeWidgetWrapper widget = this.widgets.get(0);
-			if(!(widget.getQuestionDef() == null || widget.getQuestionDef().getDataNode() == null)){
-				/*Element dataNode = (Element)widget.getQuestionDef().getDataNode().getParentNode();
-				Element parent = (Element)dataNode.getParentNode();
-				NodeList nodeList = parent.getElementsByTagName(dataNode.getNodeName());*/
-				
-				Element repeatDataNode = getParentNode(widget.getQuestionDef().getDataNode(),(widget.getWrappedWidget() instanceof CheckBox) ? widget.getParentBinding() : widget.getBinding());
-				Element parent = (Element)repeatDataNode.getParentNode();
-				NodeList nodeList = parent.getElementsByTagName(repeatDataNode.getNodeName());
-				
-				for(int index = 1; index < nodeList.getLength(); index++)
-					addNewRow((Element)nodeList.item(index));
-			}
+			
+			DeferredCommand.addCommand(new Command() {
+				public void execute() {
+					RuntimeWidgetWrapper widget = widgets.get(0);
+					if(!(widget.getQuestionDef() == null || widget.getQuestionDef().getDataNode() == null)){
+						/*Element dataNode = (Element)widget.getQuestionDef().getDataNode().getParentNode();
+						Element parent = (Element)dataNode.getParentNode();
+						NodeList nodeList = parent.getElementsByTagName(dataNode.getNodeName());*/
+
+						Element repeatDataNode = getParentNode(widget.getQuestionDef().getDataNode(),(widget.getWrappedWidget() instanceof CheckBox) ? widget.getParentBinding() : widget.getBinding());
+						Element parent = (Element)repeatDataNode.getParentNode();
+						NodeList nodeList = parent.getElementsByTagName(repeatDataNode.getNodeName());
+
+
+						RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
+						int y = getHeightInt();
+
+						for(int index = 1; index < nodeList.getLength(); index++)
+							addNewRow((Element)nodeList.item(index));
+
+						editListener.onRowAdded(wrapper,getHeightInt()-y);
+
+					}
+				}
+			});	
 		}
 
 		//Now add the button widgets, if any.
@@ -204,7 +219,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		for(int row = 1; row < table.getRowCount(); row++){
 			if(sender == table.getWidget(row, widgets.size())){
-				
+
 				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
 				int y = getHeightInt();
 
@@ -216,7 +231,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 					btnAdd.setEnabled(true);
 
 				editListener.onRowRemoved(wrapper,y-getHeightInt());
-				
+
 				RuntimeWidgetWrapper parent = (RuntimeWidgetWrapper)getParent().getParent();
 				ValidationRule validationRule = parent.getValidationRule();
 				if(validationRule != null)
@@ -234,7 +249,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		QuestionDef questionDef = null;
 		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
 		String parentBinding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_PARENTBINDING);
-		
+
 		if(isRepeated){
 			if(binding != null && binding.trim().length() > 0 && repeatQtnsDef != null){
 				questionDef = repeatQtnsDef.getQuestion(binding);
@@ -265,7 +280,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			parentWrapper = getParentWrapper(widget,node,parentBinding);
 			((RadioButton)widget).setTabIndex(tabIndex);
-			
+
 			if(wrapperSet){
 				wrapper = parentWrapper;
 				questionDef = formDef.getQuestion(parentBinding);
@@ -402,7 +417,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		if(!wrapperSet){
 			wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
-			
+
 			if(parentWrapper != null){ //Check box or radio button
 				if(!parentWrapper.getQuestionDef().isVisible())
 					wrapper.setVisible(false);
@@ -432,7 +447,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		if(binding != null)
 			wrapper.setBinding(binding);
-		
+
 		if(parentBinding != null)
 			wrapper.setParentBinding(parentBinding);
 
@@ -685,7 +700,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
 			RuntimeWidgetWrapper mainWidget = widgets.get(index);
-			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget,true);
+			RuntimeWidgetWrapper copyWidget = getPreparedWidget(mainWidget,false);
 
 			//table.setWidget(row, index, copyWidget);
 
@@ -699,12 +714,16 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				Element repeatDataNode = getParentNode(dataNode,(mainWidget.getWrappedWidget() instanceof CheckBox) ? mainWidget.getParentBinding() : mainWidget.getBinding());
 				newRepeatDataNode = (Element)repeatDataNode.cloneNode(true);
 				repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
+				//workonDefaults(newRepeatDataNode);
 				dataNodes.add(newRepeatDataNode);
 			}
 
 			table.setWidget(row, index, copyWidget);
 
 			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
+			
+			//Loading widget from here instead of in getPreparedWidget because setDataNode may clear default values
+			copyWidget.loadQuestion();
 
 			if(copyWidget.getWrappedWidget() instanceof RadioButton)
 				((RadioButton)copyWidget.getWrappedWidget()).setName(((RadioButton)copyWidget.getWrappedWidget()).getName()+row);
@@ -747,7 +766,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			setDataNode(copyWidget,dataNode,copyWidget.getBinding(),true);
 		}
-		
+
 		addDeleteButton(row);
 	}
 
@@ -790,6 +809,11 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 					if(loadQtn){
 						widget.getQuestionDef().setDefaultValue(XmlUtil.getTextValue((Element)child));
 						widget.loadQuestion();
+					}
+					else{
+						((Element)child).setAttribute("new", XformConstants.XPATH_VALUE_TRUE);
+						if(XformConstants.XPATH_VALUE_FALSE.equals(((Element)child).getAttribute("default")))
+							widget.getQuestionDef().setDefaultValue(null);
 					}
 				}
 				return;
@@ -934,7 +958,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 	public boolean isValid(){
 		firstInvalidWidget = null;
-		
+
 		if(isRepeated){
 			for(int row = 0; row < table.getRowCount(); row++){
 				for(int col = 0; col < table.getCellCount(row)-1; col++){
@@ -1080,4 +1104,18 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public int getHeightInt(){
 		return getElement().getOffsetHeight();
 	}
+	
+	/*private void workonDefaults(Node repeatDataNode){
+		NodeList nodes = repeatDataNode.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			if(XformConstants.XPATH_VALUE_FALSE.equals(((Element)child).getAttribute("default")))
+				XmlUtil.setTextValue((Element)child, "");
+			
+			workonDefaults(child);
+		}
+	}*/
 }

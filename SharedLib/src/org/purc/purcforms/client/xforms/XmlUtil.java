@@ -104,6 +104,22 @@ public class XmlUtil {
 		}
 		return false;
 	}
+	
+	
+	/*public static boolean setTextValue(Node node, String value){
+		if(node == null)
+			return false;
+
+		int numOfEntries = node.getChildNodes().getLength();
+		for (int i = 0; i < numOfEntries; i++) {
+			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
+				node.getChildNodes().item(i).setNodeValue(value);
+				return true;
+			}
+		}
+		return false;
+	}*/
+
 
 
 	/**

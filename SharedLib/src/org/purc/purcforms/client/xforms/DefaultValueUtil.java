@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Element;
@@ -30,8 +28,8 @@ public class DefaultValueUtil {
 	private DefaultValueUtil(){
 
 	}
-	
-	
+
+
 	/**
 	 * Sets all default values of questions in a form definition object
 	 * as per the xforms document being parsed.
@@ -78,17 +76,17 @@ public class DefaultValueUtil {
 		}
 
 		//Now do set default values for repeats since they are not part of the id2VarNameMap
-		for(int pageNo=0; pageNo<formDef.getPageCount(); pageNo++){
+		/*for(int pageNo=0; pageNo<formDef.getPageCount(); pageNo++){
 			PageDef pageDef = formDef.getPageAt(pageNo);
 			for(int qtnNo=0; qtnNo<pageDef.getQuestionCount(); qtnNo++){
 				QuestionDef questionDef = pageDef.getQuestionAt(qtnNo);
 				if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 					setRptQtnsDefaultValues(questionDef.getDataNode(),formDef,questionDef.getRepeatQtnsDef());
 			}
-		}
+		}*/
 	}
-	
-	
+
+
 	/**
 	 * Sets a question's default value which comes from a node attribute value.
 	 * 
@@ -124,8 +122,8 @@ public class DefaultValueUtil {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Sets the default values for child questions of a repeat question type.
 	 * 
@@ -133,7 +131,7 @@ public class DefaultValueUtil {
 	 * @param formDef the form definition object to which the repeat question belongs.
 	 * @param repeatQtnsDef the repeat question definition object.
 	 */
-	private static void setRptQtnsDefaultValues(Element dataNode, FormDef formDef, RepeatQtnsDef repeatQtnsDef){
+	/*private static void setRptQtnsDefaultValues(Element dataNode, FormDef formDef, RepeatQtnsDef repeatQtnsDef){
 		for(int i=0; i<repeatQtnsDef.getQuestionsCount(); i++){
 			QuestionDef questionDef = repeatQtnsDef.getQuestionAt(i);
 			String id = questionDef.getVariableName();
@@ -142,5 +140,5 @@ public class DefaultValueUtil {
 				continue;
 			questionDef.setDefaultValue(val);
 		}
-	}
+	}*/
 }

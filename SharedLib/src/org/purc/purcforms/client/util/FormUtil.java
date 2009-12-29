@@ -717,4 +717,26 @@ public class FormUtil {
 	public static Image createImage(ImageResource resource){
 		return AbstractImagePrototype.create(resource).createImage();
 	}
+	
+	/**
+     * Evaluate scripts in an HTML string. Will eval both <script src=""></script>
+     * and <script>javascript here</scripts>.
+     *
+     * @param element a new HTML(text).getElement() e.g evalScripts(new HTML(response.getText()).getElement())
+     */
+    public static native void evalScripts(Element element) /*-{
+        var scripts = element.getElementsByTagName("script");
+    
+        for (i=0; i < scripts.length; i++) {
+            // if src, eval it, otherwise eval the body
+            if (scripts[i].hasAttribute("src")) {
+                var src = scripts[i].getAttribute("src");
+                var script = $doc.createElement('script');
+                script.setAttribute("src", src);
+                $doc.getElementsByTagName('body')[0].appendChild(script);
+            } else {
+                $wnd.eval(scripts[i].innerHTML);
+            }
+        }
+    }-*/;
 }

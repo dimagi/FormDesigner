@@ -654,8 +654,13 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			}
 		}*/
 
-		if(!"true".equals(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL)))
+		if(!"true".equals(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEADER_LABEL))){
 			dragController.makeDraggable(wrapper);
+			
+			//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+			//edited text is not automatically selected.
+			wrapper.removeStyleName("dragdrop-handle");
+		}
 
 		panel.add(wrapper);
 		FormDesignerUtil.setWidgetPosition(wrapper, left, top);

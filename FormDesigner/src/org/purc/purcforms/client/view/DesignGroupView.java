@@ -1914,6 +1914,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//End header label stuff
 
 		y = oldY;
+		
+		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+		//edited text is not automatically selected.
+		widget.removeStyleName("dragdrop-handle");
 
 		return widget;
 	}
@@ -2043,6 +2047,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		selectedDragController = dragController;
 		y = oldY;*/
 		//End header label stuff
+		
+		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+		//edited text is not automatically selected.
+		widget.removeStyleName("dragdrop-handle");
 
 		return widget;
 	}
@@ -2135,6 +2143,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//End header label stuff
 
 		y = oldY;
+		
+		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+		//edited text is not automatically selected.
+		widget.removeStyleName("dragdrop-handle");
 
 		return widget;
 	}
@@ -2227,6 +2239,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//End header label stuff
 
 		y = oldY;
+		
+		//Without this, widgets in this box cant use Ctrl + A in edit mode and also
+		//edited text is not automatically selected.
+		widget.removeStyleName("dragdrop-handle");
 
 		return widget;
 	}

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 import org.purc.purcforms.client.xforms.RelevantBuilder;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 
 /**
@@ -179,13 +180,11 @@ public class SkipRule implements Serializable{
 		conditions.remove(condition);
 	}
 	
-	public void removeQuestion(QuestionDef questionDef){
-		for(int index = 0; index < getConditionCount(); index++){
-			Condition condition = getConditionAt(index);
-			if(condition.getQuestionId() == questionDef.getId()){
-				removeCondition(condition);
-				index++;
-			}
+	public void removeActionTarget(QuestionDef questionDef){
+		
+		if(questionDef.getBindNode() != null){
+			questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
+			questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
 		}
 		
 		for(int index = 0; index < getActionTargetCount(); index++){
@@ -195,6 +194,26 @@ public class SkipRule implements Serializable{
 				index++;
 			}
 		}
+	}
+	
+	public void removeQuestion(QuestionDef questionDef){
+		for(int index = 0; index < getConditionCount(); index++){
+			Condition condition = getConditionAt(index);
+			if(condition.getQuestionId() == questionDef.getId()){
+				removeCondition(condition);
+				index++;
+			}
+		}
+		
+		/*for(int index = 0; index < getActionTargetCount(); index++){
+			Integer id = getActionTargetAt(index);
+			if(id.intValue() == questionDef.getId()){
+				this.actionTargets.remove(id);
+				index++;
+			}
+		}*/
+		
+		removeActionTarget(questionDef);
 	}
 
 	/** 

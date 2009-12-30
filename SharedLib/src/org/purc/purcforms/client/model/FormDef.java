@@ -962,9 +962,9 @@ public class FormDef implements Serializable{
 		if(dataNode != null){
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
 				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
-				if(questionDef != null && questionDef.getDataNode() != null){
-					questionDef.getDataNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
-					questionDef.getDataNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
+				if(questionDef != null && questionDef.getBindNode() != null){
+					questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
+					questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
 				}
 			}
 		}

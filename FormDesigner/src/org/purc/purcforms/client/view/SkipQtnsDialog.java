@@ -263,7 +263,7 @@ public class SkipQtnsDialog  extends DialogBox {
 		}
 		
 		btnSelect.setEnabled(false);
-		btnOk.setEnabled(lbSelQtns.getItemCount() > 0);
+		btnOk.setEnabled(true/*lbSelQtns.getItemCount() > 0*/); //TODO need to be smarter than this
 	}
 	
 	
@@ -281,7 +281,7 @@ public class SkipQtnsDialog  extends DialogBox {
 		}
 		
 		btnDeselect.setEnabled(false);
-		btnOk.setEnabled(lbSelQtns.getItemCount() > 0);
+		btnOk.setEnabled(true /*lbSelQtns.getItemCount() > 0*/); //TODO Need to be smarter than this.
 	}
 	
 	

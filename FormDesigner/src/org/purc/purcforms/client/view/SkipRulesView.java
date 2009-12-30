@@ -203,8 +203,15 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * @param conditionWidget the widget having the condition to delete.
 	 */
 	public void deleteCondition(ConditionWidget conditionWidget){
-		if(skipRule != null)
-			skipRule.removeCondition(conditionWidget.getCondition());
+		if(skipRule != null){
+			Condition condition = conditionWidget.getCondition();
+			if(condition != null){
+				if(skipRule.getConditionCount() == 1 && skipRule.getActionTargetCount() > 1)
+					skipRule.removeActionTarget(questionDef);
+				else
+					skipRule.removeCondition(condition);
+			}
+		}
 		verticalPanel.remove(conditionWidget);
 	}
 
@@ -220,6 +227,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		if(skipRule == null)
 			skipRule = new SkipRule();
 
+		int conditionCount = 0;
 		int count = verticalPanel.getWidgetCount();
 		for(int i=0; i<count; i++){
 			Widget widget = verticalPanel.getWidget(i);
@@ -229,10 +237,11 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 					skipRule.addCondition(condition);
 				else if(condition != null && skipRule.containsCondition(condition))
 					skipRule.updateCondition(condition);
+				conditionCount++;
 			}
 		}
 
-		if(skipRule.getConditions() == null)
+		if(skipRule.getConditions() == null || conditionCount == 0)
 			skipRule = null;
 		else{
 			skipRule.setConditionsOperator(groupHyperlink.getConditionsOperator());

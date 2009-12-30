@@ -88,11 +88,11 @@ public class LanguageUtil {
 				//TODO We need to uniquely identify nodes and so each xpath should
 				//point to no more than one node.
 				if(result.size() > 1){
-					Window.alert(result.size()+"..........."+xpath+"............"+value);
+					;//Window.alert(result.size()+"..........."+xpath+"............"+value);
 					continue;
 				}
 				else if(result.size() == 0)
-					Window.alert(result.size()+"..........."+xpath+"............"+value);
+					;//Window.alert(result.size()+"..........."+xpath+"............"+value);
 				
 				for(int item = 0; item < result.size(); item++){
 					Element targetNode = (Element)result.get(item);

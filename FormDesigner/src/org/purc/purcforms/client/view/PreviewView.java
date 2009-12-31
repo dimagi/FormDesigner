@@ -171,7 +171,7 @@ public class PreviewView extends FormRunnerView {
 			public void execute() {
 				try{
 					centerPanel.commitChanges();
-					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),null);
+					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),centerPanel.getJavaScriptSource(),null);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

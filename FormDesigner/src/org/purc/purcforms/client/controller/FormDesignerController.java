@@ -259,6 +259,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							formDef.setXformXml(centerPanel.getXformsSource());
 							formDef.setLayoutXml(centerPanel.getLayoutXml());
 						}
+						
+						if(formDef.getJavaScriptSource() != null)
+							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
 
 						//TODO May also need to refresh UI if form was not stored in default lang.
 						HashMap<String,String> locales = languageText.get(formDef.getId());
@@ -383,8 +386,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					centerPanel.saveLanguageText(false);
 					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
 
+					centerPanel.saveJavaScriptSource();
+					
 					if(!isOfflineMode() && formSaveListener == null)
-						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())));
+						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
 
 					boolean saveLocaleText = false;
 					if(formSaveListener != null)
@@ -667,7 +672,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 								return;
 							}
 
-							String xformXml, layoutXml = null, localeXml = null;
+							String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null;
 
 							/*int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 							if(pos > 0){
@@ -679,16 +684,27 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 							int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 							int pos2 = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
+							int pos3 = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
 							if(pos > 0){
 								xformXml = xml.substring(0,pos);
-								layoutXml = FormUtil.formatXml(xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), pos2 > 0 ? pos2 : xml.length()));
+								layoutXml = FormUtil.formatXml(xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length()))));
 
 								if(pos2 > 0)
-									localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), xml.length()));
+									localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
+							
+								if(pos3 > 0)
+									javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
 							}
 							else if(pos2 > 0){
 								xformXml = xml.substring(0,pos2);
-								localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), xml.length()));
+								localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
+								
+								if(pos3 > 0)
+									javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
+							}
+							else if(pos3 > 0){
+								xformXml = xml.substring(0,pos3);
+								javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
 							}
 							else
 								xformXml = xml;
@@ -697,6 +713,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 							centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 							centerPanel.setLayoutXml(layoutXml,false);
+							centerPanel.setJavaScriptSource(javaScriptSrc);
 
 							openFormDeffered(formId,false);
 
@@ -733,7 +750,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		}
 	}
 
-	public void saveForm(String xformXml, String layoutXml, String languageXml){
+	public void saveForm(String xformXml, String layoutXml, String languageXml, String javaScriptSrc){
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getFormDefUploadUrlSuffix();
 		url += FormUtil.getFormIdName()+"="+this.formId;
@@ -747,6 +764,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 			if(languageXml != null && languageXml.trim().length() > 0)
 				xml += PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + languageXml;
+			
+			if(javaScriptSrc != null && javaScriptSrc.trim().length() > 0)
+				xml += PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
 
 			builder.sendRequest(xml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){

@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.util;
 
+import java.util.Date;
 import java.util.List;
 
 import org.purc.purcforms.client.locale.LocaleText;
@@ -724,7 +725,7 @@ public class FormUtil {
      *
      * @param element a new HTML(text).getElement() e.g evalScripts(new HTML(response.getText()).getElement())
      */
-    public static native void evalScripts(Element element) /*-{
+    public static native void evalScripts(com.google.gwt.user.client.Element element) /*-{
         var scripts = element.getElementsByTagName("script");
     
         for (i=0; i < scripts.length; i++) {
@@ -739,4 +740,32 @@ public class FormUtil {
             }
         }
     }-*/;
+    
+    
+    public static native String getElementValue(com.google.gwt.user.client.Element element) /*-{
+    	return element.value;
+    }-*/;
+    
+    public static native void setElementValue(com.google.gwt.user.client.Element element, String value1, String value2) /*-{
+		//element.value = value;
+		//element.onchange=function(){alert('yo men')};
+		//element.addEventListener('change',function(){alert(Math.round(0.60))},false)
+		//element.addEventListener('change',function(){alert(Math.round((new Date().getTime() - value.getTime())/365.25));},false)
+		var val = Math.round(((Date.parse(value1) - Date.parse(value2))/86400000)/365.25);
+		//alert(val);
+		element.value = val;
+		
+		if(document.createEvent){
+			// dispatch for firefox + others
+			var evt = document.createEvent('HTMLEvents');
+			evt.initEvent('change', true, true ); // event type,bubbling,cancelable
+			element.dispatchEvent(evt);
+		}
+		else{
+			// dispatch for IE
+			var evt = document.createEventObject();
+			element.fireEvent('onchange',evt)
+		}
+		
+	}-*/;
 }

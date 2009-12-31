@@ -76,6 +76,9 @@ public class FormDef implements Serializable{
 	/** The layout xml for this form. */
 	private String layoutXml;
 	
+	/** The javascript source for this form. */
+	private String javaScriptSource;
+	
 	/** The xforms xml for this form. */
 	private String xformXml;
 	
@@ -283,6 +286,14 @@ public class FormDef implements Serializable{
 
 	public void setDescriptionTemplate(String descriptionTemplate) {
 		this.descriptionTemplate = descriptionTemplate;
+	}
+	
+	public String getJavaScriptSource() {
+		return javaScriptSource;
+	}
+
+	public void setJavaScriptSource(String javaScriptSource) {
+		this.javaScriptSource = javaScriptSource;
 	}
 
 	public String getLayoutXml() {

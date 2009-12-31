@@ -31,15 +31,22 @@ public class PurcFormBuilder {
 		purcFormNode.appendChild(xformNode);
 
 
-		Element layoutNode = doc.createElement("Layout");
 		String xml = formDef.getLayoutXml();
 		if(xml != null && xml.trim().length() > 0){
 			node = (Element)XmlUtil.getDocument(xml).getDocumentElement().cloneNode(true);
 			doc.importNode(node, true);
+			Element layoutNode = doc.createElement("Layout");
 			layoutNode.appendChild(node);
 			purcFormNode.appendChild(layoutNode);
 		}
-
+		
+		String src = formDef.getJavaScriptSource();
+		if(src != null && src.trim().length() > 0){
+			Element javaScriptNode = doc.createElement("JavaScript");
+			javaScriptNode.appendChild(doc.createCDATASection(src));
+			purcFormNode.appendChild(javaScriptNode);
+		}
+		
 		purcFormNode.appendChild(getLanguageNode(doc,localeText));
 
 		return XmlUtil.fromDoc2String(doc);

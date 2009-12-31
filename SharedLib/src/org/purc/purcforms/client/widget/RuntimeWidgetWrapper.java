@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.widget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
@@ -26,6 +27,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -68,6 +70,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	/** The widget's validation rule. */
 	private ValidationRule validationRule;
+
+	private static int id = 0;
 
 	/**
 	 * Creates a copy of the widget.
@@ -225,6 +229,16 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 					if(widget instanceof DatePickerWidget)
 						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+
+					//Window.alert(widget.getElement().getId());
+					//Window.alert(FormUtil.getElementValue(DOM.getElementById(widget.getElement().getId())));
+
+					/*if("question1".equals(widget.getElement().getId())){
+						DateTimeFormat format = FormUtil.getDateDisplayFormat();
+						String value1 = format.format(new Date());
+						String value2 = FormUtil.getElementValue(DOM.getElementById(widget.getElement().getId()));
+						FormUtil.setElementValue(DOM.getElementById("question5"), value1, value2);
+					}*/
 				}
 			});
 		}
@@ -283,7 +297,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		});
 	}
 
-	
+
 	/**
 	 * Sets up date time event listeners.
 	 */
@@ -314,7 +328,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		});
 	}
-	
+
 
 	/**
 	 * Sets the question for the widget.
@@ -1037,5 +1051,31 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	public void moveToNextWidget(){
 		editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+	}
+
+	public void setBinding(String binding){
+		super.setBinding(binding);
+		setId();
+	}
+
+	public void setParentBinding(String parentBinding){
+		super.setParentBinding(parentBinding);
+		setId();
+	}
+
+	private void setId(){
+		if(!(widget instanceof TextBox))
+			return;
+
+		String id = "";
+
+		if(binding != null)
+			id += binding;
+
+		if(parentBinding != null)
+			id += parentBinding;
+
+		if(id.trim().length() > 0)
+			widget.getElement().setId(id);
 	}
 }

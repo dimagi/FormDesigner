@@ -3,6 +3,7 @@ package org.purc.purcforms.client.xforms;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 
@@ -44,7 +45,7 @@ public class XmlUtil {
 	 * @param node the node whose text value to get.
 	 * @return the text value.
 	 */
-	public static String getTextValue(Element node){
+	public static String getTextValue(Node node){
 		int numOfEntries = node.getChildNodes().getLength();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE){
@@ -227,6 +228,30 @@ public class XmlUtil {
 			sibling = sibling.getNextSibling();
 		}
 
+		return node;
+	}
+	
+	
+	public static Node getChildElement(Node node){
+		NodeList nodes = node.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() == Node.ELEMENT_NODE)
+				return child;
+		}
+		
+		return node;
+	}
+	
+	
+	public static Node getChildCDATA(Node node){
+		NodeList nodes = node.getChildNodes();
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node child = nodes.item(index);
+			if(child.getNodeType() == Node.CDATA_SECTION_NODE)
+				return child;
+		}
+		
 		return node;
 	}
 }

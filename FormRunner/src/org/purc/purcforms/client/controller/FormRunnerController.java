@@ -40,6 +40,7 @@ public class FormRunnerController implements SubmitListener{
 	private FormRunnerWidget formRunner;
 	private String xformXml;
 	private String layoutXml;
+	private String javaScriptSrc;
 	private int formId;
 	private int entityId;
 	private List<RuntimeWidgetWrapper> externalSourceWidgets;
@@ -115,7 +116,7 @@ public class FormRunnerController implements SubmitListener{
 				try{
 					externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
 					FormDef formDef = XformParser.fromXform2FormDef(xformXml);
-					formRunner.loadForm(formDef, layoutXml,externalSourceWidgets);
+					formRunner.loadForm(formDef, layoutXml,javaScriptSrc,externalSourceWidgets);
 
 					if(externalSourceWidgets.size() > 0)
 						fillExternalSourceWidget(externalSourceWidgets.get(externalSourceWidgetIndex++));

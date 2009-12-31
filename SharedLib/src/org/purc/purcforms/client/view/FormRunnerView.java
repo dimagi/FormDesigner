@@ -35,6 +35,7 @@ import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -192,7 +193,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * @param externalSourceWidgets a list of widgets which get their data from sources 
 	 * 		  external to the xform.
 	 */
-	public void loadForm(FormDef formDef,String layoutXml, List<RuntimeWidgetWrapper> externalSourceWidgets){
+	public void loadForm(FormDef formDef,String layoutXml, String javaScriptSrc, List<RuntimeWidgetWrapper> externalSourceWidgets){
 		FormUtil.initialize();
 
 		if(externalSourceWidgets == null){
@@ -215,6 +216,29 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		loadLayout(layoutXml,externalSourceWidgets);
 		isValid(true);
 		moveToFirstWidget();
+
+		com.google.gwt.dom.client.Element script = DOM.getElementById("purcforms_javascript");
+		if(script != null)
+			script.removeFromParent();
+
+		/*String s = " function calculateAge(){ " +
+		" 	var element2 = document.getElementById('question5'); " +
+		"   var element1 = document.getElementById('question1'); " +
+		" 	element2.value = element1.value;	 " +
+		" } " +
+		"  " +
+		"  " +
+		" var element = document.getElementById('question1'); " +
+		" element.addEventListener('change',calculateAge ,false) ";*/
+
+		if(javaScriptSrc != null){
+			Document document = Document.get();
+			script = document.createElement("script");
+			script.setAttribute("type", "text/javascript");
+			script.setAttribute("id", "purcforms_javascript");
+			script.appendChild(document.createTextNode(javaScriptSrc));
+			document.getElementsByTagName("head").getItem(0).appendChild(script);
+		}
 	}
 
 	/**
@@ -434,7 +458,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				wrapper = parentWrapper;
 				questionDef = formDef.getQuestion(parentBinding);
 			}
-				
+
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_BUTTON)){
 			widget = new Button(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
@@ -574,7 +598,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		if(binding != null)
 			wrapper.setBinding(binding);
-		
+
 		if(parentBinding != null)
 			wrapper.setParentBinding(parentBinding);
 

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.model.Calculation;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -514,6 +515,9 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT) != null)
 			constraints.put(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT));
 
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE) != null)
+			formDef.addCalculation(new Calculation(qtn.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
+
 		return qtn.getVariableName();
 	}
 
@@ -625,6 +629,9 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT) != null)
 			constraints.put(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT));
 
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE) != null)
+			formDef.addCalculation(new Calculation(qtn.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
+			
 		if(qtn.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(qtn);
 			qtn.setRepeatQtnsDef(repeatQtnsDef);

@@ -6,6 +6,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.Calculation;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -133,9 +134,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** Widget for setting the description template property. */
 	private TextBox txtDescTemplate = new TextBox();
+	
+	private Label lblDescTemplate;
+
+	private TextBox txtCalculation = new TextBox();
 
 	/** Widget for selecting fields which define the description template. */
 	private DescTemplateWidget btnDescTemplate; // = new Button("Create/Edit");
+
+	private DescTemplateWidget btnCalculation;
 
 	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private Object propertiesObj;
@@ -162,6 +169,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public PropertiesView(){
 
 		btnDescTemplate = new DescTemplateWidget(this);
+		btnCalculation = new DescTemplateWidget(this);
 
 		table.setWidget(0, 0, new Label(LocaleText.get("text")));
 		table.setWidget(1, 0, new Label(LocaleText.get("helpText")));
@@ -172,7 +180,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(6, 0, new Label(LocaleText.get("locked")));
 		table.setWidget(7, 0, new Label(LocaleText.get("required")));
 		table.setWidget(8, 0, new Label(LocaleText.get("defaultValue")));
-		table.setWidget(9, 0, new Label(LocaleText.get("descriptionTemplate")));
+		table.setWidget(9, 0, new Label(LocaleText.get("calculation")));
+		
+		lblDescTemplate = new Label(LocaleText.get("descriptionTemplate"));
+		table.setWidget(10, 0, lblDescTemplate);
 
 		table.setWidget(0, 1, txtText);
 		table.setWidget(1, 1, txtHelpText);
@@ -185,12 +196,20 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(8, 1, txtDefaultValue);
 
 		HorizontalPanel panel = new HorizontalPanel();
+		panel.add(txtCalculation);
+		panel.add(btnCalculation);
+		panel.setCellWidth(btnCalculation, "20%");
+		FormUtil.maximizeWidget(txtCalculation);
+		FormUtil.maximizeWidget(panel);
+		table.setWidget(9, 1, panel);
+
+		panel = new HorizontalPanel();
 		panel.add(txtDescTemplate);
 		panel.add(btnDescTemplate);
 		panel.setCellWidth(btnDescTemplate, "20%");
 		FormUtil.maximizeWidget(txtDescTemplate);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(9, 1, panel);
+		table.setWidget(10, 1, panel);
 
 		table.setStyleName("cw-FlexTable");
 
@@ -216,6 +235,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidth("100%");
 		cellFormatter.setWidth(0, 0, "20%");
 		//cellFormatter.setColSpan(0, 0, 2);
+		
+		//cellFormatter.setWidth(9, 0, "20px");
+		//cellFormatter.setWidth(9, 1, "20px");
 
 		txtText.setWidth("100%");
 		txtHelpText.setWidth("100%");
@@ -224,6 +246,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.setWidth("100%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
+		verticalPanel.setSpacing(5);
 		verticalPanel.add(table);
 
 		DecoratedTabPanel tabs = new DecoratedTabPanel();
@@ -244,8 +267,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		enableQuestionOnlyProperties(false);
 		txtText.setEnabled(false);
-		txtDescTemplate.setEnabled(false);
-		btnDescTemplate.setEnabled(false);
+		//txtDescTemplate.setVisible(false);
+		//btnDescTemplate.setVisible(false);
+		enableDescriptionTemplate(false);
+		txtCalculation.setEnabled(false);
+		btnCalculation.setEnabled(false);
 
 		txtText.setTitle(LocaleText.get("questionTextDesc"));
 		txtHelpText.setTitle(LocaleText.get("questionDescDesc"));
@@ -423,6 +449,17 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
+		txtCalculation.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateCalculation();
+			}
+		});
+		txtCalculation.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				updateCalculation();
+			}
+		});
+
 		//Combo boxes
 		cbDataType.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
@@ -458,14 +495,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return ((OptionDef)propertiesObj).getText();
 		return null;
 	}
-	
+
 	private void updateSelObjBinding(String orgText){
-		
+
 		if(orgText == null)
 			return;
-		
+
 		String orgTextDefBinding = FormDesignerUtil.getXmlTagName(getTextWithoutDecTemplate(orgText));
-		
+
 		if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
 			String text = getTextWithoutDecTemplate(txtText.getText().trim());
 			String name = FormDesignerUtil.getXmlTagName(text);
@@ -483,8 +520,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets text without the description template, for a given text.
 	 * 
@@ -500,8 +537,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 		return text;
 	}
-	
-	
+
+
 	/**
 	 * Checks if a given character is allowed to begin an xml node name.
 	 * 
@@ -572,6 +609,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			formChangeListener.onFormItemChanged(propertiesObj);
 		}
 	}
+
+
+	private void updateCalculation(){
+		if(propertiesObj == null)
+			return;
+
+		assert(propertiesObj instanceof QuestionDef);
+		Context.getFormDef().updateCalculation((QuestionDef)propertiesObj, txtCalculation.getText());
+	}
+
 
 	/**
 	 * Updates the selected object with the new binding as typed by the user.
@@ -743,16 +790,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableQuestionOnlyProperties(false);
 
 		txtText.setEnabled(true);
-		txtDescTemplate.setEnabled(Context.isStructureReadOnly() ? false : true);
-		btnDescTemplate.setEnabled(Context.isStructureReadOnly() ? false : true);
+		//txtDescTemplate.setVisible(Context.isStructureReadOnly() ? false : true);
+		//btnDescTemplate.setVisible(Context.isStructureReadOnly() ? false : true);
+		enableDescriptionTemplate(Context.isStructureReadOnly() ? false : true);
 
 		txtText.setText(formDef.getName());
 		txtBinding.setText(formDef.getVariableName());
 		//skipRulesView.setFormDef(formDef);
 
 		txtDescTemplate.setText(formDef.getDescriptionTemplate());
-
 		btnDescTemplate.setFormDef(formDef);
+		
+		btnCalculation.setFormDef(formDef);
 	}
 
 	/**
@@ -764,8 +813,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableQuestionOnlyProperties(false);
 
 		txtText.setEnabled(true);
-		txtDescTemplate.setEnabled(false);
-		btnDescTemplate.setEnabled(false);
+		//txtDescTemplate.setVisible(false);
+		//btnDescTemplate.setVisible(false);
+		enableDescriptionTemplate(false);
+		txtCalculation.setEnabled(false);
+		btnCalculation.setEnabled(false);
 
 		txtText.setText(pageDef.getName());
 		txtBinding.setText(String.valueOf(pageDef.getPageNo()));
@@ -779,8 +831,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void setQuestionProperties(QuestionDef questionDef){
 		enableQuestionOnlyProperties(true);
-		
-		txtDescTemplate.setEnabled(false);
+
+		//txtDescTemplate.setVisible(false);
+		enableDescriptionTemplate(false);
 
 		txtText.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getVariableName());
@@ -793,6 +846,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkRequired.setValue(questionDef.isRequired());
 
 		setDataType(questionDef.getDataType());
+		
+		String calculationExpression = null;
+		Calculation calculation = Context.getFormDef().getCalculation(questionDef);
+		if(calculation != null)
+			calculationExpression = calculation.getCalculateExpression();
+		txtCalculation.setText(calculationExpression);
 
 		//Skip logic processing is a bit slow and hence we wanna update the 
 		//UI with the rest of simple quick properties as we process skip logic
@@ -812,8 +871,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void setQuestionOptionProperties(OptionDef optionDef){
 		enableQuestionOnlyProperties(false);
-		txtDescTemplate.setEnabled(false);
-		btnDescTemplate.setEnabled(false);
+		//txtDescTemplate.setVisible(false);
+		//btnDescTemplate.setVisible(false);
+		enableDescriptionTemplate(false);
+		txtCalculation.setEnabled(false);
+		btnCalculation.setEnabled(false);
 
 		txtText.setText(optionDef.getText());
 		txtBinding.setText(optionDef.getVariableName());
@@ -839,8 +901,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
 		dynamicListsView.setEnabled(enable2);
-		
-		btnDescTemplate.setEnabled(enable2);
+
+		//btnDescTemplate.setVisible(enable2);
+		txtCalculation.setEnabled(enable2);
+		btnCalculation.setEnabled(enable2);
 
 		clearProperties();
 	}
@@ -918,6 +982,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtText.setText(null);
 		txtBinding.setText(null);
 		txtDescTemplate.setText(null);
+		txtCalculation.setText(null);
 	}
 
 	/**
@@ -932,8 +997,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(formItem == null){
 			enableQuestionOnlyProperties(false);
 			txtText.setEnabled(false);
-			txtDescTemplate.setEnabled(false);
-			btnDescTemplate.setEnabled(false);
+			//txtDescTemplate.setVisible(false);
+			//btnDescTemplate.setVisible(false);
+			enableDescriptionTemplate(false);
 			return;
 		}
 
@@ -947,7 +1013,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			setQuestionProperties((QuestionDef)formItem);
 		else if(formItem instanceof OptionDef){
 			setQuestionOptionProperties((OptionDef)formItem);
-			
+
 			//Since option bindings are not xml node names, we may allow their
 			//edits as they are not structure breaking.
 			txtBinding.setEnabled(!Context.isStructureReadOnly());
@@ -984,7 +1050,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
-		if(sender instanceof DescTemplateWidget){
+		if(sender == btnDescTemplate){
+			
+			item = "${" + item + "}$";
+			
 			if(propertiesObj instanceof QuestionDef){
 				txtText.setText(txtText.getText() + " " + txtDescTemplate.getText() + item);
 				updateText();
@@ -995,6 +1064,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				updateDescTemplate(); //Added for IE which does not properly throw change events for the desc template textbox
 				txtDescTemplate.setFocus(true);
 			}
+		}
+		else if(sender == btnCalculation){
+			assert(propertiesObj instanceof QuestionDef);
+			txtCalculation.setText(txtCalculation.getText() + item);
+			updateCalculation(); //Added for IE which does not properly throw change events for the desc template textbox
+			txtCalculation.setFocus(true);
 		}
 	}
 
@@ -1045,5 +1120,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 			}
 		}
+	}
+	
+	private void enableDescriptionTemplate(boolean enable){
+		//txtDescTemplate.setVisible(enable);
+		btnDescTemplate.setEnabled(enable);
+		//txtDescTemplate.getParent().setVisible(enable);
+		//lblDescTemplate.setVisible(enable);
+		
+		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
+		cellFormatter.setVisible(10, 0, enable);
+		cellFormatter.setVisible(10, 1, enable);
 	}
 }

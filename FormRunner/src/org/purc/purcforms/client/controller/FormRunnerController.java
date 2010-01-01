@@ -78,12 +78,17 @@ public class FormRunnerController implements SubmitListener{
 								return;
 							}
 
-							xformXml = null; layoutXml = null;
+							xformXml = null; layoutXml = null; javaScriptSrc = null;
 
 							int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+							int pos2 = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
 							if(pos > 0){
 								xformXml = xml.substring(0,pos);
-								layoutXml = xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), xml.length());
+								layoutXml = xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), pos2 > 0 ? pos2 : xml.length());
+								
+								if(pos2 > 0)
+									javaScriptSrc = xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+										
 								openForm();
 								//FormUtil.dlg.hide(); //open form above will close it
 							}

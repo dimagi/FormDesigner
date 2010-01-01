@@ -621,6 +621,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_REPEATED);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setRepeated(value.equals(WidgetEx.REPEATED_TRUE_VALUE));
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setId(value);
 
 		String binding = node.getAttribute(WidgetEx.WIDGET_PROPERTY_BINDING);
 		if(binding != null && binding.trim().length() > 0)

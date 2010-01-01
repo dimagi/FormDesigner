@@ -157,6 +157,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 
 	/** Widget for setting the value field property. */
 	private TextBox txtValueField = new TextBox();
+	
+	/** Widget for setting the id property. */
+	private TextBox txtId= new TextBox();
 
 	/** The current form definition object. */
 	private FormDef formDef;
@@ -205,6 +208,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 0, new Label(LocaleText.get("borderStyle")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("borderWidth")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("borderColor")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("id")));
 
 		index = -1;
 		table.setWidget(++index, 1,txtText );
@@ -235,6 +239,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 1, lbBorderStyle);
 		table.setWidget(++index, 1, txtBorderWidth);
 		table.setWidget(++index, 1, sgstBorderColor);
+		table.setWidget(++index, 1, txtId);
 
 		txtText.setWidth("100%");
 		txtHelpText.setWidth("100%");
@@ -263,6 +268,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		lbBorderStyle.setWidth("100%");
 		txtBorderWidth.setWidth("100%");
 		sgstBorderColor.setWidth("100%");
+		txtId.setWidth("100%");
 
 		table.setStyleName("cw-FlexTable");
 		table.setWidth("100%");
@@ -467,6 +473,19 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				updateValueField();
 			}
 		});
+		
+		txtId.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateId();
+			}
+		});
+
+		txtId.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				updateId();
+			}
+		});
+
 
 
 		txtForeColor.addChangeHandler(new ChangeHandler(){
@@ -675,6 +694,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateValueField(){
 		if(widget != null)
 			widget.setValueField(txtValueField.getText());
+	}
+	
+	/**
+	 * Updates the selected widget with the new id as typed by the user.
+	 */
+	private void updateId(){
+		if(widget != null)
+			widget.setId(txtId.getText());
 	}
 
 	/**
@@ -894,6 +921,12 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 				txtValueField.setText(value);
 			else
 				txtValueField.setText(null);
+			
+			value = this.widget.getId();
+			if(value != null && value.trim().length() > 0)
+				txtId.setText(value);
+			else
+				txtId.setText(null);
 
 			cbRepeat.setSelectedIndex(this.widget.isRepeated() ? 0 : 1);
 
@@ -1013,6 +1046,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtExternalSource.setText(null);
 		txtDisplayField.setText(null);
 		txtValueField.setText(null);
+		txtId.setText(null);
 		cbRepeat.setSelectedIndex(-1);
 		enableLabelProperties(false);
 	}

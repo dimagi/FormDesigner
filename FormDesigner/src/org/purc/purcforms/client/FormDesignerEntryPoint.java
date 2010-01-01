@@ -135,6 +135,10 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 		s = FormUtil.getDivValue("showModelXmlTab");
 		if(!("1".equals(s) || "true".equals(s)))
 			designer.removeModelXmlTab();
+		
+		s = FormUtil.getDivValue("showJavaScriptTab");
+		if(!("1".equals(s) || "true".equals(s)))
+			designer.removeJavaScriptTab();
 	}
 	
 	public void onResize(ResizeEvent event){

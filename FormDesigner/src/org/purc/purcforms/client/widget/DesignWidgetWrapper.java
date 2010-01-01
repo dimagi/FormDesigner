@@ -600,6 +600,12 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+		
+		value = getId();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_ID, value);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_ID);
 
 		return node;
 	}

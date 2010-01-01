@@ -85,6 +85,7 @@ public class XformConstants {
 	public static final String ATTRIBUTE_NAME_CONSTRAINT = "constraint";
 	public static final String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
 	public static final String ATTRIBUTE_NAME_REQUIRED = "required";
+	public static final String ATTRIBUTE_NAME_CALCULATE = "calculate";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";
 	public static final String ATTRIBUTE_NAME_NAME = "name";
 	public static final String ATTRIBUTE_NAME_XMLNS = "xmlns:"+PREFIX_XFORMS;

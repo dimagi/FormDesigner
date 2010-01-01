@@ -1,6 +1,5 @@
 package org.purc.purcforms.client.util;
 
-import java.util.Date;
 import java.util.List;
 
 import org.purc.purcforms.client.locale.LocaleText;
@@ -10,6 +9,7 @@ import org.purc.purcforms.client.view.ProgressDialog;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -767,5 +767,18 @@ public class FormUtil {
 			element.fireEvent('onchange',evt)
 		}
 		
+	}-*/;
+    
+    
+    public static native int evaluateIntExpression(String expression) /*-{
+	    return eval(expression);
+	}-*/;
+    
+    public static native double evaluateDoubleExpression(String expression) /*-{
+    	return eval(expression);
+	}-*/;
+    
+    public static native String evaluateStringExpression(String expression) /*-{
+    	return eval(expression);
 	}-*/;
 }

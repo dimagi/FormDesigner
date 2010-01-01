@@ -49,6 +49,9 @@ public class FormDef implements Serializable{
 	/** The collection of rules (ValidationRule objects) for this form. */
 	private Vector validationRules;
 
+	/** The collection of calculations (Calculation objects) for this form. */
+	private Vector calculations;
+
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
 
@@ -60,28 +63,28 @@ public class FormDef implements Serializable{
 
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
 	private Document doc;
-	
+
 	/** 
 	 * The data node of the xform that this form represents.
 	 * This is the node immediately under the instace node.
 	 */
 	private Element dataNode;
-	
+
 	/** The top level node of the xform that this form represents. */
 	private Element xformsNode;
-	
+
 	/** The model node of the xform that this form represents. */
 	private Element modelNode;
 
 	/** The layout xml for this form. */
 	private String layoutXml;
-	
+
 	/** The javascript source for this form. */
 	private String javaScriptSource;
-	
+
 	/** The xforms xml for this form. */
 	private String xformXml;
-	
+
 	/** The language xml for this form. */
 	private String languageXml;
 
@@ -124,6 +127,7 @@ public class FormDef implements Serializable{
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
 		copyPages(formDef.getPages());
 		copySkipRules(formDef.getSkipRules());
+		copyCalculations(formDef.getCalculations());
 
 		//This is a temporary fix for an infinite recursion that happens when validation
 		//rule copy constructor tries to set a formdef using the FormDef copy constructor.
@@ -142,7 +146,7 @@ public class FormDef implements Serializable{
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate) {
+	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
 		setId(id);
 		setName(name);
 
@@ -154,6 +158,7 @@ public class FormDef implements Serializable{
 		setValidationRules(validationRules);
 		setDynamicOptions(dynamicOptions);
 		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
+		setCalculations(calculations);
 	}
 
 	/**
@@ -227,6 +232,12 @@ public class FormDef implements Serializable{
 		return (ValidationRule)validationRules.elementAt(index);
 	}
 
+	public Calculation getCalculationAt(int index) {
+		if(calculations == null)
+			return null;
+		return (Calculation)calculations.elementAt(index);
+	}
+
 	public void setPages(Vector pages) {
 		this.pages = pages;
 	}
@@ -272,6 +283,14 @@ public class FormDef implements Serializable{
 		this.validationRules = validationRules;
 	}
 
+	public Vector getCalculations() {
+		return calculations;
+	}
+
+	public void setCalculations(Vector calculations) {
+		this.calculations = calculations;
+	}
+
 	public HashMap<Integer,DynamicOptionDef> getDynamicOptions() {
 		return dynamicOptions;
 	}
@@ -287,7 +306,7 @@ public class FormDef implements Serializable{
 	public void setDescriptionTemplate(String descriptionTemplate) {
 		this.descriptionTemplate = descriptionTemplate;
 	}
-	
+
 	public String getJavaScriptSource() {
 		return javaScriptSource;
 	}
@@ -345,6 +364,19 @@ public class FormDef implements Serializable{
 				if(((Integer)targets.elementAt(j)).intValue() == questionDef.getId())
 					return rule;
 			}
+		}
+
+		return null;
+	}
+
+	public Calculation getCalculation(QuestionDef questionDef){
+		if(calculations == null)
+			return null;
+
+		for(int i=0; i<calculations.size(); i++){
+			Calculation calculation = (Calculation)calculations.elementAt(i);
+			if(calculation.getQuestionId() == questionDef.getId())
+				return calculation;
 		}
 
 		return null;
@@ -434,6 +466,13 @@ public class FormDef implements Serializable{
 					continue;
 
 				dynamicOptionDef.updateDoc(this,questionDef);
+			}
+		}
+		
+		if(calculations != null){
+			for(int i=0; i<calculations.size(); i++){
+				Calculation calculation = (Calculation)calculations.elementAt(i);
+				calculation.updateDoc(this);
 			}
 		}
 	}
@@ -576,6 +615,15 @@ public class FormDef implements Serializable{
 			}
 		}
 	}
+	
+	private void copyCalculations(Vector calculations){
+		if(calculations != null)
+		{
+			this.calculations =  new Vector();
+			for(int i=0; i<calculations.size(); i++)
+				this.calculations.addElement(new Calculation((Calculation)calculations.elementAt(i)));
+		}
+	}
 
 	/*private void copyDynamicOptions(HashMap<Integer,DynamicOptionDef>){
 
@@ -657,7 +705,7 @@ public class FormDef implements Serializable{
 		this.modelNode = modelNode;
 	}
 
-	
+
 	/**
 	 * Moves a page one position up in the form.
 	 * 
@@ -787,7 +835,7 @@ public class FormDef implements Serializable{
 		removeQtnFromValidationRules(qtnDef);
 		removeQtnFromSkipRules(qtnDef);
 	}
-	
+
 	/**
 	 * Check if a question is referenced by any dynamic selection list relationship
 	 * and if so, removes the relationship.
@@ -796,12 +844,12 @@ public class FormDef implements Serializable{
 	 */
 	public void removeQtnFromDynamicLists(QuestionDef questionDef){
 		if(dynamicOptions != null){
-			
+
 			Object[] keys = dynamicOptions.keySet().toArray();
 			for(int index = 0; index < keys.length; index++){
 				Integer questionId = (Integer)keys[index];
 				DynamicOptionDef dynamicOptionDef = dynamicOptions.get(questionId);
-				
+
 				//Check if the deleted question is the parent of a dynamic selection
 				//list relationship. And if so, delete the relationship.
 				if(questionId.intValue() == questionDef.getId()){
@@ -817,12 +865,42 @@ public class FormDef implements Serializable{
 					removeDynamicInstanceNode(dynamicOptionDef);
 					continue;
 				}
-				
+
 				dynamicOptionDef.updateDoc(this,questionDef);
 			}
 		}
 	}
 	
+	
+	public void removeQtnFromCalculations(QuestionDef questionDef){
+		for(int index = 0; index < getCalculationCount(); index++){
+			Calculation calculation = getCalculationAt(index);
+			if(calculation.getQuestionId() == questionDef.getId()){
+				calculations.remove(index);
+				
+				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+				if(questionDef.getBindNode() != null)
+					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
+				
+				return;
+			}
+		}
+	}
+	
+	
+	public void updateCalculation(QuestionDef questionDef, String calculateExpression){
+		if(calculateExpression == null || calculateExpression.trim().length() == 0)
+			removeQtnFromCalculations(questionDef);
+		else{
+			Calculation calculation = getCalculation(questionDef);
+			if(calculation == null)
+				addCalculation(new Calculation(questionDef.getId(),calculateExpression));
+			else
+				calculation.setCalculateExpression(calculateExpression);
+		}
+	}
+	
+
 	/**
 	 * Removes the instance node referenced by a dynamic selection list object.
 	 * 
@@ -832,11 +910,11 @@ public class FormDef implements Serializable{
 		//dataNode points to <dynamiclist>
 		//dataNode.getParentNode() points to <xf:instance id="theid">
 		//dataNode.getParentNode().getParentNode() points to <xf:model>
-		
+
 		Element dataNode = dynamicOptionDef.getDataNode();
 		if(dataNode != null && dataNode.getParentNode() != null
 				&& dataNode.getParentNode().getParentNode() != null){
-			
+
 			dataNode.getParentNode().getParentNode().removeChild(dataNode.getParentNode());	
 		}
 	}
@@ -862,6 +940,12 @@ public class FormDef implements Serializable{
 			return 0;
 		return skipRules.size();
 	}
+	
+	public int getCalculationCount(){
+		if(calculations == null)
+			return 0;
+		return calculations.size();
+	}
 
 	/**
 	 * Gets the number of validation rules in the form.
@@ -883,7 +967,7 @@ public class FormDef implements Serializable{
 	public void moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
 		if(pages.size() < pageNo)
 			pages.add(new PageDef(formDef));
-		
+
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
 			if(page.contains(qtn)){
@@ -910,7 +994,7 @@ public class FormDef implements Serializable{
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * Checks if the form has a particular skip rule.
@@ -924,7 +1008,7 @@ public class FormDef implements Serializable{
 		return skipRules.contains(skipRule);
 	}
 
-	
+
 	/**
 	 * Checks if a form has a particular validation rule.
 	 * 
@@ -959,6 +1043,13 @@ public class FormDef implements Serializable{
 		validationRules.addElement(validationRule);
 	}
 
+	public void addCalculation(Calculation calculation){
+		if(calculations == null)
+			calculations = new Vector();
+		calculations.addElement(calculation);
+	}
+	
+	
 	/**
 	 * Removes a skip rule from the form.
 	 * 
@@ -973,9 +1064,10 @@ public class FormDef implements Serializable{
 		if(dataNode != null){
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
 				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
-				if(questionDef != null && questionDef.getBindNode() != null){
-					questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
-					questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
+				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+				if(questionDef != null && node != null){
+					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
+					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
 				}
 			}
 		}
@@ -995,23 +1087,24 @@ public class FormDef implements Serializable{
 		boolean ret = validationRules.remove(validationRule);
 		if(dataNode != null){
 			QuestionDef questionDef = getQuestion(validationRule.getQuestionId());
-			if(questionDef != null && questionDef.getBindNode() != null){
-				questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
-				questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+			Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+			if(questionDef != null && node != null){
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
 			}
 		}
 		return ret;
 	}
 
 	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
-		
+
 		//The parent or child question may have been deleted.
 		if(getQuestion(questionId) == null || getQuestion(dynamicOptionDef.getQuestionId()) == null)
 			return;
-		
+
 		if(dynamicOptions == null)
 			dynamicOptions = new HashMap<Integer,DynamicOptionDef>();
-		
+
 		dynamicOptions.put(questionId, dynamicOptionDef);
 	}
 
@@ -1073,9 +1166,9 @@ public class FormDef implements Serializable{
 			DynamicOptionDef dynamciOptionDef = dynamicOptions.get(questionId);
 			if(dynamciOptionDef == null)
 				return;
-			
+
 			removeDynamicInstanceNode(dynamciOptionDef);
-			
+
 			dynamicOptions.remove(questionId);
 		}
 	}
@@ -1099,13 +1192,13 @@ public class FormDef implements Serializable{
 		skipRules = new Vector();
 		for(int index = 0; index < formDef.getSkipRuleCount(); index++)
 			formDef.getSkipRuleAt(index).refresh(this, formDef);
-		
+
 		//Clear existing validation rules if any. Already existing validation rules 
 		//will always overwrite those from the refresh source.
 		validationRules = new Vector();
 		for(int index = 0; index < formDef.getValidationRuleCount(); index++)
 			formDef.getValidationRuleAt(index).refresh(this, formDef);
-		
+
 		//If we already had dynamic options, they will always overwrite all 
 		//from the refresh source.
 		//TODO May need to do a smarter refresh by only overwriting those that have
@@ -1116,24 +1209,24 @@ public class FormDef implements Serializable{
 			Iterator<Entry<Integer,DynamicOptionDef>> iterator = formDef.getDynamicOptions().entrySet().iterator();
 			while(iterator.hasNext()){
 				Entry<Integer,DynamicOptionDef> entry = iterator.next();
-				
+
 				QuestionDef oldParentQtnDef = formDef.getQuestion(entry.getKey());
 				if(oldParentQtnDef == null)
 					continue; //How can this be missing in the original formdef???
-				
+
 				QuestionDef newParentQtnDef = getQuestion(oldParentQtnDef.getVariableName());
 				if(newParentQtnDef == null)
 					continue; //My be deleted by refresh source.
-				
+
 				DynamicOptionDef oldDynOptionDef = entry.getValue();
 				QuestionDef oldChildQtnDef = formDef.getQuestion(oldDynOptionDef.getQuestionId());
 				if(oldChildQtnDef == null)
 					return; //can this be lost in the old formdef????
-				
+
 				QuestionDef newChildQtnDef = getQuestion(oldChildQtnDef.getVariableName());
 				if(newChildQtnDef == null)
 					continue; //possibly deleted by refresh sourced (eg server).
-				
+
 				DynamicOptionDef newDynOptionDef = new DynamicOptionDef();
 				newDynOptionDef.setQuestionId(newChildQtnDef.getId());
 				newDynOptionDef.refresh(this, formDef, newDynOptionDef, oldDynOptionDef,newParentQtnDef,oldParentQtnDef,newChildQtnDef,oldChildQtnDef);

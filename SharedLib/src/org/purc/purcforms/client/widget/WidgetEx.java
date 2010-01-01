@@ -63,6 +63,8 @@ public class WidgetEx extends Composite{
 	
 	public static final String WIDGET_PROPERTY_BACKGROUND_COLOR = "backgroundColor";
 	
+	public static final String WIDGET_PROPERTY_ID = "Id";
+	
 	public static final String REPEATED_TRUE_VALUE = "1";
 	
 	protected Widget widget;
@@ -92,6 +94,8 @@ public class WidgetEx extends Composite{
 	protected String valueField;
 	
 	protected boolean isRepeated = false;
+	
+	protected String id;
 	
 	/** 
 	 * The horizontal panel which contains the widget. The widget is contained in a horizontal
@@ -138,6 +142,7 @@ public class WidgetEx extends Composite{
 		this.displayField = widget.displayField;
 		this.valueField = widget.valueField;
 		this.isRepeated = widget.isRepeated;
+		this.id = widget.id;
 		
 		copyWidget(widget);
 
@@ -705,5 +710,13 @@ public class WidgetEx extends Composite{
 
 	public void setTopInt(int top){
 		setTop(top+"px");
+	}
+	
+	public void setId(String id){
+		this.id = id;
+	}
+	
+	public String getId(){
+		return id;
 	}
 }

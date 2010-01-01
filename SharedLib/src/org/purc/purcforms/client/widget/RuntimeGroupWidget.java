@@ -74,7 +74,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	protected HashMap<Label,String> labelReplaceText = new HashMap<Label,String>();
 
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
-
+	
+	protected HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap = new HashMap<QuestionDef,List<RuntimeWidgetWrapper>>();
+	
 
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
@@ -125,7 +127,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		return parentWrapper;
 	}
 
-	public void loadWidgets(FormDef formDef,NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets){
+	public void loadWidgets(FormDef formDef,NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets,
+			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings, HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap){
+		
 		HashMap<Integer,RuntimeWidgetWrapper> widgetMap = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
@@ -134,7 +138,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(formDef,node,widgetMap,externalSourceWidgets);
+				int index = loadWidget(formDef,node,widgetMap,externalSourceWidgets,calcQtnMappings, calcWidgetMap);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -240,7 +244,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		}
 	}
 
-	private int loadWidget(FormDef formDef, Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets){
+	private int loadWidget(FormDef formDef, Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets,
+			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings,HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap){
+		
 		RuntimeWidgetWrapper parentWrapper = null;
 
 		String s = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE);
@@ -400,7 +406,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
 
 			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,editListener,repeated);
-			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets);
+			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets,calcQtnMappings,calcWidgetMap);
 			/*getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
 			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
 			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
@@ -445,15 +451,6 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			wrapper.setValidationRule(validationRule);
 		}
 
-		if(binding != null)
-			wrapper.setBinding(binding);
-
-		if(parentBinding != null)
-			wrapper.setParentBinding(parentBinding);
-
-		if(parentWrapper != null)
-			parentWrapper.addChildWidget(wrapper);
-
 		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTitle(value);
@@ -473,6 +470,20 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setDisplayField(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setId(value);
+		
+		if(parentBinding != null)
+			wrapper.setParentBinding(parentBinding);
+		
+		if(binding != null)
+			wrapper.setBinding(binding);
+
+		if(parentWrapper != null)
+			parentWrapper.addChildWidget(wrapper);
+		
 
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 		if(value != null && value.trim().length() > 0){
@@ -529,6 +540,9 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				});
 			}
 		}
+		
+		if(wrapper.isEditable() && questionDef != null)
+			FormRunnerView.updateCalcWidgetMapping(wrapper, calcQtnMappings, calcWidgetMap);
 
 		return tabIndex;
 	}
@@ -1043,6 +1057,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 	public HashMap<QuestionDef,List<Label>> getLabelMap(){
 		return labelMap;
+	}
+	
+	public HashMap<QuestionDef,List<RuntimeWidgetWrapper>> getCalcWidgetMap(){
+		return calcWidgetMap;
 	}
 
 	public HashMap<Label,String> getLabelText(){

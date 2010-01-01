@@ -1,7 +1,6 @@
 package org.purc.purcforms.client.widget;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.purc.purcforms.client.controller.QuestionChangeListener;
@@ -27,7 +26,6 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -451,6 +449,69 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.isLocked())
 			setLocked(true);
 	}
+	
+	
+	public void setAnswer(String answer){
+		questionDef.setAnswer(answer);
+		
+		int type = questionDef.getDataType();
+		
+		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC
+				|| type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				&& widget instanceof ListBox){
+			List options  = questionDef.getOptions();
+			int defaultValueIndex = 0;
+			ListBox listBox = (ListBox)widget;
+
+			if(options != null){
+				for(int index = 0; index < options.size(); index++){
+					OptionDef optionDef = (OptionDef)options.get(index);
+					if(optionDef.getVariableName().equalsIgnoreCase(answer))
+						defaultValueIndex = index+1;
+				}
+			}
+			listBox.setSelectedIndex(defaultValueIndex);
+		}
+		else if(type == QuestionDef.QTN_TYPE_BOOLEAN && widget instanceof ListBox){
+			ListBox listBox = (ListBox)widget;
+			if(answer != null){
+				if(answer.equalsIgnoreCase(QuestionDef.TRUE_VALUE))
+					listBox.setSelectedIndex(1);
+				else if(answer.equalsIgnoreCase(QuestionDef.FALSE_VALUE))
+					listBox.setSelectedIndex(2);
+			}
+		}
+		else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE && answer != null 
+				&& answer.trim().length() > 0&& binding != null 
+				&& binding.trim().length() > 0 && widget instanceof CheckBox){
+			if(answer.contains(binding))
+				((CheckBox)widget).setValue(true);
+		}
+		else if(type == QuestionDef.QTN_TYPE_DATE_TIME && widget instanceof DateTimeWidget)
+			((DateTimeWidget)widget).setText(answer);
+
+
+		if(widget instanceof TextBoxBase){
+			((TextBoxBase)widget).setText(""); //first init just incase we have default value
+
+			if(answer != null && answer.trim().length() > 0){
+				if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
+					OptionDef optionDef = questionDef.getOptionWithValue(answer);
+					if(optionDef != null)
+						((TextBox)widget).setText(optionDef.getText());
+				}
+				else{
+					if(answer.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(answer))
+						answer = questionDef.getDefaultValueDisplay();
+					else if(answer.trim().length() > 0 && questionDef.isDate())
+						answer = fromSubmit2DisplayDate(answer);
+
+					((TextBoxBase)widget).setText(answer);
+				}
+			}
+		}
+	}
+	
 
 	/**
 	 * Converts a date,time or dateTime from its xml submit format to display format.
@@ -1055,7 +1116,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	public void setBinding(String binding){
 		super.setBinding(binding);
-		setId();
+		if(getId() == null || getId().trim().length() == 0)
+			setId();
 	}
 
 	public void setParentBinding(String parentBinding){
@@ -1077,5 +1139,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		if(id.trim().length() > 0)
 			widget.getElement().setId(id);
+	}
+	
+	public boolean isEditable(){
+		return (widget instanceof TextBox || widget instanceof TextArea || widget instanceof ListBox || widget instanceof CheckBox);
+	}
+	
+	public void setId(String id){
+		super.setId(id);
+		widget.getElement().setId(id);
 	}
 }

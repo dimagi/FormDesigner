@@ -256,12 +256,16 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						if(formDef.getLayoutXml() != null)
 							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
 						else{
+							//Could be from form runner which puts these contents in center panel
+							//because it does not yet have a formdef by the time it has this data.
 							formDef.setXformXml(centerPanel.getXformsSource());
 							formDef.setLayoutXml(centerPanel.getLayoutXml());
 						}
 						
 						if(formDef.getJavaScriptSource() != null)
 							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
+						else
+							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
 
 						//TODO May also need to refresh UI if form was not stored in default lang.
 						HashMap<String,String> locales = languageText.get(formDef.getId());
@@ -342,14 +346,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		if(obj.isReadOnly())
 			;//return; //TODO I think we should allow saving of form text and layout
 
-		if(!leftPanel.isValidForm())
-			return;
-
-
 		if(obj == null){
 			Window.alert(LocaleText.get("selectSaveItem"));
 			return;
 		}
+		
+		if(!leftPanel.isValidForm())
+			return;
 
 		if(Context.inLocalizationMode()){
 			saveLanguageText(formSaveListener == null && isOfflineMode());
@@ -693,18 +696,18 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 									localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
 							
 								if(pos3 > 0)
-									javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
+									javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
 							}
 							else if(pos2 > 0){
 								xformXml = xml.substring(0,pos2);
 								localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
 								
 								if(pos3 > 0)
-									javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
+									javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
 							}
 							else if(pos3 > 0){
 								xformXml = xml.substring(0,pos3);
-								javaScriptSrc = FormUtil.formatXml(xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length()));
+								javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
 							}
 							else
 								xformXml = xml;

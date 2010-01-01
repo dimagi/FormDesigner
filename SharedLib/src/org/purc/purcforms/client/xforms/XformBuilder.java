@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.model.Calculation;
 import org.purc.purcforms.client.model.DynamicOptionDef;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.PageDef;
@@ -118,6 +119,17 @@ public class XformBuilder {
 		if(rules != null){
 			for(int i=0; i<rules.size(); i++)
 				ConstraintBuilder.fromValidationRule2Xform((ValidationRule)rules.elementAt(i),formDef);
+		}
+		
+		//Build calculates for calculations
+		for(int index = 0; index < formDef.getCalculationCount(); index++){
+			Calculation calculation = formDef.getCalculationAt(index);
+			QuestionDef questionDef = formDef.getQuestion(calculation.getQuestionId());
+			if(questionDef == null)
+				continue;
+			Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+			if(node != null)
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE, calculation.getCalculateExpression());
 		}
 
 		//Build itemsets for dynamic option definition objects.

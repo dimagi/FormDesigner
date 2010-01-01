@@ -102,7 +102,7 @@ public class DescTemplateWidget extends Composite{
 		QuestionDef qtn = formDef.getQuestionWithText(sgstField.getText());
 		if(qtn != null){
 			fieldHyperlink.setText(LocaleText.get("addField"));
-			itemSelectionListener.onItemSelected(this,"${/"+formDef.getVariableName()+"/"+qtn.getVariableName()+"}$");
+			itemSelectionListener.onItemSelected(this,"/"+formDef.getVariableName()+"/"+qtn.getVariableName());
 		}
 	}
 

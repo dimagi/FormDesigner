@@ -769,6 +769,20 @@ public class FormUtil {
 		
 	}-*/;
     
+    public static native void fireChangeEvent(com.google.gwt.user.client.Element element) /*-{
+    	if(document.createEvent){
+			// dispatch for firefox + others
+			var evt = document.createEvent('HTMLEvents');
+			evt.initEvent('change', true, true ); // event type,bubbling,cancelable
+			element.dispatchEvent(evt);
+		}
+		else{
+			// dispatch for IE
+			var evt = document.createEventObject();
+			element.fireEvent('onchange',evt)
+		}
+    }-*/;
+    
     
     public static native int evaluateIntExpression(String expression) /*-{
 	    return eval(expression);

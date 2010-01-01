@@ -1337,6 +1337,13 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		else
 			loginDlg.center();
 	}
+	
+	/**
+	 * This method is called from javascript to submit form data.
+	 */
+	public static void submitForm(){
+		formRunnerView.submit();
+	}
 
 	/**
 	 * @see org.purc.purcforms.client.widget.EditListener#onRowAdded(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)

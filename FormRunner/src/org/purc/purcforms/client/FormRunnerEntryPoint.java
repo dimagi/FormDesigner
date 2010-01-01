@@ -100,5 +100,6 @@ public class FormRunnerEntryPoint implements EntryPoint{
 	// Set up the JS-callable signature as a global JS function.
 	private static native void publishJS() /*-{
    		$wnd.authenticationCallback = @org.purc.purcforms.client.view.FormRunnerView::authenticationCallback(Z);
+   		$wnd.submitForm = @org.purc.purcforms.client.view.FormRunnerView::submitForm();
 	}-*/;
 }

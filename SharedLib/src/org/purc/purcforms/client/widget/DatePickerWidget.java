@@ -117,7 +117,9 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 		//fireEvent(Document.get().createChangeEvent());
 		//changeListeners.fireChange(this);
 		
-		DomEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
+		//DomEvent.fireNativeEvent(Document.get().createChangeEvent(), this);
+		
+		FormUtil.fireChangeEvent(getElement());
 	}
 
 	/**

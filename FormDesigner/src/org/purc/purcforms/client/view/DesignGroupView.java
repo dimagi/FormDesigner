@@ -840,6 +840,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		//if(this instanceof DesignGroupWidget)
 		//	return;
 
+		//Prevent the browser from selecting text.
+		DOM.eventPreventDefault(event);
+		
 		selectedPanel.add(rubberBand);
 
 		x = event.getClientX()-selectedPanel.getAbsoluteLeft();
@@ -1463,8 +1466,10 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 	@Override
 	public void onBrowserEvent(Event event) {
+		
 		switch (DOM.eventGetType(event)) {
 		case Event.ONMOUSEDOWN:  
+			
 			mouseMoved = false;
 			x = event.getClientX();
 			y = event.getClientY();

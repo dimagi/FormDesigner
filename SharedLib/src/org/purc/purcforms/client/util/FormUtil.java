@@ -9,7 +9,6 @@ import org.purc.purcforms.client.view.ProgressDialog;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ChangeEvent;

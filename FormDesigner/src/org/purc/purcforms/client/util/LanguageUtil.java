@@ -81,7 +81,7 @@ public class LanguageUtil {
 			String value = ((Element)node).getAttribute(XformConstants.ATTRIBUTE_NAME_VALUE);
 			if(xpath == null || value == null)
 				continue;
-
+			
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null){
 				
@@ -109,7 +109,7 @@ public class LanguageUtil {
 		return doc.toString();
 	}
 
-	public static String translate(String srcXml, String langXml){
+	/*public static String translate(String srcXml, String langXml){
 		if(srcXml == null || srcXml.trim().length() == 0 || langXml == null || langXml.trim().length() == 0)
 			return srcXml;
 
@@ -150,7 +150,7 @@ public class LanguageUtil {
 			}
 		}
 		return doc.toString();
-	}
+	}*/
 
 	/**
 	 * Extracts xforms locale text from a combined locale document.

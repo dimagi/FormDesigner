@@ -160,6 +160,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	}
 
 	public void onWidgetSelected(Widget widget, boolean multipleSel){
+		
+		//Some widgets like check boxes and buttons may not have sizes set yet
+		//and so when in edit mode, they fire onmousedown events.
+		if(widget != null && widget == editWidget)
+			return;
+		
 		if(widget == null)
 			selectedDragController.clearSelection();
 		else if(widget instanceof DesignWidgetWrapper && !(((DesignWidgetWrapper)widget).getWrappedWidget() instanceof DesignGroupWidget)){

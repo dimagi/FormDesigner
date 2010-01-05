@@ -1,7 +1,10 @@
 package org.purc.purcforms.client.widget;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -26,7 +29,8 @@ public class RadioButtonWidget extends RadioButton{
 	 */
 	public RadioButtonWidget(String name){
 		super(name);
-		sinkEvents(Event.getTypeInt(ClickEvent.getType().getName()));		
+		sinkEvents(Event.getTypeInt(ClickEvent.getType().getName()));
+		sinkEvents(Event.ONKEYUP);
 		addClickHandler(this);
 	}
 
@@ -64,13 +68,21 @@ public class RadioButtonWidget extends RadioButton{
 		if(DOM.eventGetType(event) == Event.ONMOUSEUP)
 			checked = getValue();
 		else if(DOM.eventGetType(event) == Event.ONCLICK){
-
 			if((getParent().getParent() instanceof RuntimeWidgetWrapper &&
 					((RuntimeWidgetWrapper)getParent().getParent()).isLocked()) ||
 					!(getParent().getParent() instanceof RuntimeWidgetWrapper)){
 
 				event.preventDefault();
 				event.stopPropagation();
+				return;
+			}
+		}
+		else if(DOM.eventGetType(event) == Event.ONKEYUP){
+			if(event.getKeyCode() == 32 && getValue()){
+				setValue(false);
+				event.preventDefault();
+				event.stopPropagation();
+				DomEvent.fireNativeEvent(Document.get().createHtmlEvent("click", true, true), this);
 				return;
 			}
 		}

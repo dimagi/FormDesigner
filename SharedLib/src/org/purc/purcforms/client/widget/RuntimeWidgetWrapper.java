@@ -171,7 +171,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 					else if(keyCode == KeyCodes.KEY_UP || keyCode == KeyCodes.KEY_LEFT)
 						editListener.onMoveToPrevWidget((RuntimeWidgetWrapper)panel.getParent());
 				}
-			});
+			}); 
 		}
 		else if(widget instanceof ListBox){
 			((ListBox)widget).addChangeHandler(new ChangeHandler(){
@@ -793,7 +793,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	 * 
 	 * @param childWidget the CheckBox or RadioButton widget.
 	 */
-	public void addChildWidget(RuntimeWidgetWrapper childWidget){
+	public void addChildWidget(final RuntimeWidgetWrapper childWidget){
 		if(childWidgets == null)
 			childWidgets = new ArrayList<RuntimeWidgetWrapper>();
 		childWidgets.add(childWidget);
@@ -842,6 +842,18 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 			}
 		});
+		
+		
+		//As for now, am not yet sure why below is what i need to turn off
+		//radio button selections using space bar.
+		if(childWidget.getWrappedWidget() instanceof RadioButton){
+			((RadioButton)childWidget.getWrappedWidget()).addKeyUpHandler(new KeyUpHandler(){
+				public void onKeyUp(KeyUpEvent event) {
+					if(event.getNativeKeyCode() == 32)
+						((RadioButton)childWidget.getWrappedWidget()).setValue(false);
+				}
+			});
+		}
 	}
 
 	/**
@@ -948,11 +960,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		//Browser does not seem to set focus to check boxes and radio buttons
 
-		/*if(widget instanceof RadioButton)
+		if(widget instanceof RadioButton)
 			((RadioButton)widget).setFocus(true);
 		else if(widget instanceof CheckBox)
 			((CheckBox)widget).setFocus(true);
-		else*/ if(widget instanceof ListBox)
+		else if(widget instanceof ListBox)
 			((ListBox)widget).setFocus(true);
 		else if(widget instanceof TextArea){
 			((TextArea)widget).setFocus(true);

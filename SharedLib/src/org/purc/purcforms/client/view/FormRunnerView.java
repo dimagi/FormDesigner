@@ -41,6 +41,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -78,6 +83,9 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class FormRunnerView extends Composite implements SelectionHandler<Integer>, EditListener,QuestionChangeListener{
 
+	private final char FIELD_SEPARATOR = '|'; //TODO These may need to be changed.
+	private final char RECORD_SEPARATOR = '$';
+	
 	public interface Images extends ClientBundle {
 		ImageResource error();
 		ImageResource loading();
@@ -171,6 +179,11 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	private static FormRunnerView formRunnerView;
 
 
+	private List<RuntimeWidgetWrapper> externalSourceWidgets;
+	private int externalSourceWidgetIndex = 0;
+	
+	
+	
 	/**
 	 * Constructs an instance of the form runner.
 	 *
@@ -249,6 +262,12 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			script.appendChild(document.createTextNode(javaScriptSrc));
 			document.getElementsByTagName("head").getItem(0).appendChild(script);
 		}
+		
+		this.externalSourceWidgets = externalSourceWidgets;
+		externalSourceWidgetIndex = 0;
+		if(externalSourceWidgets != null && externalSourceWidgets.size() > 0 && FormUtil.getExternalSourceUrlSuffix() != null)
+			fillExternalSourceWidget(externalSourceWidgets.get(externalSourceWidgetIndex++));
+
 	}
 
 	/**
@@ -649,11 +668,17 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 			if(externalSourceWidgets != null && wrapper.getExternalSource() != null && wrapper.getDisplayField() != null
 					&& (wrapper.getWrappedWidget() instanceof TextBox || wrapper.getWrappedWidget() instanceof ListBox)
-					&& questionDef != null
-					&& (wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE
-							||wrapper.getQuestionDef().getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+					&& questionDef != null){
+				
+					if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE
+							||questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+						questionDef.setDataType(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+					}
+						
 				externalSourceWidgets.add(wrapper);
 				loadWidget = false;
+				
+				wrapper.addSuggestBoxChangeEvent();
 			}
 		}
 
@@ -1584,4 +1609,95 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		
 		return answer;
 	}
+	
+	
+	
+	private void fillExternalSourceWidget(RuntimeWidgetWrapper widget){
+		String url = FormUtil.getHostPageBaseURL();
+		url += FormUtil.getExternalSourceUrlSuffix();
+		url += WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE + "="+widget.getExternalSource();
+		url += "&" + WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD + "="+widget.getDisplayField();
+		url += "&" + WidgetEx.WIDGET_PROPERTY_VALUEFIELD + "="+widget.getValueField();
+
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
+
+		try{
+			builder.sendRequest(null, new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+					fillWidgetValues(response.getText());
+					fillNextExternalSourceWidget();
+				}
+
+				public void onError(Request request, Throwable exception){
+					FormUtil.displayException(exception);
+					fillNextExternalSourceWidget();
+				}
+			});
+		}
+		catch(RequestException ex){
+			FormUtil.displayException(ex);
+			fillNextExternalSourceWidget();
+		}
+	}
+	
+	
+	private void fillNextExternalSourceWidget(){
+		if(externalSourceWidgetIndex < externalSourceWidgets.size())
+			fillExternalSourceWidget(externalSourceWidgets.get(externalSourceWidgetIndex++));
+		else{
+			externalSourceWidgets.clear();
+			externalSourceWidgetIndex = 0;
+		}
+	}
+
+	private void fillWidgetValues(String text){
+		if(text == null)
+			return;
+
+		RuntimeWidgetWrapper widget = externalSourceWidgets.get(externalSourceWidgetIndex-1);
+		QuestionDef questionDef = widget.getQuestionDef();
+		questionDef.clearOptions();
+
+		String displayField = null, valueField = null; int beginIndex = 0;
+		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
+		while(pos > 0){
+			displayField = text.substring(beginIndex, pos);
+
+			beginIndex = pos+1;
+			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
+			if(pos > 0){
+				valueField = text.substring(beginIndex, pos);
+				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
+				beginIndex = pos+1;
+				pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
+			}
+			else{
+				valueField = text.substring(beginIndex);
+				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
+			}
+		}
+
+		widget.loadQuestion();
+	}
+
+	//Recursion fails here for very big lists and we are therefore using iteration
+	/*private void fillWidgetValues(String text, int beginIndex, QuestionDef questionDef){
+		String displayField = null, valueField = null;
+		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
+		if(pos > 0){
+			displayField = text.substring(beginIndex, pos);
+
+			beginIndex = pos+1;
+			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
+			if(pos > 0){
+				valueField = text.substring(beginIndex, pos);
+				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
+				fillWidgetValues(text,pos+1,questionDef);
+			}
+			else{
+				valueField = text.substring(beginIndex);
+				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
+			}
+		}
+	}*/
 }

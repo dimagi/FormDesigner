@@ -1,11 +1,16 @@
 package org.purc.purcforms.client.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.purc.purcforms.client.CenterPanel;
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformUtil;
 
@@ -171,7 +176,10 @@ public class PreviewView extends FormRunnerView {
 			public void execute() {
 				try{
 					centerPanel.commitChanges();
-					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),centerPanel.getJavaScriptSource(),null);
+					List<RuntimeWidgetWrapper> externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
+					if(Context.isOfflineMode())
+						;//externalSourceWidgets = null;
+					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),centerPanel.getJavaScriptSource(),externalSourceWidgets);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

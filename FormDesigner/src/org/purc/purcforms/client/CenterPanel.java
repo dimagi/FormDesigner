@@ -1,5 +1,8 @@
 package org.purc.purcforms.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
@@ -17,6 +20,7 @@ import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
 import org.purc.purcforms.client.view.PropertiesView;
+import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -245,7 +249,12 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			public void execute() {
 				try{
 					commitChanges();
-					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),null);
+					
+					List<RuntimeWidgetWrapper> externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
+					if(Context.isOfflineMode())
+						;//externalSourceWidgets = null;
+
+					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),externalSourceWidgets);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

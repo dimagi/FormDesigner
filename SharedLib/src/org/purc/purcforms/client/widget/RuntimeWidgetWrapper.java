@@ -196,24 +196,46 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS | Event.ONCONTEXTMENU | Event.KEYEVENTS);
 	}
 
+	public void addSuggestBoxChangeEvent(){
+		if(widget instanceof TextBox){
+			((TextBox)widget).addChangeHandler(new ChangeHandler(){
+				public void onChange(ChangeEvent event){
+					onSuggestBoxChange();
+				}
+			});
+		}
+	}
+
+	private void onSuggestBoxChange(){
+		if(questionDef != null){
+			OptionDef optionDef = questionDef.getOptionWithText(getTextBoxAnswer());
+			if(optionDef != null)
+				questionDef.setAnswer(optionDef.getVariableName());
+			else{
+				questionDef.setAnswer(null);
+				setText(null);
+			}
+			isValid();
+			editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
+		}
+		else
+			((TextBox)widget).setText(null);
+	}
+
 	/**
 	 * Sets up text box event listeners.
 	 */
 	private void setupTextBoxEventListeners(){
 		if(widget.getParent() instanceof SuggestBox){
-			((SuggestBox)widget.getParent()).addSelectionHandler(new SelectionHandler(){
-				public void onSelection(SelectionEvent event){
-					if(questionDef != null){
-						OptionDef optionDef = questionDef.getOptionWithText(getTextBoxAnswer());
-						if(optionDef != null)
-							questionDef.setAnswer(optionDef.getVariableName());
-						else
-							questionDef.setAnswer(null);
-						isValid();
-						editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
+			if(widget.getParent() instanceof SuggestBox){
+				((SuggestBox)widget.getParent()).addSelectionHandler(new SelectionHandler(){
+					public void onSelection(SelectionEvent event){
+						onSuggestBoxChange();
 					}
-				}
-			});
+				});
+			}
+
+			addSuggestBoxChangeEvent();
 		}
 		else{
 			((TextBox)widget).addChangeHandler(new ChangeHandler(){
@@ -273,7 +295,10 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		((TextBox)widget).addKeyPressHandler(new KeyPressHandler(){
 			public void onKeyPress(KeyPressEvent event) {
 				int keyCode = event.getCharCode();
-				if(externalSource != null && externalSource.trim().length() > 0){
+				if((externalSource != null && externalSource.trim().length() > 0) && 
+						(displayField == null || displayField.trim().length() == 0) &&
+						(valueField == null || valueField.trim().length() == 0) ){
+
 					((TextBox) event.getSource()).cancelKey(); 
 					while(panel.getWidgetCount() > 1)
 						panel.remove(1);
@@ -449,13 +474,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(questionDef.isLocked())
 			setLocked(true);
 	}
-	
-	
+
+
 	public void setAnswer(String answer){
 		questionDef.setAnswer(answer);
-		
+
 		int type = questionDef.getDataType();
-		
+
 		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC
 				|| type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof ListBox){
@@ -511,7 +536,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Converts a date,time or dateTime from its xml submit format to display format.
@@ -842,8 +867,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 			}
 		});
-		
-		
+
+
 		//As for now, am not yet sure why below is what i need to turn off
 		//radio button selections using space bar.
 		if(childWidget.getWrappedWidget() instanceof RadioButton){
@@ -1152,11 +1177,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if(id.trim().length() > 0)
 			widget.getElement().setId(id);
 	}
-	
+
 	public boolean isEditable(){
 		return (widget instanceof TextBox || widget instanceof TextArea || widget instanceof ListBox || widget instanceof CheckBox);
 	}
-	
+
 	public void setId(String id){
 		super.setId(id);
 		widget.getElement().setId(id);

@@ -533,7 +533,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			value = getBinding();
 		}
 		node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);
-		
+
 		/*value = getBinding();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, value);
@@ -600,7 +600,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
-		
+
 		value = getId();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_ID, value);
@@ -617,7 +617,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		String xpathRoot = xpath;
 		if(binding != null && binding.trim().length() > 0)
 			xpathRoot +=  "Binding='" + binding + "' and @";
-		
+
 		if(parentBinding != null && parentBinding.trim().length() > 0)
 			xpathRoot +=  "ParentBinding='" + parentBinding + "' and @";
 
@@ -826,11 +826,19 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			if(!(widget instanceof ListBox || widget instanceof RadioButton)){
-				storePosition();
-				panel.remove(widget);
-				widget = new ListBox(false);
-				panel.add(widget);
-				refreshSize();
+				if((externalSource != null && externalSource.trim().length() > 0) ||
+						(displayField != null && displayField.trim().length() > 0) ||
+						(valueField != null && valueField.trim().length() > 0)){
+
+					onDataTypeChanged(sender,QuestionDef.QTN_TYPE_TEXT);
+				}
+				else{
+					storePosition();
+					panel.remove(widget);
+					widget = new ListBox(false);
+					panel.add(widget);
+					refreshSize();
+				}
 			}
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_IMAGE){

@@ -34,17 +34,12 @@ import com.google.gwt.user.client.Window;
  */
 public class FormRunnerController implements SubmitListener{
 
-	private final char FIELD_SEPARATOR = '|'; //TODO These may need to be changed.
-	private final char RECORD_SEPARATOR = '$';
-
 	private FormRunnerWidget formRunner;
 	private String xformXml;
 	private String layoutXml;
 	private String javaScriptSrc;
 	private int formId;
 	private int entityId;
-	private List<RuntimeWidgetWrapper> externalSourceWidgets;
-	private int externalSourceWidgetIndex = 0;
 
 	public FormRunnerController(FormRunnerWidget formRunner){
 		this.formRunner = formRunner;
@@ -119,12 +114,9 @@ public class FormRunnerController implements SubmitListener{
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				try{
-					externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
+					List<RuntimeWidgetWrapper> externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
 					FormDef formDef = XformParser.fromXform2FormDef(xformXml);
 					formRunner.loadForm(formDef, layoutXml,javaScriptSrc,externalSourceWidgets);
-
-					if(externalSourceWidgets.size() > 0)
-						fillExternalSourceWidget(externalSourceWidgets.get(externalSourceWidgetIndex++));
 
 					FormUtil.dlg.hide();	
 				}
@@ -195,92 +187,4 @@ public class FormRunnerController implements SubmitListener{
 			}
 		});
 	}
-
-	private void fillExternalSourceWidget(RuntimeWidgetWrapper widget){
-		String url = FormUtil.getHostPageBaseURL();
-		url += FormUtil.getExternalSourceUrlSuffix();
-		url += WidgetEx.WIDGET_PROPERTY_EXTERNALSOURCE + "="+widget.getExternalSource();
-		url += "&" + WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD + "="+widget.getDisplayField();
-		url += "&" + WidgetEx.WIDGET_PROPERTY_VALUEFIELD + "="+widget.getValueField();
-
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
-
-		try{
-			builder.sendRequest(null, new RequestCallback(){
-				public void onResponseReceived(Request request, Response response){
-					fillWidgetValues(response.getText());
-					fillNextExternalSourceWidget();
-				}
-
-				public void onError(Request request, Throwable exception){
-					FormUtil.displayException(exception);
-					fillNextExternalSourceWidget();
-				}
-			});
-		}
-		catch(RequestException ex){
-			FormUtil.displayException(ex);
-			fillNextExternalSourceWidget();
-		}
-	}
-
-	private void fillNextExternalSourceWidget(){
-		if(externalSourceWidgetIndex < externalSourceWidgets.size())
-			fillExternalSourceWidget(externalSourceWidgets.get(externalSourceWidgetIndex++));
-		else{
-			externalSourceWidgets.clear();
-			externalSourceWidgetIndex = 0;
-		}
-	}
-
-	private void fillWidgetValues(String text){
-		if(text == null)
-			return;
-
-		RuntimeWidgetWrapper widget = externalSourceWidgets.get(externalSourceWidgetIndex-1);
-		QuestionDef questionDef = widget.getQuestionDef();
-		questionDef.clearOptions();
-
-		String displayField = null, valueField = null; int beginIndex = 0;
-		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
-		while(pos > 0){
-			displayField = text.substring(beginIndex, pos);
-
-			beginIndex = pos+1;
-			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
-			if(pos > 0){
-				valueField = text.substring(beginIndex, pos);
-				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
-				beginIndex = pos+1;
-				pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
-			}
-			else{
-				valueField = text.substring(beginIndex);
-				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
-			}
-		}
-
-		widget.loadQuestion();
-	}
-
-	//Recursion fails here for very big lists and we are therefore using iteration
-	/*private void fillWidgetValues(String text, int beginIndex, QuestionDef questionDef){
-		String displayField = null, valueField = null;
-		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
-		if(pos > 0){
-			displayField = text.substring(beginIndex, pos);
-
-			beginIndex = pos+1;
-			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
-			if(pos > 0){
-				valueField = text.substring(beginIndex, pos);
-				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
-				fillWidgetValues(text,pos+1,questionDef);
-			}
-			else{
-				valueField = text.substring(beginIndex);
-				questionDef.addOption(new OptionDef(questionDef.getOptionCount()+1,displayField,valueField,questionDef));
-			}
-		}
-	}*/
 }

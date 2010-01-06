@@ -34,13 +34,13 @@ public class QuestionDef implements Serializable{
 
 	/** The value to save for boolean questions when one selects the yes option. */
 	public static final String TRUE_VALUE = "true";
-	
+
 	/** The value to save for the boolean questions when one selects the no option. */
 	public static final String FALSE_VALUE = "false";
 
 	/** The text to display for boolean questions for the yes option. */
 	public static final String TRUE_DISPLAY_VALUE = LocaleText.get("yes");
-	
+
 	/** The text to display for boolean questions for the no option. */
 	public static final String FALSE_DISPLAY_VALUE = LocaleText.get("no");
 
@@ -144,28 +144,28 @@ public class QuestionDef implements Serializable{
 
 	/** Question with GPS cordinates. */
 	public static final int QTN_TYPE_GPS = 15;
-	
+
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;
-	
+
 	/** The xforms label node for this question. */
 	private Element labelNode;
-	
+
 	/** The xforms hint node for this question. */
 	private Element hintNode;
-	
+
 	/** The xforms bind node for this question. */
 	private Element bindNode;
-	
+
 	/** The xforms input,select, or select1 node for the question. */
 	private Element controlNode;
-	
+
 	/** For select and select1 questions, this is the reference to the node representing
 	 * the first option.
 	 */
 	private Element firstOptionNode;
 
-	
+
 	/** A list of interested listeners to the question change events. */
 	private List<QuestionChangeListener> changeListeners = new ArrayList<QuestionChangeListener>();
 
@@ -394,7 +394,7 @@ public class QuestionDef implements Serializable{
 		if(changed){
 			//if(controlNode != null && (dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			//	options = new ArrayList();
-			
+
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onDataTypeChanged(this,dataType);
 		}
@@ -544,11 +544,11 @@ public class QuestionDef implements Serializable{
 		if(options == null || !(options instanceof ArrayList))
 			options = new ArrayList();
 		((List)options).add(optionDef);
-		
+
 		if(setAsParent)
 			optionDef.setParent(this);
 	}
-	
+
 	public RepeatQtnsDef getRepeatQtnsDef(){
 		return (RepeatQtnsDef)options;
 	}
@@ -570,7 +570,7 @@ public class QuestionDef implements Serializable{
 	private void copyQuestionOptions(List options){
 		if(options == null)
 			return;
-		
+
 		this.options = new ArrayList();
 		for(int i=0; i<options.size(); i++)
 			((List)this.options).add(new OptionDef((OptionDef)options.get(i),this));
@@ -694,7 +694,7 @@ public class QuestionDef implements Serializable{
 			node = controlNode;
 			appendParentBinding = false;
 		}
-		
+
 		if(node != null){
 			String binding = variableName;
 			if(!binding.startsWith("/"+ formDef.getVariableName()+"/") && appendParentBinding){
@@ -706,7 +706,7 @@ public class QuestionDef implements Serializable{
 					binding = variableName;
 				}
 			}
-			
+
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
 			if(node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET) != null)
@@ -728,18 +728,18 @@ public class QuestionDef implements Serializable{
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED,XformConstants.XPATH_VALUE_TRUE);
 			else
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);
-			
+
 			if(!visible)
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE,XformConstants.XPATH_VALUE_FALSE);
 			else
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE);
 
-			
+
 			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
 					dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_GPS))
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
-			
-			
+
+
 			if(dataNode != null)
 				updateDataNode(doc,formDef,orgFormVarName);
 		}
@@ -1018,7 +1018,7 @@ public class QuestionDef implements Serializable{
 		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getVariableName()+"/"+variableName);
 	}
 
-	
+
 	/**
 	 * Checks if the xforms ui node name of this question requires to
 	 * be changed and does so, if it needs to be changed.
@@ -1068,7 +1068,7 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Updates xforms ui nodes of the child nodes when the name of xforms ui 
 	 * node of this question has changed. Eg when changes from select to select1.
@@ -1084,12 +1084,14 @@ public class QuestionDef implements Serializable{
 
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			List optns = (List)options;
-			for(int i=0; i<optns.size(); i++){
-				OptionDef optionDef = (OptionDef)optns.get(i);
-				updateOptionNodeChildren(optionDef);
-				if(i == 0)
-					firstOptionNode = optionDef.getControlNode();
+			if(options != null){
+				List optns = (List)options;
+				for(int i=0; i<optns.size(); i++){
+					OptionDef optionDef = (OptionDef)optns.get(i);
+					updateOptionNodeChildren(optionDef);
+					if(i == 0)
+						firstOptionNode = optionDef.getControlNode();
+				}
 			}
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
@@ -1195,7 +1197,7 @@ public class QuestionDef implements Serializable{
 		setDefaultValue(questionDef.getDefaultValue());
 
 		int prevDataType = dataType;
-		
+
 		//The old data type can only overwrite the new one if its not text (The new one is this question)
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_TEXT)
 			setDataType(questionDef.getDataType());
@@ -1208,7 +1210,7 @@ public class QuestionDef implements Serializable{
 		if((dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ){
 			refreshOptions(questionDef);
-			
+
 			if(!(prevDataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || prevDataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
 				//A single or multiple select may have had options added on the client and so we do wanna
 				//lose them for instance when the server has text data type.
@@ -1246,7 +1248,7 @@ public class QuestionDef implements Serializable{
 			return 0;
 		return ((List)options).size();
 	}
-	
+
 	/**
 	 * Gets the option at a given position (zero based).
 	 * 
@@ -1288,7 +1290,7 @@ public class QuestionDef implements Serializable{
 			changeListeners.get(index).onOptionsChanged(this,optionList);
 	}
 
-	
+
 	/**
 	 * Updates the xforms instance data nodes referenced by this question and its children.
 	 * 
@@ -1368,7 +1370,7 @@ public class QuestionDef implements Serializable{
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the form to which this question belongs.
 	 * 
@@ -1377,7 +1379,7 @@ public class QuestionDef implements Serializable{
 	public FormDef getParentFormDef(){
 		return getParentFormDef(this);
 	}
-	
+
 	private FormDef getParentFormDef(QuestionDef questionDef){
 		Object parent = questionDef.getParent();
 		if(parent instanceof PageDef)
@@ -1386,7 +1388,7 @@ public class QuestionDef implements Serializable{
 			return getParentFormDef((QuestionDef)parent);
 		return null;
 	}
-	
+
 	public String getDisplayText(){
 		String displayText = getText();
 		int pos1 = displayText.indexOf("${");

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="H:/gwt-2.0.0/gwt-user.jar"/>
+	<classpathentry kind="lib" path="H:/gwt-2.0.0/gwt-dev.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FormDesigner"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SharedLib"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>

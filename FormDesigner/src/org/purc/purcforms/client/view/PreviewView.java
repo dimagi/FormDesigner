@@ -6,6 +6,7 @@ import java.util.List;
 import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.Toolbar;
+import org.purc.purcforms.client.controller.ICenterPanel;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -44,7 +45,7 @@ public class PreviewView extends FormRunnerView {
 	private DesignSurfaceView designSurfaceView;
 	
 	/** Reference to the center panel for committing edit changes and getting the current form. */
-	private CenterPanel centerPanel;
+	private ICenterPanel centerPanel;
 
 	
 	/**
@@ -83,7 +84,7 @@ public class PreviewView extends FormRunnerView {
 		this.designSurfaceView = designSurfaceView;
 	}
 
-	public void setCenterPanel(CenterPanel centerPanel){
+	public void setCenterPanel(ICenterPanel centerPanel){
 		this.centerPanel = centerPanel;
 	}
 

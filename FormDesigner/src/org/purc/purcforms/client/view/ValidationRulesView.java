@@ -2,6 +2,7 @@ package org.purc.purcforms.client.view;
 
 import java.util.Vector;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IConditionController;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Condition;
@@ -296,6 +297,6 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	 */
 	public void onWindowResized(int width, int height){
 		if(width - 700 > 0)
-			txtErrorMessage.setWidth(width - 700 + "px");
+			txtErrorMessage.setWidth(width - 700 + PurcConstants.UNITS);
 	}
 }

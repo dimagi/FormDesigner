@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,7 +54,7 @@ public class SaveFileDialog extends DialogBox{
 		txtName = new TextBox();
 		txtName.setText(fileName);
 		txtName.setName("filename");
-		txtName.setWidth("250px");
+		txtName.setWidth("250"+PurcConstants.UNITS);
 		
 		verticalPanel.add(txtName);
 		verticalPanel.add(txtArea);

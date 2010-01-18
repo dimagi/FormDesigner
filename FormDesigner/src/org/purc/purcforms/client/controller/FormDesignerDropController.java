@@ -2,6 +2,7 @@ package org.purc.purcforms.client.controller;
 
 import java.util.ArrayList;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
@@ -159,7 +160,7 @@ public class FormDesignerDropController extends AbstractPositioningDropControlle
 		// excluding positioner border in quirks and strict modes
 		SimplePanel outer = new SimplePanel();
 		//outer.addStyleName(CSS_DRAGDROP_POSITIONER); //TODO ????????????????????????????
-		outer.getElement().getStyle().setProperty("margin", "0px");
+		outer.getElement().getStyle().setProperty("margin", "0"+PurcConstants.UNITS);
 
 		// place off screen for border calculation
 		RootPanel.get().add(outer, -500, -500);
@@ -169,7 +170,7 @@ public class FormDesignerDropController extends AbstractPositioningDropControlle
 		outer.setWidget(DUMMY_LABEL_IE_QUIRKS_MODE_OFFSET_HEIGHT);
 
 		SimplePanel inner = new SimplePanel();
-		inner.getElement().getStyle().setProperty("margin", "0px");
+		inner.getElement().getStyle().setProperty("margin", "0"+PurcConstants.UNITS);
 		inner.getElement().getStyle().setProperty("border", "none");
 		int offsetWidth = reference.getOffsetWidth() - DOMUtil.getHorizontalBorders(outer);
 		int offsetHeight = reference.getOffsetHeight() - DOMUtil.getVerticalBorders(outer);

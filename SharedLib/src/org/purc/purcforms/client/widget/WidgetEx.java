@@ -1,13 +1,18 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -220,6 +225,9 @@ public class WidgetEx extends Composite{
 			return ((Hyperlink)widget).getText();
 		else if(widget instanceof DateTimeWidget)
 			return ((DateTimeWidget)widget).getText();
+		else if(widget instanceof TabBar)
+			return getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
+
 		return null;
 	}
 	
@@ -331,6 +339,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "color", color);
 			this.color = color; 
+			
+			if(widget instanceof TabBar)
+				setTabStyle("color", color);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -341,6 +352,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "fontWeight", fontWeight);
 			this.fontWeight = fontWeight;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("fontWeight", fontWeight);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -351,6 +365,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "fontStyle", fontStyle);
 			this.fontStyle = fontStyle;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("fontStyle", fontStyle);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -361,6 +378,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "fontSize", fontSize);
 			this.fontSize = fontSize;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("fontSize", fontSize);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -371,9 +391,12 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "fontFamily", fontFamily);
 			this.fontFamily = fontFamily;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("fontFamily", fontFamily);
 		}
 		catch(Exception ex){
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 	}
 	
@@ -381,6 +404,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "textDecoration", textDecoration);
 			this.textDecoration = textDecoration;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("textDecoration", textDecoration);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -391,6 +417,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "textAlign", textAlign);
 			this.textAlign = textAlign;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("textAlign", textAlign);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -404,6 +433,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "backgroundColor", backgroundColor);
 			this.backgroundColor = backgroundColor;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("backgroundColor", backgroundColor);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -414,6 +446,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "borderStyle", borderStyle);
 			this.borderStyle = borderStyle;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("borderStyle", borderStyle);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -424,6 +459,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "borderWidth", borderWidth);
 			this.borderWidth = borderWidth;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("borderWidth", borderWidth);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -434,6 +472,9 @@ public class WidgetEx extends Composite{
 		try{
 			DOM.setStyleAttribute(widget.getElement(), "borderColor", borderColor);
 			this.borderColor = borderColor;
+			
+			if(widget instanceof TabBar)
+				setTabStyle("borderColor", borderColor);
 		}
 		catch(Exception ex){
 			//ex.printStackTrace();
@@ -442,6 +483,9 @@ public class WidgetEx extends Composite{
 
 	
 	public String getForeColor(){
+		if(widget instanceof TabBar)
+			return color;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "color");
 		if(s == null || s.trim().length() == 0)
 			s = color;
@@ -449,6 +493,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getFontWeight(){
+		if(widget instanceof TabBar)
+			return fontWeight;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "fontWeight");
 		if(s == null || s.trim().length() == 0)
 			s = fontWeight;
@@ -456,6 +503,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getFontStyle(){
+		if(widget instanceof TabBar)
+			return fontStyle;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "fontStyle");
 		if(s == null || s.trim().length() == 0)
 			s = fontStyle;
@@ -463,13 +513,28 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getFontSize(){
+		if(widget instanceof TabBar){
+			if(fontSize == null || fontSize.trim().length() == 0)
+				fontSize = FormUtil.getDefaultFontSize();
+			return fontSize;
+		}
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "fontSize");
-		if(s == null || s.trim().length() == 0)
+		if(s == null || s.trim().length() == 0){
+			if(fontSize == null || fontSize.trim().length() == 0)
+				fontSize = FormUtil.getDefaultFontSize();
 			s = fontSize;
+		}
 		return s;
 	}
 	
 	public String getFontFamily(){
+		if(widget instanceof TabBar){
+			if(fontFamily == null || fontFamily.trim().length() == 0)
+				fontFamily = FormUtil.getDefaultFontFamily();
+			return fontFamily;
+		}
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "fontFamily");
 		if(s == null || s.trim().length() == 0){
 			if(fontFamily == null || fontFamily.trim().length() == 0)
@@ -480,6 +545,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getTextDecoration(){
+		if(widget instanceof TabBar)
+			return textDecoration;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "textDecoration");
 		if(s == null || s.trim().length() == 0)
 			s = textDecoration;
@@ -487,6 +555,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getTextAlign(){
+		if(widget instanceof TabBar)
+			return textAlign;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "textAlign");
 		if(s == null || s.trim().length() == 0)
 			s = textAlign;
@@ -494,6 +565,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getBackgroundColor(){
+		if(widget instanceof TabBar)
+			return backgroundColor;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "backgroundColor");
 		if(s == null || s.trim().length() == 0)
 			s = backgroundColor;
@@ -501,6 +575,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getBorderStyle(){
+		if(widget instanceof TabBar)
+			return borderStyle;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "borderStyle");
 		if(s == null || s.trim().length() == 0)
 			s = borderStyle;
@@ -508,6 +585,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getBorderWidth(){
+		if(widget instanceof TabBar)
+			return borderWidth;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "borderWidth");
 		if(s == null || s.trim().length() == 0)
 			s = borderWidth;
@@ -515,6 +595,9 @@ public class WidgetEx extends Composite{
 	}
 	
 	public String getBorderColor(){
+		if(widget instanceof TabBar)
+			return borderColor;
+		
 		String s = DOM.getStyleAttribute(widget.getElement(), "borderColor");
 		if(s == null || s.trim().length() == 0)
 			s = borderColor;
@@ -535,12 +618,18 @@ public class WidgetEx extends Composite{
 			 widget.setFontStyle(value);
 		 
 		 value = node.getAttribute("fontSize");
-		 if(value != null && value.trim().length() > 0)
+		 if(value != null && value.trim().length() > 0){
 			 widget.setFontSize(value);
+			 if(widget.getWrappedWidget() instanceof DateTimeWidget)
+				 ((DateTimeWidget)widget.getWrappedWidget()).setFontSize(value);
+		 }
 		 
 		 value = node.getAttribute("fontFamily");
-		 if(value != null && value.trim().length() > 0)
+		 if(value != null && value.trim().length() > 0){
 			 widget.setFontFamily(value);
+			 if(widget.getWrappedWidget() instanceof DateTimeWidget)
+				 ((DateTimeWidget)widget.getWrappedWidget()).setFontFamily(value);
+		 }
 		 
 		 value = node.getAttribute("textDecoration");
 		 if(value != null && value.trim().length() > 0)
@@ -697,19 +786,19 @@ public class WidgetEx extends Composite{
 	}
 	
 	public void setWidthInt(int width){
-		setWidth(width+"px");
+		setWidth(width+PurcConstants.UNITS);
 	}
 
 	public void setHeightInt(int height){
-		setHeight(height+"px");
+		setHeight(height+PurcConstants.UNITS);
 	}
 
 	public void setLeftInt(int left){
-		setLeft(left+"px");
+		setLeft(left+PurcConstants.UNITS);
 	}
 
 	public void setTopInt(int top){
-		setTop(top+"px");
+		setTop(top+PurcConstants.UNITS);
 	}
 	
 	public void setId(String id){
@@ -718,5 +807,41 @@ public class WidgetEx extends Composite{
 	
 	public String getId(){
 		return id;
+	}
+	
+	
+	public static String getTabDisplayText(String html){
+		if(html.indexOf("&lt") > 0)
+			html = URL.decode(html);
+		if(html.indexOf("</") > 0)
+			html = html.substring(html.indexOf(">")+1,html.indexOf("</"));
+
+		return html;
+	}
+	
+	public void setTabStyle(String property, String value){
+		HTML html1 = new HTML(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()),false);
+		String style = html1.getElement().getAttribute("style");
+		if(html1.getElement().getChildCount() > 0 && html1.getElement().getChild(0).getNodeType() == com.google.gwt.user.client.Element.ELEMENT_NODE)
+			style = ((com.google.gwt.user.client.Element)html1.getElement().getChild(0)).getAttribute("style");
+		
+		HTML html = new HTML(getText(),false);
+		html.getElement().setAttribute("style", style);
+		DOM.setStyleAttribute(html.getElement(), property, value);	
+		((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), html.toString().replace("div", "span"));
+		//System.out.println(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));	
+	}
+	
+	
+	public void setTabText(String text){
+		HTML html1 = new HTML(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()),false);
+		String style = html1.getElement().getAttribute("style");
+		if(html1.getElement().getChildCount() > 0 && html1.getElement().getChild(0).getNodeType() == com.google.gwt.user.client.Element.ELEMENT_NODE)
+			style = ((com.google.gwt.user.client.Element)html1.getElement().getChild(0)).getAttribute("style");
+		
+		HTML html = new HTML(text,false);
+		html.getElement().setAttribute("style", style);	
+		((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), html.toString().replace("div", "span"));
+		//System.out.println(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));	
 	}
 }

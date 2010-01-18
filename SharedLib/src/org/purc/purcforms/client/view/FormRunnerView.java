@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.QuestionChangeListener;
 import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -68,6 +69,7 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TabBar.Tab;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -337,8 +339,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			if(pages.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
 			Element node = (Element)pages.item(i);
+			
 			addNewTab(node.getAttribute("Text"));
-
+			WidgetEx.loadLabelProperties(node, new RuntimeWidgetWrapper(tabs.getTabBar(),images.error(),this));
+			
 			setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
 			setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
 			setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
@@ -1388,7 +1392,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				currentWidget.setTopInt(top + increment);
 		}
 
-		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()+increment+"px");	
+		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()+increment+PurcConstants.UNITS);	
 	}
 
 	/**
@@ -1410,7 +1414,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				currentWidget.setTopInt(top - decrement);
 		}
 
-		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()-decrement+"px");
+		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()-decrement+PurcConstants.UNITS);
 	}
 
 	/**

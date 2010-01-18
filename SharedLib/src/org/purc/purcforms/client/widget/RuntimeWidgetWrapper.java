@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
@@ -103,16 +104,19 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 	public RuntimeWidgetWrapper(Widget widget,ImageResource errorImageProto,EditListener editListener){
 		this.widget = widget;
-		this.errorImageProto = errorImageProto;
-		this.errorImage = FormUtil.createImage(errorImageProto);
-		this.editListener = editListener;
 
-		panel.add(widget);
-		initWidget(panel);
-		setupEventListeners();
-		errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
+		if(!(widget instanceof TabBar)){
+			this.errorImageProto = errorImageProto;
+			this.errorImage = FormUtil.createImage(errorImageProto);
+			this.editListener = editListener;
 
-		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS /*| Event.ONCONTEXTMENU | Event.KEYEVENTS*/);
+			panel.add(widget);
+			initWidget(panel);
+			setupEventListeners();
+			errorImage.setTitle(LocaleText.get("requiredErrorMsg"));
+
+			DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS /*| Event.ONCONTEXTMENU | Event.KEYEVENTS*/);
+		}
 	}
 
 	public ImageResource getErrorImage(){

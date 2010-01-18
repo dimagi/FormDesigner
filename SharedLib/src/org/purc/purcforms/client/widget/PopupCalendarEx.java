@@ -2,10 +2,12 @@ package org.purc.purcforms.client.widget;
 
 import java.util.Date;
 
+import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.util.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
@@ -155,6 +157,7 @@ public class PopupCalendarEx extends PopupPanel {
 		CellFormatter monthCellFormatter = monthLine.getCellFormatter();
 
 		Label previousYear = new Label("«");
+		FormUtil.setElementFontSizeAndFamily(previousYear.getElement());
 		previousYear.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				leave = false;
@@ -163,6 +166,7 @@ public class PopupCalendarEx extends PopupPanel {
 		});
 		monthLine.setWidget(0, 0, previousYear);
 		Label previousMonth = new Label("‹");
+		FormUtil.setElementFontSizeAndFamily(previousMonth.getElement());
 		previousMonth.addClickListener(new ClickListener() {
 			public void onClick(com.google.gwt.user.client.ui.Widget sender) {
 				leave = false;
@@ -172,6 +176,7 @@ public class PopupCalendarEx extends PopupPanel {
 		monthLine.setWidget(0, 1, previousMonth);
 		monthCellFormatter.setWidth(0, 2, "60%");
 		currentMonth = new Label();
+		FormUtil.setElementFontSizeAndFamily(currentMonth.getElement());
 		currentMonth.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				leave = false;
@@ -179,6 +184,7 @@ public class PopupCalendarEx extends PopupPanel {
 		});
 		monthLine.setWidget(0, 2, currentMonth);
 		Label nextMonth = new Label("›");
+		FormUtil.setElementFontSizeAndFamily(nextMonth.getElement());
 		nextMonth.addClickListener(new ClickListener() {
 			public void onClick(com.google.gwt.user.client.ui.Widget sender) {
 				leave = false;
@@ -187,6 +193,7 @@ public class PopupCalendarEx extends PopupPanel {
 		});
 		monthLine.setWidget(0, 3, nextMonth);
 		Label nextYear = new Label("»");
+		FormUtil.setElementFontSizeAndFamily(nextYear.getElement());
 		nextYear.addClickListener(new ClickListener() {
 			public void onClick(Widget sender) {
 				leave = false;
@@ -206,12 +213,16 @@ public class PopupCalendarEx extends PopupPanel {
 	 */
 	private void drawWeekLine(Panel panel) {
 		Grid weekLine = new Grid(1, 7);
+		CellFormatter cf = weekLine.getCellFormatter();
+		
 		weekLine.setStyleName(theme + "-" + "week-line");
 		Date weekFirstday = DateUtil.getWeekFirstDay();
 		for (int i = 0; i < 7; i++) {
 			weekLine.setText(0, i, dayNameFormat.format(
 					DateUtil.addDays(weekFirstday, i)).substring(0, 1)
 					.toUpperCase());
+			
+			FormUtil.setElementFontSizeAndFamily(cf.getElement(0, i));
 		}
 		panel.add(weekLine);
 	}
@@ -244,8 +255,8 @@ public class PopupCalendarEx extends PopupPanel {
 	 * Update the Label which shows the displayed month (in the month line).
 	 */
 	private void drawLabelMoisAnnee() {
-		currentMonth
-				.setText(monthFormat.format(this.displayedMonth).toLowerCase());
+		currentMonth.setText(monthFormat.format(this.displayedMonth).toLowerCase());
+		FormUtil.setElementFontSizeAndFamily(currentMonth.getElement());
 	}
 
 	/**
@@ -294,6 +305,8 @@ public class PopupCalendarEx extends PopupPanel {
 					cfJours.addStyleName(i, j, theme + "-" + "other-day");
 
 				cursor = DateUtil.addDays(cursor, 1);
+				
+				FormUtil.setElementFontSizeAndFamily(cfJours.getElement(i, j));
 			}
 		}
 	}

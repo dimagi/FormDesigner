@@ -3,6 +3,7 @@ package org.purc.purcforms.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.QuestionSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
@@ -65,10 +66,10 @@ public class SkipQtnsDialog  extends DialogBox {
 		
 		this.qtnSelListener = qtnSelListener;
 		
-		lbAllQtns.setWidth("250px");
-		lbSelQtns.setWidth("250px");
-		lbAllQtns.setHeight("200px");
-		lbSelQtns.setHeight("200px");
+		lbAllQtns.setWidth("250"+PurcConstants.UNITS);
+		lbSelQtns.setWidth("250"+PurcConstants.UNITS);
+		lbAllQtns.setHeight("200"+PurcConstants.UNITS);
+		lbSelQtns.setHeight("200"+PurcConstants.UNITS);
 		
 		setWidget(mainPanel);
 
@@ -196,7 +197,7 @@ public class SkipQtnsDialog  extends DialogBox {
 		vertPanel.add(btnDeselect);
 		vertPanel.setCellVerticalAlignment(btnSelect, HasAlignment.ALIGN_MIDDLE);
 		vertPanel.setCellVerticalAlignment(btnDeselect, HasAlignment.ALIGN_MIDDLE);
-		vertPanel.setHeight("200px");
+		vertPanel.setHeight("200"+PurcConstants.UNITS);
 		
 		parentPanel.add(vertPanel);
 		

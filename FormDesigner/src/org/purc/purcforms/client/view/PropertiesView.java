@@ -1,6 +1,7 @@
 package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.Context;
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
@@ -236,8 +237,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cellFormatter.setWidth(0, 0, "20%");
 		//cellFormatter.setColSpan(0, 0, 2);
 		
-		//cellFormatter.setWidth(9, 0, "20px");
-		//cellFormatter.setWidth(9, 1, "20px");
+		//cellFormatter.setWidth(9, 0, "20"+PurcConstants.UNITS);
+		//cellFormatter.setWidth(9, 1, "20"+PurcConstants.UNITS);
 
 		txtText.setWidth("100%");
 		txtHelpText.setWidth("100%");

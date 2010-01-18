@@ -14,6 +14,7 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -28,13 +29,13 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -261,6 +262,22 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 				text = ((Button)widget).getText();
 			else
 				text = getText();
+			
+			/*if(!"100%".equals(width)){
+				com.google.gwt.dom.client.Element html = Document.get().getElementById("labelEdit");
+				html.getStyle().setProperty("fontSize", fontSize);
+				html.getStyle().setProperty("fontFamily", fontFamily);
+				html.getStyle().setProperty("visibility", "show");
+				/*DOM.setStyleAttribute(html, "fontSize",fontSize);
+				DOM.setStyleAttribute(html, "fontFamily",fontFamily);
+				DOM.setStyleAttribute(html, "position","absolute");
+				DOM.setStyleAttribute(html, "visibility","hidden");
+				DOM.setStyleAttribute(html, "height","auto");
+				DOM.setStyleAttribute(html, "width","auto");*/
+				/*DOM.setStyleAttribute(txtEdit.getElement(), "width", html.getClientWidth()+1+"px");
+				System.out.println(html.getClientWidth());
+				System.out.println(html.getInnerHTML());
+			}*/
 
 			txtEdit.setText(text);
 			txtEdit.selectAll();
@@ -370,16 +387,11 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		return "move";
 	}
 
-	public String getText(){
-		if(widget instanceof TabBar)
-			return DesignWidgetWrapper.getTabDisplayText(((TabBar)widget).getTabHTML(((TabBar)widget).getSelectedTab()));
-		return super.getText();
-	}
-
 	public void setText(String text){
 		if(widget instanceof TabBar && text != null && text.trim().length() > 0)
-			//((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), URL.encode(text));
-			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");
+			setTabText(text);
+			/*//((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), URL.encode(text));
+			((TabBar)widget).setTabHTML(((TabBar)widget).getSelectedTab(), "<span style='white-space:nowrap'>" + text + "</span>");*/
 		else
 			super.setText(text);
 	}
@@ -395,15 +407,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			((DesignGroupWidget)widget).setTitle(title);
 		else
 			super.setTitle(title);
-	}
-
-	public static String getTabDisplayText(String html){
-		if(html.indexOf("&lt") > 0)
-			html = URL.decode(html);
-		if(html.indexOf("</") > 0)
-			html = html.substring(html.indexOf(">")+1,html.indexOf("</"));
-
-		return html;
 	}
 
 	public String getWidgetName(){
@@ -648,7 +651,7 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		}
 	}
 
-	private void buildLabelProperties(Element node){
+	public void buildLabelProperties(Element node){
 		String value = getForeColor();
 		if(value != null && value.trim().length() > 0)
 			node.setAttribute("color", value);
@@ -913,4 +916,82 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 	public HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler) {
 		return addDomHandler(handler, MouseWheelEvent.getType());
 	}
+	
+	/*public void setForeColor(String color){
+		super.setForeColor(color);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("color", color);
+	}
+	
+	
+	public void setFontWeight(String fontWeight){
+		super.setFontWeight(fontWeight);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("fontWeight", fontWeight);
+	}
+
+	public void setFontStyle(String fontStyle){
+		super.setFontStyle(fontStyle);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("fontStyle", fontStyle);
+	}
+
+	public void setFontSize(String fontSize){
+		super.setFontSize(fontSize);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("fontSize", fontSize);
+	}
+	
+	public void setFontFamily(String fontFamily){
+		super.setFontFamily(fontFamily);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("fontFamily", fontFamily);
+	}
+	
+	public void setTextDecoration(String textDecoration){
+		super.setTextDecoration(textDecoration);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("textDecoration", textDecoration);
+	}
+	
+	public void setTextAlign(String textAlign){
+		super.setTextAlign(textAlign);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("textAlign", textAlign);
+	}
+	
+	public void setBackgroundColor(String backgroundColor){
+		super.setBackgroundColor(backgroundColor);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("backgroundColor", backgroundColor);
+	}
+	
+	public void setBorderStyle(String borderStyle){
+		super.setBorderStyle(borderStyle);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("borderStyle", borderStyle);
+	}
+	
+	public void setBorderWidth(String borderWidth){
+		super.setBorderWidth(borderWidth);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("borderWidth", borderWidth);
+	}
+	
+	public void setBorderColor(String borderColor){
+		super.setBorderColor(borderColor);
+		
+		if(widget instanceof TabBar)
+			setTabStyle("borderColor", borderColor);
+	}*/
 }

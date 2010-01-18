@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.LeftPanel.Images;
+import org.purc.purcforms.client.controller.ICenterPanel;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
@@ -44,7 +45,7 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class CenterPanel extends Composite implements SelectionHandler<Integer>, IFormSelectionListener, SubmitListener, LayoutChangeListener{
+public class CenterPanel extends Composite implements SelectionHandler<Integer>, IFormSelectionListener, SubmitListener, LayoutChangeListener, ICenterPanel{
 
 	/** Index for the properties tab. */
 	private int SELECTED_INDEX_PROPERTIES = 0;
@@ -273,8 +274,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		int height = Window.getClientHeight();
 		int width = Window.getClientWidth();
-		designSurfaceView.setWidth(width+"px"); //100% //1015px
-		designSurfaceView.setHeight(height+"px"); //707px
+		designSurfaceView.setWidth(width+PurcConstants.UNITS); //100% //1015"+PurcConstants.UNITS
+		designSurfaceView.setHeight(height+PurcConstants.UNITS); //707"+PurcConstants.UNITS
 		designSurfaceView.setLayoutChangeListener(this);
 
 		scrollPanelDesign.setWidget(designSurfaceView);
@@ -321,8 +322,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 */
 	private void initPreview(){
 		tabs.add(scrollPanelPreview, LocaleText.get("preview"));
-		previewView.setWidth("100%"); //1015px
-		previewView.setHeight("700px"); //707px
+		previewView.setWidth("100%"); //1015"+PurcConstants.UNITS
+		previewView.setHeight("700"+PurcConstants.UNITS); //707"+PurcConstants.UNITS
 		previewView.setSubmitListener(this);
 		previewView.setDesignSurface(designSurfaceView);
 		previewView.setCenterPanel(this);
@@ -400,8 +401,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		int height = tabs.getOffsetHeight()-48;
 		if(height > 0){
-			scrollPanelDesign.setHeight(height +"px");
-			scrollPanelPreview.setHeight(height +"px");
+			scrollPanelDesign.setHeight(height +PurcConstants.UNITS);
+			scrollPanelPreview.setHeight(height +PurcConstants.UNITS);
 		}
 	}
 
@@ -411,8 +412,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	public void onVerticalResize(){
 		int d = Window.getClientWidth()-tabs.getAbsoluteLeft();
 		if(d > 0){
-			scrollPanelDesign.setWidth(d-16+"px");
-			scrollPanelPreview.setWidth(d-16+"px");
+			scrollPanelDesign.setWidth(d-16+PurcConstants.UNITS);
+			scrollPanelPreview.setWidth(d-16+PurcConstants.UNITS);
 		}
 	}
 

@@ -2,6 +2,7 @@ package org.purc.purcforms.client.widget.skiprule;
 
 import java.util.List;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.DynamicOptionDef;
@@ -265,8 +266,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 			/*ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
-			scrollPanel.setHeight("200px");
-			scrollPanel.setWidth((maxSize*11)+"px");*/
+			scrollPanel.setHeight("200"+PurcConstants.UNITS);
+			scrollPanel.setWidth((maxSize*11)+PurcConstants.UNITS);*/
 
 			int height = options.size()*29;
 			if(height > 400)
@@ -279,8 +280,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(menuBar);
-			scrollPanel.setHeight(height+"px"); //"200px"
-			scrollPanel.setWidth((maxSize)+"px");
+			scrollPanel.setHeight(height+PurcConstants.UNITS); //"200"+PurcConstants.UNITS
+			scrollPanel.setWidth((maxSize)+PurcConstants.UNITS);
 
 			popup = new PopupPanel(true,false);
 			popup.setWidget(scrollPanel);
@@ -337,8 +338,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			
 			ScrollPanel scrollPanel = new ScrollPanel();
 			scrollPanel.setWidget(panel);
-			scrollPanel.setHeight(height+"px"); //"200px"
-			scrollPanel.setWidth((maxSize)+"px");
+			scrollPanel.setHeight(height+PurcConstants.UNITS); //"200"+PurcConstants.UNITS
+			scrollPanel.setWidth((maxSize)+PurcConstants.UNITS);
 
 			popup = new PopupPanel(true,false);
 			popup.addCloseHandler(this);

@@ -71,7 +71,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			// Get rid of scrollbars, and clear out the window's built-in margin,
 			// because we want to take advantage of the entire client area.
 			Window.enableScrolling(false);
-			Window.setMargin("0px");
+			Window.setMargin("0"+PurcConstants.UNITS);
 
 			// Different themes use different background colors for the body
 			// element, but IE only changes the background of the visible content

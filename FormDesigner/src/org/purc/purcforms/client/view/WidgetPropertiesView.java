@@ -2,6 +2,7 @@ package org.purc.purcforms.client.view;
 
 import java.util.List;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
 import org.purc.purcforms.client.controller.WidgetPropertySetter;
@@ -547,17 +548,17 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtFontSize.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				if(widget != null)
-					widget.setFontSize(txtFontSize.getText());
+					widget.setFontSize(txtFontSize.getText()+PurcConstants.UNITS);
 				else
-					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText());
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText()+PurcConstants.UNITS);
 			}
 		});
 		txtFontSize.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
 				if(widget != null)
-					widget.setFontSize(txtFontSize.getText());
+					widget.setFontSize(txtFontSize.getText()+PurcConstants.UNITS);
 				else
-					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText());
+					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FONT_SIZE, txtFontSize.getText()+PurcConstants.UNITS);
 			}
 		});
 		txtFontFamily.addChangeHandler(new ChangeHandler(){
@@ -776,15 +777,15 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateWidth(){
 		if(txtWidth.getText().trim().length() > 0){
 			if(widget != null)		
-				widget.setWidth(txtWidth.getText()+"px");
+				widget.setWidth(txtWidth.getText()+PurcConstants.UNITS);
 			else if(viewWidget != null){
 				if(viewWidget instanceof DesignSurfaceView)
-					((DesignSurfaceView)viewWidget).setWidth(txtWidth.getText()+"px");
+					((DesignSurfaceView)viewWidget).setWidth(txtWidth.getText()+PurcConstants.UNITS);
 				else
-					viewWidget.setWidth(txtWidth.getText()+"px");
+					viewWidget.setWidth(txtWidth.getText()+PurcConstants.UNITS);
 			}
 			else
-				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_WIDTH, txtWidth.getText()+"px");
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_WIDTH, txtWidth.getText()+PurcConstants.UNITS);
 		}
 	}
 
@@ -794,15 +795,15 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateHeight(){
 		if(txtHeight.getText().trim().length() > 0){
 			if(widget != null)
-				widget.setHeight(txtHeight.getText()+"px");
+				widget.setHeight(txtHeight.getText()+PurcConstants.UNITS);
 			else if(viewWidget != null){
 				if(viewWidget instanceof DesignSurfaceView)
-					((DesignSurfaceView)viewWidget).setHeight(txtHeight.getText()+"px");
+					((DesignSurfaceView)viewWidget).setHeight(txtHeight.getText()+PurcConstants.UNITS);
 				else
-					viewWidget.setHeight(txtHeight.getText()+"px");
+					viewWidget.setHeight(txtHeight.getText()+PurcConstants.UNITS);
 			}
 			else
-				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_HEIGHT, txtHeight.getText()+"px");
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_HEIGHT, txtHeight.getText()+PurcConstants.UNITS);
 		}
 	}
 
@@ -812,9 +813,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateLeft(){
 		if(txtLeft.getText().trim().length() > 0){
 			if(widget != null)
-				widget.setLeft(txtLeft.getText()+"px");
+				widget.setLeft(txtLeft.getText()+PurcConstants.UNITS);
 			else
-				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_LEFT, txtLeft.getText()+"px");
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_LEFT, txtLeft.getText()+PurcConstants.UNITS);
 		}
 	}
 
@@ -824,9 +825,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateTop(){
 		if(txtTop.getText().trim().length() > 0){
 			if(widget != null)
-				widget.setTop(txtTop.getText()+"px");
+				widget.setTop(txtTop.getText()+PurcConstants.UNITS);
 			else
-				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_TOP, txtTop.getText()+"px");
+				widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_TOP, txtTop.getText()+PurcConstants.UNITS);
 		}
 	}
 

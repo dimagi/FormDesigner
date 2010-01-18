@@ -188,4 +188,25 @@ public class DateTimeWidget extends Composite{
 		dateWidget.addKeyUpHandler(handler);
 		timeWidget.addKeyUpHandler(handler);
 	}
+	
+	
+	public void setFontFamily(String fontFamily){
+		try{
+			DOM.setStyleAttribute(dateWidget.getElement(), "fontFamily", fontFamily);
+			DOM.setStyleAttribute(timeWidget.getElement(), "fontFamily", fontFamily);
+		}
+		catch(Exception ex){
+			//ex.printStackTrace();
+		}
+	}
+	
+	public void setFontSize(String fontSize){
+		try{
+			DOM.setStyleAttribute(dateWidget.getElement(), "fontSize", fontSize);
+			DOM.setStyleAttribute(timeWidget.getElement(), "fontSize", fontSize);
+		}
+		catch(Exception ex){
+			//ex.printStackTrace();
+		}
+	}
 }

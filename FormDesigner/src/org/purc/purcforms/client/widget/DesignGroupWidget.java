@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.IWidgetPopupMenuListener;
@@ -279,13 +280,14 @@ public class DesignGroupWidget extends DesignGroupView implements DragDropListen
 
 		DesignWidgetWrapper wrapper = addNewWidget(link);
 		wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+		wrapper.setFontSize(FormUtil.getDefaultFontSize());
 		return wrapper;
 	}
 
 	private DesignWidgetWrapper addNewPicture(){
 		Image image = FormUtil.createImage(images.picture());
-		DOM.setStyleAttribute(image.getElement(), "height","150px");
-		DOM.setStyleAttribute(image.getElement(), "width","185px");
+		DOM.setStyleAttribute(image.getElement(), "height","150"+PurcConstants.UNITS);
+		DOM.setStyleAttribute(image.getElement(), "width","185"+PurcConstants.UNITS);
 		return addNewWidget(image);
 	}
 

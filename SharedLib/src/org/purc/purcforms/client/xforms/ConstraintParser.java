@@ -42,7 +42,7 @@ public class ConstraintParser {
 		Vector rules = new Vector();
 
 		Iterator keys = constraints.keySet().iterator();
-		int id = 0;
+		//int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
 			ValidationRule validationRule = buildValidationRule(formDef, qtn.getId(),(String)constraints.get(qtn));

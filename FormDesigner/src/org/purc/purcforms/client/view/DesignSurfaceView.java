@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.LeftPanel.Images;
 import org.purc.purcforms.client.controller.DragDropListener;
 import org.purc.purcforms.client.controller.FormDesignerDragController;
@@ -83,6 +84,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 	/** The height offset when the form designer is used as a widget embedded in a GWT application. */
 	private int embeddedHeightOffset = 0;
 
+	
+	public DesignSurfaceView(){
+		super(null);
+	}
 
 	/**
 	 * Creates a new instance of the design surface.
@@ -317,7 +322,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 	 * 
 	 * @param name the tab name.
 	 */
-	private void addNewTab(String name){
+	private DesignWidgetWrapper addNewTab(String name){
 		initPanel();
 		if(name == null)
 			name = LocaleText.get("page")+(tabs.getWidgetCount());
@@ -328,6 +333,8 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		DesignWidgetWrapper widget = new DesignWidgetWrapper(tabs.getTabBar(),widgetPopup,this);
 		widget.setBinding(name);
+		widget.setFontFamily(FormUtil.getDefaultFontFamily());
+		widget.setFontSize(FormUtil.getDefaultFontSize());
 		pageWidgets.put(tabs.getTabBar().getTabCount()-1, widget);
 
 		//widgetSelectionListener.onWidgetSelected(widget);
@@ -338,6 +345,8 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 				setHeight(getHeight());
 			}
 		});
+		
+		return widget;
 	}
 	
 
@@ -386,6 +395,8 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			Element node = doc.createElement("Page");
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_TEXT, DesignWidgetWrapper.getTabDisplayText(tabs.getTabBar().getTabHTML(i)));
 			//node.setAttribute("BackgroundColor", tabs.getTabBar().getTabHTML(i));
+			
+			pageWidgets.get(i).buildLabelProperties(node);
 
 			if(pageWidgets.get(i) != null)
 				node.setAttribute(WidgetEx.WIDGET_PROPERTY_BINDING, pageWidgets.get(i).getBinding());
@@ -484,6 +495,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		PaletteView.unRegisterAllDropControllers();
 		tabs.clear();
+		pageWidgets.clear();
 
 		if(xml == null || xml.trim().length() == 0){
 			addNewTab(null);
@@ -497,8 +509,9 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			if(pages.item(i).getNodeType() != Node.ELEMENT_NODE)
 				continue;
 			Element node = (Element)pages.item(i);
-			addNewTab(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
-
+			DesignWidgetWrapper widget = addNewTab(node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT));
+			WidgetEx.loadLabelProperties(node, widget);
+			
 			((DesignGroupView)this).setWidth(node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH));
 			((DesignGroupView)this).setHeight(node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT));
 			((DesignGroupView)this).setBackgroundColor(node.getAttribute(WidgetEx.WIDGET_PROPERTY_BACKGROUND_COLOR));
@@ -730,6 +743,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		PaletteView.unRegisterAllDropControllers();
 		tabs.clear();
+		pageWidgets.clear();
 
 		Vector pages = formDef.getPages();
 		if(pages != null){
@@ -907,12 +921,12 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		y += ((ScrollPanel)getParent()).getScrollPosition();
 		
-		setHeight(y+40+"px");
+		setHeight(y+40+PurcConstants.UNITS);
 		
 		if(maxX < 900)
 			maxX = 900;
 		if(FormUtil.convertDimensionToInt(getWidth()) < maxX)
-			setWidth(maxX + "px");
+			setWidth(maxX + PurcConstants.UNITS);
 	}
 
 
@@ -941,6 +955,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			OptionDef optionDef = (OptionDef)options.get(i);
 			DesignWidgetWrapper wrapper = addNewWidget(new CheckBox(optionDef.getText()),false);
 			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
+			wrapper.setFontSize(FormUtil.getDefaultFontSize());
 			wrapper.setBinding(optionDef.getVariableName());
 			wrapper.setParentBinding(questionDef.getVariableName());
 			wrapper.setText(optionDef.getText());
@@ -1079,6 +1094,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		if(this.formDef != formDef){
 			PaletteView.unRegisterAllDropControllers();
 			tabs.clear();
+			pageWidgets.clear();
 			addNewTab(null);
 		}
 

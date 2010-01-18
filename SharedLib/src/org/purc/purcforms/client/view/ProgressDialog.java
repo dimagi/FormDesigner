@@ -40,7 +40,7 @@ public class ProgressDialog extends DialogBox{
 		//Reset the progress message to the default because it may have been
 		//been changed with a custom one.
 		label.setText(LocaleText.get("processingMsg"));
-
+		
 		super.center();
 	}
 
@@ -50,7 +50,7 @@ public class ProgressDialog extends DialogBox{
 	 * 
 	 * @param progressMsg the custom progress message.
 	 */
-	public void center(String progressMsg){
+	public void center(String progressMsg){		
 		if(progressMsg == null)
 			center();
 		else

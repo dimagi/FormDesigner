@@ -468,7 +468,7 @@ public class FormDef implements Serializable{
 				dynamicOptionDef.updateDoc(this,questionDef);
 			}
 		}
-		
+
 		if(calculations != null){
 			for(int i=0; i<calculations.size(); i++){
 				Calculation calculation = (Calculation)calculations.elementAt(i);
@@ -615,7 +615,7 @@ public class FormDef implements Serializable{
 			}
 		}
 	}
-	
+
 	private void copyCalculations(Vector calculations){
 		if(calculations != null)
 		{
@@ -870,24 +870,24 @@ public class FormDef implements Serializable{
 			}
 		}
 	}
-	
-	
+
+
 	public void removeQtnFromCalculations(QuestionDef questionDef){
 		for(int index = 0; index < getCalculationCount(); index++){
 			Calculation calculation = getCalculationAt(index);
 			if(calculation.getQuestionId() == questionDef.getId()){
 				calculations.remove(index);
-				
+
 				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
 				if(questionDef.getBindNode() != null)
 					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
-				
+
 				return;
 			}
 		}
 	}
-	
-	
+
+
 	public void updateCalculation(QuestionDef questionDef, String calculateExpression){
 		if(calculateExpression == null || calculateExpression.trim().length() == 0)
 			removeQtnFromCalculations(questionDef);
@@ -899,7 +899,7 @@ public class FormDef implements Serializable{
 				calculation.setCalculateExpression(calculateExpression);
 		}
 	}
-	
+
 
 	/**
 	 * Removes the instance node referenced by a dynamic selection list object.
@@ -940,7 +940,7 @@ public class FormDef implements Serializable{
 			return 0;
 		return skipRules.size();
 	}
-	
+
 	public int getCalculationCount(){
 		if(calculations == null)
 			return 0;
@@ -1048,8 +1048,8 @@ public class FormDef implements Serializable{
 			calculations = new Vector();
 		calculations.addElement(calculation);
 	}
-	
-	
+
+
 	/**
 	 * Removes a skip rule from the form.
 	 * 
@@ -1064,10 +1064,12 @@ public class FormDef implements Serializable{
 		if(dataNode != null){
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
 				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
-				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
-				if(questionDef != null && node != null){
-					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
-					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
+				if(questionDef != null){
+					Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+					if(node != null){
+						node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
+						node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
+					}
 				}
 			}
 		}
@@ -1087,10 +1089,12 @@ public class FormDef implements Serializable{
 		boolean ret = validationRules.remove(validationRule);
 		if(dataNode != null){
 			QuestionDef questionDef = getQuestion(validationRule.getQuestionId());
-			Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
-			if(questionDef != null && node != null){
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+			if(questionDef != null){
+				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+				if(node != null){
+					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
+					node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+				}
 			}
 		}
 		return ret;

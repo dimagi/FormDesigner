@@ -47,12 +47,6 @@ body, html {
   border: 1px solid red;
 }
 
-.gwt-HorizontalSplitPanel .hsplitter {
-  cursor: move;
-  border: 0px; 
-  background: #91c0ef url(vborder.png) repeat-y;
-}
-
 .FormDesigner-ErrorDialog {
   border: 2px outset;
   background-color: white;
@@ -168,11 +162,20 @@ body, html {
    visibility: hidden;
    width: 0px; height: 0px;
    border: 1px dashed black;
- }
+}
  
- .dragdrop-handle-resize {
+.dragdrop-handle-resize {
   cursor: w-resize;
   user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
 }
+
+.labelEdit
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
+}
+

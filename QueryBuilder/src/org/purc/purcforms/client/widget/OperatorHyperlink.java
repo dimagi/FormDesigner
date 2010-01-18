@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.widget;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -120,9 +121,9 @@ public class OperatorHyperlink extends Hyperlink implements ItemSelectionListene
 
 		ScrollPanel scrollPanel = new ScrollPanel();
 		scrollPanel.setWidget(menuBar);
-		scrollPanel.setWidth("300px");
-		scrollPanel.setHeight(height+"px");
-		//scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+"px");
+		scrollPanel.setWidth("300"+PurcConstants.UNITS);
+		scrollPanel.setHeight(height+PurcConstants.UNITS);
+		//scrollPanel.setHeight((Window.getClientHeight() - getAbsoluteTop() - 25)+PurcConstants.UNITS);
 
 		popup.setWidget(scrollPanel);
 	}

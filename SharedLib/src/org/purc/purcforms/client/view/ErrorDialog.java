@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 
@@ -25,7 +26,7 @@ public class ErrorDialog extends DialogBox implements ClickHandler {
 	
 	/** This displays the call stack at the time of the exception. */
 	private TextArea callStack = new TextArea();
-
+	
 	
 	/**
 	 * Creates a new instance of the error dialog box.
@@ -47,10 +48,10 @@ public class ErrorDialog extends DialogBox implements ClickHandler {
 
 		setWidget(panel);
 		
-		txtErrorMsg.setWidth("500px");
-		txtErrorMsg.setHeight("200px");
-		callStack.setWidth("500px");
-		callStack.setHeight("200px");
+		txtErrorMsg.setWidth("500"+PurcConstants.UNITS);
+		txtErrorMsg.setHeight("200"+PurcConstants.UNITS);
+		callStack.setWidth("500"+PurcConstants.UNITS);
+		callStack.setHeight("200"+PurcConstants.UNITS);
 	}
 
 	/**

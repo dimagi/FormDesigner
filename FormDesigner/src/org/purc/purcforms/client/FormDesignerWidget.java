@@ -51,25 +51,25 @@ public class FormDesignerWidget extends Composite{
 	 * and Model Xml tabs.
 	 */
 	private CenterPanel centerPanel = new CenterPanel(images);
-	
+
 	/** 
 	 * Widget used on the left hand side of the form designer to display a list
 	 * of forms and their pages, questions, etc.
 	 */
 	private LeftPanel leftPanel = new LeftPanel(images,centerPanel);
-	
+
 	/** The coordinator for execution of commands between the menu and tool bar, left and center panel. */
 	private FormDesignerController controller = new FormDesignerController(centerPanel,leftPanel);
 
 	/** The menu bar widget. */
 	private Menu menu = new Menu(images,controller);
-	
+
 	/** The tool bar widget. */
 	private Toolbar toolbar = new Toolbar(images,controller);
-	
+
 	/** The splitter between the left and center panel. */
 	private HorizontalSplitPanel hsplitClient;
-	
+
 	/** Flag to tell whether we in in the resize mode of the splitter. */
 	private boolean isResizing = false;
 
@@ -86,12 +86,12 @@ public class FormDesignerWidget extends Composite{
 	public FormDesignerWidget(boolean showMenubar, boolean showToolbar,boolean showFormAsRoot){
 		leftPanel.showFormAsRoot(showFormAsRoot);
 		centerPanel.setWidgetSelectionListener(leftPanel.getWidgetSelectionListener());
-		
+
 		leftPanel.setFormDesignerListener(controller);
 		leftPanel.setWidgetPropertyChangeListener(centerPanel.getWidgetPropertyChangeListener());
-		
+
 		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
-		
+
 		initDesigner(showMenubar, showToolbar);  
 		centerPanel.setFormChangeListener(leftPanel.getFormChangeListener());
 	}
@@ -109,25 +109,25 @@ public class FormDesignerWidget extends Composite{
 		hsplitClient.setLeftWidget(leftPanel);
 		hsplitClient.setRightWidget(centerPanel);
 		hsplitClient.setSplitPosition("25%");
-		
+
 		VerticalPanel panel = new VerticalPanel();
-		
+
 		if(showMenubar)
 			panel.add(menu);
-		
+
 		if(showToolbar)
 			panel.add(toolbar);
-		
+
 		panel.add(hsplitClient);
 		panel.setWidth("100%");
 
 		dockPanel.add(panel, DockPanel.CENTER);
-		
+
 		FormUtil.maximizeWidget(dockPanel);
 		//FormUtil.maximizeWidget(hsplitClient);
 
 		initWidget(dockPanel);
-		
+
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 	}
 
@@ -139,27 +139,29 @@ public class FormDesignerWidget extends Composite{
 		if (shortcutHeight < 1) 
 			shortcutHeight = 1;
 
-		leftPanel.setHeight(shortcutHeight + "px");
+		leftPanel.setHeight(shortcutHeight + PurcConstants.UNITS);
 
 		shortcutHeight = height - centerPanel.getAbsoluteTop();
-		centerPanel.adjustHeight(shortcutHeight-50 + "px");
-		centerPanel.onWindowResized(width, height);
-		hsplitClient.setHeight(shortcutHeight+"px");
+		if(shortcutHeight > 50){
+			centerPanel.adjustHeight(shortcutHeight-50 + PurcConstants.UNITS);
+			centerPanel.onWindowResized(width, height);
+			hsplitClient.setHeight(shortcutHeight+PurcConstants.UNITS);
+		}
 	}
-	
+
 	@Override
 	public void onBrowserEvent(Event event) {
 		//TODO Firefox doesn't seem to give us mouse events when resizing.
 		if(isResizing)
 			centerPanel.onVerticalResize();
-		
+
 		isResizing = false;
 		if(hsplitClient.isResizing()){
 			isResizing = true;
 			centerPanel.onVerticalResize();
 		}
 	}
-	
+
 	/**
 	 * Loads a form from the server into the form designer.
 	 * 
@@ -169,7 +171,7 @@ public class FormDesignerWidget extends Composite{
 		if(formId != -1)
 			controller.loadForm(formId);
 	}
-	
+
 	/**
 	 * Sets the offset height of the form designer. This is useful for GWT
 	 * applications using the form designer as an embedded widget and do not
@@ -180,7 +182,7 @@ public class FormDesignerWidget extends Composite{
 	public void setEmbeddedHeightOffset(int offset){
 		centerPanel.setEmbeddedHeightOffset(offset);
 	}
-	
+
 	/**
 	 * Loads a form in the form designer.
 	 * 
@@ -193,19 +195,19 @@ public class FormDesignerWidget extends Composite{
 	public void loadForm(int formId,String xform, String layout, boolean readOnly){
 		if(leftPanel.formExists(formId))
 			return;
-		
+
 		centerPanel.setXformsSource(xform, false);
 		centerPanel.setLayoutXml(layout, false);
 		controller.openFormDeffered(formId,readOnly);
 	}
-	
+
 	/**
 	 * Saves the currently selected form in the form designer.
 	 */
 	public void saveSelectedForm(){
 		controller.saveForm();
 	}
-	
+
 	/**
 	 * Creates a new form in the form designer.
 	 * 
@@ -216,17 +218,17 @@ public class FormDesignerWidget extends Composite{
 	public void addNewForm(String name, String varName, int formId){
 		if(leftPanel.formExists(formId))
 			return;
-		
+
 		leftPanel.addNewForm(name, varName, formId);
 	}
-	
+
 	/**
 	 * Removes all forms in the form designer.
 	 */
 	public void clear(){
 		leftPanel.clear();
 	}
-	
+
 	/**
 	 * Sets the position of the splitter between the form designer's
 	 * left and center panel.
@@ -236,7 +238,7 @@ public class FormDesignerWidget extends Composite{
 	public void setSplitPos(String pos){
 		hsplitClient.setSplitPosition(pos);
 	}
-	
+
 	/**
 	 * Sets the listener to form save events.
 	 * 
@@ -245,14 +247,14 @@ public class FormDesignerWidget extends Composite{
 	public void setFormSaveListener(IFormSaveListener formSaveListener){
 		controller.setFormSaveListener(formSaveListener);
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#format()
 	 */
 	public void format(){
 		controller.format();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
 	 */
@@ -266,133 +268,133 @@ public class FormDesignerWidget extends Composite{
 	public void alignRight(){
 		controller.alignRight();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop(){
 		controller.alignTop();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
 	 */
 	public void makeSameSize(){
 		controller.makeSameSize();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
 	 */
 	public void makeSameHeight(){
 		controller.makeSameHeight();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
 	 */
 	public void makeSameWidth(){
 		controller.makeSameWidth();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom(){
 		controller.alignBottom();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#showAboutInfo()
 	 */
 	public void openForm(){
 		controller.openForm();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp(){
 		controller.moveItemUp();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown(){
 		controller.moveItemDown();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem(){
 		controller.cutItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem(){
 		controller.copyItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem(){
 		controller.pasteItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem(){
 		controller.addNewChildItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem(){
 		controller.addNewItem();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem(){
 		controller.deleteSelectedItem();
 	}
-	
+
 	/**
 	 * Refreshes the currently selected item.
 	 */
 	public void refreshItem(){
 		controller.refresh(this);
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.LeftPanel#getSelectedForm()
 	 */
 	public FormDef getSelectedForm(){
 		return leftPanel.getSelectedForm();
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#setDefaultLocale(java.lang.String)
 	 */
 	public void setDefaultLocale(String locale){
 		controller.setDefaultLocale(locale);
 	}
-	
+
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#changeLocale(java.lang.String)
 	 */
 	public void changeLocale(String locale){
 		controller.changeLocale(locale);
 	}
-	
+
 	/**
 	 * Sets the xforms and layout xml locale text for a given form.
 	 * 
@@ -404,32 +406,32 @@ public class FormDesignerWidget extends Composite{
 	public void setLocaleText(Integer formId, String locale, String xform, String layout){
 		controller.setLocaleText(formId, locale, xform, layout);
 	}
-	
+
 	/**
 	 * Removes the language tab.
 	 */
 	public void removeLanguageTab(){
 		centerPanel.removeLanguageTab();
 	}
-	
+
 	public void populateLocales(){
 		toolbar.populateLocales();
 	}
-	
+
 	public void removeXformSourceTab(){
 		centerPanel.removeXformSourceTab();
 	}
-	
-	
+
+
 	public void removeLayoutXmlTab(){
 		centerPanel.removeLayoutXmlTab();
 	}
-	
-	
+
+
 	public void removeModelXmlTab(){
 		centerPanel.removeModelXmlTab();
 	}
-	
+
 	public void removeJavaScriptTab(){
 		centerPanel.removeJavaScriptSourceTab();
 	}

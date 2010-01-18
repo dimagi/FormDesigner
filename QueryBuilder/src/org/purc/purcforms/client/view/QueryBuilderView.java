@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.view;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.sql.SqlBuilder;
 import org.purc.purcforms.client.sql.XmlBuilder;
@@ -110,9 +111,9 @@ public class QueryBuilderView  extends Composite implements SelectionHandler<Int
 	}
 	
 	public void onWindowResized(int width, int height) {
-		txtXform.setHeight(height-50+"px");
-		txtDefXml.setHeight(height-50+"px");
-		txtSql.setHeight(height-50+"px");
+		txtXform.setHeight(height-50+PurcConstants.UNITS);
+		txtDefXml.setHeight(height-50+PurcConstants.UNITS);
+		txtSql.setHeight(height-50+PurcConstants.UNITS);
 	} 
 	
 	private void parseXform(){

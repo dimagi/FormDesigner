@@ -9,6 +9,8 @@ package org.purc.purcforms.client;
  */
 public class PurcConstants {
 	
+	public static final String UNITS = "px";
+	
 	/** The separator between the xforms xml and javascript source in a combined xml document for a form. */
 	public static final String PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR = " PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR ";
 

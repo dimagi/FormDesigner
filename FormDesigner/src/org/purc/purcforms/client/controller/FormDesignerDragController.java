@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.purc.purcforms.client.Context;
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.widget.DesignGroupWidget;
 import org.purc.purcforms.client.widget.DesignWidgetWrapper;
 import org.purc.purcforms.client.widget.PaletteWidget;
@@ -567,7 +568,7 @@ public class FormDesignerDragController extends AbstractDragController{
 			}
 
 			info.initialDraggableMargin = DOM.getStyleAttribute(widget.getElement(), "margin");
-			widget.getElement().getStyle().setProperty("margin", "0px");
+			widget.getElement().getStyle().setProperty("margin", "0"+PurcConstants.UNITS);
 			savedWidgetInfoMap.put(widget, info);
 		}
 	}

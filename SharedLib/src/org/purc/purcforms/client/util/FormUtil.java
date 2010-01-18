@@ -2,6 +2,7 @@ package org.purc.purcforms.client.util;
 
 import java.util.List;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.view.ErrorDialog;
@@ -88,6 +89,9 @@ public class FormUtil {
 
 	/** The default font family used by the form designer. */
 	private static String defaultFontFamily;
+	
+	/** The default font size, in pixels, used by the form designer. */
+	private static String defaultFontSize;
 
 	/** Flag determining whether to append the entity id to the url 
 	 * we go to after a form submission. eg ........?patientId=13
@@ -379,6 +383,10 @@ public class FormUtil {
 		if(defaultFontFamily == null || defaultFontFamily.trim().length() == 0)
 			defaultFontFamily = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
 
+		defaultFontSize = getDivValue("defaultFontSize");
+		if(defaultFontSize == null || defaultFontSize.trim().length() == 0)
+			defaultFontSize = "16";
+
 		String s = getDivValue("appendEntityIdAfterSubmit");
 		if(s == null || s.trim().length() == 0)
 			appendEntityIdAfterSubmit = false;
@@ -545,6 +553,10 @@ public class FormUtil {
 
 	public static String getDefaultFontFamily(){
 		return defaultFontFamily;
+	}
+	
+	public static String getDefaultFontSize(){
+		return defaultFontSize + PurcConstants.UNITS;
 	}
 
 	public static boolean appendEntityIdAfterSubmit(){
@@ -794,4 +806,12 @@ public class FormUtil {
     public static native String evaluateStringExpression(String expression) /*-{
     	return eval(expression);
 	}-*/;
+    
+    
+    public static void setElementFontSizeAndFamily(com.google.gwt.user.client.Element element){
+    	try{
+			DOM.setStyleAttribute(element, "fontFamily", getDefaultFontFamily());
+			DOM.setStyleAttribute(element, "fontSize", getDefaultFontSize());
+		}catch(Exception ex){}
+    }
 }

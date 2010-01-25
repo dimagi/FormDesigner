@@ -1224,6 +1224,20 @@ public class QuestionDef implements Serializable{
 			questionDef.getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
 
+	
+	public int getOptionIndex(String varName){
+		if(options == null)
+			return -1;
+
+		for(int i=0; i<getOptions().size(); i++){
+			OptionDef def = (OptionDef)getOptions().get(i);
+			if(def.getVariableName().equals(varName))
+				return i;
+		}
+		
+		return -1;
+	}
+	
 	private void refreshOptions(QuestionDef questionDef){
 		List options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
@@ -1235,6 +1249,12 @@ public class QuestionDef implements Serializable{
 			if(optionDef == null)
 				continue;
 			optionDef.setText(optn.getText());
+			
+			/*int index1 = this.getOptionIndex(optn.getVariableName());
+			if(index != index1 && index1 != -1 && index < this.getOptionCount() - 1){
+				((List)this.getOptions()).remove(optionDef);
+				((List)this.getOptions()).set(index, optionDef);
+			}*/
 		}
 	}
 

@@ -235,6 +235,20 @@ public class PageDef implements Serializable{
 
 		return null;
 	}
+	
+	
+	public int getQuestionIndex(String varName){
+		if(questions == null)
+			return -1;
+
+		for(int i=0; i<getQuestions().size(); i++){
+			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
+			if(def.getVariableName().equals(varName))
+				return i;
+		}
+		
+		return -1;
+	}
 
 	
 	/**
@@ -694,7 +708,7 @@ public class PageDef implements Serializable{
 	}
 
 	/**
-	 * Updates this pageDef (as the main) with the parameter one
+	 * Updates this pageDef (as the main or new from a refresh xml) with the parameter one (existing or the one being refreshed)
 	 * 
 	 * @param pageDef
 	 */
@@ -709,6 +723,12 @@ public class PageDef implements Serializable{
 			if(questionDef == null)
 				continue; //Possibly this question was deleted on server
 			questionDef.refresh(qtn);
+			
+			/*int index1 = this.getQuestionIndex(qtn.getVariableName());
+			if(index != index1 && index1 != -1 && index < this.getQuestionCount() - 1){
+				this.getQuestions().removeElement(questionDef);
+				this.getQuestions().insertElementAt(questionDef, index);
+			}*/
 		}
 	}
 

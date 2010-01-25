@@ -3,8 +3,8 @@ package org.openrosa.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.view.FormDesignerWidget;
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.FormDesignerWidget;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
@@ -53,7 +53,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	public void onModuleLoadDeffered() {
 
 		try{
-			RootPanel rootPanel = RootPanel.get("purcformsdesigner");
+			RootPanel rootPanel = RootPanel.get("openrosaformdesigner");
 			if(rootPanel == null){
 				FormUtil.dlg.hide();
 				return;
@@ -86,12 +86,12 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 
 			loadLocales();
 			
-			designer = new FormDesignerWidget(true,true,true);
+			designer = new FormDesignerWidget(true,true);
 			
 			// Finally, add the designer widget to the RootPanel, so that it will be displayed.
 			rootPanel.add(designer);
 			
-			updateTabs();
+			//updateTabs();
 			
 			//If a form id has been specified in the html host page, load the form
 			//with that id in the designer.

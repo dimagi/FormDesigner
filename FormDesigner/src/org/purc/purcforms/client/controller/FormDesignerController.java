@@ -875,7 +875,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 						//If we are in offline mode, we completely overwrite the form 
 						//with the contents of the xforms source tab.
-						if(!isOfflineMode())
+						//if(!isOfflineMode())
 							formDef.refresh(oldFormDef);
 
 						formDef.updateDoc(false);

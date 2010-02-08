@@ -91,8 +91,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			verticalPanel.add(table);
 			initWidget(verticalPanel);
 		}
-		else
+		else{
+			//FormUtil.maximizeWidget(selectedPanel);	
 			initWidget(selectedPanel);
+		}
 		//setupEventListeners();
 
 		//table.setStyleName("cw-FlexTable");

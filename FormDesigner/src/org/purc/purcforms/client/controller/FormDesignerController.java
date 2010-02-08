@@ -1276,7 +1276,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						try{
 							FormDef formDef = leftPanel.getSelectedForm();
 							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
-							xml = FormDesignerUtil.formatXml(xml);
+							
+							//This below messes up JS
+							//xml = FormDesignerUtil.formatXml(xml);
 
 							FormUtil.dlg.hide();
 

@@ -549,6 +549,9 @@ public class XformParser {
 
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME) != null)
 			formDef.setName(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME));
+		
+		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY) != null)
+			formDef.setFormKey(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY));
 	}
 
 

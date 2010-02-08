@@ -39,6 +39,8 @@ public class FormDef implements Serializable{
 
 	/** The display name of the form. */
 	private String name = ModelConstants.EMPTY_STRING;
+	
+	private String formKey = ModelConstants.EMPTY_STRING;
 
 	/** The numeric unique identifier of the form definition. */
 	private int id = ModelConstants.NULL_ID;
@@ -120,6 +122,7 @@ public class FormDef implements Serializable{
 	public FormDef(FormDef formDef, boolean copyValidationRules) {
 		setId(formDef.getId());
 		setName(formDef.getName());
+		setFormKey(formDef.getFormKey());
 
 		//I just don't think we need this in addition to the id
 		setVariableName(formDef.getVariableName());
@@ -146,9 +149,10 @@ public class FormDef implements Serializable{
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
+	public FormDef(int id, String name, String formKey, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
 		setId(id);
 		setName(name);
+		setFormKey(formKey);
 
 		//I just don't think we need this in addition to the id
 		setVariableName(variableName);
@@ -248,6 +252,14 @@ public class FormDef implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getFormKey() {
+		return formKey;
+	}
+
+	public void setFormKey(String formKey) {
+		this.formKey = formKey;
 	}
 
 	//I just don't think we need this in addition to the id
@@ -408,7 +420,8 @@ public class FormDef implements Serializable{
 	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
-
+		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
+		
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
 		//If ones want to change the id, he should load the xform as a new form with that id

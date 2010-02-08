@@ -69,7 +69,6 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.TabBar.Tab;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -1380,7 +1379,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	public void onRowAdded(RuntimeWidgetWrapper rptWidget, int increment){
 
 		//Get the current bottom y position of the repeat widget.
-		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
+		int bottomYpos = getBottomYPos(rptWidget);
 
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper currentWidget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
@@ -1393,7 +1392,46 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 
 		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()+increment+PurcConstants.UNITS);	
+	
+		setParentHeight(true,rptWidget,increment);
 	}
+	
+	private void setParentHeight(boolean increase, RuntimeWidgetWrapper rptWidget, int change){
+		Widget parent = rptWidget.getParent();
+		while(parent != null){
+			if(parent instanceof RuntimeGroupWidget){
+				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)((RuntimeGroupWidget)parent).getParent().getParent();
+				int height = wrapper.getHeightInt();
+				wrapper.setHeight((increase ? height+change : height-change)+PurcConstants.UNITS);
+			}
+			else if(parent instanceof FormRunnerView)
+				return;
+			
+			parent = parent.getParent();
+		}
+	}
+	
+	private int getBottomYPos(RuntimeWidgetWrapper rptWidget){
+		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
+		
+		Widget parent = rptWidget.getParent();
+		while(parent != null){
+			if(parent instanceof RuntimeGroupWidget){
+				RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)((RuntimeGroupWidget)parent).getParent().getParent();
+				if(selectedPanel.getWidgetIndex(wrapper) != -1){
+					bottomYpos = wrapper.getTopInt() + wrapper.getHeightInt();
+					break;
+				}
+			}
+			else if(parent instanceof FormRunnerView)
+				break;
+			
+			parent = parent.getParent();
+		}
+		
+		return bottomYpos;
+	}
+	
 
 	/**
 	 * @see org.purc.purcforms.client.widget.EditListener#onRowRemoved(org.purc.purcforms.client.widget.RuntimeWidgetWrapper)
@@ -1401,7 +1439,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	public void onRowRemoved(RuntimeWidgetWrapper rptWidget, int decrement){
 
 		//Get the current bottom y position of the repeat widget.
-		int bottomYpos = rptWidget.getTopInt() + rptWidget.getHeightInt();
+		int bottomYpos = getBottomYPos(rptWidget);
 
 		//Move widgets which are below the bottom of the repeat widget.
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
@@ -1415,6 +1453,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		}
 
 		DOM.setStyleAttribute(selectedPanel.getElement(), "height", getHeightInt()-decrement+PurcConstants.UNITS);
+	
+		setParentHeight(false,rptWidget,decrement);
 	}
 
 	/**

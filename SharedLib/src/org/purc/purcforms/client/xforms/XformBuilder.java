@@ -91,6 +91,7 @@ public class XformBuilder {
 		Element formNode =  doc.createElement(formDef.getVariableName());
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, String.valueOf(formDef.getId()));
+		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 

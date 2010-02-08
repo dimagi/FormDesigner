@@ -1,7 +1,6 @@
 package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
@@ -144,6 +143,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private DescTemplateWidget btnDescTemplate; // = new Button("Create/Edit");
 
 	private DescTemplateWidget btnCalculation;
+	
+	/** Widget for setting the form key property. */
+	private TextBox txtFormKey = new TextBox();
 
 	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private Object propertiesObj;
@@ -185,6 +187,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		
 		lblDescTemplate = new Label(LocaleText.get("descriptionTemplate"));
 		table.setWidget(10, 0, lblDescTemplate);
+		table.setWidget(11, 0, new Label(LocaleText.get("formKey")));
 
 		table.setWidget(0, 1, txtText);
 		table.setWidget(1, 1, txtHelpText);
@@ -211,6 +214,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		FormUtil.maximizeWidget(txtDescTemplate);
 		FormUtil.maximizeWidget(panel);
 		table.setWidget(10, 1, panel);
+		
+		table.setWidget(11, 1, txtFormKey);
 
 		table.setStyleName("cw-FlexTable");
 
@@ -245,6 +250,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setWidth("100%");
 		txtDefaultValue.setWidth("100%");
 		cbDataType.setWidth("100%");
+		txtFormKey.setWidth("100%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.setSpacing(5);
@@ -485,6 +491,17 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 			}
 		});
+		
+		txtFormKey.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateFormKey();
+			}
+		});
+		txtFormKey.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				updateFormKey();
+			}
+		});
 	}
 
 	private String getSelObjetOriginalText(){
@@ -597,7 +614,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
+	
 
+	private void updateFormKey(){
+		if(propertiesObj == null)
+			return;
+
+		if(propertiesObj instanceof FormDef)
+			((FormDef)propertiesObj).setFormKey(txtFormKey.getText());
+
+		formChangeListener.onFormItemChanged(propertiesObj);
+	}
+
+	
 	/**
 	 * Updates the selected object with the new description template as typed by the user.
 	 */
@@ -797,6 +826,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		txtText.setText(formDef.getName());
 		txtBinding.setText(formDef.getVariableName());
+		txtFormKey.setText(formDef.getFormKey());
 		//skipRulesView.setFormDef(formDef);
 
 		txtDescTemplate.setText(formDef.getDescriptionTemplate());
@@ -984,6 +1014,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setText(null);
 		txtDescTemplate.setText(null);
 		txtCalculation.setText(null);
+		txtFormKey.setText(null);
 	}
 
 	/**
@@ -1132,5 +1163,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setVisible(10, 0, enable);
 		cellFormatter.setVisible(10, 1, enable);
+		
+		//form key
+		cellFormatter.setVisible(11, 0, enable);
+		cellFormatter.setVisible(11, 1, enable);
 	}
 }

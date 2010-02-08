@@ -88,6 +88,7 @@ public class XformConstants {
 	public static final String ATTRIBUTE_NAME_CALCULATE = "calculate";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";
 	public static final String ATTRIBUTE_NAME_NAME = "name";
+	public static final String ATTRIBUTE_NAME_FORM_KEY = "formKey";
 	public static final String ATTRIBUTE_NAME_XMLNS = "xmlns:"+PREFIX_XFORMS;
 	public static final String ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE = "description-template"; //eg ${/patient/family_name}$
 	public static final String ATTRIBUTE_NAME_ACTION = "action";

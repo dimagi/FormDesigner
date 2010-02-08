@@ -208,10 +208,12 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * Adds the selected widgets to a group box.
 	 */
 	protected void groupWidgets(){
-		for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
+		
+		//We now allow nested group boxes
+		/*for(int i=0; i<selectedDragController.getSelectedWidgetCount(); i++){
 			if(((DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(i)).getWrappedWidget() instanceof DesignGroupWidget)
 				return; //We do not allow nested group boxes
-		}
+		}*/
 
 		cutWidgets();
 

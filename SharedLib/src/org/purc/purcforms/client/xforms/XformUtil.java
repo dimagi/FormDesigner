@@ -222,6 +222,7 @@ public class XformUtil {
 	public static Document getInstanceDataDoc(Document doc){
 		Element data = getInstanceDataNode(getInstanceNode(doc));
 		Document dataDoc = XMLParser.createDocument();
+		dataDoc.appendChild(dataDoc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		dataDoc.appendChild(data.cloneNode(true));
 
 		Element root = dataDoc.getDocumentElement();

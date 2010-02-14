@@ -20,6 +20,7 @@ public class PurcFormBuilder {
 	public static String build(FormDef formDef, HashMap<String,String> localeText){
 
 		Document doc = XMLParser.createDocument();
+		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 
 		Element purcFormNode = doc.createElement("PurcForm");
 		doc.appendChild(purcFormNode);
@@ -69,6 +70,7 @@ public class PurcFormBuilder {
 	
 	public static String getCombinedLanguageText(HashMap<String,String> localeText){
 		Document doc = XMLParser.createDocument();
+		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		doc.appendChild(getLanguageNode(doc,localeText));
 		
 		return XmlUtil.fromDoc2String(doc);

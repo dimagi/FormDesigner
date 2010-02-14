@@ -34,6 +34,7 @@ public class XhtmlBuilder {
 		Document prevdoc = formDef.getDoc();
 
 		Document doc = XMLParser.createDocument();
+		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		formDef.setDoc(doc);
 
 		Element htmlNode = doc.createElement("html");

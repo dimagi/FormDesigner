@@ -47,6 +47,7 @@ public class XformBuilder {
 
 		//Create a new document.
 		Document doc = XMLParser.createDocument();
+		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		formDef.setDoc(doc);
 
 		//Create the document root node.

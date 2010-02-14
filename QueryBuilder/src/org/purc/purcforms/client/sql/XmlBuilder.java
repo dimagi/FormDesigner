@@ -50,6 +50,7 @@ public class XmlBuilder {
 			return null;
 
 		doc = XMLParser.createDocument();
+		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		Element rootNode = doc.createElement(NODE_NAME_QUERYDEF);
 		doc.appendChild(rootNode);
 

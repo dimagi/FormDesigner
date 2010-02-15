@@ -139,13 +139,13 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @param images
 	 */
 	public CenterPanel(Images images) {
-		designSurfaceView = new DesignSurfaceView();
+		//designSurfaceView = new DesignSurfaceView();
 		//designSurfaceView = new DesignSurfaceView(images);
 		//previewView = new PreviewView((PreviewView.Images)images);
 
 		initProperties();
-		initXformsSource();
-		/*initDesignSurface();
+		/*initXformsSource();
+		initDesignSurface();
 		initJavaScriptSource();
 		initLayoutXml();
 		initLanguageXml();
@@ -376,8 +376,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		if(this.formDef != form){
 			setFormDef(form);
 
-			designSurfaceView.setFormDef(formDef);
-			previewView.setFormDef(formDef);
+			//designSurfaceView.setFormDef(formDef);
+			//previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
 				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),null);

@@ -34,6 +34,8 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 */
 	public void onModuleLoad() {
 		
+		FormUtil.setupUncaughtExceptionHandler();
+		
 		FormUtil.dlg.setText(LocaleText.get("loading"));
 		FormUtil.dlg.center();
 		
@@ -95,9 +97,9 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 			
 			//If a form id has been specified in the html host page, load the form
 			//with that id in the designer.
-			s = FormUtil.getFormId();
+			/*s = FormUtil.getFormId();
 			if(s != null)
-				designer.loadForm(Integer.parseInt(s));
+				designer.loadForm(Integer.parseInt(s));*/
 			
 
 			// Call the window resized handler to get the initial sizes setup. Doing
@@ -122,7 +124,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		}
 	}
 	
-	private void updateTabs(){
+	/*private void updateTabs(){
 		String s = FormUtil.getDivValue("showXformsSourceTab");
 		if(!("1".equals(s) || "true".equals(s)))
 			designer.removeXformSourceTab();
@@ -142,7 +144,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		s = FormUtil.getDivValue("showJavaScriptTab");
 		if(!("1".equals(s) || "true".equals(s)))
 			designer.removeJavaScriptTab();
-	}
+	}*/
 	
 	public void onResize(ResizeEvent event){
 		designer.onWindowResized(event.getWidth(), event.getHeight());

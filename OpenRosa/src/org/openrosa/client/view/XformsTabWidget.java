@@ -15,12 +15,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class XformsWidget extends Composite {
+public class XformsTabWidget extends Composite {
 
 	private TextArea txtXforms = new TextArea();
 	
 	
-	public XformsWidget(){
+	public XformsTabWidget(){
 		
 		VerticalPanel verticalPanel = new VerticalPanel();
 		
@@ -40,5 +40,10 @@ public class XformsWidget extends Composite {
 		initWidget(verticalPanel);
 		
 		FormUtil.maximizeWidget(this);
+	}
+	
+	
+	public void adjustHeight(String height){
+		txtXforms.setHeight(height);
 	}
 }

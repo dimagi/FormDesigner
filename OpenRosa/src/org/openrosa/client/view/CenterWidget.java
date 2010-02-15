@@ -1,5 +1,6 @@
 package org.openrosa.client.view;
 
+import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -19,8 +20,11 @@ public class CenterWidget extends Composite {
 	 */
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
 	
+	private XformsTabWidget xformsWidget = new XformsTabWidget();
+	private DesignTabWidget designWidget = new DesignTabWidget();
 	
-	public CenterWidget() {
+	
+	public CenterWidget() {		
 		initDesignTab();
 		initXformsTab();
 		initItextTab();
@@ -35,17 +39,25 @@ public class CenterWidget extends Composite {
 	}
 	
 	private void initDesignTab(){
-		tabs.add(new Label(), "Design");
+		tabs.add(designWidget, "Design");
 		//FormUtil.maximizeWidget(txtLayoutXml);
 	}
 	
 	private void initXformsTab(){
-		tabs.add(new XformsWidget(), "Xforms");
+		tabs.add(xformsWidget, "Xforms");
 		//FormUtil.maximizeWidget(txtLayoutXml);
 	}
 	
 	private void initItextTab(){
 		tabs.add(new Label(), "Internationalization");
 		//FormUtil.maximizeWidget(txtLayoutXml);
+	}
+	
+	public void onWindowResized(int width, int height){
+		int shortcutHeight = height - getAbsoluteTop();
+		if(shortcutHeight > 50)
+			xformsWidget.adjustHeight(shortcutHeight-130 + PurcConstants.UNITS);
+		
+		designWidget.onWindowResized(width, height);
 	}
 }

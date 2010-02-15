@@ -166,14 +166,14 @@ public class Toolbar extends Composite{
 		btnUndo.setTitle(LocaleText.get("undo"));
 		btnRedo.setTitle(LocaleText.get("redo"));
 		
-		if(Context.isOfflineMode())
-			panel.add(btnNewForm);
+		//if(Context.isOfflineMode())
+		//	panel.add(btnNewForm);
 		
-		panel.add(btnOpenForm);
+		//panel.add(btnOpenForm);
 		
-		panel.add(btnSaveForm);
+		//panel.add(btnSaveForm);
 		
-		panel.add(separatorWidget);
+		//panel.add(separatorWidget);
 		
 		panel.add(btnAddNewItem);
 		panel.add(btnAddNewChildItem);
@@ -187,8 +187,8 @@ public class Toolbar extends Composite{
 		panel.add(btnCopy);
 		panel.add(btnPaste);
 		
-		panel.add(separatorWidget);
-		panel.add(btnRefresh);
+		//panel.add(separatorWidget);
+		//panel.add(btnRefresh);
 		
 		/*panel.add(separatorWidget);
 		panel.add(btnAlignLeft);
@@ -201,9 +201,9 @@ public class Toolbar extends Composite{
 		panel.add(btnSameHeight);
 		panel.add(btnSameSize);*/
 		
-		panel.add(separatorWidget);
-		panel.add(btnUndo);
-		panel.add(btnRedo);
+		//panel.add(separatorWidget);
+		//panel.add(btnUndo);
+		//panel.add(btnRedo);
 		
 		Label label = new Label(FormDesignerUtil.getTitle());
 		panel.add(label);

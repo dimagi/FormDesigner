@@ -1,9 +1,5 @@
 package org.openrosa.client.view;
 
-import org.openrosa.client.view.Toolbar.Images;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.util.FormUtil;
-
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PushButton;

@@ -8,15 +8,10 @@ import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
-import org.purc.purcforms.client.controller.WidgetSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
-import org.purc.purcforms.client.view.PaletteView;
-import org.purc.purcforms.client.view.WidgetPropertiesView;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
@@ -76,8 +71,8 @@ public class LeftPanel extends Composite {
 		formsTreeView.setFormDesignerListener(formDesignerListener);
 	}
 
-	public void showFormAsRoot(boolean showFormAsRoot){
-		formsTreeView.showFormAsRoot(showFormAsRoot);
+	public void showFormAsRoot(){
+		formsTreeView.showFormAsRoot(true);
 	}
 
 	/**

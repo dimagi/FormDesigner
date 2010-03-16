@@ -259,7 +259,6 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}

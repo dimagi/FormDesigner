@@ -1221,7 +1221,7 @@ public class QuestionDef implements Serializable{
 
 		}
 		else if(dataType == QuestionDef.QTN_TYPE_REPEAT && questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-			questionDef.getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
+			getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
 
 	
@@ -1243,6 +1243,8 @@ public class QuestionDef implements Serializable{
 		if(options == null || options2 == null)
 			return;
 
+		Vector<OptionDef> orderedOptns = new Vector<OptionDef>();
+		
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
 			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
@@ -1250,12 +1252,24 @@ public class QuestionDef implements Serializable{
 				continue;
 			optionDef.setText(optn.getText());
 			
+			orderedOptns.add(optionDef); //add the option in the order it was before the refresh.
+			
 			/*int index1 = this.getOptionIndex(optn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getOptionCount() - 1){
 				((List)this.getOptions()).remove(optionDef);
 				((List)this.getOptions()).set(index, optionDef);
 			}*/
 		}
+		
+		//now add the new questions which have just been added by refresh.
+		int count = getOptionCount();
+		for(int index = 0; index < count; index++){
+			OptionDef optionDef = getOptionAt(index);
+			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null)
+				orderedOptns.add(optionDef);
+		}
+		
+		options = orderedOptns;
 	}
 
 	/**

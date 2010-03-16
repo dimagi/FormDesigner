@@ -281,7 +281,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -322,7 +321,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -407,7 +405,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 					return;
 				}	
@@ -439,7 +436,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						FormUtil.dlg.hide();
 					}
 					catch(Exception ex){
-						FormUtil.dlg.hide();
 						FormUtil.displayException(ex);
 					}	
 				}
@@ -463,7 +459,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -668,6 +663,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					builder.sendRequest(null, new RequestCallback(){
 						public void onResponseReceived(Request request, Response response){
+							
+							if(response.getStatusCode() != Response.SC_OK){
+								FormUtil.displayReponseError(response);
+								return;
+							}
+							
 							String xml = response.getText();
 							if(xml == null || xml.length() == 0){
 								FormUtil.dlg.hide();
@@ -724,13 +725,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						}
 
 						public void onError(Request request, Throwable exception){
-							FormUtil.dlg.hide();
 							FormUtil.displayException(exception);
 						}
 					});
 				}
 				catch(RequestException ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
@@ -773,18 +772,22 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 			builder.sendRequest(xml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
+					
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+					
 					FormUtil.dlg.hide();
 					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
 				public void onError(Request request, Throwable exception){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(exception);
 				}
 			});
 		}
 		catch(RequestException ex){
-			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
 	}
@@ -800,18 +803,22 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		try{
 			builder.sendRequest(languageXml, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
+					
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+					
 					FormUtil.dlg.hide();
 					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
 				public void onError(Request request, Throwable exception){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(exception);
 				}
 			});
 		}
 		catch(RequestException ex){
-			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
 	}
@@ -837,6 +844,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		try{
 			builder.sendRequest(null, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
+					
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+					
 					String xml = response.getText();
 					if(xml == null || xml.length() == 0){
 						Window.alert(LocaleText.get("noDataFound"));
@@ -892,7 +905,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
@@ -955,6 +967,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		try{
 			builder.sendRequest(null, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
+					
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+					
 					String contents = response.getText();
 					if(contents != null && contents.trim().length() > 0){
 						if(centerPanel.isInLayoutMode())
@@ -1047,7 +1065,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						openFormLayout(false);
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
@@ -1120,7 +1137,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())));
 		}
 		catch(Exception ex){
-			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}	
 	}
@@ -1250,7 +1266,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -1290,7 +1305,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							}
 						}
 						catch(Exception ex){
-							FormUtil.dlg.hide();
 							FormUtil.displayException(ex);
 						}	
 					}

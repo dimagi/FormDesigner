@@ -6,12 +6,9 @@ import java.util.List;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.OptionDef;
-import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.widget.FormRunnerWidget;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
-import org.purc.purcforms.client.widget.WidgetEx;
 import org.purc.purcforms.client.xforms.XformParser;
 
 import com.google.gwt.http.client.Request;
@@ -66,6 +63,12 @@ public class FormRunnerController implements SubmitListener{
 				try{
 					builder.sendRequest(null, new RequestCallback(){
 						public void onResponseReceived(Request request, Response response){
+							
+							if(response.getStatusCode() != Response.SC_OK){
+								FormUtil.displayReponseError(response);
+								return;
+							}
+								
 							String xml = response.getText();
 							if(xml == null || xml.length() == 0){
 								FormUtil.dlg.hide();
@@ -80,10 +83,10 @@ public class FormRunnerController implements SubmitListener{
 							if(pos > 0){
 								xformXml = xml.substring(0,pos);
 								layoutXml = xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), pos2 > 0 ? pos2 : xml.length());
-								
+
 								if(pos2 > 0)
 									javaScriptSrc = xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-										
+
 								openForm();
 								//FormUtil.dlg.hide(); //open form above will close it
 							}
@@ -94,13 +97,11 @@ public class FormRunnerController implements SubmitListener{
 						}
 
 						public void onError(Request request, Throwable exception){
-							FormUtil.dlg.hide();
 							FormUtil.displayException(exception);
 						}
 					});
 				}
 				catch(RequestException ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
@@ -121,13 +122,12 @@ public class FormRunnerController implements SubmitListener{
 					FormUtil.dlg.hide();	
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
 		});
 	}
-	
+
 	public void onCancel(){
 		String url = FormUtil.getHostPageBaseURL();
 		url += FormUtil.getAfterSubmitUrlSuffix();
@@ -146,7 +146,7 @@ public class FormRunnerController implements SubmitListener{
 		FormUtil.dlg.center();
 
 		final String submitXml = xml;
-		
+
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 				//"http://127.0.0.1:8080/openmrs/module/xforms/xformDataUpload.form"
@@ -160,28 +160,38 @@ public class FormRunnerController implements SubmitListener{
 						public void onResponseReceived(Request request, Response response){
 							FormUtil.dlg.hide();
 							
-							if(FormUtil.showSubmitSuccessMsg())
-								Window.alert(LocaleText.get("formSubmitSuccess"));
-
-							String url = FormUtil.getHostPageBaseURL();
-							url += FormUtil.getAfterSubmitUrlSuffix();
-
-							if(FormUtil.appendEntityIdAfterSubmit()){
-								url += FormUtil.getEntityIdName();
-								url += "=" + entityId;
+							if(response.getStatusCode() != Response.SC_OK){
+								FormUtil.displayReponseError(response);
+								return;
 							}
 
-							Window.Location.replace(url); //"http://127.0.0.1:8080/openmrs/patientDashboard.form?patientId=13"
+							if(response.getStatusCode() == Response.SC_OK){
+								if(FormUtil.showSubmitSuccessMsg())
+									Window.alert(LocaleText.get("formSubmitSuccess"));
+
+								String url = FormUtil.getHostPageBaseURL();
+								url += FormUtil.getAfterSubmitUrlSuffix();
+
+								if(FormUtil.appendEntityIdAfterSubmit()){
+									url += FormUtil.getEntityIdName();
+									if(entityId > 0)
+										url += "=" + entityId;
+									else if(entityId == 0 && response.getText().trim().length() > 0)
+										url += "=" + response.getText();
+								}
+
+								Window.Location.replace(url); //"http://127.0.0.1:8080/openmrs/patientDashboard.form?patientId=13"
+							}
+							else
+								FormUtil.displayReponseError(response);
 						}
 
 						public void onError(Request request, Throwable exception){
-							FormUtil.dlg.hide();
 							FormUtil.displayException(exception);
 						}
 					});
 				}
 				catch(RequestException ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}

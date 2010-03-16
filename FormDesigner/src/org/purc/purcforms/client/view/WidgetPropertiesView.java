@@ -159,6 +159,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	/** Widget for setting the value field property. */
 	private TextBox txtValueField = new TextBox();
 	
+	/** Widget for setting the filter field property. */
+	private TextBox txtFilterField = new TextBox();
+	
 	/** Widget for setting the id property. */
 	private TextBox txtId= new TextBox();
 
@@ -197,6 +200,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 0, new Label(LocaleText.get("externalSource")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("displayField")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("valueField")));
+		table.setWidget(++index, 0, new Label(LocaleText.get("filterField")));
 
 		table.setWidget(++index, 0, new Label(LocaleText.get("fontFamily")));
 		table.setWidget(++index, 0, new Label(LocaleText.get("foreColor")));
@@ -228,6 +232,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		table.setWidget(++index, 1, txtExternalSource);
 		table.setWidget(++index, 1, txtDisplayField);
 		table.setWidget(++index, 1, txtValueField);
+		table.setWidget(++index, 1, txtFilterField);
 
 		table.setWidget(++index, 1, txtFontFamily);
 		table.setWidget(++index, 1, sgstForeColor);
@@ -257,6 +262,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtExternalSource.setWidth("100%");
 		txtDisplayField.setWidth("100%");
 		txtValueField.setWidth("100%");
+		txtFilterField.setWidth("100%");
 
 		sgstForeColor.setWidth("100%");
 		lbFontWeight.setWidth("100%");
@@ -472,6 +478,18 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtValueField.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
 				updateValueField();
+			}
+		});
+		
+		txtFilterField.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				updateFilterField();
+			}
+		});
+
+		txtFilterField.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				updateFilterField();
 			}
 		});
 		
@@ -695,6 +713,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	private void updateValueField(){
 		if(widget != null)
 			widget.setValueField(txtValueField.getText());
+	}
+	
+	/**
+	 * Updates the selected widget with the new filter field as typed by the user.
+	 */
+	private void updateFilterField(){
+		if(widget != null)
+			widget.setFilterField(txtFilterField.getText());
 	}
 	
 	/**
@@ -923,6 +949,12 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			else
 				txtValueField.setText(null);
 			
+			value = this.widget.getFilterField();
+			if(value != null && value.trim().length() > 0)
+				txtFilterField.setText(value);
+			else
+				txtFilterField.setText(null);
+			
 			value = this.widget.getId();
 			if(value != null && value.trim().length() > 0)
 				txtId.setText(value);
@@ -1047,6 +1079,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		txtExternalSource.setText(null);
 		txtDisplayField.setText(null);
 		txtValueField.setText(null);
+		txtFilterField.setText(null);
 		txtId.setText(null);
 		cbRepeat.setSelectedIndex(-1);
 		enableLabelProperties(false);

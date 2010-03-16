@@ -103,7 +103,6 @@ public class QueryBuilderView  extends Composite implements SelectionHandler<Int
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -134,7 +133,6 @@ public class QueryBuilderView  extends Composite implements SelectionHandler<Int
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}
@@ -157,7 +155,6 @@ public class QueryBuilderView  extends Composite implements SelectionHandler<Int
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}	
 			}

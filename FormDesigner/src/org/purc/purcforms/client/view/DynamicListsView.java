@@ -298,7 +298,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		//Populate the list of parent options from a dynamic selection list question.
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 			DynamicOptionDef options = formDef.getChildDynamicOptions(parentQuestionDef.getId());
-			if(options != null){
+			if(options != null && options.getParentToChildOptions() != null){
 				Iterator<Entry<Integer,List<OptionDef>>> iterator = options.getParentToChildOptions().entrySet().iterator();
 				while(iterator.hasNext()){
 					Entry<Integer,List<OptionDef>> entry = iterator.next();

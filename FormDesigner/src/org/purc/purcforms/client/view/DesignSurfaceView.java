@@ -624,6 +624,10 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setValueField(value);
+		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setFilterField(value);
 
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDTH);
 		if(value != null && value.trim().length() > 0)
@@ -1132,7 +1136,6 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 						FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}
@@ -1175,7 +1178,6 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 						FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
-					FormUtil.dlg.hide();
 					FormUtil.displayException(ex);
 				}
 			}

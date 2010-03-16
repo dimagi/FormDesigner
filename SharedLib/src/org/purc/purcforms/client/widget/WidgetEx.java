@@ -5,8 +5,6 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
@@ -61,6 +59,7 @@ public class WidgetEx extends Composite{
 	public static final String WIDGET_PROPERTY_EXTERNALSOURCE = "ExternalSource";
 	public static final String WIDGET_PROPERTY_DISPLAYFIELD = "DisplayField";
 	public static final String WIDGET_PROPERTY_VALUEFIELD = "ValueField";
+	public static final String WIDGET_PROPERTY_FILTERFIELD = "FilterField";
 	public static final String WIDGET_PROPERTY_TABINDEX = "TabIndex";
 	public static final String WIDGET_PROPERTY_REPEATED = "Repeated";
 	public static final String WIDGET_PROPERTY_TEXT_ALIGN = "TextAlign";
@@ -97,6 +96,7 @@ public class WidgetEx extends Composite{
 	protected String externalSource;
 	protected String displayField;
 	protected String valueField;
+	protected String filterField;
 	
 	protected boolean isRepeated = false;
 	
@@ -146,6 +146,7 @@ public class WidgetEx extends Composite{
 		this.externalSource = widget.externalSource;
 		this.displayField = widget.displayField;
 		this.valueField = widget.valueField;
+		this.filterField = widget.filterField;
 		this.isRepeated = widget.isRepeated;
 		this.id = widget.id;
 		
@@ -721,6 +722,14 @@ public class WidgetEx extends Composite{
 		this.valueField = valueField;
 	}
 	
+	public String getFilterField() {
+		return filterField;
+	}
+
+	public void setFilterField(String filterField) {
+		this.filterField = filterField;
+	}
+
 	public String getBinding(){
 		return binding;
 	}

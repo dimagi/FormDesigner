@@ -485,7 +485,10 @@ public class FormDef implements Serializable{
 		if(calculations != null){
 			for(int i=0; i<calculations.size(); i++){
 				Calculation calculation = (Calculation)calculations.elementAt(i);
-				calculation.updateDoc(this);
+				if(getQuestion(calculation.getQuestionId()) == null) //possibly question deleted
+					calculations.remove(i);
+				else
+					calculation.updateDoc(this);
 			}
 		}
 	}
@@ -1249,6 +1252,15 @@ public class FormDef implements Serializable{
 				newDynOptionDef.refresh(this, formDef, newDynOptionDef, oldDynOptionDef,newParentQtnDef,oldParentQtnDef,newChildQtnDef,oldChildQtnDef);
 				dynamicOptions.put(new Integer(newParentQtnDef.getId()),newDynOptionDef);
 			}
+		}
+		
+		//add calculations for questions that still exist.
+		calculations = new Vector();
+		for(int index = 0; index < formDef.getCalculationCount(); index++){
+			Calculation calculation = formDef.getCalculationAt(index);
+			QuestionDef questionDef = getQuestion(formDef.getQuestion(calculation.getQuestionId()).getVariableName());
+			if(questionDef != null)
+				addCalculation(new Calculation(questionDef.getId(),calculation.getCalculateExpression()));
 		}
 	}
 

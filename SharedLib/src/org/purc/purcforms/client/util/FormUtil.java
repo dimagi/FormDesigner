@@ -17,6 +17,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
@@ -533,14 +534,29 @@ public class FormUtil {
 
 	public static String getHostPageBaseURL(){
 		//return "http://127.0.0.1:8080/openmrs/";
+		//or http://dev.cell-life.org/openmrs/
 
 		String s = GWT.getHostPageBaseURL();
-
-		int pos = s.lastIndexOf(':');
+		
+		/*int pos = s.lastIndexOf(':');
 		if(pos == -1)
 			return s;
 
 		pos = s.indexOf('/', pos+1);
+		if(pos == -1)
+			return s;
+
+		pos = s.indexOf('/', pos+1);
+		if(pos == -1)
+			return s;
+
+		return s.substring(0,pos+1);*/
+		
+		int pos = s.indexOf("//");
+		if(pos == -1)
+			return s;
+
+		pos = s.indexOf('/', pos+2);
 		if(pos == -1)
 			return s;
 
@@ -604,6 +620,24 @@ public class FormUtil {
 		}
 		//else
 		//	Window.alert("Trapped");
+	}
+	
+	public static void displayReponseError(Response response){
+		dlg.hide();
+		
+		ErrorDialog dialogBox = new ErrorDialog();
+		dialogBox.setText(LocaleText.get("unexpectedFailure"));
+		
+		String errorMessage = response.getHeader("PURCFORMS-ERROR-MESSAGE");
+		if(errorMessage == null || errorMessage.trim().length() == 0)
+			errorMessage = response.getStatusText();
+		
+		dialogBox.setErrorMessage(errorMessage);
+		String stackTrace = "NO STACK TRACE";
+		if(response.getText() != null && response.getText().trim().length() > 0)
+			stackTrace = response.getText().trim();
+		dialogBox.setCallStack(stackTrace);
+		dialogBox.center();
 	}
 
 	/**
@@ -699,8 +733,8 @@ public class FormUtil {
 		return $wnd.initialize();
 	}-*/;
 
-	public static native void searchExternal(String key,String value,com.google.gwt.user.client.Element parentElement, com.google.gwt.user.client.Element textElement, com.google.gwt.user.client.Element valueElement) /*-{
-		return $wnd.searchExternal(key,value,parentElement.parentNode.parentNode,textElement,valueElement);
+	public static native void searchExternal(String key,String value,com.google.gwt.user.client.Element parentElement, com.google.gwt.user.client.Element textElement, com.google.gwt.user.client.Element valueElement, String filterField) /*-{
+		return $wnd.searchExternal(key,value,parentElement.parentNode.parentNode,textElement,valueElement,filterField);
 	}-*/;
 
 	/**

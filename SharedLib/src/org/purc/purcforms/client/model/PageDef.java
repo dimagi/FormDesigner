@@ -35,14 +35,14 @@ public class PageDef implements Serializable{
 
 	/** The xforms label node for this page. */
 	private Element labelNode;
-	
+
 	/** The xforms group node for this page. */
 	private Element groupNode;
 
 	/** The form definition to which this page belongs. */
 	private FormDef parent;
 
-	
+
 	/**
 	 * Constructs a new page.
 	 * 
@@ -153,8 +153,8 @@ public class PageDef implements Serializable{
 	public void setQuestions(Vector questions) {
 		this.questions = questions;
 	}
-	
-	
+
+
 	/**
 	 * Gets the number of questions on this page.
 	 * 
@@ -166,7 +166,7 @@ public class PageDef implements Serializable{
 		return questions.size();
 	}
 
-	
+
 	/**
 	 * Gets the question at a given position on this page.
 	 * 
@@ -178,8 +178,8 @@ public class PageDef implements Serializable{
 			return null;
 		return (QuestionDef)questions.elementAt(index);
 	}
-	
-	
+
+
 	/**
 	 * Adds a question to the page.
 	 * 
@@ -192,7 +192,7 @@ public class PageDef implements Serializable{
 		qtn.setParent(this);
 	}
 
-	
+
 	/**
 	 * Gets a question with a given variable name.
 	 * 
@@ -207,7 +207,7 @@ public class PageDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getVariableName().equals(varName))
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
 			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
 				def = def.getRepeatQtnsDef().getQuestion(varName);
@@ -235,8 +235,8 @@ public class PageDef implements Serializable{
 
 		return null;
 	}
-	
-	
+
+
 	public int getQuestionIndex(String varName){
 		if(questions == null)
 			return -1;
@@ -246,11 +246,11 @@ public class PageDef implements Serializable{
 			if(def.getVariableName().equals(varName))
 				return i;
 		}
-		
+
 		return -1;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given identifier.
 	 * 
@@ -265,7 +265,7 @@ public class PageDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
 			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
 				def = def.getRepeatQtnsDef().getQuestion(id);
@@ -277,13 +277,13 @@ public class PageDef implements Serializable{
 		return null;
 	}
 
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
 
-	
+
 	/**
 	 * Copies a list of questions into this page.
 	 * 
@@ -297,7 +297,7 @@ public class PageDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Removes a question from this page.
 	 * 
@@ -329,7 +329,7 @@ public class PageDef implements Serializable{
 		return questions.removeElement(qtnDef);
 	}
 
-	
+
 	/**
 	 * Removes all questions from this page.
 	 * 
@@ -343,7 +343,7 @@ public class PageDef implements Serializable{
 			removeQuestion((QuestionDef)questions.elementAt(0),formDef);
 	}
 
-	
+
 	/**
 	 * Gets the number of questions on this page.
 	 * 
@@ -355,7 +355,7 @@ public class PageDef implements Serializable{
 		return questions.size();
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in the page.
 	 * 
@@ -365,7 +365,7 @@ public class PageDef implements Serializable{
 		moveQuestionUp(questions,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in a list of questions.
 	 * 
@@ -430,7 +430,7 @@ public class PageDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in the page.
 	 * 
@@ -440,7 +440,7 @@ public class PageDef implements Serializable{
 		moveQuestionDown(questions,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in a list of questions.
 	 * 
@@ -556,7 +556,7 @@ public class PageDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Gets the next question which has been converted to xforms and 
 	 * hence attached to an xforms document node, starting at a given 
@@ -576,7 +576,7 @@ public class PageDef implements Serializable{
 		return (QuestionDef)questions.get(index);
 	}
 
-	
+
 	/**
 	 * Checks if this page contains a particular question.
 	 * 
@@ -587,7 +587,7 @@ public class PageDef implements Serializable{
 		return questions.contains(qtn);
 	}
 
-	
+
 	/**
 	 * Updates the xforms document nodes referenced by this page and all its children.
 	 * 
@@ -626,7 +626,7 @@ public class PageDef implements Serializable{
 
 		for(int k = 0; k < newQuestions.size(); k++){
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
-			
+
 			//We do not update data nodes which deal with attributes.
 			if(questionDef.getDataNode() == null && !questionDef.getVariableName().contains("@")){
 				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
@@ -642,7 +642,7 @@ public class PageDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Gets the first question which is not new, in a given list of questions,
 	 * starting at a given position.
@@ -665,7 +665,7 @@ public class PageDef implements Serializable{
 		return null;
 	}
 
-	
+
 	/**
 	 * Checks if all question on this page are new.
 	 * 
@@ -683,7 +683,7 @@ public class PageDef implements Serializable{
 		return true;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given text.
 	 * 
@@ -716,6 +716,8 @@ public class PageDef implements Serializable{
 		if(pageNo == pageDef.getPageNo())
 			name = pageDef.getName();
 
+		Vector<QuestionDef> orderedQtns = new Vector<QuestionDef>();
+		
 		int count = pageDef.getQuestionCount();
 		for(int index = 0; index < count; index++){
 			QuestionDef qtn = pageDef.getQuestionAt(index);
@@ -723,6 +725,8 @@ public class PageDef implements Serializable{
 			if(questionDef == null)
 				continue; //Possibly this question was deleted on server
 			questionDef.refresh(qtn);
+
+			orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
 			
 			/*int index1 = this.getQuestionIndex(qtn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getQuestionCount() - 1){
@@ -730,9 +734,19 @@ public class PageDef implements Serializable{
 				this.getQuestions().insertElementAt(questionDef, index);
 			}*/
 		}
+
+		//now add the new questions which have just been added by refresh.
+		count = getQuestionCount();
+		for(int index = 0; index < count; index++){
+			QuestionDef questionDef = getQuestionAt(index);
+			if(pageDef.getQuestion(questionDef.getVariableName()) == null)
+				orderedQtns.add(questionDef);
+		}
+		
+		questions = orderedQtns;
 	}
 
-	
+
 	/**
 	 * Moves the question xforms document nodes by one position upwards.
 	 * 
@@ -773,7 +787,7 @@ public class PageDef implements Serializable{
 
 	}
 
-	
+
 	/**
 	 * Updates the xforms instance data nodes referenced by this page's questions.
 	 * 
@@ -787,7 +801,7 @@ public class PageDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
 	}
 
-	
+
 	/**
 	 * Builds the language translation nodes for text in this page and all its children.
 	 * 
@@ -815,7 +829,7 @@ public class PageDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
 	}
 
-	
+
 	/**
 	 * Removes all question change event listeners.
 	 */

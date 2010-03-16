@@ -652,6 +652,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		if(value != null && value.trim().length() > 0)
 			wrapper.setDisplayField(value);
 		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setFilterField(value);
+		
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setId(value);
@@ -819,7 +823,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 			return;
 
 		String xml = XformUtil.getInstanceDataDoc(formDef.getDoc()).toString();
-		xml = FormUtil.formatXml("<?xml version='1.0' encoding='UTF-8' ?> " + xml);
+		xml = FormUtil.formatXml(xml); //"<?xml version='1.0' encoding='UTF-8' ?> " + 
 		submitListener.onSubmit(xml);
 	}
 
@@ -1132,7 +1136,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		childQuestionDef.setOptionList(optionList);
 
-		onValueChanged(childQuestionDef); //do it recursively untill when no more dependent questions.
+		onValueChanged(childQuestionDef); //do it recursively until when no more dependent questions.
 	}
 
 

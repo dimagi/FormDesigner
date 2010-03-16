@@ -14,7 +14,6 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.HasAllMouseHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -35,7 +34,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -603,6 +601,12 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			node.setAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD, value);
 		else
 			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
+		
+		value = getFilterField();
+		if(value != null && value.trim().length() > 0)
+			node.setAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD, value);
+		else
+			node.removeAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD);
 
 		value = getId();
 		if(value != null && value.trim().length() > 0)

@@ -82,7 +82,6 @@ public class FormRunnerEntryPoint implements EntryPoint{
 			});
 		}
 		catch(Exception ex){
-			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
 	}

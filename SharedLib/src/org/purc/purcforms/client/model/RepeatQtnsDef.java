@@ -185,12 +185,26 @@ public class RepeatQtnsDef implements Serializable {
 		if(questions == null || questions2 == null)
 			return;
 		
+		Vector<QuestionDef> orderedQtns = new Vector<QuestionDef>();
+		
 		for(int index = 0; index < questions2.size(); index++){
 			QuestionDef qtn = (QuestionDef)questions2.get(index);
 			QuestionDef questionDef = getQuestion(qtn.getVariableName());
-			if(questionDef != null)
+			if(questionDef != null){
 				questionDef.refresh(qtn);
+				orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
+			}
 		}
+		
+		//now add the new questions which have just been added by refresh.
+		int count = questions.size();
+		for(int index = 0; index < count; index++){
+			QuestionDef questionDef = getQuestionAt(index);
+			if(pepeatQtnsDef.getQuestion(questionDef.getVariableName()) == null)
+				orderedQtns.add(questionDef);
+		}
+		
+		questions = orderedQtns;
 	}
 	
 	

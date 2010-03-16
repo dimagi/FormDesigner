@@ -114,7 +114,6 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			Window.addResizeHandler(this);
 		}
 		catch(Exception ex){
-			FormUtil.dlg.hide();
 			FormUtil.displayException(ex);
 		}
 	}

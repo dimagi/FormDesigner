@@ -473,6 +473,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		if(value != null && value.trim().length() > 0)
 			wrapper.setDisplayField(value);
 		
+		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD);
+		if(value != null && value.trim().length() > 0)
+			wrapper.setFilterField(value);
+		
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setId(value);

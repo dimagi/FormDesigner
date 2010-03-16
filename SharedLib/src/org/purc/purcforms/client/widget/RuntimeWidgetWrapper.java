@@ -269,17 +269,13 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 		((TextBox)widget).addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_TAB)
+					return;
+				
 				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 					questionDef.setAnswer(getTextBoxAnswer());
 
-					//boolean hasErrors = false;
-					//if(panel.getWidgetCount() > 1)
-					//	hasErrors = true;
-
 					isValid();
-
-					//if(hasErrors)
-					//	panel.add(errorImage);
 
 					editListener.onValueChanged((RuntimeWidgetWrapper)panel.getParent());
 				}
@@ -315,10 +311,15 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						return;
 					}
 
+					if(keyCode == KeyCodes.KEY_TAB || keyCode == KeyCodes.KEY_ENTER){
+						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+						return;
+					}
+					
 					Label label = new Label("");
 					label.setVisible(false);
 					panel.add(label);
-					FormUtil.searchExternal(externalSource,String.valueOf(event.getCharCode()), widget.getElement(), label.getElement(), widget.getElement());
+					FormUtil.searchExternal(externalSource,String.valueOf(event.getCharCode()), widget.getElement(), label.getElement(), widget.getElement(),filterField);
 				}
 			}
 		});

@@ -1039,6 +1039,27 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public boolean onMoveToNextWidget(Widget widget) {
 		//TODO Handle tabbing for repeats within the flex table
 		int index = selectedPanel.getWidgetIndex(widget);
+		
+		if(index == -1){
+			if(isRepeated){
+				boolean found = false;
+				for(int row = 0; row < table.getRowCount(); row++){
+					for(int col = 0; col < table.getCellCount(row); col++){
+						if(found){
+							Widget curWidget = table.getWidget(row, col);
+							if(curWidget instanceof RuntimeWidgetWrapper && ((RuntimeWidgetWrapper)curWidget).setFocus())
+								return true;
+						}
+						
+						if(table.getWidget(row, col) == widget)
+							found = true;
+					}
+				}
+			}
+			
+			return false;
+		}
+		
 		return moveToNextWidget(index);
 	}
 

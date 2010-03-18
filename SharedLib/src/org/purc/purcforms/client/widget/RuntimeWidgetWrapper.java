@@ -299,6 +299,11 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						(displayField == null || displayField.trim().length() == 0) &&
 						(valueField == null || valueField.trim().length() == 0) ){
 
+					if(keyCode == KeyCodes.KEY_TAB || keyCode == KeyCodes.KEY_ENTER){
+						//editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
+						return;
+					}
+					
 					((TextBox) event.getSource()).cancelKey(); 
 					while(panel.getWidgetCount() > 1)
 						panel.remove(1);
@@ -308,11 +313,6 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						if(questionDef != null)
 							questionDef.setAnswer(null);
 
-						return;
-					}
-
-					if(keyCode == KeyCodes.KEY_TAB || keyCode == KeyCodes.KEY_ENTER){
-						editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 						return;
 					}
 					

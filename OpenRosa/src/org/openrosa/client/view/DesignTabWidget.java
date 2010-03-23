@@ -2,12 +2,10 @@ package org.openrosa.client.view;
 
 import org.openrosa.client.controller.FormDesignerController;
 import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 

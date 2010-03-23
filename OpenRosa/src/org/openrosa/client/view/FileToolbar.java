@@ -21,7 +21,6 @@ public class FileToolbar extends Composite {
 	private PushButton btnSave;
 	
 	
-
 	public FileToolbar(){
 		setupToolbar();
 		initWidget(panel);

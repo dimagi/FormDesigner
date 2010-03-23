@@ -5,7 +5,6 @@ import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
-import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -22,6 +21,7 @@ public class CenterWidget extends Composite {
 	
 	private XformsTabWidget xformsWidget = new XformsTabWidget();
 	private DesignTabWidget designWidget = new DesignTabWidget();
+	private ItextTabWidget itextWidget = new ItextTabWidget();
 	
 	
 	public CenterWidget() {		
@@ -40,17 +40,14 @@ public class CenterWidget extends Composite {
 	
 	private void initDesignTab(){
 		tabs.add(designWidget, "Design");
-		//FormUtil.maximizeWidget(txtLayoutXml);
 	}
 	
 	private void initXformsTab(){
 		tabs.add(xformsWidget, "Xforms");
-		//FormUtil.maximizeWidget(txtLayoutXml);
 	}
 	
 	private void initItextTab(){
-		tabs.add(new Label(), "Internationalization");
-		//FormUtil.maximizeWidget(txtLayoutXml);
+		tabs.add(itextWidget, "Internationalization");
 	}
 	
 	public void onWindowResized(int width, int height){

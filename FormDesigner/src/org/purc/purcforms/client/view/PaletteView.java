@@ -63,7 +63,7 @@ public class PaletteView extends Composite {
 		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("picture"))));
 		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("videoAudio"))));
 		
-		verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("searchServer"))));
+		//verticalPanel.add(createPaletteWidget(new HTML(LocaleText.get("searchServer"))));
 
 		initWidget(verticalPanel);
 		FormUtil.maximizeWidget(verticalPanel);

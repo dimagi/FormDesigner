@@ -9,6 +9,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.xforms.ItemsetBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
 
@@ -39,7 +40,7 @@ public class FormDef implements Serializable{
 
 	/** The display name of the form. */
 	private String name = ModelConstants.EMPTY_STRING;
-	
+
 	private String formKey = ModelConstants.EMPTY_STRING;
 
 	/** The numeric unique identifier of the form definition. */
@@ -421,7 +422,7 @@ public class FormDef implements Serializable{
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
-		
+
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
 		//If ones want to change the id, he should load the xform as a new form with that id
@@ -1253,7 +1254,7 @@ public class FormDef implements Serializable{
 				dynamicOptions.put(new Integer(newParentQtnDef.getId()),newDynOptionDef);
 			}
 		}
-		
+
 		//add calculations for questions that still exist.
 		calculations = new Vector();
 		for(int index = 0; index < formDef.getCalculationCount(); index++){

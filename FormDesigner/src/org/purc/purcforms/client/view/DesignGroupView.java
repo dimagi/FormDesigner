@@ -1375,8 +1375,8 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			retWidget = addNewPictureSection(null,null,true);
 		else if(text.equals(LocaleText.get("videoAudio")))
 			retWidget = addNewVideoAudioSection(null,null,true);
-		else if(text.equals(LocaleText.get("searchServer")))
-			retWidget = addNewSearchServerWidget(null,null,true);
+		/*else if(text.equals(LocaleText.get("searchServer")))
+			retWidget = addNewSearchServerWidget(null,null,true);*/
 
 		if(retWidget != null){
 			int height = FormUtil.convertDimensionToInt(getHeight());
@@ -1830,7 +1830,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			return;
 
 		DesignWidgetWrapper widget = (DesignWidgetWrapper)selectedDragController.getSelectedWidgetAt(0);
-		if(!(widget.getWrappedWidget() instanceof ListBox || widget.getWrappedWidget() instanceof TextBox))
+		if(!(widget.getWrappedWidget() instanceof ListBox /*|| widget.getWrappedWidget() instanceof TextBox*/))
 			return;
 
 		QuestionDef questionDef = widget.getQuestionDef();
@@ -1848,7 +1848,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		if(widget.getWrappedWidget() instanceof ListBox)
 			addNewRadioButtonSet(questionDef,vertically);
 		else
-			addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
+			;//addNewSearchServerWidget(questionDef.getVariableName(),questionDef.getText(), true);
 
 		//increase height if the last widget is beyond our current y coordinate.
 		int height = FormUtil.convertDimensionToInt(getHeight());
@@ -1864,7 +1864,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 	 * @param select set to true to automatically select the added widget.,
 	 * @return the added widget.
 	 */
-	protected DesignWidgetWrapper addNewSearchServerWidget(String parentBinding, String text, boolean select){
+	/*protected DesignWidgetWrapper addNewSearchServerWidget(String parentBinding, String text, boolean select){
 		DesignGroupWidget repeat = new DesignGroupWidget(images,this);
 		repeat.addStyleName("getting-started-label2");
 		DOM.setStyleAttribute(repeat.getElement(), "height","70"+PurcConstants.UNITS);
@@ -1958,7 +1958,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 		widget.removeStyleName("dragdrop-handle");
 
 		return widget;
-	}
+	}*/
 
 	/**
 	 * Adds a new group box widget.

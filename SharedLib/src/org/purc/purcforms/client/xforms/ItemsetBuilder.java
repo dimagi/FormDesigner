@@ -32,8 +32,8 @@ public class ItemsetBuilder {
 	private ItemsetBuilder(){
 
 	}
-	
-	
+
+
 	/**
 	 * Converts a dynamic option definition object to an xform.
 	 * 
@@ -60,32 +60,45 @@ public class ItemsetBuilder {
 		instanceNode.appendChild(dataNode);
 		dynamicOptionDef.setDataNode(dataNode);
 
-		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
-		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
-		while(iterator.hasNext()){
-			Entry<Integer,List<OptionDef>> entry = iterator.next();
-			List<OptionDef> list = entry.getValue();
-
-			OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
-			if(parentOptionDef == null){
-				//Parent question options are not yet loaded.
-				modelNode.removeChild(instanceNode);
-				return false;//continue;
-			}
-
-			for(int index = 0; index < list.size(); index++){
-				OptionDef optionDef = list.get(index);
-				addNewDynamicOption(doc, optionDef, parentOptionDef, dataNode);
-				questionDef.addOption(optionDef,false);
-			}
-		}
-
-		//Sometimes the FirstOptionNode can be null. eg when a form is opened with a type
+		//Some times the FirstOptionNode can be null. eg when a form is opened with a type
 		//other than single select dynamic and then changed to it.
 		if(questionDef.getFirstOptionNode() == null)
 			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
 		Element itemSetNode = questionDef.getFirstOptionNode();
 		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+
+		
+		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
+		if(parentToChildOptions != null){
+			Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<Integer,List<OptionDef>> entry = iterator.next();
+				List<OptionDef> list = entry.getValue();
+
+				OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+				if(parentOptionDef == null){
+					//Parent question options are not yet loaded.
+					//modelNode.removeChild(instanceNode);
+					return false;//continue;
+				}
+
+				for(int index = 0; index < list.size(); index++){
+					OptionDef optionDef = list.get(index);
+					addNewDynamicOption(doc, optionDef, parentOptionDef, dataNode);
+					
+					//TODO The line below makes the application hang when one clicks
+					//the submit button on a not yet saved form.
+					//questionDef.addOption(optionDef,false); //Bug increasing list we are iterating.
+				}
+			}
+		}
+
+		//Some times the FirstOptionNode can be null. eg when a form is opened with a type
+		//other than single select dynamic and then changed to it.
+		/*if(questionDef.getFirstOptionNode() == null)
+			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
+		Element itemSetNode = questionDef.getFirstOptionNode();
+		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");*/
 
 		return true;
 	}
@@ -183,6 +196,9 @@ public class ItemsetBuilder {
 	 */
 	public static void updateDynamicOptionDef(FormDef formDef, QuestionDef parentQuestionDef, DynamicOptionDef dynamicOptionDef){
 		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
+		if(parentToChildOptions == null)
+			return;
+		
 		Iterator<Entry<Integer,List<OptionDef>>> iterator = parentToChildOptions.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<Integer,List<OptionDef>> entry = iterator.next();

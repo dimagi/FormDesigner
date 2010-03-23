@@ -233,6 +233,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 		/*//operatorHyperlink.setDataType(questionDef.getDataType());
 		setOperatorDataType(questionDef);*/
 
+		setOperatorDataType(questionDef);
+		
 		if(condition != null){
 			operator = condition.getOperator();
 			function = condition.getFunction();

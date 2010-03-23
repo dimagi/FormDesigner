@@ -84,7 +84,8 @@ public class ConstraintBuilder {
 		if(questionDef != null){			
 			String value = " '" + condition.getValue() + "'";
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || 
-					questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT || condition.getFunction() == ModelConstants.FUNCTION_LENGTH)
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT || condition.getFunction() == ModelConstants.FUNCTION_LENGTH ||
+					condition.getValue().endsWith("()"))
 				value = " " + condition.getValue();
 
 			constraint = ". ";

@@ -285,8 +285,16 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		//Populate the list of parent options from a single select question.
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
-			if(!(parentQuestionDef.getOptionCount() > 0))
+			if(!(parentQuestionDef.getOptionCount() > 0)){
+				
+				//we are creating new DynamicOptionDef() because we want to allow
+				//one specify type to be single select dynamic without specifying any
+				//options for cases where they will be got from the server using the
+				//external source widget filter property.
+				dynamicOptionDef = new DynamicOptionDef();
+				dynamicOptionDef.setQuestionId(questionDef.getId());
 				return;
+			}
 
 			List options = parentQuestionDef.getOptions();
 			for(int i=0; i<options.size(); i++){
@@ -297,6 +305,16 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		//Populate the list of parent options from a dynamic selection list question.
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+			
+			if(dynamicOptionDef == null){
+				//we are creating new DynamicOptionDef() because we want to allow
+				//one specify type to be single select dynamic without specifying any
+				//options for cases where they will be got from the server using the
+				//external source widget filter property.
+				dynamicOptionDef = new DynamicOptionDef();
+				dynamicOptionDef.setQuestionId(questionDef.getId());
+			}
+			
 			DynamicOptionDef options = formDef.getChildDynamicOptions(parentQuestionDef.getId());
 			if(options != null && options.getParentToChildOptions() != null){
 				Iterator<Entry<Integer,List<OptionDef>>> iterator = options.getParentToChildOptions().entrySet().iterator();
@@ -329,7 +347,12 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * that is being edited on this widget.
 	 */
 	public void updateDynamicLists(){
-		if(dynamicOptionDef == null || dynamicOptionDef.size() == 0){
+		//dynamicOptionDef.size() == 0 is commented out because we want to allow
+		//one specify type to be single select dynamic without specifying any
+		//options for cases where they will be got from the server using the
+		//external source widget filter property.
+		
+		if(dynamicOptionDef == null /*|| dynamicOptionDef.size() == 0*/){
 			if(parentQuestionDef != null)
 				formDef.removeDynamicOptions(parentQuestionDef.getId());
 			return;

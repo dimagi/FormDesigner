@@ -437,6 +437,14 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			handlerReg1 = txtValue1.addKeyPressHandler(keyboardListener1);
 			handlerReg2 = txtValue2.addKeyPressHandler(keyboardListener2);
 		}
+		else if(function == ModelConstants.FUNCTION_LENGTH){
+			keyboardListener1 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue1, false);
+			keyboardListener2 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue2, false );
+
+			txtValue1.addKeyPressHandler(keyboardListener1);
+			txtValue2.addKeyPressHandler(keyboardListener2);
+		}
+
 	}
 
 	private boolean InArray(String[] array, String item){

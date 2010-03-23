@@ -77,7 +77,14 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	
 	protected HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap = new HashMap<QuestionDef,List<RuntimeWidgetWrapper>>();
 	
-
+	/**
+	 * A map of filtered single select dynamic questions and their corresponding 
+	 * non label widgets. Only questions of single select dynamic which have the
+	 * widget filter property set are put in this list
+	 */
+	protected HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap = new HashMap<QuestionDef,RuntimeWidgetWrapper>();
+	
+	
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.formDef = formDef;
@@ -130,7 +137,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	public void loadWidgets(FormDef formDef,NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets,
-			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings, HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap){
+			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings, HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap,
+			HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap){
 		
 		HashMap<Integer,RuntimeWidgetWrapper> widgetMap = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
@@ -140,7 +148,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				continue;
 			try{
 				Element node = (Element)nodes.item(i);
-				int index = loadWidget(formDef,node,widgetMap,externalSourceWidgets,calcQtnMappings, calcWidgetMap);
+				int index = loadWidget(formDef,node,widgetMap,externalSourceWidgets,calcQtnMappings, calcWidgetMap, filtDynOptWidgetMap);
 				if(index > maxTabIndex)
 					maxTabIndex = index;
 			}
@@ -247,7 +255,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	private int loadWidget(FormDef formDef, Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets,
-			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings,HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap){
+			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings,HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap,
+			HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap){
 		
 		RuntimeWidgetWrapper parentWrapper = null;
 
@@ -408,7 +417,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				repeated = (value.equals(WidgetEx.REPEATED_TRUE_VALUE));
 
 			widget = new RuntimeGroupWidget(images,formDef,repeatQtnsDef,editListener,repeated);
-			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets,calcQtnMappings,calcWidgetMap);
+			((RuntimeGroupWidget)widget).loadWidgets(formDef,node.getChildNodes(),externalSourceWidgets,calcQtnMappings,calcWidgetMap,filtDynOptWidgetMap);
 			/*getLabelMap(((RuntimeGroupWidget)widget).getLabelMap());
 			getLabelText(((RuntimeGroupWidget)widget).getLabelText());
 			getLabelReplaceText(((RuntimeGroupWidget)widget).getLabelReplaceText());
@@ -439,20 +448,6 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		//RuntimeWidgetWrapper wrapper = new RuntimeWidgetWrapper(widget,images.error(),editListener);
 		boolean loadWidget = true;
 
-		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
-			if(binding != null && binding.trim().length() > 0){
-				questionDef = formDef.getQuestion(binding);
-				if(questionDef != null)
-					questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
-			}
-		}
-
-		if(questionDef != null){
-			wrapper.setQuestionDef(questionDef,false);
-			ValidationRule validationRule = formDef.getValidationRule(questionDef);
-			wrapper.setValidationRule(validationRule);
-		}
-
 		String value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HELPTEXT);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setTitle(value);
@@ -480,6 +475,27 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setId(value);
+		
+		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
+			if(binding != null && binding.trim().length() > 0){
+				questionDef = formDef.getQuestion(binding);
+				if(questionDef != null)
+					questionDef.setAnswer(questionDef.getDefaultValue()); //Just incase we are refreshing and had already set the answer
+			}
+		}
+
+		if(questionDef != null){
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+				questionDef.setOptions(null); //may have been set by the preview
+				//if(wrapper.getWrappedWidget() instanceof ListBox || wrapper.getWrappedWidget() instanceof TextBox)
+				if(wrapper.getFilterField() != null && wrapper.getFilterField().trim().length() > 0)
+					filtDynOptWidgetMap.put(questionDef, wrapper);
+			}
+			
+			wrapper.setQuestionDef(questionDef,false);
+			ValidationRule validationRule = formDef.getValidationRule(questionDef);
+			wrapper.setValidationRule(validationRule);
+		}
 		
 		if(parentBinding != null)
 			wrapper.setParentBinding(parentBinding);
@@ -1037,10 +1053,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	}
 
 	public boolean onMoveToNextWidget(Widget widget) {
-		//TODO Handle tabbing for repeats within the flex table
 		int index = selectedPanel.getWidgetIndex(widget);
 		
 		if(index == -1){
+			//Handle tabbing for repeats within the flex table
 			if(isRepeated){
 				boolean found = false;
 				for(int row = 0; row < table.getRowCount(); row++){
@@ -1088,6 +1104,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	
 	public HashMap<QuestionDef,List<RuntimeWidgetWrapper>> getCalcWidgetMap(){
 		return calcWidgetMap;
+	}
+	
+	public HashMap<QuestionDef,RuntimeWidgetWrapper> getFiltDynOptWidgetMap(){
+		return filtDynOptWidgetMap;
 	}
 
 	public HashMap<Label,String> getLabelText(){

@@ -183,7 +183,7 @@ public class ItemsetParser {
 
 		//Get the dynamic option definition instance node.
 		Element instanceNode = XformUtil.getInstanceNode(formDef.getModelNode(), instanceId);
-		assert(instanceNode != null);
+		//assert(instanceNode != null);
 		if(instanceNode == null)
 			return; //This can only be a bug
 		

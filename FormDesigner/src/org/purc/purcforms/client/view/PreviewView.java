@@ -3,7 +3,6 @@ package org.purc.purcforms.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.purc.purcforms.client.CenterPanel;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.Toolbar;
 import org.purc.purcforms.client.controller.ICenterPanel;
@@ -180,7 +179,7 @@ public class PreviewView extends FormRunnerView {
 					List<RuntimeWidgetWrapper> externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
 					if(Context.isOfflineMode())
 						;//externalSourceWidgets = null;
-					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),centerPanel.getJavaScriptSource(),externalSourceWidgets);
+					loadForm(centerPanel.getFormDef(), designSurfaceView.getLayoutXml(),centerPanel.getJavaScriptSource(),externalSourceWidgets,true);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

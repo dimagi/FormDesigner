@@ -127,6 +127,10 @@ public class FormUtil {
 		textBox.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				char keyCode = event.getCharCode();
+				
+				if( keyCode == '%' || keyCode == '&' || keyCode == '(')
+					((TextBox) event.getSource()).cancelKey();
+				
 				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyCodes.KEY_TAB)
 						&& (keyCode != (char) KeyCodes.KEY_BACKSPACE) && (keyCode != (char) KeyCodes.KEY_LEFT)
 						&& (keyCode != (char) KeyCodes.KEY_UP) && (keyCode != (char) KeyCodes.KEY_RIGHT)
@@ -166,6 +170,10 @@ public class FormUtil {
 		return new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				char keyCode = event.getCharCode();
+				
+				if( keyCode == '%' || keyCode == '&' || keyCode == '(')
+					((TextBox) event.getSource()).cancelKey();
+
 				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyCodes.KEY_TAB)
 						&& (keyCode != (char) KeyCodes.KEY_BACKSPACE) && (keyCode != (char) KeyCodes.KEY_LEFT)
 						&& (keyCode != (char) KeyCodes.KEY_UP) && (keyCode != (char) KeyCodes.KEY_RIGHT)

@@ -8,6 +8,12 @@ public class ItextModel extends BaseModel {
 		
 	}
 	
+	public ItextModel(String id, String defaultVal, String english){
+		setId(id);
+		setDefault(defaultVal);
+		setEnglish(english);
+	}
+	
 	public void setId(String id) {
         set("id", id);
     }

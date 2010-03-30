@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="FormRunner" default="dev" basedir=".">
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="../../gwt-2.0.0" />
+  <property name="gwt.sdk" location="../../gwt-2.0.3" />
 
   <!-- SWT on Mac requires the -XstartOFirstThreadFlag. -->
   <condition property="XstartOnFirstThreadFlag" value="-XstartOnFirstThread"

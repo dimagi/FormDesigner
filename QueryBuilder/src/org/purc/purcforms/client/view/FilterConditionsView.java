@@ -44,8 +44,8 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 
 
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private AddConditionHyperlink addConditionLink = new AddConditionHyperlink(LocaleText.get("clickToAddNewCondition"),null,1);
-	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null,1);
+	private AddConditionHyperlink addConditionLink = new AddConditionHyperlink(LocaleText.get("clickToAddNewCondition"),"",1);
+	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"",1);
 	private ConditionActionHyperlink actionHyperlink;
 
 	private FormDef formDef;
@@ -61,7 +61,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 
-		actionHyperlink = new ConditionActionHyperlink("<>",null,false,1,addConditionLink,this);
+		actionHyperlink = new ConditionActionHyperlink("<>","",false,1,addConditionLink,this);
 
 		horizontalPanel.add(actionHyperlink);
 		horizontalPanel.add(new Label("Choose records where")); //LocaleText.get("when")
@@ -116,7 +116,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 			index = verticalPanel.getWidgetIndex(((ConditionActionHyperlink)sender).getAddConditionHyperlink().getParent());
 
 		AddConditionHyperlink addConditionLink = new AddConditionHyperlink(LocaleText.get("clickToAddNewCondition"),null,depth);
-		ConditionActionHyperlink actionHyperlink = new ConditionActionHyperlink("<>",null,true,depth,addConditionLink,this);
+		ConditionActionHyperlink actionHyperlink = new ConditionActionHyperlink("<>","",true,depth,addConditionLink,this);
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
@@ -125,7 +125,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		horizontalPanel.add(new CheckBox());
 		horizontalPanel.add(actionHyperlink);
 
-		GroupHyperlink groupHyperlink = new GroupHyperlink(operator != null ? operator : GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,null,depth);
+		GroupHyperlink groupHyperlink = new GroupHyperlink(operator != null ? operator : GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"",depth);
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
 

@@ -68,6 +68,26 @@ public class XformParserUtil {
 				return ModelConstants.OPERATOR_EQUAL;
 			return ModelConstants.OPERATOR_NOT_EQUAL;
 		}
+		else if(expression.indexOf("not(starts-with") > 0){
+			if(XformBuilderUtil.isPositiveAction(action))
+				return ModelConstants.OPERATOR_NOT_START_WITH;
+			return ModelConstants.OPERATOR_STARTS_WITH;
+		}
+		else if(expression.indexOf("starts-with") > 0){
+			if(XformBuilderUtil.isPositiveAction(action))
+				return ModelConstants.OPERATOR_STARTS_WITH;
+			return ModelConstants.OPERATOR_NOT_START_WITH;
+		}
+		else if(expression.indexOf("not(contains") > 0){
+			if(XformBuilderUtil.isPositiveAction(action))
+				return ModelConstants.OPERATOR_NOT_CONTAIN;
+			return ModelConstants.OPERATOR_CONTAINS;
+		}
+		else if(expression.indexOf("contains") > 0){
+			if(XformBuilderUtil.isPositiveAction(action))
+				return ModelConstants.OPERATOR_CONTAINS;
+			return ModelConstants.OPERATOR_NOT_CONTAIN;
+		}
 
 		return ModelConstants.OPERATOR_NULL;
 	}
@@ -124,6 +144,25 @@ public class XformParserUtil {
 			return pos;
 
 		pos = expression.lastIndexOf('=');
+		if(pos > 0)
+			return pos;
+		
+		//the order of the code below should not be changed as for example 'starts with' can be taken
+		//even when condition is 'not(starts-with'
+		
+		pos = expression.lastIndexOf("not(starts-with");
+		if(pos > 0)
+			return pos;
+		
+		pos = expression.lastIndexOf("starts-with");
+		if(pos > 0)
+			return pos;
+		
+		pos = expression.lastIndexOf("not(contains");
+		if(pos > 0)
+			return pos;
+		
+		pos = expression.lastIndexOf("contains");
 		if(pos > 0)
 			return pos;
 

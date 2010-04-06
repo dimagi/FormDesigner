@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="OpenRosa" default="build" basedir=".">
+<project name="OpenRosa" default="gwtc" basedir=".">
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="../../gwt-2.0.3" />
 
@@ -65,9 +65,7 @@
 
   <target name="hosted" depends="devmode" description="Run development mode (NOTE: the 'hosted' target is deprecated)" />
 
-  <target name="build" depends="gwtc" description="Build this project" />
-
-  <target name="war" depends="build" description="Create a war file">
+  <target name="war" depends="gwtc" description="Create a war file">
     <zip destfile="FormDesigner.war" basedir="war"/>
   </target>
 

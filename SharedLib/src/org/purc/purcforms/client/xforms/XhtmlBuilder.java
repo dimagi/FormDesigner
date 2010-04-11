@@ -23,19 +23,17 @@ public class XhtmlBuilder {
 
 	}
 	
-	
 	/**
-	 * Converts a form definition object to XHTML.
+	 * Converts a form definition object to an XHTML document object.
 	 * 
 	 * @param formDef the form definition object.
-	 * @return the xhtml.
+	 * @return the xhtml document object.
 	 */
-	public static String fromFormDef2Xhtml(FormDef formDef){
+	public static Document fromFormDef2XhtmlDoc(FormDef formDef){
 		Document prevdoc = formDef.getDoc();
 
 		Document doc = XMLParser.createDocument();
 		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
-		formDef.setDoc(doc);
 
 		Element htmlNode = doc.createElement("html");
 		formDef.setXformsNode(htmlNode);
@@ -66,7 +64,19 @@ public class XhtmlBuilder {
 		XformBuilder.buildXform(formDef,doc,bodyNode,modelNode);
 
 		XformUtil.copyModel(prevdoc,doc);
-
+		
+		return doc;
+	}
+	
+	/**
+	 * Converts a form definition object to XHTML.
+	 * 
+	 * @param formDef the form definition object.
+	 * @return the xhtml.
+	 */
+	public static String fromFormDef2Xhtml(FormDef formDef){
+		Document doc = fromFormDef2XhtmlDoc(formDef);
+		formDef.setDoc(doc);
 		return XmlUtil.fromDoc2String(doc);
 	}
 }

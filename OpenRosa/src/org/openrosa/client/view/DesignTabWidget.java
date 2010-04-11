@@ -2,6 +2,7 @@ package org.openrosa.client.view;
 
 import org.openrosa.client.controller.FormDesignerController;
 import org.purc.purcforms.client.PurcConstants;
+import org.purc.purcforms.client.model.FormDef;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -36,10 +37,6 @@ public class DesignTabWidget extends Composite {
 
 	/** The coordinator for execution of commands between the menu and tool bar, left and center panel. */
 	private FormDesignerController controller = new FormDesignerController(centerPanel,leftPanel);
-
-
-	/** The tool bar widget. */
-	private Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller);
 
 	/** The splitter between the left and center panel. */
 	private HorizontalSplitPanel hsplitClient;
@@ -117,5 +114,12 @@ public class DesignTabWidget extends Composite {
 			centerPanel.onVerticalResize();
 		}
 	}
-
+	
+	public void loadForm(FormDef formDef){
+		leftPanel.loadForm(formDef);
+	}
+	
+	public void addNewForm(){
+		leftPanel.addNewForm();
+	}
 }

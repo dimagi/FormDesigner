@@ -370,7 +370,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				s = s.replace("(", "");
 				s = s.replace("!", "");
 				s = s.replace("&", "");
-				s = s.replace(".", "");
+				//s = s.replace(".", ""); //Looks like this is an allowed character in xml node names.
 				s = s.replace("'", "");
 				s = s.replace("\"", "");
 				s = s.replace("$", "");

@@ -1,1 +1,0 @@
-@java -Xmx256M -cp "%~dp0\src;%~dp0\bin;%~dp0/../SharedLib/src;C:/gwt-windows-1.5.3/gwt-user.jar;%~dp0/../SharedLib/lib/gwt-datepicker-r29.jar;C:/gwt-windows-1.5.3/gwt-dev-windows.jar" com.google.gwt.dev.GWTShell -out "%~dp0\www" %* org.purc.purcforms.QueryBuilder/QueryBuilder.html

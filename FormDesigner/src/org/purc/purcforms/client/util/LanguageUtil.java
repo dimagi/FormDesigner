@@ -70,7 +70,7 @@ public class LanguageUtil {
 		return null;
 	}
 
-	private static String translate(Document doc, Node parent){
+	public static String translate(Document doc, Node parent){
 		NodeList nodes = parent.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node node = nodes.item(index);

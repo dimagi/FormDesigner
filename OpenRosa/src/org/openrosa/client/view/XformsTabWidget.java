@@ -46,4 +46,12 @@ public class XformsTabWidget extends Composite {
 	public void adjustHeight(String height){
 		txtXforms.setHeight(height);
 	}
+	
+	public void setXform(String xml){
+		txtXforms.setText(xml);
+	}
+	
+	public String getXform(){
+		return txtXforms.getText();
+	}
 }

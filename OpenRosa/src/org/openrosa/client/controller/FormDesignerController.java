@@ -385,9 +385,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					xml = FormDesignerUtil.formatXml(xml);
 
 					formDef.setXformXml(xml);
-					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+					/*centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
 					centerPanel.buildLayoutXml();
-					//formDef.setLayout(centerPanel.getLayoutXml());
+					formDef.setLayout(centerPanel.getLayoutXml());
 
 					centerPanel.saveLanguageText(false);
 					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
@@ -399,15 +399,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 					boolean saveLocaleText = false;
 					if(formSaveListener != null)
-						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());
+						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());*/
 
 					if(isOfflineMode() || formSaveListener != null)
 						FormUtil.dlg.hide();
 
 					//Save text for the current language
-					if(saveLocaleText)
-						saveTheLanguageText(false,false);
-					//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
+					//if(saveLocaleText)
+					//	saveTheLanguageText(false,false);
 				}
 				catch(Exception ex){
 					FormUtil.dlg.hide();

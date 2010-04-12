@@ -73,11 +73,11 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	/** Index for the model xml tab. */
 	private int SELECTED_INDEX_MODEL_XML = 7;
 
-	private boolean showXformsSource = true;
-	private boolean showJavaScriptSource = true;
-	private boolean showLayoutXml = true;
-	private boolean showLanguageXml = true;
-	private boolean showModelXml = true;
+	private boolean showXformsSource = false;
+	private boolean showJavaScriptSource = false;
+	private boolean showLayoutXml = false;
+	private boolean showLanguageXml = false;
+	private boolean showModelXml = false;
 
 
 	/**
@@ -690,6 +690,9 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			txtLanguageXml.setText(FormDesignerUtil.formatXml(txtLanguageXml.getText()));
 	}
 
+	/**
+	 * Modifies the FormDef object to reflect any changes made by the user.
+	 */
 	public void commitChanges(){
 		propertiesView.commitChanges();
 	}

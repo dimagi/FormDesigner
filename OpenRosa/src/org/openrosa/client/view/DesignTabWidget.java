@@ -52,7 +52,7 @@ public class DesignTabWidget extends Composite {
 		leftPanel.setFormDesignerListener(controller);
 
 		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
-
+		
 		initDesigner();  
 		centerPanel.setFormChangeListener(leftPanel.getFormChangeListener());
 	}
@@ -121,5 +121,9 @@ public class DesignTabWidget extends Composite {
 	
 	public void addNewForm(){
 		leftPanel.addNewForm();
+	}
+	
+	public void commitChanges(){
+		centerPanel.commitChanges();
 	}
 }

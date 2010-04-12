@@ -23,6 +23,6 @@ public class ItextModel extends BaseModel {
     }
     
     public void setEnglish(String english) {
-        set("english", english);
+        set("en", english);
     }
 }

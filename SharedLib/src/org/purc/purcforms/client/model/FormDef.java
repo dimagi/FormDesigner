@@ -1322,11 +1322,6 @@ public class FormDef implements Serializable{
 				while(iterator.hasNext())
 					iterator.next().getValue().buildLanguageNodes(this, rootNode);
 			}
-
-			/*XPathExpression xpls = new XPathExpression(this.doc, "xforms/model/instance/newform1"); //"/xforms/model/instance/newform1"
-			Vector result = xpls.getResult();
-			if(result.size() > 0)
-				System.out.println(result.get(0));*/
 		}
 
 		return rootNode;

@@ -36,7 +36,7 @@ public class XhtmlBuilder {
 		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 
 		Element htmlNode = doc.createElement("html");
-		formDef.setXformsNode(htmlNode);
+		//formDef.setXformsNode(htmlNode);
 
 		htmlNode.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS, XformConstants.NAMESPACE_XFORMS);
@@ -61,6 +61,8 @@ public class XhtmlBuilder {
 		Element modelNode =  doc.createElement(XformConstants.NODE_NAME_MODEL);
 		headNode.appendChild(modelNode);
 
+		//we do not want to lose anything that the model could have had which we do not build when
+		//creating an xform from scratch
 		XformBuilder.buildXform(formDef,doc,bodyNode,modelNode);
 
 		XformUtil.copyModel(prevdoc,doc);
@@ -77,6 +79,8 @@ public class XhtmlBuilder {
 	public static String fromFormDef2Xhtml(FormDef formDef){
 		Document doc = fromFormDef2XhtmlDoc(formDef);
 		formDef.setDoc(doc);
+		formDef.setXformsNode(doc.getDocumentElement());
+		
 		return XmlUtil.fromDoc2String(doc);
 	}
 }

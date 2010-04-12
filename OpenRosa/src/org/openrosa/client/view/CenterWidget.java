@@ -5,6 +5,7 @@ import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.ITextUtil;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -91,9 +92,25 @@ public class CenterWidget extends Composite implements IFileListener {
 		String xml = null;
 		FormDef formDef = Context.getFormDef();
 		if(formDef != null){
-			Document doc = XhtmlBuilder.fromFormDef2XhtmlDoc(formDef);
+			designWidget.commitChanges();
+			
+			//TODO need to solve bug when opened forms do not reflect changes in the instance data node names.
+			//This is caused by copying a new model during the xhtml conversion
+			Document doc = formDef.getDoc();
+			
+			if(doc != null)
+				formDef.updateDoc(false);
+			else{
+				doc = XhtmlBuilder.fromFormDef2XhtmlDoc(formDef);
+				formDef.setDoc(doc);
+				formDef.setXformsNode(doc.getDocumentElement());
+			}
+			
+			ITextUtil.updateItextBlock(doc,formDef);
+			
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 			doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+			
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(doc));
 		}
 

@@ -58,9 +58,19 @@ public class ConstraintBuilder {
 
 		String constratint = "";
 		for(int i=0; i<conditions.size(); i++){
+			
+			Condition condition  = (Condition)conditions.elementAt(i);
+			
+			if(condition.getValue() == null && conditions.size() == 1){
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
+				formDef.removeValidationRule(rule);
+				return; //This could happen if say data type changed from text to single select.
+			}
+			
 			if(constratint.length() > 0)
 				constratint += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
-			constratint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,ModelConstants.ACTION_ENABLE,questionDef);
+			constratint += fromValidationRuleCondition2Xform(condition,formDef,ModelConstants.ACTION_ENABLE,questionDef);
 		}
 
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT, constratint);

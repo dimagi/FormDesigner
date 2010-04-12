@@ -83,7 +83,10 @@ public class XformConstants {
 	public static final String ATTRIBUTE_NAME_READONLY = "readonly";
 	public static final String ATTRIBUTE_NAME_RELEVANT = "relevant";
 	public static final String ATTRIBUTE_NAME_CONSTRAINT = "constraint";
-	public static final String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
+	
+	//no longer final because we need api users to overwrite it, since its not part of the xforms standard.
+	public static /*final*/ String ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "message";
+	
 	public static final String ATTRIBUTE_NAME_REQUIRED = "required";
 	public static final String ATTRIBUTE_NAME_CALCULATE = "calculate";
 	public static final String ATTRIBUTE_NAME_TYPE = "type";

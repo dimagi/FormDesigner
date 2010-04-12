@@ -10,6 +10,7 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -87,6 +88,9 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 			RootPanel.getBodyElement().getStyle().setProperty("display", "");
 
 			loadLocales();
+			
+			//replace constraint message with JR custom name.
+			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "jr:constraintMsg";
 			
 			designer = new FormDesignerWidget(true,true);
 			

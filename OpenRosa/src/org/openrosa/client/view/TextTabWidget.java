@@ -26,22 +26,21 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	private EditorGrid<ItextModel> grid;
-	ContentPanel contentPanel = new ContentPanel();
-
+	private ContentPanel contentPanel = new ContentPanel();
+	
 
 	public TextTabWidget(){
-		// create column config - defines the column in the grid
+		
 		List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
 
-		// create audit fields
-		ColumnConfig formId = new ColumnConfig("id", "Id", 50);
+		ColumnConfig xpath = new ColumnConfig("xpath", "Xpath", 5);
+		xpath.setHidden(true);
+		configs.add(xpath);
+		
+		ColumnConfig formId = new ColumnConfig("id", "Id", 200);
 		configs.add(formId);
 		TextField<String> text = new TextField<String>();
 		formId.setEditor(new CellEditor(text));
-
-		ColumnConfig def = new ColumnConfig("default", "Default", 125);
-        configs.add(def);
-        def.setEditor(new CellEditor(new TextField<String>()));
 
 		List<Locale> locales = Context.getLocales();
 		if(locales != null){
@@ -54,24 +53,24 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 		ColumnModel columnModel = new ColumnModel(configs);
 
-		ListStore<ItextModel> list = new ListStore<ItextModel>();
-		list.add(new ItextModel("1","Test1","Test6"));
-		list.add(new ItextModel("1","Test2","Test7"));
-		list.add(new ItextModel("1","Test3","Test8"));
-		list.add(new ItextModel("1","Test4","Test9"));
-		list.add(new ItextModel("1","Test5","Test10"));
-
-		grid = new EditorGrid<ItextModel>(list, columnModel);
+		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), columnModel);
 		grid.setBorders(true);
 		grid.setStripeRows(true);
-		//grid.getView().setForceFit(true);
-		//grid.getView().setAutoFill(true);       
 
 		contentPanel.setHeaderVisible(false);
 		contentPanel.setLayout(new FitLayout());
 		contentPanel.add(grid);
 
 		initComponent(contentPanel);
+	}
+	
+	public void loadItext(ListStore<ItextModel> list){
+		grid.reconfigure(list, grid.getColumnModel());
+	}
+	
+	public List<ItextModel> getItext(){
+		grid.getStore().commitChanges();
+		return grid.getStore().getModels();
 	}
 
 	public void adjustHeight(String height){

@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -24,7 +25,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PushButton;
 
 /**
- * This widget is the main tool bar for the form designer.
+ * This widget is the tool bar for the form design tab.
  * 
  * @author daniel
  *
@@ -205,6 +206,15 @@ public class Toolbar extends Composite{
 		//panel.add(btnUndo);
 		//panel.add(btnRedo);
 		
+		panel.add(separatorWidget);
+		panel.add(separatorWidget);
+		panel.add(new Button("Text"));
+		panel.add(new Button("Numeric"));
+		panel.add(new Button("Decimal"));
+		panel.add(new Button("Date"));
+		panel.add(new Button("Single"));
+		panel.add(new Button("Multi"));
+		
 		Label label = new Label(FormDesignerUtil.getTitle());
 		panel.add(label);
 		panel.setCellWidth(label,"100%");
@@ -219,7 +229,8 @@ public class Toolbar extends Composite{
 		cbLanguages.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				int index = getCurrentLocaleIndex();
-				if(!controller.changeLocale(((ListBox)event.getSource()).getValue(((ListBox)event.getSource()).getSelectedIndex())))
+				ListBox listBox = (ListBox)event.getSource();
+				if(!controller.changeLocale(new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()))))
 					cbLanguages.setSelectedIndex(index);
 			}
 		});
@@ -309,14 +320,14 @@ public class Toolbar extends Composite{
 	
 	
 	private int getCurrentLocaleIndex(){
-		String localeKey = Context.getLocale();
+		Locale currentLocale = Context.getLocale();
 		
 		List<Locale> locales = Context.getLocales();
 		assert(locales != null);
 		
 		for(int index = 0; index < locales.size(); index++){
 			Locale locale = locales.get(index);
-			if(locale.getKey().equals(localeKey))
+			if(locale.getKey().equals(currentLocale.getKey()))
 				return index;
 		}
 		

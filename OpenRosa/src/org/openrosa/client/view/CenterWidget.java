@@ -4,12 +4,14 @@ import org.openrosa.client.controller.IFileListener;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.ITextUtil;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
+import com.extjs.gxt.ui.client.store.ListStore;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.xml.client.Document;
@@ -89,9 +91,18 @@ public class CenterWidget extends Composite implements IFileListener {
 	}
 
 	public void onSave(){
-		String xml = null;
 		FormDef formDef = Context.getFormDef();
-		if(formDef != null){
+		
+		String xml = null;
+		
+		if(tabs.getTabBar().getSelectedTab() == TAB_INDEX_ITEXT){
+			if(formDef == null || formDef.getDoc() == null)
+				return;
+			
+			ITextUtil.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
+			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
+		}
+		else if(formDef != null){
 			designWidget.commitChanges();
 			
 			//TODO need to solve bug when opened forms do not reflect changes in the instance data node names.
@@ -106,7 +117,9 @@ public class CenterWidget extends Composite implements IFileListener {
 				formDef.setXformsNode(doc.getDocumentElement());
 			}
 			
-			ITextUtil.updateItextBlock(doc,formDef);
+			ListStore<ItextModel> list = new ListStore<ItextModel>();
+			ITextUtil.updateItextBlock(doc,formDef,list);
+			itextWidget.loadItext(list);
 			
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 			doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/1999/xhtml");

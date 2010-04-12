@@ -11,6 +11,7 @@ import org.purc.purcforms.client.LeftPanel;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
@@ -385,7 +386,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					//formDef.setLayout(centerPanel.getLayoutXml());
 
 					centerPanel.saveLanguageText(false);
-					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
+					setLocaleText(formDef.getId(),Context.getLocale().getKey(), centerPanel.getLanguageXml());
 
 					centerPanel.saveJavaScriptSource();
 					
@@ -1036,7 +1037,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					if(forms != null && forms.size() > 0){
 						List<FormDef> newForms = new ArrayList<FormDef>();
 						for(FormDef form : forms){
-							xml = getFormLocaleText(form.getId(),Context.getLocale());
+							xml = getFormLocaleText(form.getId(),Context.getLocale().getKey());
 							if(xml != null){
 								String xform = FormUtil.formatXml(LanguageUtil.translate(form.getDoc(), xml, true));
 								FormDef newFormDef = XformParser.fromXform2FormDef(xform);
@@ -1118,7 +1119,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 			if(rebuild){
 				centerPanel.saveLanguageText(selTab);
-				setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
+				setLocaleText(formDef.getId(),Context.getLocale().getKey(), centerPanel.getLanguageXml());
 			}
 
 			String langXml = formDef.getLanguageXml();
@@ -1145,9 +1146,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	/**
 	 * Reloads forms in a given locale.
 	 * 
-	 * @param locale the locale key.
+	 * @param locale the locale.
 	 */
-	public boolean changeLocale(final String locale){
+	public boolean changeLocale(final Locale locale){
 
 		final FormDef formDef = centerPanel.getFormDef();
 		if(formDef == null)
@@ -1233,9 +1234,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	/**
 	 * Sets the default locale used by the form designer.
 	 * 
-	 * @param locale the locale key.
+	 * @param locale the locale.
 	 */
-	public void setDefaultLocale(String locale){
+	public void setDefaultLocale(Locale locale){
 		Context.setDefaultLocale(locale);
 	}
 

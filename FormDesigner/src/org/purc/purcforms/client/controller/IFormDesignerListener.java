@@ -1,5 +1,7 @@
 package org.purc.purcforms.client.controller;
 
+import org.purc.purcforms.client.model.Locale;
+
 import com.google.gwt.user.client.Event;
 
 
@@ -137,7 +139,7 @@ public interface IFormDesignerListener extends IFormActionListener{
 	 * 
 	 * @param locale the locale to change to.
 	 */
-	public boolean changeLocale(String locale);
+	public boolean changeLocale(Locale locale);
 	
 	/**
 	 * Embeds the xform into xhtml.

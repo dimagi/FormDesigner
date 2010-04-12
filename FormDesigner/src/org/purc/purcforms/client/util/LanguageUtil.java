@@ -181,7 +181,7 @@ public class LanguageUtil {
 		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
 		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 		Element rootNode = doc.createElement("LanguageText");
-		rootNode.setAttribute("lang", Context.getLocale());
+		rootNode.setAttribute("lang", Context.getLocale().getKey());
 		doc.appendChild(rootNode);
 		return doc;
 	}

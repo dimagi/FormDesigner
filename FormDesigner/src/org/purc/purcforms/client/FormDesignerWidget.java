@@ -3,6 +3,7 @@ package org.purc.purcforms.client;
 import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSaveListener;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
@@ -382,16 +383,16 @@ public class FormDesignerWidget extends Composite{
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#setDefaultLocale(java.lang.String)
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#setDefaultLocale(Locale)
 	 */
-	public void setDefaultLocale(String locale){
+	public void setDefaultLocale(Locale locale){
 		controller.setDefaultLocale(locale);
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#changeLocale(java.lang.String)
+	 * @see org.purc.purcforms.client.controller.IFormDesignerController#changeLocale(Locale)
 	 */
-	public void changeLocale(String locale){
+	public void changeLocale(Locale locale){
 		controller.changeLocale(locale);
 	}
 

@@ -39,10 +39,10 @@ public class Context {
 	public static final byte MODE_XFORMS_SOURCE = 4;
 	
 	/** The default locale key. */
-	private static String defaultLocale = "en";
+	private static Locale defaultLocale = new Locale("en","English");
 	
 	/** The current locale. */
-	private static String locale = defaultLocale;
+	private static Locale locale = defaultLocale;
 	
 	/** A list of supported locales. */
 	private static List<Locale> locales = new ArrayList<Locale>();
@@ -73,7 +73,7 @@ public class Context {
 	 * 
 	 * @param locale the default locale key.
 	 */
-	public static void setDefaultLocale(String locale){
+	public static void setDefaultLocale(Locale locale){
 		Context.defaultLocale = locale;
 	}
 	
@@ -82,25 +82,25 @@ public class Context {
 	 * 
 	 * @return the default locale key.
 	 */
-	public static String getDefaultLocale(){
+	public static Locale getDefaultLocale(){
 		return defaultLocale;
 	}
 	
 	/**
 	 * Sets the current locale.
 	 * 
-	 * @param locale the locale key.
+	 * @param locale the locale.
 	 */
-	public static void setLocale(String locale){
+	public static void setLocale(Locale locale){
 		Context.locale = locale;
 	}
 	
 	/**
 	 * Gets the current locale.
 	 * 
-	 * @return the locale key.
+	 * @return the locale.
 	 */
-	public static String getLocale(){
+	public static Locale getLocale(){
 		return locale;
 	}
 	
@@ -128,7 +128,7 @@ public class Context {
 	 * @return true if in localization mode, else false.
 	 */
 	public static boolean inLocalizationMode(){
-		return !defaultLocale.equalsIgnoreCase(locale);
+		return !defaultLocale.getKey().equalsIgnoreCase(locale.getKey());
 	}
 	
 	/**

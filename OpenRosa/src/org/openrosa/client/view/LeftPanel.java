@@ -9,6 +9,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
@@ -250,7 +251,7 @@ public class LeftPanel extends Composite {
 	 * 
 	 * @param locale the localey key.
 	 */
-	public void setDefaultLocale(String locale){
+	public void setDefaultLocale(Locale locale){
 		Context.setDefaultLocale(locale);
 	}
 }

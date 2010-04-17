@@ -7,7 +7,8 @@ import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.ITextUtil;
+import org.purc.purcforms.client.util.ItextBuilder;
+import org.purc.purcforms.client.util.ItextParser;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -110,9 +111,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			return;
 		}
 		
-		FormDef formDef = XformParser.fromXform2FormDef(xml);
+		ListStore<ItextModel> list = new ListStore<ItextModel>();
+		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);
+		itextWidget.loadItext(list);
 		tabs.selectTab(TAB_INDEX_DESIGN);
 	}
 
@@ -142,7 +145,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			if(formDef == null || formDef.getDoc() == null)
 				return;
 			
-			ITextUtil.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
+			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 		}
 		else if(formDef != null){
@@ -161,7 +164,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			}
 			
 			ListStore<ItextModel> list = new ListStore<ItextModel>();
-			ITextUtil.updateItextBlock(doc,formDef,list);
+			ItextBuilder.updateItextBlock(doc,formDef,list);
 			itextWidget.loadItext(list);
 			
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
@@ -191,7 +194,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			ListStore<ItextModel> list = new ListStore<ItextModel>();
 			
 			if(formDef != null && formDef.getDoc() != null)
-				ITextUtil.updateItextBlock(formDef.getDoc(),formDef,list);
+				ItextBuilder.updateItextBlock(formDef.getDoc(),formDef,list);
 			
 			itextWidget.loadItext(list);
 		}

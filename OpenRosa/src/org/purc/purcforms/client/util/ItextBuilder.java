@@ -23,7 +23,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class ITextUtil {
+public class ItextBuilder {
 
 	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list){
 		/*List<Locale> locales = Context.getLocales();

@@ -620,9 +620,10 @@ public class XformParser {
 			qtn.setLocked(true);
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE).equals(XformConstants.XPATH_VALUE_FALSE))
 			qtn.setVisible(false);
-
+		
 		if(!addRepeatChildQtn(qtn,repeatQtns,child,id2VarNameMap,rptKidMap)){
-			id2VarNameMap.put(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ID), qtn.getVariableName());
+			String id = child.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+			id2VarNameMap.put(id != null ? id : qtn.getVariableName(), qtn.getVariableName());
 			formDef.addQuestion(qtn);
 		}
 

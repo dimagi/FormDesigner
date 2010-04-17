@@ -96,8 +96,16 @@ public class ITextUtil {
 				itextModel.set("id", id);
 				itextModel.set(locale.getKey(), value);
 				list.add(itextModel);
+				
+				//remove text.
+				removeAllChildNodes(targetNode);
 			}
 		}
+	}
+	
+	private static void removeAllChildNodes(Element node){
+		while(node.getChildNodes().getLength() > 0)
+			node.removeChild(node.getChildNodes().item(0));
 	}
 
 

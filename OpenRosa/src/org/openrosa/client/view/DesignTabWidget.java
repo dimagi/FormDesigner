@@ -1,7 +1,11 @@
 package org.openrosa.client.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openrosa.client.controller.FormDesignerController;
 import org.purc.purcforms.client.PurcConstants;
+import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 
 import com.google.gwt.user.client.DOM;
@@ -16,7 +20,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class DesignTabWidget extends Composite {
+public class DesignTabWidget extends Composite implements IFormSelectionListener{
 	
 	/** The main widget for the form designer. */
 	private VerticalPanel panel;
@@ -44,13 +48,16 @@ public class DesignTabWidget extends Composite {
 	/** Flag to tell whether we in in the resize mode of the splitter. */
 	private boolean isResizing = false;
 	
+	/** List of form item selection listeners. */
+	private List<IFormSelectionListener> formSelectionListeners = new ArrayList<IFormSelectionListener>();
 	
 	
 	public DesignTabWidget(){
 		leftPanel.showFormAsRoot();
 
 		leftPanel.setFormDesignerListener(controller);
-
+		leftPanel.addFormSelectionListener(this);
+		
 		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
 		
 		initDesigner();  
@@ -125,5 +132,19 @@ public class DesignTabWidget extends Composite {
 	
 	public void commitChanges(){
 		centerPanel.commitChanges();
+	}
+	
+	/**
+	 * Adds a listener to form item selection events.
+	 * 
+	 * @param formSelectionListener the listener to add.
+	 */
+	public void addFormSelectionListener(IFormSelectionListener formSelectionListener){
+		this.formSelectionListeners.add(formSelectionListener);
+	}
+	
+	public void onFormItemSelected(Object formItem){
+		for(int i=0; i<formSelectionListeners.size(); i++)
+			formSelectionListeners.get(i).onFormItemSelected(formItem);
 	}
 }

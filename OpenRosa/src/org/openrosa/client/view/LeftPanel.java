@@ -1,5 +1,6 @@
 package org.openrosa.client.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.Context;
@@ -41,9 +42,6 @@ public class LeftPanel extends Composite {
 	/** The GWT stack panel which serves as the main or root widget. */
 	private DecoratedStackPanel stackPanel = new DecoratedStackPanel();
 	
-	/** Listener to form item selection events. */
-	private IFormSelectionListener formSelectionListener;
-	
 	/** Widgets which displays the list of forms in a tree view. */
 	private FormsTreeView formsTreeView;
 	
@@ -54,8 +52,6 @@ public class LeftPanel extends Composite {
 	 * @param images a bundle that provides the images for this widget
 	 */
 	public LeftPanel(Images images, IFormSelectionListener formSelectionListener) {
-		this.formSelectionListener = formSelectionListener;
-
 		formsTreeView = new FormsTreeView(images,formSelectionListener);
 		add(images,formsTreeView , images.tasksgroup(), "Form Outline");
 		FormUtil.maximizeWidget(stackPanel);
@@ -253,5 +249,14 @@ public class LeftPanel extends Composite {
 	 */
 	public void setDefaultLocale(Locale locale){
 		Context.setDefaultLocale(locale);
+	}
+	
+	/**
+	 * Adds a listener to form item selection events.
+	 * 
+	 * @param formSelectionListener the listener to add.
+	 */
+	public void addFormSelectionListener(IFormSelectionListener formSelectionListener){
+		formsTreeView.addFormSelectionListener(formSelectionListener);
 	}
 }

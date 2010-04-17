@@ -52,12 +52,18 @@ public class FileToolbar extends Composite {
 		panel.setSpacing(3);
 		
 		btnNew.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){fileListener.onNew();}});
+			public void onClick(ClickEvent event){
+				fileListener.onNew();}}
+		);
 		
 		btnOpen.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){fileListener.onOpen();}});
+			public void onClick(ClickEvent event){
+				fileListener.onOpen();}}
+		);
 		
 		btnSave.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){fileListener.onSave();}});
+			public void onClick(ClickEvent event){
+				fileListener.onSave();}}
+		);
 	}
 }

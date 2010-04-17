@@ -1,6 +1,7 @@
 package org.openrosa.client.view;
 
 import org.purc.purcforms.client.FormDesignerImages;
+import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.PreviewView;
 
@@ -25,7 +26,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class FormDesignerWidget extends Composite{
+public class FormDesignerWidget extends Composite {
 
 	/**
 	 * Instantiate an application-level image bundle. This object will provide

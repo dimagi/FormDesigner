@@ -9,7 +9,6 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.ItemsetBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
 

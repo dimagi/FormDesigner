@@ -260,11 +260,11 @@ public class XformParser {
 			//if(tagname.equals(NODE_NAME_SUBMIT) || tagname.equals(NODE_NAME_SUBMIT_MINUS_PREFIX))
 			if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SUBMIT_MINUS_PREFIX))
 				continue;
-			else if (tagname.equals("head"))
+			else if (XmlUtil.nodeNameEquals(tagname,"head"))
 				parseElement(formDef,child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
-			else if (tagname.equals("body"))
+			else if (XmlUtil.nodeNameEquals(tagname,"body"))
 				parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
-			else if (tagname.equals("title")){
+			else if (XmlUtil.nodeNameEquals(tagname,"title")){
 				if(child.getChildNodes().getLength() != 0)
 					formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
 			}

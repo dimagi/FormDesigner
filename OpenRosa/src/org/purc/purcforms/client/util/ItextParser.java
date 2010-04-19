@@ -1,8 +1,12 @@
 package org.purc.purcforms.client.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.model.ItextModel;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
@@ -25,20 +29,28 @@ public class ItextParser {
 		if(nodes == null || nodes.getLength() == 0)
 			return doc;
 		
+		List<Locale> locales = new ArrayList<Locale>();
 		HashMap<String,String> defaultItext = null;
 		HashMap<String, HashMap<String,String>> translations = new HashMap<String, HashMap<String,String>>();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element translationNode = (Element)nodes.item(index);
 			HashMap<String,String> itext = new HashMap<String,String>();
-			translations.put(translationNode.getAttribute("lang"), itext);
+			String lang = translationNode.getAttribute("lang");
+			translations.put(lang, itext);
 			fillItext(translationNode,itext);
 			
-			if(index == 0)
+			if(index == 0){
 				defaultItext = itext;
+				Context.setLocale(new Locale(lang,lang));
+			}
+			
+			locales.add(new Locale(lang,lang));
 		}
 		
 		tranlateNodes("label", doc, defaultItext, list);
 		tranlateNodes("hint", doc, defaultItext, list);
+		
+		Context.setLocales(locales);
 		
 		return doc;
 	}

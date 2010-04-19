@@ -32,11 +32,11 @@ public class ItextBuilder {
 
 		for(Locale locale : locales)
 			updateItextBlock(doc,formDef,list,locale);*/
-		
+
 		updateItextBlock(doc,formDef,list,Context.getLocale());
 	}
-	
-	
+
+
 	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, Locale locale){
 
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
@@ -72,37 +72,77 @@ public class ItextBuilder {
 			if(node.getNodeType() != Node.ELEMENT_NODE)
 				continue;
 
-			Element textNode = doc.createElement("text");
-			translationNode.appendChild(textNode);
+			/*Element textNode = doc.createElement("text");
+			translationNode.appendChild(textNode);*/
 
 			String value = ((Element)node).getAttribute("value");
 			String id = FormDesignerUtil.getXmlTagName(value);
-			textNode.setAttribute("id", id);
+			/*textNode.setAttribute("id", id);
 
 			Element valueNode = doc.createElement("value");
 			textNode.appendChild(valueNode);
 
-			valueNode.appendChild(doc.createTextNode(value));
+			valueNode.appendChild(doc.createTextNode(value));*/
 
 			String xpath = ((Element)node).getAttribute("xpath");
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null && result.size() > 0){
 				Element targetNode = (Element)result.get(0);
-				targetNode.setAttribute("ref", "jr:itext('" + id + "')");
+
+				int pos = xpath.lastIndexOf('@');
+				if(pos > 0 && xpath.indexOf('=',pos) < 0){
+					//String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
+					//targetNode.setAttribute(attributeName, value);
+					xpath = FormUtil.getNodePath(formDef.getPageAt(0).getGroupNode());
+				}
+				else{
+					targetNode.setAttribute("ref", "jr:itext('" + id + "')");
+
+					//remove text.
+					removeAllChildNodes(targetNode);
+				}
+
 				assert(result.size() == 1); //each xpath expression should point to not more than one node.
 
-				ItextModel itextModel = new ItextModel();
+				/*ItextModel itextModel = new ItextModel();
 				itextModel.set("xpath", xpath);
 				itextModel.set("id", id);
-				itextModel.set(locale.getKey(), value);
-				list.add(itextModel);
-				
-				//remove text.
-				removeAllChildNodes(targetNode);
+				itextModel.set(localeKey, value);
+				list.add(itextModel);*/
+
+				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey());
+			}
+			else if(index == 0){
+				NodeList titles = doc.getElementsByTagName("title");
+				if(titles != null && titles.getLength() > 0)
+					addTextNode(doc,translationNode, list,FormUtil.getNodePath(titles.item(0)),id,value,locale.getKey());
 			}
 		}
 	}
-	
+
+	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey){
+		if(value.trim().length() == 0)
+			return;
+		
+		Element textNode = doc.createElement("text");
+		translationNode.appendChild(textNode);
+
+		//String value = ((Element)node).getAttribute("value");
+		//String id = FormDesignerUtil.getXmlTagName(value);
+		textNode.setAttribute("id", id);
+
+		Element valueNode = doc.createElement("value");
+		textNode.appendChild(valueNode);
+
+		valueNode.appendChild(doc.createTextNode(value));
+
+		ItextModel itextModel = new ItextModel();
+		itextModel.set("xpath", xpath);
+		itextModel.set("id", id);
+		itextModel.set(localeKey, value);
+		list.add(itextModel);
+	}
+
 	private static void removeAllChildNodes(Element node){
 		while(node.getChildNodes().getLength() > 0)
 			node.removeChild(node.getChildNodes().item(0));
@@ -164,7 +204,7 @@ public class ItextBuilder {
 				Element targetNode = (Element)result.get(0);
 				targetNode.setAttribute("ref", "jr:itext('" + id + "')");
 				assert(result.size() == 1); //each xpath expression should point to not more than one node.
-				
+
 				if(locale.getKey().equalsIgnoreCase(Context.getDefaultLocale().getKey()))
 					XmlUtil.setTextNodeValue(targetNode, value);
 			}

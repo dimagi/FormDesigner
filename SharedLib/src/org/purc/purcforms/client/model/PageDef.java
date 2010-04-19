@@ -717,7 +717,7 @@ public class PageDef implements Serializable{
 			name = pageDef.getName();
 
 		Vector<QuestionDef> orderedQtns = new Vector<QuestionDef>();
-		
+
 		int count = pageDef.getQuestionCount();
 		for(int index = 0; index < count; index++){
 			QuestionDef qtn = pageDef.getQuestionAt(index);
@@ -727,7 +727,7 @@ public class PageDef implements Serializable{
 			questionDef.refresh(qtn);
 
 			orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
-			
+
 			/*int index1 = this.getQuestionIndex(qtn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getQuestionCount() - 1){
 				this.getQuestions().removeElement(questionDef);
@@ -742,7 +742,7 @@ public class PageDef implements Serializable{
 			if(pageDef.getQuestion(questionDef.getVariableName()) == null)
 				orderedQtns.add(questionDef);
 		}
-		
+
 		questions = orderedQtns;
 	}
 
@@ -809,18 +809,22 @@ public class PageDef implements Serializable{
 	 * @param parentLangNode the language parent node for the page language nodes.
 	 */
 	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
-		if(labelNode == null || groupNode == null)
+		//if(labelNode == null || groupNode == null)
+		if(groupNode == null)
 			return;
 
 		String xpath = FormUtil.getNodePath(groupNode);
-		String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
-		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
+		
+		if(labelNode != null){
+			String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+			if(id != null && id.trim().length() > 0)
+				xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
 
-		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
-		parentLangNode.appendChild(node);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+			parentLangNode.appendChild(node);
+		}
 
 		if(questions == null)
 			return;

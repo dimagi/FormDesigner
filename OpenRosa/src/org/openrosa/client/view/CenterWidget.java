@@ -6,6 +6,8 @@ import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ItextModel;
+import org.purc.purcforms.client.model.PageDef;
+import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.ItextBuilder;
 import org.purc.purcforms.client.util.ItextParser;
@@ -19,6 +21,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -113,9 +116,18 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+		
+		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
+		if(formDef.getQuestionCount() > 0){
+			PageDef pageDef = formDef.getPageAt(0);
+			QuestionDef questionDef = pageDef.getQuestionAt(0);
+			if(questionDef.getControlNode() != null)
+				pageDef.setGroupNode((Element)questionDef.getControlNode().getParentNode());
+		}
+		
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);
-		itextWidget.loadItext(list);
+		//itextWidget.loadItext(list); on loading, form item is selected and this is eventually called.
 		tabs.selectTab(TAB_INDEX_DESIGN);
 	}
 

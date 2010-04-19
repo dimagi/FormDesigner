@@ -149,7 +149,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 	
 	private void saveFile(){
-		FormDef formDef = Context.getFormDef();
+		//FormDef formDef = Context.getFormDef();
 		
 		String xml = null;
 		
@@ -159,6 +159,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			
 			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
+			
+			//update form outline with the itext changes
+			ListStore<ItextModel> list = new ListStore<ItextModel>();
+			formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+			designWidget.refreshForm(formDef);
 		}
 		else if(formDef != null){
 			designWidget.commitChanges();

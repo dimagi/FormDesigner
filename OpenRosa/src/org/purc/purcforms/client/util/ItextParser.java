@@ -49,6 +49,7 @@ public class ItextParser {
 		
 		tranlateNodes("label", doc, defaultItext, list);
 		tranlateNodes("hint", doc, defaultItext, list);
+		tranlateNodes("title", doc, defaultItext, list);
 		
 		Context.setLocales(locales);
 		

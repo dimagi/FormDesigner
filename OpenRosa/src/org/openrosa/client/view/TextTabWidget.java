@@ -30,7 +30,18 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	
 
 	public TextTabWidget(){
-		
+		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), getColumnModel());
+		grid.setBorders(true);
+		grid.setStripeRows(true);
+
+		contentPanel.setHeaderVisible(false);
+		contentPanel.setLayout(new FitLayout());
+		contentPanel.add(grid);
+
+		initComponent(contentPanel);
+	}
+	
+	private ColumnModel getColumnModel(){
 		List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
 
 		ColumnConfig xpath = new ColumnConfig("xpath", "Xpath", 5);
@@ -51,21 +62,11 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			}
 		}
 
-		ColumnModel columnModel = new ColumnModel(configs);
-
-		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), columnModel);
-		grid.setBorders(true);
-		grid.setStripeRows(true);
-
-		contentPanel.setHeaderVisible(false);
-		contentPanel.setLayout(new FitLayout());
-		contentPanel.add(grid);
-
-		initComponent(contentPanel);
+		return new ColumnModel(configs);
 	}
 	
 	public void loadItext(ListStore<ItextModel> list){
-		grid.reconfigure(list, grid.getColumnModel());
+		grid.reconfigure(list, getColumnModel());
 	}
 	
 	public List<ItextModel> getItext(){

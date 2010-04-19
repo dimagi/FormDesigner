@@ -126,6 +126,10 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 		leftPanel.loadForm(formDef);
 	}
 	
+	public void refreshForm(FormDef formDef){
+		leftPanel.refresh(formDef);
+	}
+	
 	public void addNewForm(){
 		leftPanel.addNewForm();
 	}

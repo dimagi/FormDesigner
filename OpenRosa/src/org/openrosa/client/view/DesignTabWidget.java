@@ -13,9 +13,11 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.purc.purcforms.client.Context;
 
 
 /**
+ * This is the widget which we display in the design tab.
  * 
  * @author daniel
  *
@@ -75,7 +77,9 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 
 		//VerticalPanel panel = new VerticalPanel();
 
-		panel.add(new Toolbar(FormDesignerWidget.images,controller));
+		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller);
+		Context.addLocaleListChangeListener(toolbar);
+		panel.add(toolbar);
 
 		panel.add(hsplitClient);
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.purc.purcforms.client.controller.ILocaleListChangeListener;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormUtil;
@@ -66,6 +67,9 @@ public class Context {
 	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	
 	private static boolean offlineMode = true;
+	
+	/** List of those interested in being notified whenever the locale list changes. */
+	private static List<ILocaleListChangeListener> localeListeners = new ArrayList<ILocaleListChangeListener>();
 	
 	
 	/**
@@ -147,6 +151,18 @@ public class Context {
 	 */
 	public static void setLocales(List<Locale> locales){
 		Context.locales = locales;
+		
+		for(ILocaleListChangeListener listener : localeListeners)
+			listener.onLocaleListChanged();
+	}
+	
+	/**
+	 * Adds a listener to locale list change event.
+	 * 
+	 * @param listener the listener.
+	 */
+	public static void addLocaleListChangeListener(ILocaleListChangeListener listener){
+		localeListeners.add(listener);
 	}
 	
 	/**

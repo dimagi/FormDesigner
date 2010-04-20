@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
+import org.purc.purcforms.client.controller.ILocaleListChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -30,7 +31,7 @@ import com.google.gwt.user.client.ui.PushButton;
  * @author daniel
  *
  */
-public class Toolbar extends Composite{
+public class Toolbar extends Composite implements ILocaleListChangeListener{
 
 	/**
 	 * Tool bar images.
@@ -332,5 +333,9 @@ public class Toolbar extends Composite{
 		}
 		
 		return 0;
+	}
+	
+	public void onLocaleListChanged(){
+		populateLocales();
 	}
 }

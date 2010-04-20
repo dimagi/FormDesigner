@@ -51,7 +51,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		ColumnConfig formId = new ColumnConfig("id", "Id", 200);
 		configs.add(formId);
 		TextField<String> text = new TextField<String>();
-		formId.setEditor(new CellEditor(text));
+		CellEditor cellEditor = new CellEditor(text);
+		formId.setEditor(cellEditor);
 
 		List<Locale> locales = Context.getLocales();
 		if(locales != null){

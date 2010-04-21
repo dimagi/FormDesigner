@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -65,6 +66,9 @@ public class ItextBuilder {
 		translationNode.setAttribute("lang", locale.getName());
 		itextNode.appendChild(translationNode);
 
+		//Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
+		HashMap<String,String> duplicatesMap = new HashMap<String, String>();
+		
 		Element rootNode = formDef.getLanguageNode();
 		NodeList nodes = rootNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
@@ -110,6 +114,12 @@ public class ItextBuilder {
 				itextModel.set(localeKey, value);
 				list.add(itextModel);*/
 
+				//Skip the steps below if we have already processed this itext id.
+				if(duplicatesMap.containsKey(id))
+					continue;
+				else
+					duplicatesMap.put(id, id);
+				
 				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey());
 			}
 			else if(index == 0){
@@ -120,6 +130,18 @@ public class ItextBuilder {
 		}
 	}
 
+	/**
+	 * Creates a new itext node with its text value and a gxt grid model item for a given 
+	 * xforms documet's translation node.
+	 * 
+	 * @param doc the xfrorms document.
+	 * @param translationNode the translation node.
+	 * @param list the gxt grid model list.
+	 * @param xpath the xpath expression pointing to the node text that this itext represents.
+	 * @param id the itext id.
+	 * @param value the itext value of the given id.
+	 * @param localeKey the locale key
+	 */
 	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey){
 		if(value.trim().length() == 0)
 			return;
@@ -143,12 +165,25 @@ public class ItextBuilder {
 		list.add(itextModel);
 	}
 
+	
+	/**
+	 * Removes all child nodes for a give  node.
+	 * 
+	 * @param node the node whose child nodes to remove.
+	 */
 	private static void removeAllChildNodes(Element node){
 		while(node.getChildNodes().getLength() > 0)
 			node.removeChild(node.getChildNodes().item(0));
 	}
 
 
+	/**
+	 * Updates an xforms document itext block with values as edited by the user from a grid.
+	 * 
+	 * @param doc the xforms document.
+	 * @param formDef the form definition object.
+	 * @param list the gxt grid itext model.
+	 */
 	public static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list){
 		List<Locale> locales = Context.getLocales();
 		if(locales == null)
@@ -158,6 +193,15 @@ public class ItextBuilder {
 			updateItextBlock(doc,formDef,list,locale);
 	}
 
+	
+	/**
+	 * Updates an xforms document itext block with values as edited by the user from a grid for a given locale.
+	 * 
+	 * @param doc the xforms document.
+	 * @param formDef the form definition object.
+	 * @param list the gxt grid itext model.
+	 * @param locale the locale.
+	 */
 	private static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, Locale locale){
 
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
@@ -182,21 +226,32 @@ public class ItextBuilder {
 			}
 		}
 
+		//Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
+		HashMap<String,String> duplicatesMap = new HashMap<String, String>();
+
 		Element translationNode = doc.createElement("translation");
 		translationNode.setAttribute("lang", locale.getName());
 		itextNode.appendChild(translationNode);
 
+		//we shold also have alist of those that were duplicates
 		for(ItextModel itext : list){
-			Element textNode = doc.createElement("text");
-			translationNode.appendChild(textNode);
-
+			
 			String id = itext.get("id");
-			textNode.setAttribute("id", id);
-
 			String value = itext.get(locale.getKey());
-			Element valueNode = doc.createElement("value");
-			textNode.appendChild(valueNode);
-			valueNode.appendChild(doc.createTextNode(value));
+			
+			//Do not create a duplicate itext element if we have already processed this itext id.
+			if(!duplicatesMap.containsKey(id)){
+				Element textNode = doc.createElement("text");
+				translationNode.appendChild(textNode);
+
+				textNode.setAttribute("id", id);
+				
+				Element valueNode = doc.createElement("value");
+				textNode.appendChild(valueNode);
+				valueNode.appendChild(doc.createTextNode(value));
+			}
+			else
+				duplicatesMap.put(id, id);
 
 			String xpath = (String)itext.get("xpath");
 			Vector result = new XPathExpression(doc, xpath).getResult();

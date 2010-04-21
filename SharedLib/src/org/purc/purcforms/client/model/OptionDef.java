@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.UiElementBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
@@ -183,6 +184,7 @@ public class OptionDef implements Serializable {
     		String xpath = parentXpath + "/" + FormUtil.getNodeName(controlNode);
     		
     		String id = controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+    		
     		if(id != null && id.trim().length() > 0)
     			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
     		

@@ -16,47 +16,76 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 
 
+/**
+ * Parses an xforms document and puts text in all nodes referencing an itext block for a given language.
+ * The first language in the itext block is taken to be the current or default one.
+ * 
+ * @author daniel
+ *
+ */
 public class ItextParser {
 
+	/**
+	 * Parses an xform and sets the text of various nodes based on the current a locale
+	 * as represented by their itext ids. The first locale in the itext block is the one
+	 * taken as the default.
+	 * 
+	 * @param xml the xforms xml.
+	 * @param list the itext model which can be displayed in a gxt grid.
+	 * @return the document where all itext refs are filled with text for a given locale.
+	 */
 	public static Document parse(String xml, ListStore<ItextModel> list){
 		Document doc = XmlUtil.getDocument(xml);
 		
+		//Check if we have an itext block in this xform.
 		NodeList nodes = doc.getElementsByTagName("itext");
 		if(nodes == null || nodes.getLength() == 0)
 			return doc;
 		
+		//Check if we have any translations in this itext block.
 		nodes = ((Element)nodes.item(0)).getElementsByTagName("translation");
 		if(nodes == null || nodes.getLength() == 0)
 			return doc;
+	
+		List<Locale> locales = new ArrayList<Locale>(); //New list of locales as it comes form the parsed xform.
+		HashMap<String,String> defaultItext = null; //Map of id and itext.
 		
-		List<Locale> locales = new ArrayList<Locale>();
-		HashMap<String,String> defaultItext = null;
+		//Map of each locale key and map of its id and itext translations.
 		HashMap<String, HashMap<String,String>> translations = new HashMap<String, HashMap<String,String>>();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element translationNode = (Element)nodes.item(index);
 			HashMap<String,String> itext = new HashMap<String,String>();
 			String lang = translationNode.getAttribute("lang");
 			translations.put(lang, itext);
-			fillItext(translationNode,itext);
+			fillItextMap(translationNode,itext);
 			
 			if(index == 0){
 				defaultItext = itext;
 				Context.setLocale(new Locale(lang,lang));
+				Context.setDefaultLocale(Context.getLocale());
 			}
 			
+			//create a new locale object for the current translation.
 			locales.add(new Locale(lang,lang));
 		}
 		
-		tranlateNodes("label", doc, defaultItext, list);
-		tranlateNodes("hint", doc, defaultItext, list);
-		tranlateNodes("title", doc, defaultItext, list);
+		tranlateNodes("label", doc, defaultItext, list, Context.getLocale().getKey());
+		tranlateNodes("hint", doc, defaultItext, list, Context.getLocale().getKey());
+		tranlateNodes("title", doc, defaultItext, list, Context.getLocale().getKey());
 		
 		Context.setLocales(locales);
 		
 		return doc;
 	}
 	
-	private static void fillItext(Element translationNode, HashMap<String,String> itext){
+	
+	/**
+	 * Fills a map of id and itext for a given locale as represented by a given translation node.
+	 * 
+	 * @param translationNode the translation node.
+	 * @param itext the itext map.
+	 */
+	private static void fillItextMap(Element translationNode, HashMap<String,String> itext){
 		NodeList nodes = translationNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node textNode = nodes.item(index);
@@ -67,6 +96,13 @@ public class ItextParser {
 		}
 	}
 	
+	
+	/**
+	 * Gets the text value of a node.
+	 * 
+	 * @param textNode the node.
+	 * @return the text value.
+	 */
 	private static String getValueText(Node textNode){
 		NodeList nodes = textNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
@@ -80,25 +116,50 @@ public class ItextParser {
 		return "";
 	}
 	
-	private static void tranlateNodes(String name, Document doc, HashMap<String,String> itext, ListStore<ItextModel> list){
+	
+	/**
+	 * For a given xforms document, fills the text of all nodes having a given name with their 
+	 * corresponding text based on the itext id in the ref attribute.
+	 * 
+	 * @param name the name of the nodes to look for.
+	 * @param doc the xforms document.
+	 * @param itext the id to itext map.
+	 * @param list the itext model as required by gxt grids.
+	 */
+	private static void tranlateNodes(String name, Document doc, HashMap<String,String> itext, ListStore<ItextModel> list, String localeKey){
 		NodeList nodes = doc.getElementsByTagName(name);
 		if(nodes == null || nodes.getLength() == 0)
 			return;
 		
+		//Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
+		HashMap<String,String> duplicatesMap = new HashMap<String, String>();
+		
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element node = (Element)nodes.item(index);
+			
+			//Check if current node has a ref attribute.
 			String ref = node.getAttribute("ref");
 			if(ref == null)
 				continue;
 			
+			//Check if node has jr:itext value in the ref attribute value.
 			int pos = ref.indexOf("jr:itext('");
 			if(pos < 0)
 				continue;
 			
+			//Get the itext id which starts at the 11th character.
 			String id = ref.substring(10,ref.lastIndexOf("'"));
 			String text = itext.get(id);
+			
+			//If the text node does not already exist, add it, else just update itx text.
 			if(!XmlUtil.setTextNodeValue(node, text))
 				node.appendChild(doc.createTextNode(text));
+			
+			//Skip the steps below if we have already processed this itext id.
+			if(duplicatesMap.containsKey(id))
+				continue;
+			else
+				duplicatesMap.put(id, id);
 			
 			Element parentNode = (Element)node.getParentNode();
 			String idname = "bind";
@@ -108,10 +169,11 @@ public class ItextParser {
 			else
 				ref = parentNode.getAttribute("bind");
 			
+			//Create and add an itext model object as required by the gxt grid.
 			ItextModel itextModel = new ItextModel();
 			itextModel.set("xpath", FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + id + "']" + "/" + name);
 			itextModel.set("id", id);
-			itextModel.set("en", text);
+			itextModel.set(localeKey, text);
 			list.add(itextModel);
 		}
 	}

@@ -384,6 +384,11 @@ public class XformParser {
 				optionDef.setLabelNode(nodeContext.getLabelNode());
 				optionDef.setValueNode(nodeContext.getValueNode());
 				questionDef.addOption(optionDef);
+				
+				//Ids are mandatory for uniquely identifying items for localization xpath expressions.
+				String id = element.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+				if(id == null || id.trim().length() == 0)
+					element.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getVariableName());
 			}
 		} 
 		else if (!nodeContext.getLabel().equals("") && questionDef != null){

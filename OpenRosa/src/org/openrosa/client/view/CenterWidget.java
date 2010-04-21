@@ -1,6 +1,7 @@
 package org.openrosa.client.view;
 
 import org.openrosa.client.controller.IFileListener;
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
@@ -150,6 +151,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 	private void saveFile(){
 		//FormDef formDef = Context.getFormDef();
+		
+		if(Context.getFormDef() == null)
+			formDef = null;
 
 		String xml = null;
 

@@ -1,6 +1,5 @@
 package org.openrosa.client.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.Context;
@@ -196,6 +195,13 @@ public class LeftPanel extends Composite {
 	 */
 	public void refreshItem(){
 		formsTreeView.refreshItem();
+	}
+	
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 */
+	public void addNewQuestion(int dataType){
+		formsTreeView.addNewQuestion(dataType);
 	}
 
 	/**

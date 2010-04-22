@@ -22,7 +22,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
-import org.purc.purcforms.client.view.PropertiesView;
+import org.openrosa.client.view.PropertiesView;
 import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;

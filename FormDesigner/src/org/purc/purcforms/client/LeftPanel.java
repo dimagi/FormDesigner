@@ -175,6 +175,13 @@ public class LeftPanel extends Composite {
 	public void addNewChildItem(){
 		formsTreeView.addNewChildItem();
 	}
+	
+	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 */
+	public void addNewQuestion(int dataType){
+		formsTreeView.addNewQuestion(dataType);
+	}
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()

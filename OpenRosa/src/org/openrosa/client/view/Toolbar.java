@@ -7,6 +7,7 @@ import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.ILocaleListChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.view.FormRunnerView;
@@ -98,6 +99,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
 	
+	Button btnText;
+	Button btnNumeric;
+	Button btnDecimal;
+	Button btnDate;
+	Button btnSingle;
+	Button btnMulti;
+	
 	
 	/**
 	 * Creates a new instance of the tool bar.
@@ -142,6 +150,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		btnUndo = new PushButton(FormUtil.createImage(images.undo()));
 		btnRedo = new PushButton(FormUtil.createImage(images.redo()));
+		
+		btnText = new Button("Text");
+		btnNumeric = new Button("Numeric");
+		btnDecimal = new Button("Decimal");
+		btnDate = new Button("Date");
+		btnSingle = new Button("Single");
+		btnMulti = new Button("Multi");
 		
 		btnNewForm.setTitle(LocaleText.get("newForm"));
 		btnSaveForm.setTitle(LocaleText.get("save"));
@@ -209,12 +224,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		panel.add(separatorWidget);
 		panel.add(separatorWidget);
-		panel.add(new Button("Text"));
-		panel.add(new Button("Numeric"));
-		panel.add(new Button("Decimal"));
-		panel.add(new Button("Date"));
-		panel.add(new Button("Single"));
-		panel.add(new Button("Multi"));
+		panel.add(btnText);
+		panel.add(btnNumeric);
+		panel.add(btnDecimal);
+		panel.add(btnDate);
+		panel.add(btnSingle);
+		panel.add(btnMulti);
 		
 		Label label = new Label(FormDesignerUtil.getTitle());
 		panel.add(label);
@@ -303,6 +318,25 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		btnRefresh.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){controller.refresh(this);}});
+		
+		
+		btnText.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);}});
+		
+		btnNumeric.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_NUMERIC);}});
+		
+		btnDecimal.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_DECIMAL);}});
+		
+		btnDate.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_DATE);}});
+		
+		btnSingle.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);}});
+		
+		btnMulti.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_MULTIPLE);}});
 	}
 	
 	/**

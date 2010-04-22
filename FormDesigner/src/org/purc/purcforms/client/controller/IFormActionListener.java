@@ -92,4 +92,6 @@ public interface IFormActionListener {
 	 * This is done with the LEFT arrow key.
 	 */
 	public void moveToChild();
+	
+	public void addNewQuestion(int dataType);
 }

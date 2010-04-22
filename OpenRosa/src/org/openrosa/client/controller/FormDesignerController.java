@@ -139,6 +139,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 */
+	public void addNewQuestion(int dataType){
+		leftPanel.addNewQuestion(dataType);
+	}
+	
+	
+	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#printForm()
 	 */
 	public void printForm(){
@@ -146,6 +154,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		if(formDef != null)
 			openForm(formDef.getName(), centerPanel.getFormInnerHtml());
 	}
+	
 
 	/**
 	 * Opens a new browser window with a given title and html contents.

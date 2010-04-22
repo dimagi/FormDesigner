@@ -1,4 +1,4 @@
-package org.purc.purcforms.client.view;
+package org.openrosa.client.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -583,68 +583,25 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 				item = addImageItem(item.getParentItem(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				addFormDefItem(questionDef,item.getParentItem());
 				
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-					addNewOptionDef(questionDef, item);
+				addNewOptionDef(questionDef, item);
 				
 				tree.setSelectedItem(item);
 			}
 			else if(userObj instanceof OptionDef){
-				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,item.getParentItem().getParentItem().getUserObject());
-				questionDef.setDataType(dataType);
-				item = addImageItem(item.getParentItem().getParentItem(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				addFormDefItem(questionDef,item.getParentItem());
-				
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-					addNewOptionDef(questionDef, item);
-				
-				tree.setSelectedItem(item);
+				//addNewOptionDef();
 			}
 			else if(userObj instanceof PageDef){
-				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,item.getUserObject());
-				questionDef.setDataType(dataType);
-				item = addImageItem(item, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				addFormDefItem(questionDef,item.getParentItem());
-				
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-					addNewOptionDef(questionDef, item);
-				
+				int id = ++nextPageId;
+				PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)item.getParentItem().getUserObject());
+				item = addImageItem(item.getParentItem(), pageDef.getName(), images.drafts(),pageDef,null);
+				addFormDefItem(pageDef,item.getParentItem());
 				tree.setSelectedItem(item);
 			}
-			else if(userObj instanceof FormDef){
-				//addNewForm();
-				
-				//If not yet got pages, just quit.
-				if(item.getChildCount() == 0)
-					return;
-				
-				TreeItem parentItem = item.getChild(0);
-				
-				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,parentItem.getUserObject());
-				questionDef.setDataType(dataType);
-				item = addImageItem(parentItem, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				addFormDefItem(questionDef,item.getParentItem());
-				
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-					addNewOptionDef(questionDef, item);
-				
-				tree.setSelectedItem(item);
-			}
+			else if(userObj instanceof FormDef)
+				addNewForm();
 		}
-		else{
+		else
 			addNewForm();
-			item = tree.getSelectedItem();
-			QuestionDef questionDef = (QuestionDef)item.getUserObject();
-			questionDef.setDataType(dataType);
-			
-			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				addNewOptionDef(questionDef, item);
-			
-			tree.setSelectedItem(item.getParentItem());
-			tree.setSelectedItem(item);
-		}
 	}
 	
 	
@@ -653,10 +610,7 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 		OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,questionDef);
 		addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
 		addFormDefItem(optionDef,parentItem);
-		
-		parentItem.setState(true);
 	}
-	
 
 	private void addFormDefItem(Object obj,TreeItem parentItem){
 		Object parentUserObj = parentItem.getUserObject();

@@ -13,6 +13,7 @@
   <!-- Other module inherits                                      -->
   <inherits name='org.purc.purcforms.FormDesigner'/>
   <inherits name='com.extjs.gxt.ui.GXT'/>
+  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openrosa.client.FormDesigner'/>

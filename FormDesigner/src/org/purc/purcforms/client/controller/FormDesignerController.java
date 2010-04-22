@@ -136,6 +136,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
+	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 */
+	public void addNewQuestion(int dataType){
+		leftPanel.addNewQuestion(dataType);
+	}
+	
+	
+	/**
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#printForm()
 	 */
 	public void printForm(){

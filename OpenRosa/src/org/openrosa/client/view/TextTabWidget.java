@@ -3,8 +3,8 @@ package org.openrosa.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.model.Locale;
 
 import com.extjs.gxt.ui.client.store.ListStore;

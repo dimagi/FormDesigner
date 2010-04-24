@@ -1,16 +1,16 @@
 package org.openrosa.client.view;
 
 import org.openrosa.client.controller.IFileListener;
+import org.openrosa.client.model.ItextModel;
+import org.openrosa.client.util.ItextBuilder;
+import org.openrosa.client.util.ItextParser;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.ItextBuilder;
-import org.purc.purcforms.client.util.ItextParser;
 import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.xforms.XmlUtil;

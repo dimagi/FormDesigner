@@ -1219,6 +1219,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 	
 	private void enableDescriptionTemplate(boolean enable){
+		
+		//desc template is as of now not yet used by JR
+		enable = false;
+		
 		//txtDescTemplate.setVisible(enable);
 		btnDescTemplate.setVisible(enable);
 		lblDescTemplate.setVisible(enable);

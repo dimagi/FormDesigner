@@ -1,13 +1,15 @@
-package org.purc.purcforms.client.util;
+package org.openrosa.client.util;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
@@ -97,7 +99,16 @@ public class ItextBuilder {
 				if(pos > 0 && xpath.indexOf('=',pos) < 0){
 					//String attributeName = xpath.substring(pos + 1, xpath.indexOf(']',pos));
 					//targetNode.setAttribute(attributeName, value);
-					xpath = FormUtil.getNodePath(formDef.getPageAt(0).getGroupNode());
+					
+					//xpath = FormUtil.getNodePath(formDef.getPageAt(0).getGroupNode());
+					
+					NodeList titles = doc.getElementsByTagName("title");
+					if(titles != null && titles.getLength() > 0){
+						xpath = FormUtil.getNodePath(titles.item(0));
+						((Element)titles.item(0)).setAttribute("ref", "jr:itext('" + id + "')");
+					}
+					else
+						continue;
 				}
 				else{
 					targetNode.setAttribute("ref", "jr:itext('" + id + "')");
@@ -123,9 +134,9 @@ public class ItextBuilder {
 				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey());
 			}
 			else if(index == 0){
-				NodeList titles = doc.getElementsByTagName("title");
-				if(titles != null && titles.getLength() > 0)
-					addTextNode(doc,translationNode, list,FormUtil.getNodePath(titles.item(0)),id,value,locale.getKey());
+				//NodeList titles = doc.getElementsByTagName("title");
+				//if(titles != null && titles.getLength() > 0)
+				//	addTextNode(doc,translationNode, list,FormUtil.getNodePath(titles.item(0)),id,value,locale.getKey());
 			}
 		}
 	}

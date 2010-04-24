@@ -1,4 +1,4 @@
-package org.purc.purcforms.client.model;
+package org.openrosa.client.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Vector;
 
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.model.ModelConstants;
+import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;

@@ -1,12 +1,13 @@
-package org.purc.purcforms.client.util;
+package org.openrosa.client.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.model.ItextModel;
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;

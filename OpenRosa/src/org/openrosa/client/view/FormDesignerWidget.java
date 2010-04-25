@@ -1,8 +1,6 @@
 package org.openrosa.client.view;
 
-import org.purc.purcforms.client.FormDesignerImages;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.PreviewView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
@@ -37,7 +35,7 @@ public class FormDesignerWidget extends Composite {
 	 * An aggragate image bundle that pulls together all the images for this
 	 * application into a single bundle.
 	 */
-	public interface Images extends LeftPanel.Images,Toolbar.Images,PreviewView.Images,FormDesignerImages {}
+	public interface Images extends LeftPanel.Images {}
 
 	private DockPanel dockPanel;
 	

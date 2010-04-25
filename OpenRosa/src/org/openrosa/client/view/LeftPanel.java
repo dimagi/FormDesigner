@@ -3,7 +3,6 @@ package org.openrosa.client.view;
 import java.util.List;
 
 import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.FormDesignerImages;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
@@ -12,7 +11,6 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.FormsTreeView;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
@@ -33,7 +31,7 @@ public class LeftPanel extends Composite {
 	 * An image bundle specifying the images for this Widget and aggregating
 	 * images needed in child widgets.
 	 */
-	public interface Images extends FormsTreeView.Images,FormDesignerImages{
+	public interface Images extends FormsTreeView.Images{
 		ImageResource tasksgroup();
 		ImageResource filtersgroup();
 	}

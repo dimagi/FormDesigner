@@ -10,7 +10,6 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.FormRunnerView;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -37,7 +36,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	/**
 	 * Tool bar images.
 	 */
-	public interface Images extends ClientBundle,FormRunnerView.Images {
+	public interface Images extends ClientBundle{
 		ImageResource newform();
 		ImageResource open();
 		ImageResource save();

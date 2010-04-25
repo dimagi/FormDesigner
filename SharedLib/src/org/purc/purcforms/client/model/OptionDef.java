@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.UiElementBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;

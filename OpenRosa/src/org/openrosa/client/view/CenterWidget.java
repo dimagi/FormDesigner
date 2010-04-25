@@ -115,6 +115,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			return;
 		}
 
+		tabs.selectTab(TAB_INDEX_DESIGN);
+		
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
 
@@ -129,7 +131,6 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);
 		//itextWidget.loadItext(list); on loading, form item is selected and this is eventually called.
-		tabs.selectTab(TAB_INDEX_DESIGN);
 	}
 
 	public void onSave(){
@@ -156,11 +157,14 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			formDef = null;
 
 		String xml = null;
-
+		
 		if(tabs.getTabBar().getSelectedTab() == TAB_INDEX_ITEXT){
 			if(formDef == null || formDef.getDoc() == null)
 				return;
 
+			//this line is necessary for gxt to load the form with text on the design tab.
+			tabs.selectTab(TAB_INDEX_DESIGN);
+			
 			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 

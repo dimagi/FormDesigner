@@ -53,6 +53,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		TextField<String> text = new TextField<String>();
 		CellEditor cellEditor = new CellEditor(text);
 		formId.setEditor(cellEditor);
+		//cellEditor.setStyle
 
 		List<Locale> locales = Context.getLocales();
 		if(locales != null){
@@ -60,6 +61,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				ColumnConfig columnConfig = new ColumnConfig(locale.getKey(), locale.getName(), 200);
 				configs.add(columnConfig);
 				columnConfig.setEditor(new CellEditor(new TextField<String>()));
+				columnConfig.setStyle("font-size: 20px");
 			}
 		}
 

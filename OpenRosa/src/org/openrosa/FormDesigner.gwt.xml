@@ -12,6 +12,7 @@
 
   <!-- Other module inherits                                      -->
   <inherits name='org.purc.purcforms.FormDesigner'/>
+  <inherits name='org.purc.purcforms.SharedLib'/>
   <inherits name='com.extjs.gxt.ui.GXT'/>
   <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 

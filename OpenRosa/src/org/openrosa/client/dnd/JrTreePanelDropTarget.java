@@ -30,6 +30,7 @@ public class JrTreePanelDropTarget extends TreePanelDropTarget{
 		this.formsTreeView = formsTreeView;
 	}
 
+	
 	protected void handleInsertDrop(DNDEvent event, TreeNode item, int index) {
 		
 		List<ModelData> models = event.getData();
@@ -47,10 +48,16 @@ public class JrTreePanelDropTarget extends TreePanelDropTarget{
 		int newpos = item.getParent().indexOf(item);		
 		boolean moveup = newpos < orgpos;
 		
-		if(moveup)
-			formsTreeView.dragMoveUp(modelItem);
-		else
-			formsTreeView.dragMoveDown(modelItem);
+		if(moveup){
+			int count = Math.abs(orgpos - newpos);
+			while(count-- > 0)
+				formsTreeView.dragMoveUp(modelItem);
+		}
+		else{
+			int count = Math.abs(newpos - orgpos) + 1;
+			while(count-- > 0)
+				formsTreeView.dragMoveDown(modelItem);
+		}
 		
 		TreeModelItem parent = (TreeModelItem)item.getParent().getModel();
 		parent.remove(modelItem);

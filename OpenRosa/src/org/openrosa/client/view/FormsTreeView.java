@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.openrosa.client.dnd.JrTreePanelDropTarget;
 import org.openrosa.client.model.TreeModelItem;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormActionListener;
@@ -22,7 +23,6 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
-import com.extjs.gxt.ui.client.dnd.TreePanelDropTarget;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.event.DNDListener;
@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.store.TreeStoreModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -135,7 +136,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			public void handleEvent(SelectionChangedEvent<TreeModelItem> te) {
 				if(te.getSelectedItem() == null)
 					return;
-				
+
 				Object selObject = te.getSelectedItem().getUserObject();
 				Context.setFormDef(FormDef.getFormDef(selObject));
 				formDef = Context.getFormDef();
@@ -157,19 +158,27 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				}  
 				super.dragStart(e);  
 			}  
-			
-			@Override
+
+			/*@Override
 			public void dragDrop(DNDEvent e) {
-				
 				super.dragDrop(e);
-			}
+
+				List<TreeStoreModel> models = e.getData();
+				TreeStoreModel storeModel = (TreeStoreModel) models.get(0);
+				final TreeModelItem data = (TreeModelItem) storeModel.getModel();
+				System.out.println(data.getText());
+				System.out.println(treePanel.getStore().indexOf(data));
+				System.out.println(data.getParent().indexOf(data));
+				
+				treePanel.getStore().rejectChanges();
+			}*/
 		});  
 
-		TreePanelDropTarget target = new TreePanelDropTarget(treePanel);  
+		JrTreePanelDropTarget target = new JrTreePanelDropTarget(treePanel,this);  
 		target.setAllowSelfAsSource(true);  
 		target.setFeedback(Feedback.BOTH); 
-		
-		
+
+
 
 
 		/*tree = new Tree(images);
@@ -357,7 +366,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			/*formRoot = new CompositeTreeItem(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 			formRoot.setUserObject(formDef);
 			tree.addItem(formRoot);*/
-			
+
 			formRoot = new TreeModelItem(formDef.getName(),formDef,null);
 			treePanel.getStore().add(formRoot, true);
 		}
@@ -369,7 +378,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				//We expand only the first page.
 				if(currentPageNo == 0)
 					treePanel.setExpanded(pageRoot, true);
-					//pageRoot.setState(true);    
+				//pageRoot.setState(true);    
 			}
 		}
 
@@ -458,7 +467,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem loadPage(PageDef pageDef,TreeModelItem formRoot){
 		//TreeItem pageRoot = addImageItem(formRoot, pageDef.getName(), images.drafts(),pageDef,null);
-		
+
 		TreeModelItem pageRoot = addImageItem(formRoot, pageDef.getName(),pageDef);
 		loadQuestions(pageDef.getQuestions(),pageRoot);
 		return pageRoot;
@@ -476,12 +485,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		treePanel.getStore().add(root,item, true);
 		return item;
 	}
-	
-	
+
+
 	private TreeModelItem loadQuestion(QuestionDef questionDef,TreeModelItem root){
 		//TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
 		TreeModelItem questionRoot = addImageItem(root, questionDef.getDisplayText(), questionDef);
-		
+
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			List options = questionDef.getOptions();
@@ -496,7 +505,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//addImageItem(questionRoot, QuestionDef.FALSE_DISPLAY_VALUE, images.markRead(),null,null);
 			OptionDef optionDef = new OptionDef(1, QuestionDef.TRUE_DISPLAY_VALUE, QuestionDef.TRUE_VALUE,questionDef);
 			addImageItem(questionRoot, QuestionDef.TRUE_DISPLAY_VALUE, optionDef);
-			
+
 			optionDef = new OptionDef(2, QuestionDef.FALSE_DISPLAY_VALUE, QuestionDef.FALSE_VALUE,questionDef);
 			addImageItem(questionRoot, QuestionDef.FALSE_DISPLAY_VALUE, optionDef);
 		}
@@ -551,10 +560,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//If no more kids, then select the parent.
 			if(parent.getChildCount() == 0)
 				treePanel.getSelectionModel().select(parent, false);
-				//tree.setSelectedItem(parent);
+			//tree.setSelectedItem(parent);
 			else
 				treePanel.getSelectionModel().select(parent.getChild(index), false);
-				//tree.setSelectedItem(parent.getChild(index));
+			//tree.setSelectedItem(parent.getChild(index));
 		}
 		else{ //Must be the form root
 			index = getRootItemIndex(item);
@@ -581,7 +590,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Context.setFormDef(null);
 			formDef = null;
 			fireFormItemSelected(null);
-			
+
 			nextFormId = 0;
 			nextPageId = 0;
 			nextQuestionId = 0;
@@ -604,7 +613,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		return 0;
 	}*/
-	
+
 	/**
 	 * Gets the index of the tree item which is at the root level.
 	 * 
@@ -950,7 +959,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		//item.remove();
 		parent.remove(item);
 		treePanel.getStore().remove(item);
-		
+
 		//parent.insert(item, index -1);
 
 		while(parent.getChildCount() >= index){
@@ -969,7 +978,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		}
 
 		//treePanel.getStore().update(parent);
-		
+
 		//tree.setSelectedItem(item);
 		treePanel.getSelectionModel().select(item, false);
 	}
@@ -1055,7 +1064,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				parent.add(item); //Add after the first item.
 				treePanel.getStore().add(parent, item, true);
 			}
-			
+
 			parent.add((TreeModelItem)list.get(i));
 			treePanel.getStore().add(parent, (TreeModelItem)list.get(i), true);
 		}
@@ -1084,28 +1093,28 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			QuestionDef questionDef = (QuestionDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.lookup(), questionDef.getDisplayText(),popup,this));
 			//item.setTitle(questionDef.getHelpText());
-			
+
 			item.setText(questionDef.getDisplayText());
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof OptionDef){
 			OptionDef optionDef = (OptionDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.markRead(), optionDef.getText(),popup,this));
-			
+
 			item.setText(optionDef.getText());
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof PageDef){
 			PageDef pageDef = (PageDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.drafts(), pageDef.getName(),popup,this));
-			
+
 			item.setText(pageDef.getName());
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof FormDef){
 			FormDef formDef = (FormDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
-			
+
 			item.setText(formDef.getName());
 			treePanel.getStore().update(item);
 		}
@@ -1197,7 +1206,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			//tree.setSelectedItem(item);
 			treePanel.getSelectionModel().select(item, false);
-			
+
 			//item.getParentItem().setState(true);
 			//item.setState(true);
 		}
@@ -1215,7 +1224,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			//tree.setSelectedItem(item);
 			treePanel.getSelectionModel().select(item, false);
-			
+
 			//item.getParentItem().setState(true);
 			//item.setState(true);
 		}
@@ -1235,7 +1244,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			//tree.setSelectedItem(item);
 			treePanel.getSelectionModel().select(item, false);
-			
+
 			//item.getParentItem().setState(true);
 			//item.setState(true);
 		}
@@ -1482,5 +1491,120 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 */
 	private boolean inReadOnlyMode(){
 		return Context.isStructureReadOnly();
+	}
+	
+	
+	public void dragMoveUp(TreeModelItem item ){
+		if(inReadOnlyMode())
+			return;
+
+		//Check if there is any selection.
+		if(item == null)
+			return;
+
+		TreeModelItem parent = (TreeModelItem)item.getParent();
+
+		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
+		if(parent == null)
+			return;
+
+		//One item can't move against itself.
+		int count = parent.getChildCount();
+		if(count == 1)
+			return;
+
+		int index = parent.indexOf(item);
+		if(index == 0)
+			return; //Can't move any further upwards.
+
+		//move the item in the form object model.
+		moveFormItemUp(item,parent);
+
+		/*TreeModelItem currentItem; // = parent.getChild(index - 1);
+		List list = new ArrayList();
+
+		//item.remove();
+		parent.remove(item);
+		treePanel.getStore().remove(item);
+
+		//parent.insert(item, index -1);
+
+		while(parent.getChildCount() >= index){
+			currentItem = (TreeModelItem)parent.getChild(index-1);
+			list.add(currentItem);
+			//currentItem.remove();
+			currentItem.getParent().remove(currentItem);
+			treePanel.getStore().remove(currentItem);
+		}
+
+		parent.add(item);
+		treePanel.getStore().add(parent,item,true);
+		for(int i=0; i<list.size(); i++){
+			parent.add((TreeModelItem)list.get(i));
+			treePanel.getStore().add(parent,(TreeModelItem)list.get(i),true);
+		}
+
+		treePanel.getSelectionModel().select(item, false);*/
+	}
+	
+	
+	public void dragMoveDown(TreeModelItem item ){
+		if(inReadOnlyMode())
+			return;
+
+		//Check if there is any selection.
+		if(item == null)
+			return;
+
+		TreeModelItem parent = (TreeModelItem)item.getParent();
+
+		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
+		if(parent == null)
+			return;
+
+		//One item can't move against itself.
+		int count = parent.getChildCount();
+		if(count == 1)
+			return;
+
+		int index = parent.indexOf(item);
+		if(index == count - 1)
+			return; //Can't move any further downwards.
+
+		//move the item in the form object model.
+		moveFormItemDown(item,parent);
+
+		/*TreeModelItem currentItem; // = parent.getChild(index - 1);
+		List list = new ArrayList();
+
+		//item.remove();
+		parent.remove(item);
+		treePanel.getStore().remove(item);
+
+		while(parent.getChildCount() > 0 && parent.getChildCount() > index){
+			currentItem = (TreeModelItem)parent.getChild(index);
+			list.add(currentItem);
+			//currentItem.remove();
+			currentItem.getParent().remove(currentItem);
+			treePanel.getStore().remove(currentItem);
+		}
+
+		for(int i=0; i<list.size(); i++){
+			if(i == 1){
+				parent.add(item); //Add after the first item.
+				treePanel.getStore().add(parent, item, true);
+			}
+
+			parent.add((TreeModelItem)list.get(i));
+			treePanel.getStore().add(parent, (TreeModelItem)list.get(i), true);
+		}
+
+		if(list.size() == 1){
+			parent.add(item);
+			treePanel.getStore().add(parent, item, true);
+		}
+
+		//tree.setSelectedItem(item);
+		treePanel.getSelectionModel().select(item, false);*/
 	}
 }

@@ -989,6 +989,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//btnDescTemplate.setVisible(enable2);
 		txtCalculation.setVisible(enable2);
 		btnCalculation.setVisible(enable2);
+		btnCalculation.setEnabled(enable2);
 		lblCalculate.setVisible(enable2);
 		txtCalculation.getParent().setVisible(enable2);
 		

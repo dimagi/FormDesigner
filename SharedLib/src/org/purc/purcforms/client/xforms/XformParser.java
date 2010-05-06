@@ -107,7 +107,7 @@ public class XformParser {
 			nodes = root.getElementsByTagName("Layout");
 			if(nodes.getLength() > 0)
 				layoutXml = FormUtil.formatXml(XmlUtil.getChildElement(nodes.item(0)).toString());
-			
+
 			nodes = root.getElementsByTagName("JavaScript");
 			if(nodes.getLength() > 0)
 				javaScriptSrc = XmlUtil.getChildCDATA(nodes.item(0)).getNodeValue();
@@ -120,7 +120,7 @@ public class XformParser {
 
 		if(layoutXml != null)
 			formDef.setLayoutXml(FormUtil.formatXml(layoutXml));
-		
+
 		if(javaScriptSrc != null)
 			formDef.setJavaScriptSource(javaScriptSrc);
 
@@ -131,18 +131,18 @@ public class XformParser {
 
 		return formDef;
 	}
-	
-	
+
+
 	public static void loadLanguageText(Integer formId, NodeList nodes, HashMap<Integer,HashMap<String,String>> languageText){
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element node = (Element)nodes.item(index);
-			
+
 			HashMap<String,String> map = languageText.get(formId);
 			if(map == null){
 				map = new HashMap<String,String>();
 				languageText.put(formId, map);
 			}
-			
+
 			map.put(node.getAttribute("lang"), FormUtil.formatXml(node.toString()));
 		}
 	}
@@ -384,7 +384,7 @@ public class XformParser {
 				optionDef.setLabelNode(nodeContext.getLabelNode());
 				optionDef.setValueNode(nodeContext.getValueNode());
 				questionDef.addOption(optionDef);
-				
+
 				//Ids are mandatory for uniquely identifying items for localization xpath expressions.
 				String id = element.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 				if(id == null || id.trim().length() == 0)
@@ -502,8 +502,10 @@ public class XformParser {
 		else
 			XformParserUtil.setQuestionType(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE),child);
 
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE))
-			qtn.setRequired(true);
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE)){
+			if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION) == null)
+				qtn.setRequired(true);
+		}
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY).equals(XformConstants.XPATH_VALUE_TRUE))
 			qtn.setEnabled(false);
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED).equals(XformConstants.XPATH_VALUE_TRUE))
@@ -554,7 +556,7 @@ public class XformParser {
 
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME) != null)
 			formDef.setName(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME));
-		
+
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY) != null)
 			formDef.setFormKey(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY));
 	}
@@ -617,15 +619,17 @@ public class XformParser {
 		qtn.setId(getNextQuestionId());
 		qtn.setVariableName(XformParserUtil.getQuestionVariableName(child,formDef));
 		XformParserUtil.setQuestionType(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE),child);
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE))
-			qtn.setRequired(true);
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE)){
+			if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION) == null)
+				qtn.setRequired(true);
+		}
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY).equals(XformConstants.XPATH_VALUE_TRUE))
 			qtn.setEnabled(false);
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED).equals(XformConstants.XPATH_VALUE_TRUE))
 			qtn.setLocked(true);
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE).equals(XformConstants.XPATH_VALUE_FALSE))
 			qtn.setVisible(false);
-		
+
 		if(!addRepeatChildQtn(qtn,repeatQtns,child,id2VarNameMap,rptKidMap)){
 			String id = child.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 			id2VarNameMap.put(id != null ? id : qtn.getVariableName(), qtn.getVariableName());
@@ -640,7 +644,7 @@ public class XformParser {
 
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE) != null)
 			formDef.addCalculation(new Calculation(qtn.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
-			
+
 		if(qtn.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(qtn);
 			qtn.setRepeatQtnsDef(repeatQtnsDef);

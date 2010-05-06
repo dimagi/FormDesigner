@@ -972,9 +972,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkRequired.setVisible(enable2);
 		txtDefaultValue.setVisible(enable2);
 		txtHelpText.setVisible(enabled); //We allow localisation of help text.
-		skipRulesView.setVisible(enable2);
-		validationRulesView.setVisible(enable2);
-		dynamicListsView.setVisible(enable2);
+		
+		//We do not just wanna show this but rather want to enable them.
+		skipRulesView.setEnabled(enable2);
+		validationRulesView.setEnabled(enable2);
+		dynamicListsView.setEnabled(enable2);
 		
 		lblType.setVisible(enable2);
 		lblVisible.setVisible(enable2);

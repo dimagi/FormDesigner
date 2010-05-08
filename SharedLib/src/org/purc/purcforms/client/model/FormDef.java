@@ -432,7 +432,11 @@ public class FormDef implements Serializable{
 			setId(Integer.parseInt(val));*/
 
 		//TODO Check this with the above
-		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
+		//Some use non numeric ids like in ODK. And so in such cases, we do not want to overwrite
+		//the existing ids.
+		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){

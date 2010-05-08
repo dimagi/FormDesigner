@@ -551,8 +551,12 @@ public class XformParser {
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE) != null)
 			formDef.setDescriptionTemplate(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE));
 
-		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null)
-			formDef.setId(Integer.parseInt(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID)));
+		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null){
+			try{
+				formDef.setId(Integer.parseInt(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID)));
+			}
+			catch(Exception ex){/*We may have non numeric ids like for odk. We just ignore them.*/}
+		}
 
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME) != null)
 			formDef.setName(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NAME));

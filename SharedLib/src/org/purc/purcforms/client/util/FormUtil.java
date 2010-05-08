@@ -68,7 +68,7 @@ public class FormUtil {
 	private static String multimediaUrlSuffix;
 	private static String fileOpenUrlSuffix;
 	private static String fileSaveUrlSuffix;
-	
+
 
 	/** 
 	 * The url to navigate to when one closes the form designer by selecting
@@ -90,7 +90,7 @@ public class FormUtil {
 
 	/** The default font family used by the form designer. */
 	private static String defaultFontFamily;
-	
+
 	/** The default font size, in pixels, used by the form designer. */
 	private static String defaultFontSize;
 
@@ -127,10 +127,10 @@ public class FormUtil {
 		textBox.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				char keyCode = event.getCharCode();
-				
+
 				if( keyCode == '%' || keyCode == '&' || keyCode == '(')
 					((TextBox) event.getSource()).cancelKey();
-				
+
 				if ((!Character.isDigit(keyCode)) && (keyCode != (char) KeyCodes.KEY_TAB)
 						&& (keyCode != (char) KeyCodes.KEY_BACKSPACE) && (keyCode != (char) KeyCodes.KEY_LEFT)
 						&& (keyCode != (char) KeyCodes.KEY_UP) && (keyCode != (char) KeyCodes.KEY_RIGHT)
@@ -170,7 +170,7 @@ public class FormUtil {
 		return new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				char keyCode = event.getCharCode();
-				
+
 				if( keyCode == '%' || keyCode == '&' || keyCode == '(')
 					((TextBox) event.getSource()).cancelKey();
 
@@ -507,11 +507,11 @@ public class FormUtil {
 	public static String getMultimediaUrl(){
 		return getHostPageBaseURL()+ multimediaUrlSuffix;
 	}
-	
+
 	public static String getFileOpenUrl(){
 		return getHostPageBaseURL()+ fileOpenUrlSuffix;
 	}
-	
+
 	public static String getFileSaveUrl(){
 		return getHostPageBaseURL()+ fileSaveUrlSuffix;
 	}
@@ -545,7 +545,7 @@ public class FormUtil {
 		//or http://dev.cell-life.org/openmrs/
 
 		String s = GWT.getHostPageBaseURL();
-		
+
 		/*int pos = s.lastIndexOf(':');
 		if(pos == -1)
 			return s;
@@ -559,7 +559,7 @@ public class FormUtil {
 			return s;
 
 		return s.substring(0,pos+1);*/
-		
+
 		int pos = s.indexOf("//");
 		if(pos == -1)
 			return s;
@@ -578,7 +578,7 @@ public class FormUtil {
 	public static String getDefaultFontFamily(){
 		return defaultFontFamily;
 	}
-	
+
 	public static String getDefaultFontSize(){
 		return defaultFontSize + PurcConstants.UNITS;
 	}
@@ -629,17 +629,17 @@ public class FormUtil {
 		//else
 		//	Window.alert("Trapped");
 	}
-	
+
 	public static void displayReponseError(Response response){
 		dlg.hide();
-		
+
 		ErrorDialog dialogBox = new ErrorDialog();
 		dialogBox.setText(LocaleText.get("unexpectedFailure"));
-		
+
 		String errorMessage = response.getHeader("PURCFORMS-ERROR-MESSAGE");
 		if(errorMessage == null || errorMessage.trim().length() == 0)
 			errorMessage = response.getStatusText();
-		
+
 		dialogBox.setErrorMessage(errorMessage);
 		String stackTrace = "NO STACK TRACE";
 		if(response.getText() != null && response.getText().trim().length() > 0)
@@ -696,12 +696,12 @@ public class FormUtil {
 					if(parent.toString().equals(parentNode.toString()))
 						break;
 				}
-				
+
 				String tempPath = "";
 				String id = ((Element)parent).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 				if(id != null && id.trim().length() > 0)
 					tempPath = "[@id='" + id + "']";
-				
+
 				path = removePrefix(parent.getNodeName()) + tempPath + "/" + path;
 				parent = parent.getParentNode();
 			}
@@ -766,21 +766,21 @@ public class FormUtil {
 	public static native boolean authenticate(String username, String password) /*-{
 		return $wnd.authenticateUser(username,password);
 	}-*/;
-	
-	
+
+
 	public static Image createImage(ImageResource resource){
 		return AbstractImagePrototype.create(resource).createImage();
 	}
-	
+
 	/**
-     * Evaluate scripts in an HTML string. Will eval both <script src=""></script>
-     * and <script>javascript here</scripts>.
-     *
-     * @param element a new HTML(text).getElement() e.g evalScripts(new HTML(response.getText()).getElement())
-     */
-    public static native void evalScripts(com.google.gwt.user.client.Element element) /*-{
+	 * Evaluate scripts in an HTML string. Will eval both <script src=""></script>
+	 * and <script>javascript here</scripts>.
+	 *
+	 * @param element a new HTML(text).getElement() e.g evalScripts(new HTML(response.getText()).getElement())
+	 */
+	public static native void evalScripts(com.google.gwt.user.client.Element element) /*-{
         var scripts = element.getElementsByTagName("script");
-    
+
         for (i=0; i < scripts.length; i++) {
             // if src, eval it, otherwise eval the body
             if (scripts[i].hasAttribute("src")) {
@@ -793,13 +793,13 @@ public class FormUtil {
             }
         }
     }-*/;
-    
-    
-    public static native String getElementValue(com.google.gwt.user.client.Element element) /*-{
+
+
+	public static native String getElementValue(com.google.gwt.user.client.Element element) /*-{
     	return element.value;
     }-*/;
-    
-    public static native void setElementValue(com.google.gwt.user.client.Element element, String value1, String value2) /*-{
+
+	public static native void setElementValue(com.google.gwt.user.client.Element element, String value1, String value2) /*-{
 		//element.value = value;
 		//element.onchange=function(){alert('yo men')};
 		//element.addEventListener('change',function(){alert(Math.round(0.60))},false)
@@ -807,7 +807,7 @@ public class FormUtil {
 		var val = Math.round(((Date.parse(value1) - Date.parse(value2))/86400000)/365.25);
 		//alert(val);
 		element.value = val;
-		
+
 		if(document.createEvent){
 			// dispatch for firefox + others
 			var evt = document.createEvent('HTMLEvents');
@@ -819,10 +819,10 @@ public class FormUtil {
 			var evt = document.createEventObject();
 			element.fireEvent('onchange',evt)
 		}
-		
+
 	}-*/;
-    
-    public static native void fireChangeEvent(com.google.gwt.user.client.Element element) /*-{
+
+	public static native void fireChangeEvent(com.google.gwt.user.client.Element element) /*-{
     	if(document.createEvent){
 			// dispatch for firefox + others
 			var evt = document.createEvent('HTMLEvents');
@@ -835,25 +835,35 @@ public class FormUtil {
 			element.fireEvent('onchange',evt)
 		}
     }-*/;
-    
-    
-    public static native int evaluateIntExpression(String expression) /*-{
+
+
+	public static native int evaluateIntExpression(String expression) /*-{
 	    return eval(expression);
 	}-*/;
-    
-    public static native double evaluateDoubleExpression(String expression) /*-{
+
+	public static native double evaluateDoubleExpression(String expression) /*-{
     	return eval(expression);
 	}-*/;
-    
-    public static native String evaluateStringExpression(String expression) /*-{
+
+	public static native String evaluateStringExpression(String expression) /*-{
     	return eval(expression);
 	}-*/;
-    
-    
-    public static void setElementFontSizeAndFamily(com.google.gwt.user.client.Element element){
-    	try{
+
+
+	public static void setElementFontSizeAndFamily(com.google.gwt.user.client.Element element){
+		try{
 			DOM.setStyleAttribute(element, "fontFamily", getDefaultFontFamily());
 			DOM.setStyleAttribute(element, "fontSize", getDefaultFontSize());
 		}catch(Exception ex){}
-    }
+	}
+
+	public static boolean isNumeric(String value){
+		try{
+			Integer.parseInt(value);
+			return true;
+		}
+		catch(Exception ex){}
+
+		return false;
+	}
 }

@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrosa.client.controller.FormDesignerController;
+import org.openrosa.client.model.FormDef;
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.model.FormDef;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import org.purc.purcforms.client.Context;
 
 
 /**

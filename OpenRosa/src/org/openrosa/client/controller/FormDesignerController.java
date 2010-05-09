@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openrosa.client.Context;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.view.CenterPanel;
 import org.openrosa.client.view.LeftPanel;
+import org.openrosa.client.xforms.XformBuilder;
+import org.openrosa.client.xforms.XformParser;
+import org.openrosa.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.AboutDialog;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSaveListener;
 import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
@@ -25,10 +28,7 @@ import org.purc.purcforms.client.view.LoginDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.PurcFormBuilder;
-import org.purc.purcforms.client.xforms.XformBuilder;
-import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.http.client.Request;
@@ -1272,7 +1272,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		//if(!isOfflineMode())
 		//	return;
 
-		if(isOfflineMode())
+		/*if(isOfflineMode())
 			saveTheForm();
 
 		DeferredCommand.addCommand(new Command(){
@@ -1305,7 +1305,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				});
 
 			}
-		});
+		});*/
 	}
 
 

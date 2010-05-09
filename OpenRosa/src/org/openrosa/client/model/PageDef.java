@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.xforms.XformBuilder;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -19,38 +18,38 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 
 
-/** The definition of a group of questions on a questionaire. 
+/** The definition of a page in a form or questionnaire. 
  * 
  * @author Daniel Kayiwa
  *
  */
-public class GroupDef implements Serializable{
+public class PageDef implements Serializable{
 
-	/** A list of questions in a group. */
+	/** A list of questions on a page. */
 	private Vector questions;
-	
-	/** List of child groups for this group. */
-	private List<GroupDef> groups;
+
+	/** The page number. */
+	private int pageNo = ModelConstants.NULL_ID;
 
 	/** The name of the page. */
 	private String name = ModelConstants.EMPTY_STRING;
 
 	/** The xforms label node for this page. */
 	private Element labelNode;
-	
+
 	/** The xforms group node for this page. */
 	private Element groupNode;
 
 	/** The form definition to which this page belongs. */
 	private FormDef parent;
 
-	
+
 	/**
 	 * Constructs a new page.
 	 * 
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(FormDef parent) {
+	public PageDef(FormDef parent) {
 		this.parent = parent;
 	}
 
@@ -60,8 +59,9 @@ public class GroupDef implements Serializable{
 	 * @param pageDef the page to copy.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(GroupDef pageDef,FormDef parent) {
+	public PageDef(PageDef pageDef,FormDef parent) {
 		this(parent);
+		setPageNo(pageDef.getPageNo());
 		setName(pageDef.getName());
 		copyQuestions(pageDef.getQuestions());
 	}
@@ -73,9 +73,10 @@ public class GroupDef implements Serializable{
 	 * @param pageNo the number of the page.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(String name,FormDef parent) {
+	public PageDef(String name, int pageNo,FormDef parent) {
 		this(parent);
 		setName(name);
+		setPageNo(pageNo);
 		setQuestions(questions);
 	}
 
@@ -87,10 +88,19 @@ public class GroupDef implements Serializable{
 	 * @param questions a list of questions in the page.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(String name,Vector questions,FormDef parent) {
+	public PageDef(String name, int pageNo,Vector questions,FormDef parent) {
 		this(parent);
 		setName(name);
+		setPageNo(pageNo);
 		setQuestions(questions);
+	}
+
+	public int getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
 	}
 
 	public String getName() {
@@ -144,8 +154,8 @@ public class GroupDef implements Serializable{
 	public void setQuestions(Vector questions) {
 		this.questions = questions;
 	}
-	
-	
+
+
 	/**
 	 * Gets the number of questions on this page.
 	 * 
@@ -157,7 +167,7 @@ public class GroupDef implements Serializable{
 		return questions.size();
 	}
 
-	
+
 	/**
 	 * Gets the question at a given position on this page.
 	 * 
@@ -169,8 +179,8 @@ public class GroupDef implements Serializable{
 			return null;
 		return (QuestionDef)questions.elementAt(index);
 	}
-	
-	
+
+
 	/**
 	 * Adds a question to the page.
 	 * 
@@ -183,7 +193,7 @@ public class GroupDef implements Serializable{
 		qtn.setParent(this);
 	}
 
-	
+
 	/**
 	 * Gets a question with a given variable name.
 	 * 
@@ -198,7 +208,7 @@ public class GroupDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getVariableName().equals(varName))
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
 			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
 				def = def.getRepeatQtnsDef().getQuestion(varName);
@@ -226,8 +236,8 @@ public class GroupDef implements Serializable{
 
 		return null;
 	}
-	
-	
+
+
 	public int getQuestionIndex(String varName){
 		if(questions == null)
 			return -1;
@@ -237,11 +247,11 @@ public class GroupDef implements Serializable{
 			if(def.getVariableName().equals(varName))
 				return i;
 		}
-		
+
 		return -1;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given identifier.
 	 * 
@@ -256,7 +266,7 @@ public class GroupDef implements Serializable{
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
 			if(def.getId() == id)
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
 			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
 				def = def.getRepeatQtnsDef().getQuestion(id);
@@ -268,13 +278,13 @@ public class GroupDef implements Serializable{
 		return null;
 	}
 
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
 
-	
+
 	/**
 	 * Copies a list of questions into this page.
 	 * 
@@ -288,7 +298,7 @@ public class GroupDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Removes a question from this page.
 	 * 
@@ -320,7 +330,7 @@ public class GroupDef implements Serializable{
 		return questions.removeElement(qtnDef);
 	}
 
-	
+
 	/**
 	 * Removes all questions from this page.
 	 * 
@@ -334,7 +344,7 @@ public class GroupDef implements Serializable{
 			removeQuestion((QuestionDef)questions.elementAt(0),formDef);
 	}
 
-	
+
 	/**
 	 * Gets the number of questions on this page.
 	 * 
@@ -346,7 +356,7 @@ public class GroupDef implements Serializable{
 		return questions.size();
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in the page.
 	 * 
@@ -356,7 +366,7 @@ public class GroupDef implements Serializable{
 		moveQuestionUp(questions,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in a list of questions.
 	 * 
@@ -421,7 +431,7 @@ public class GroupDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in the page.
 	 * 
@@ -431,7 +441,7 @@ public class GroupDef implements Serializable{
 		moveQuestionDown(questions,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in a list of questions.
 	 * 
@@ -547,7 +557,7 @@ public class GroupDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Gets the next question which has been converted to xforms and 
 	 * hence attached to an xforms document node, starting at a given 
@@ -567,7 +577,7 @@ public class GroupDef implements Serializable{
 		return (QuestionDef)questions.get(index);
 	}
 
-	
+
 	/**
 	 * Checks if this page contains a particular question.
 	 * 
@@ -578,7 +588,7 @@ public class GroupDef implements Serializable{
 		return questions.contains(qtn);
 	}
 
-	
+
 	/**
 	 * Updates the xforms document nodes referenced by this page and all its children.
 	 * 
@@ -593,13 +603,13 @@ public class GroupDef implements Serializable{
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
 		if(labelNode == null && groupNode == null && allQuestionsNew) //Must be new page{
-			;//XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
+			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 
 		if(labelNode != null)
 			XmlUtil.setTextNodeValue(labelNode,name);
 
-		//if(groupNode != null)
-		//	groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
+		if(groupNode != null)
+			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
 
 		Vector newQuestions = new Vector();
 		if(questions != null){
@@ -617,7 +627,7 @@ public class GroupDef implements Serializable{
 
 		for(int k = 0; k < newQuestions.size(); k++){
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
-			
+
 			//We do not update data nodes which deal with attributes.
 			if(questionDef.getDataNode() == null && !questionDef.getVariableName().contains("@")){
 				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
@@ -633,7 +643,7 @@ public class GroupDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Gets the first question which is not new, in a given list of questions,
 	 * starting at a given position.
@@ -656,7 +666,7 @@ public class GroupDef implements Serializable{
 		return null;
 	}
 
-	
+
 	/**
 	 * Checks if all question on this page are new.
 	 * 
@@ -674,7 +684,7 @@ public class GroupDef implements Serializable{
 		return true;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given text.
 	 * 
@@ -703,9 +713,11 @@ public class GroupDef implements Serializable{
 	 * 
 	 * @param pageDef
 	 */
-	public void refresh(GroupDef pageDef){
-		//if(pageNo == pageDef.getPageNo())
-		//	name = pageDef.getName();
+	public void refresh(PageDef pageDef){
+		if(pageNo == pageDef.getPageNo())
+			name = pageDef.getName();
+
+		Vector<QuestionDef> orderedQtns = new Vector<QuestionDef>();
 
 		int count = pageDef.getQuestionCount();
 		for(int index = 0; index < count; index++){
@@ -714,16 +726,28 @@ public class GroupDef implements Serializable{
 			if(questionDef == null)
 				continue; //Possibly this question was deleted on server
 			questionDef.refresh(qtn);
-			
+
+			orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
+
 			/*int index1 = this.getQuestionIndex(qtn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getQuestionCount() - 1){
 				this.getQuestions().removeElement(questionDef);
 				this.getQuestions().insertElementAt(questionDef, index);
 			}*/
 		}
+
+		//now add the new questions which have just been added by refresh.
+		count = getQuestionCount();
+		for(int index = 0; index < count; index++){
+			QuestionDef questionDef = getQuestionAt(index);
+			if(pageDef.getQuestion(questionDef.getVariableName()) == null)
+				orderedQtns.add(questionDef);
+		}
+
+		questions = orderedQtns;
 	}
 
-	
+
 	/**
 	 * Moves the question xforms document nodes by one position upwards.
 	 * 
@@ -764,7 +788,7 @@ public class GroupDef implements Serializable{
 
 	}
 
-	
+
 	/**
 	 * Updates the xforms instance data nodes referenced by this page's questions.
 	 * 
@@ -778,7 +802,7 @@ public class GroupDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
 	}
 
-	
+
 	/**
 	 * Builds the language translation nodes for text in this page and all its children.
 	 * 
@@ -786,18 +810,22 @@ public class GroupDef implements Serializable{
 	 * @param parentLangNode the language parent node for the page language nodes.
 	 */
 	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
-		if(labelNode == null || groupNode == null)
+		//if(labelNode == null || groupNode == null)
+		if(groupNode == null)
 			return;
 
 		String xpath = FormUtil.getNodePath(groupNode);
-		String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
-		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
+		
+		if(labelNode != null){
+			String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+			if(id != null && id.trim().length() > 0)
+				xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
 
-		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
-		parentLangNode.appendChild(node);
+			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+			parentLangNode.appendChild(node);
+		}
 
 		if(questions == null)
 			return;
@@ -806,7 +834,7 @@ public class GroupDef implements Serializable{
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
 	}
 
-	
+
 	/**
 	 * Removes all question change event listeners.
 	 */

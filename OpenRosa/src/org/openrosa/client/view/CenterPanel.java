@@ -1,12 +1,10 @@
 package org.openrosa.client.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.openrosa.client.Context;
+import org.openrosa.client.controller.ICenterPanel;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.view.FormDesignerWidget.Images;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.ICenterPanel;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
@@ -16,14 +14,11 @@ import org.purc.purcforms.client.controller.SubmitListener;
 import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
 import org.purc.purcforms.client.controller.WidgetSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.DesignSurfaceView;
 import org.purc.purcforms.client.view.PreviewView;
-import org.openrosa.client.view.PropertiesView;
-import org.purc.purcforms.client.widget.RuntimeWidgetWrapper;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -230,7 +225,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
 			if(formDef != null){
 				if(!previewView.isPreviewing())
-					loadPreview();
+					;//loadPreview();
 				else
 					previewView.moveToFirstWidget();
 			}
@@ -245,7 +240,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 	}
 
-	private void loadPreview(){
+	/*private void loadPreview(){
 		FormUtil.dlg.setText(LocaleText.get("loadingPreview"));
 		FormUtil.dlg.center();
 
@@ -267,7 +262,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 				}
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Sets up the design surface.
@@ -329,7 +324,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		previewView.setHeight("700"+PurcConstants.UNITS); //707"+PurcConstants.UNITS
 		previewView.setSubmitListener(this);
 		previewView.setDesignSurface(designSurfaceView);
-		previewView.setCenterPanel(this);
+		;//previewView.setCenterPanel(this);
 
 		scrollPanelPreview.setWidget(previewView);
 	}
@@ -380,7 +375,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			//previewView.setFormDef(formDef);
 
 			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
-				previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),null,true);
+				;//previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),null,true);
 
 			//This is necessary for those running in a non GWT mode to update the 
 			//scroll bars on loading the form.
@@ -437,7 +432,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			;//designSurfaceView.setLayout(formDef);
 		}
 		else
-			designSurfaceView.setLayoutXml(layoutXml,formDef);
+			;//designSurfaceView.setLayoutXml(layoutXml,formDef);
 
 		previewView.clearPreview();
 		tabs.selectTab(SELECTED_INDEX_PROPERTIES);
@@ -592,7 +587,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			FormDef frmDef = null;
 			if(Context.inLocalizationMode())
 				frmDef = formDef;
-			designSurfaceView.setLayoutXml(layoutXml,frmDef); //TODO This passed null formdef in localization mode
+			;//designSurfaceView.setLayoutXml(layoutXml,frmDef); //TODO This passed null formdef in localization mode
 
 			updateScrollPos();
 

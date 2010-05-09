@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.Context;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
-import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;

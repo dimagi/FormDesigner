@@ -224,8 +224,9 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
 			if(formDef != null){
-				if(!previewView.isPreviewing())
+				if(!previewView.isPreviewing()){
 					;//loadPreview();
+				}
 				else
 					previewView.moveToFirstWidget();
 			}

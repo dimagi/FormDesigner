@@ -45,6 +45,7 @@ public class XformConstants {
 	public static final String NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
 	public static final String NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
 	public static final String NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
+	public static final String NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"input";
 	public static final String NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
 	public static final String NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
 	public static final String NODE_NAME_REPEAT = PREFIX_XFORMS_AND_COLON+"repeat";
@@ -62,6 +63,7 @@ public class XformConstants {
 	public static final String NODE_NAME_ITEM_MINUS_PREFIX = "item";
 	public static final String NODE_NAME_ITEMSET_MINUS_PREFIX = "itemset";
 	public static final String NODE_NAME_INPUT_MINUS_PREFIX = "input";
+	public static final String NODE_NAME_UPLOAD_MINUS_PREFIX = "upload";
 	public static final String NODE_NAME_SELECT_MINUS_PREFIX = "select";
 	public static final String NODE_NAME_SELECT1_MINUS_PREFIX = "select1";
 	public static final String NODE_NAME_REPEAT_MINUS_PREFIX = "repeat";

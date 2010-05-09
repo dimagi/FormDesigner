@@ -1288,6 +1288,19 @@ public class FormDef implements Serializable{
 
 		return count;
 	}
+	
+	/**
+	 * Gets the question at a given position in the first page.
+	 * 
+	 * @param index the question position.
+	 * @return the question definition object.
+	 */
+	public QuestionDef getQuestionAt(int index){
+		if(pages == null)
+			return null;
+		
+		return  getPageAt(0).getQuestionAt(index);
+	}
 
 	public void updateRuleConditionValue(String origValue, String newValue){
 		for(int index = 0; index < getSkipRuleCount(); index++)

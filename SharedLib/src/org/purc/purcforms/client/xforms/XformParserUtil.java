@@ -203,7 +203,7 @@ public class XformParserUtil {
 				else
 					def.setDataType(QuestionDef.QTN_TYPE_TEXT);
 			}
-			else if((type.equals("xsd:integer") || type.equals(XformConstants.DATA_TYPE_INT)) || (type.indexOf("integer") != -1 || type.indexOf("int") != -1))
+			else if((type.equals("xsd:integer") || type.equals(XformConstants.DATA_TYPE_INT)) || (type.indexOf("integer") != -1 || (type.indexOf("int") != -1) && !type.equals("geopoint") ))
 				def.setDataType(QuestionDef.QTN_TYPE_NUMERIC);
 			else if(type.equals("xsd:decimal") || type.indexOf("decimal") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_DECIMAL);
@@ -223,6 +223,13 @@ public class XformParserUtil {
 					def.setDataType(QuestionDef.QTN_TYPE_AUDIO);
 				else
 					def.setDataType(QuestionDef.QTN_TYPE_IMAGE);
+			}
+			//TODO These two are used by ODK
+			else if(type.equalsIgnoreCase("binary")){
+				def.setDataType(QuestionDef.QTN_TYPE_IMAGE);
+			}
+			else if(type.equalsIgnoreCase("geopoint")){
+				def.setDataType(QuestionDef.QTN_TYPE_GPS);
 			}
 		}
 		else

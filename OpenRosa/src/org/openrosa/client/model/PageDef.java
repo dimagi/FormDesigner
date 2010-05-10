@@ -697,7 +697,8 @@ public class PageDef implements Serializable{
 
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			if(questionDef.getText().equals(text))
+			//if(questionDef.getText().equals(text)) //Some text may have description template and we do not want to consider it when comparing question text.
+			if(questionDef.getDisplayText().equals(text))
 				return questionDef;
 			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
 				questionDef = questionDef.getRepeatQtnsDef().getQuestionWithText(text);

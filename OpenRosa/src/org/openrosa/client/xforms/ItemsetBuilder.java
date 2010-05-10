@@ -77,7 +77,13 @@ public class ItemsetBuilder {
 				Entry<Integer,List<OptionDef>> entry = iterator.next();
 				List<OptionDef> list = entry.getValue();
 
-				OptionDef parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+				OptionDef parentOptionDef = null; //parentQuestionDef.getOption(entry.getKey());
+				
+				if(parentQuestionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)
+					parentOptionDef = parentQuestionDef.getOption(entry.getKey());
+				else if(parentQuestionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+					parentOptionDef = formDef.getDynamicOptionDef(parentQuestionDef.getId(), entry.getKey());
+				
 				if(parentOptionDef == null){
 					//Parent question options are not yet loaded.
 					//modelNode.removeChild(instanceNode);
@@ -211,6 +217,7 @@ public class ItemsetBuilder {
 				parentOptionDef = parentQuestionDef.getOption(entry.getKey());
 			else if(parentQuestionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				parentOptionDef = formDef.getDynamicOptionDef(parentQuestionDef.getId(), entry.getKey());
+			
 			if(parentOptionDef == null)
 				continue;
 

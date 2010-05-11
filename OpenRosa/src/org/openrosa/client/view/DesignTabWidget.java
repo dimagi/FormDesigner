@@ -59,6 +59,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 
 		leftPanel.setFormDesignerListener(controller);
 		leftPanel.addFormSelectionListener(this);
+		leftPanel.addFormSelectionListener(centerPanel.getFormSelectionListener());
 		
 		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
 		

@@ -1,23 +1,20 @@
 package org.openrosa.client.view;
 
-import org.purc.purcforms.client.Context;
+import org.openrosa.client.Context;
+import org.openrosa.client.model.Calculation;
+import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.OptionDef;
+import org.openrosa.client.model.PageDef;
+import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.model.RepeatQtnsDef;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.widget.DescTemplateWidget;
 import org.purc.purcforms.client.controller.IFormActionListener;
 import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.Calculation;
-import org.purc.purcforms.client.model.FormDef;
-import org.purc.purcforms.client.model.OptionDef;
-import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.model.RepeatQtnsDef;
-import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.view.DynamicListsView;
-import org.purc.purcforms.client.view.SkipRulesView;
-import org.purc.purcforms.client.view.ValidationRulesView;
-import org.purc.purcforms.client.widget.DescTemplateWidget;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;

@@ -987,4 +987,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	public WidgetPropertyChangeListener getWidgetPropertyChangeListener(){
 		return designSurfaceView;
 	}
+	
+	public IFormSelectionListener getFormSelectionListener(){
+		return propertiesView;
+	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="FormDesigner" default="dev" basedir=".">
+<project name="FormDesigner" default="gwtc" basedir=".">
   <!-- Configure path to GWT SDK -->
   <property name="gwt.sdk" location="../../gwt-2.0.3" />
 

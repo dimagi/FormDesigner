@@ -228,9 +228,10 @@ public class XformParserUtil {
 			else if(type.equalsIgnoreCase("binary")){
 				def.setDataType(QuestionDef.QTN_TYPE_IMAGE);
 			}
-			else if(type.equalsIgnoreCase("geopoint")){
+			else if(type.equalsIgnoreCase("geopoint"))
 				def.setDataType(QuestionDef.QTN_TYPE_GPS);
-			}
+			else if(type.equalsIgnoreCase("barcode"))
+				def.setDataType(QuestionDef.QTN_TYPE_BARCODE);
 		}
 		else
 			def.setDataType(QuestionDef.QTN_TYPE_TEXT); //QTN_TYPE_REPEAT

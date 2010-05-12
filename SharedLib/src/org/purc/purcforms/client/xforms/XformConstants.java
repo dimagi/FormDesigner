@@ -114,6 +114,7 @@ public class XformConstants {
 	public static final String DATA_TYPE_TEXT = "xsd:string";
 	public static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
 	public static final String DATA_TYPE_BINARY = "xsd:base64Binary";
+	public static final String DATA_TYPE_BARCODE = "barcode";
 
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String XPATH_VALUE_FALSE = "false()";

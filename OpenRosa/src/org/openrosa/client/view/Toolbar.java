@@ -8,27 +8,34 @@ import org.purc.purcforms.client.controller.ILocaleListChangeListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
+import com.extjs.gxt.ui.client.Style.ButtonScale;
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.Style.IconAlign;
+import com.extjs.gxt.ui.client.data.BaseModel;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.Info;
+import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.button.ButtonGroup;
+import com.extjs.gxt.ui.client.widget.button.SplitButton;
+import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PushButton;
 
 /**
- * This widget is the tool bar for the form design tab.
+ * This widget is the tool bar for the form designer.
  * 
- * @author daniel
+ * @author adewinter
  *
  */
 public class Toolbar extends Composite implements ILocaleListChangeListener{
@@ -58,39 +65,47 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		ImageResource undo();
 		ImageResource redo();
 		ImageResource refresh();
+		ImageResource emptyIcon();
+		ImageResource addChild();
+		ImageResource addDate();
+		ImageResource addNumeric();
+		ImageResource addDecimal();
+		ImageResource addMultSelect();
+		ImageResource addSingSelect();
+		ImageResource addText();
+		ImageResource load();
+		ImageResource menu();
+		ImageResource localization();
+		ImageResource showxml();
+		ImageResource newformmenu();
 	}
 	 
 	/** Main widget for this tool bar. */
-	private HorizontalPanel panel = new HorizontalPanel();
+	private ToolBar toolBar;
 	
 	/** The tool bar buttons. */
-	private PushButton btnAddNewItem;
-	private PushButton btnAddNewChildItem;
-	private PushButton btnDeleteItem;
-	private PushButton btnMoveItemUp;
-	private PushButton btnMoveItemDown;
-	private PushButton btnNewForm;
-	private PushButton btnOpenForm;
-	private PushButton btnSaveForm;
-	private PushButton btnAlignLeft;
-	private PushButton btnAlignRight;
-	private PushButton btnAlignTop;
-	private PushButton btnAlignBottom;
-	private PushButton btnSameWidth;
-	private PushButton btnSameHeight;
-	private PushButton btnSameSize;
-	private PushButton btnCut;
-	private PushButton btnCopy;
-	private PushButton btnPaste;
-	private PushButton btnRefresh;
-	private PushButton btnUndo;
-	private PushButton btnRedo;
+	private Menu menu;
+	private SplitButton menuBut;
+	private Button saveBut;
+	private Button saveasBut;
+	private Button openBut;
+	private Button xmlBut;
+	private Button locBut;
+	private Button addSelect;
+	private Button txtBut;
+	private Button intBut;
+	private Button decBut;
+	private Button dateBut;
+	private Button multBut;
+	private Button singBut;
+	private Button newBut;
+	private SplitButton splitItem;
+	private Button bcut,bcopy,bpaste;
 	
-	/** Widget for separating tool bar buttons from each other. */
-	private Label separatorWidget = new Label("  ");
+
 	
 	/** Widget to display the list of languages or locales. */
-	private ListBox cbLanguages = new ListBox(false);
+	private ComboBox<BaseModel> cb;
 	
 	/** The images for the tool bar icons. */
 	private final Images images;
@@ -98,13 +113,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
 	
-	Button btnText;
-	Button btnNumeric;
-	Button btnDecimal;
-	Button btnDate;
-	Button btnSingle;
-	Button btnMulti;
+	//This should be localized in the same way everything else is, eventually.
+	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
+			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Show XML",
+			"New Xform"};
 	
+	
+
 	
 	/**
 	 * Creates a new instance of the tool bar.
@@ -117,150 +132,299 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		this.controller = controller;
 		setupToolbar();
 		setupClickListeners();
-		initWidget(panel);
+//		initWidget(toolBar);
 	}
 	
 	/**
 	 * Sets up the tool bar.
 	 */
 	private void setupToolbar(){
-		btnNewForm = new PushButton(FormUtil.createImage(images.newform()));
-		btnOpenForm = new PushButton(FormUtil.createImage(images.open()));
-		btnSaveForm = new PushButton(FormUtil.createImage(images.save()));
+	    toolBar = new ToolBar();  
+	    
+	    ButtonGroup group = new ButtonGroup(1);
+	    group.setHeading("Main Menu");
+	  
+		menuBut = new SplitButton(buttonLabels[7]);
+		menuBut.setIcon(AbstractImagePrototype.create(images.menu()));
+		menuBut.setScale(ButtonScale.LARGE);
+		menuBut.setIconAlign(IconAlign.TOP);
+		menuBut.setArrowAlign(ButtonArrowAlign.RIGHT);
 		
-		btnAddNewItem = new PushButton(FormUtil.createImage(images.add()));
-		btnAddNewChildItem = new PushButton(FormUtil.createImage(images.addchild()));
-		btnDeleteItem = new PushButton(FormUtil.createImage(images.delete()));
-		btnMoveItemUp = new PushButton(FormUtil.createImage(images.moveup()));
-		btnMoveItemDown = new PushButton(FormUtil.createImage(images.movedown()));
+		menu = new Menu();
+		menu.addStyleName("myMenu");
 		
-		btnAlignLeft = new PushButton(FormUtil.createImage(images.justifyleft()));
-		btnAlignRight = new PushButton(FormUtil.createImage(images.justifyright()));
-		btnAlignTop = new PushButton(FormUtil.createImage(images.alignTop()));
-		btnAlignBottom = new PushButton(FormUtil.createImage(images.alignBottom()));
-		btnSameWidth = new PushButton(FormUtil.createImage(images.samewidth()));
-		btnSameHeight = new PushButton(FormUtil.createImage(images.sameheight()));
-		btnSameSize = new PushButton(FormUtil.createImage(images.samesize()));
+		newBut = new Button(buttonLabels[13]);
+		newBut.setIcon(AbstractImagePrototype.create(images.newformmenu()));
+		newBut.setScale(ButtonScale.LARGE);
+		newBut.setIconAlign(IconAlign.LEFT);
+		newBut.addStyleName("myMenuButton");
 		
-		btnCut = new PushButton(FormUtil.createImage(images.cut()));
-		btnCopy = new PushButton(FormUtil.createImage(images.copy()));
-		btnPaste = new PushButton(FormUtil.createImage(images.paste()));
-		btnRefresh = new PushButton(FormUtil.createImage(images.refresh()));
+		saveBut = new Button(buttonLabels[8]);
+		saveBut.setIcon(AbstractImagePrototype.create(images.save()));
+		saveBut.setScale(ButtonScale.LARGE);
+		saveBut.setIconAlign(IconAlign.LEFT);
+		saveBut.addStyleName("myMenuButton");
+	    
+		saveasBut = new Button(buttonLabels[9]);
+		saveasBut.setIcon(AbstractImagePrototype.create(images.emptyIcon()));
+		saveasBut.setScale(ButtonScale.LARGE);
+		saveasBut.setIconAlign(IconAlign.LEFT);
+		saveasBut.addStyleName("myMenuButton");
 		
-		btnUndo = new PushButton(FormUtil.createImage(images.undo()));
-		btnRedo = new PushButton(FormUtil.createImage(images.redo()));
+		openBut = new Button(buttonLabels[10]);
+		openBut.setIcon(AbstractImagePrototype.create(images.load()));
+		openBut.setScale(ButtonScale.LARGE);
+		openBut.setIconAlign(IconAlign.LEFT);
+		openBut.addStyleName("myMenuButton");
+	    
+		xmlBut = new Button(buttonLabels[12]);
+		xmlBut.setIcon(AbstractImagePrototype.create(images.showxml()));
+		xmlBut.setScale(ButtonScale.LARGE);
+		xmlBut.setIconAlign(IconAlign.LEFT);
+		xmlBut.addStyleName("myMenuButton");
+	    
+		locBut = new Button(buttonLabels[11]);
+		locBut.setIcon(AbstractImagePrototype.create(images.localization()));
+		locBut.setScale(ButtonScale.LARGE);
+		locBut.setIconAlign(IconAlign.LEFT);
+		locBut.addStyleName("myMenuButton");
 		
-		btnText = new Button("Text");
-		btnNumeric = new Button("Numeric");
-		btnDecimal = new Button("Decimal");
-		btnDate = new Button("Date");
-		btnSingle = new Button("Single");
-		btnMulti = new Button("Multi");
+		menu.add(newBut);
+		menu.add(openBut);
+		menu.add(saveBut);
+		menu.add(saveasBut);
+		menu.add(xmlBut);
+		menu.add(locBut);
 		
-		btnNewForm.setTitle(LocaleText.get("newForm"));
-		btnSaveForm.setTitle(LocaleText.get("save"));
+		menuBut.setMenu(menu);
+		group.addButton(menuBut);
+		toolBar.add(group);
 		
-		btnAddNewItem.setTitle(LocaleText.get("addNew"));
-		btnAddNewChildItem.setTitle(LocaleText.get("addNewChild"));
-		btnDeleteItem.setTitle(LocaleText.get("deleteSelected"));
-		btnMoveItemUp.setTitle(LocaleText.get("moveUp"));
-		btnMoveItemDown.setTitle(LocaleText.get("moveDown"));
+	    group = new ButtonGroup(2);
+	    group.setHeading("Add Questions");
+	    splitItem = new SplitButton(buttonLabels[0]);  
+	    splitItem.setIcon(AbstractImagePrototype.create(images.add()));
+	    splitItem.setScale(ButtonScale.LARGE);
+	    splitItem.setIconAlign(IconAlign.TOP);
+	    splitItem.setArrowAlign(ButtonArrowAlign.RIGHT);
+	    menu = new Menu();
+	    menu.addStyleName("myMenu");
+	    txtBut = new Button(buttonLabels[1]);
+	    txtBut.setIcon(AbstractImagePrototype.create(images.addText()));
+	    txtBut.setScale(ButtonScale.LARGE);
+	    txtBut.setIconAlign(IconAlign.LEFT);
+	    txtBut.addStyleName("myMenuButton");
+	    
+	    
+	    intBut = new Button(buttonLabels[2]);
+	    intBut.setIcon(AbstractImagePrototype.create(images.addNumeric()));
+	    intBut.setScale(ButtonScale.LARGE);
+	    intBut.setIconAlign(IconAlign.LEFT);
+	    intBut.addStyleName("myMenuButton");
+	    decBut = new Button(buttonLabels[3]);
+	    decBut.setIcon(AbstractImagePrototype.create(images.addDecimal()));
+	    decBut.setScale(ButtonScale.LARGE);
+	    decBut.setIconAlign(IconAlign.LEFT);
+	    decBut.addStyleName("myMenuButton");
+	    dateBut = new Button(buttonLabels[4]);
+	    dateBut.setIcon(AbstractImagePrototype.create(images.addDate()));
+	    dateBut.setScale(ButtonScale.LARGE);
+	    dateBut.setIconAlign(IconAlign.LEFT);
+	    dateBut.addStyleName("myMenuButton");
+	    multBut = new Button(buttonLabels[5]);
+	    multBut.setIcon(AbstractImagePrototype.create(images.addMultSelect()));
+	    multBut.setScale(ButtonScale.LARGE);
+	    multBut.setIconAlign(IconAlign.LEFT);
+	    multBut.addStyleName("myMenuButton");
+	    singBut = new Button(buttonLabels[6]);
+	    singBut.setIcon(AbstractImagePrototype.create(images.addSingSelect()));
+	    singBut.setScale(ButtonScale.LARGE);
+	    singBut.setIconAlign(IconAlign.LEFT);
+	    singBut.addStyleName("myMenuButton");
+
+	    menu.add(txtBut);  
+	    menu.add(intBut);  
+	    menu.add(decBut);
+	    menu.add(dateBut);
+	    menu.add(multBut);
+	    menu.add(singBut);
+	    splitItem.setMenu(menu);  
+	    group.addButton(splitItem);
+	    
+	    addSelect = new Button("Add Select Option");
+	    addSelect.setIcon(AbstractImagePrototype.create(images.addchild()));
+	    addSelect.setIconAlign(IconAlign.TOP);
+	    addSelect.setScale(ButtonScale.LARGE);
+	    group.addButton(addSelect);
+	    group.setHeight(85);
+//	    group.setAutoWidth(false);
+//	    group.setWidth(500);
+	    
+	    toolBar.add(group);
+	    
+	    group = new ButtonGroup(3);
+	    group.setHeading("Clipboard");
+	    
+	    bcut = new Button("Cut", AbstractImagePrototype.create(images.cut()));
+	    bcut.setScale(ButtonScale.LARGE);
+	    bcut.setIconAlign(IconAlign.TOP);
+	    bcopy = new Button("Copy", AbstractImagePrototype.create(images.copy()));
+	    bcopy.setScale(ButtonScale.LARGE);
+	    bcopy.setIconAlign(IconAlign.TOP);
+	    bpaste = new Button("Paste", AbstractImagePrototype.create(images.paste()));
+	    bpaste.setScale(ButtonScale.LARGE);
+	    bpaste.setIconAlign(IconAlign.TOP);
+	    group.addButton(bcut);
+	    group.addButton(bcopy);
+	    group.addButton(bpaste);
+	    group.setHeight(95);
+	    toolBar.add(group);
+	    
+	    group = new ButtonGroup(2);
+	    group.setHeading("Localization");
+	    group.setHeight(97);
+	    group.setBodyStyle("myGroupStyle");
+		AbstractImagePrototype spacer = AbstractImagePrototype.create(images.emptyIcon());
+		Button b = new Button();
+		b.setText("Edit Locales");
+		b.setBorders(true);
+//		b.setIcon(spacer);
+		b.setScale(ButtonScale.SMALL);
+		group.addButton(b);
 		
-		btnCut.setTitle(LocaleText.get("cut"));
-		btnCopy.setTitle(LocaleText.get("copy"));
-		btnPaste.setTitle(LocaleText.get("paste"));
-		btnRefresh.setTitle(LocaleText.get("refresh"));
-		
-		btnAlignLeft.setTitle(LocaleText.get("alignLeft"));
-		btnAlignRight.setTitle(LocaleText.get("alignRight"));
-		btnAlignTop.setTitle(LocaleText.get("alignTop"));
-		btnAlignBottom.setTitle(LocaleText.get("alignBottom"));
-		btnSameWidth.setTitle(LocaleText.get("makeSameWidth"));
-		btnSameHeight.setTitle(LocaleText.get("makeSameHeight"));
-		btnSameSize.setTitle(LocaleText.get("makeSameSize"));
-		
-		btnUndo.setTitle(LocaleText.get("undo"));
-		btnRedo.setTitle(LocaleText.get("redo"));
-		
-		//if(Context.isOfflineMode())
-		//	panel.add(btnNewForm);
-		
-		//panel.add(btnOpenForm);
-		
-		//panel.add(btnSaveForm);
-		
-		//panel.add(separatorWidget);
-		
-		panel.add(btnAddNewItem);
-		panel.add(btnAddNewChildItem);
-		panel.add(btnDeleteItem);
-		panel.add(separatorWidget);
-		panel.add(btnMoveItemUp);
-		panel.add(btnMoveItemDown);
-		
-		panel.add(separatorWidget);
-		panel.add(btnCut);
-		panel.add(btnCopy);
-		panel.add(btnPaste);
-		
-		//panel.add(separatorWidget);
-		//panel.add(btnRefresh);
-		
-		/*panel.add(separatorWidget);
-		panel.add(btnAlignLeft);
-		panel.add(btnAlignRight);
-		panel.add(btnAlignTop);
-		panel.add(btnAlignBottom);
-		
-		panel.add(separatorWidget);
-		panel.add(btnSameWidth);
-		panel.add(btnSameHeight);
-		panel.add(btnSameSize);*/
-		
-		//panel.add(separatorWidget);
-		//panel.add(btnUndo);
-		//panel.add(btnRedo);
-		
-		panel.add(separatorWidget);
-		panel.add(separatorWidget);
-		panel.add(btnText);
-		panel.add(btnNumeric);
-		panel.add(btnDecimal);
-		panel.add(btnDate);
-		panel.add(btnSingle);
-		panel.add(btnMulti);
-		
-		Label label = new Label(FormDesignerUtil.getTitle());
-		panel.add(label);
-		panel.setCellWidth(label,"100%");
-		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_CENTER);
-		
-		label = new Label(LocaleText.get("language"));
-		panel.add(label);
-		panel.setCellHorizontalAlignment(label,HasHorizontalAlignment.ALIGN_RIGHT);
-		
+//		b = new Button(); //blank
+//		group.addButton(b);
+		group.setButtonAlign(HorizontalAlignment.CENTER);
+	    Text lang = new Text();
+	    lang.setText("Language :");
+	    group.add(lang);
+	    
+		cb = new ComboBox<BaseModel>();
+		cb.setDisplayField("name");
 		populateLocales();
+		cb.setValue(cb.getStore().getAt(0));
+		cb.addSelectionChangedListener(new SelectionChangedListener<BaseModel>() {
+			public void selectionChanged(SelectionChangedEvent<BaseModel> se) {
+				
+				if (se.getSelection().size() > 0) {
+					controller.changeLocale(new Locale((String)se.getSelectedItem().get("key"),(String)se.getSelectedItem().get("name")));
+		        	Info.display("Alert","Language Selected: "+se.getSelectedItem().get("name"));
+		        }
+			 }});
+		group.add(cb);
 		
-		cbLanguages.addChangeHandler(new ChangeHandler(){
-			public void onChange(ChangeEvent event){
-				int index = getCurrentLocaleIndex();
-				ListBox listBox = (ListBox)event.getSource();
-				if(!controller.changeLocale(new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()))))
-					cbLanguages.setSelectedIndex(index);
-			}
-		});
 		
-		panel.add(cbLanguages);
-		panel.setCellHorizontalAlignment(cbLanguages,HasHorizontalAlignment.ALIGN_RIGHT);
-		
-		//Set a 3 pixels spacing between tool bar buttons.
-		panel.setSpacing(3);
+		toolBar.add(group);    
+	}
+	
+	public ToolBar getToolBar(){
+		return toolBar;
 	}
 	
 	/**
 	 * Setup button click event handlers.
 	 */
 	private void setupClickListeners(){
+		
+		addSelect.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.addNewChildItem();
+				
+			}
+		});
+		
+		bcut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.cutItem();			
+			}
+	});
+	bcopy.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.copyItem();
+		}
+	});
+	bpaste.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.pasteItem();
+		}
+	});
+	txtBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+			splitItem.setText(txtBut.getText());
+			splitItem.setIcon(txtBut.getIcon());
+			splitItem.hideMenu();
+		}
+		
+	});
+	intBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_NUMERIC);
+			splitItem.setText(intBut.getText());
+			splitItem.setIcon(intBut.getIcon());
+			splitItem.hideMenu();
+
+		}
+	});
+	decBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_DECIMAL);
+			splitItem.setText(decBut.getText());
+			splitItem.setIcon(decBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	dateBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			// TODO Auto-generated method stub
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_DATE);
+			splitItem.setText(dateBut.getText());
+			splitItem.setIcon(dateBut.getIcon());
+			splitItem.hideMenu();
+
+		}
+	});
+	singBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+			splitItem.setText(singBut.getText());
+			splitItem.setIcon(singBut.getIcon());
+			splitItem.hideMenu();
+
+		}
+	});
+	multBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+			splitItem.setText(multBut.getText());
+			splitItem.setIcon(multBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	splitItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			String t = splitItem.getText();
+			if(t.equals(buttonLabels[0])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+			}else if(t.equals(buttonLabels[1])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+			}else if(t.equals(buttonLabels[2])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_NUMERIC);
+			}else if(t.equals(buttonLabels[3])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_DECIMAL);
+			}else if(t.equals(buttonLabels[4])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_DATE);
+			}else if(t.equals(buttonLabels[5])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+			}else if(t.equals(buttonLabels[6])){
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+			}else{
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+			}	
+		}
+	});
+	
+		/*
 		btnNewForm.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){controller.newForm();}});
 		
@@ -336,20 +500,27 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		btnMulti.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_MULTIPLE);}});
+		*/
 	}
 	
 	/**
 	 * Populates the locale drop down with a list of locales supported by the form designer.
 	 */
 	public void populateLocales(){
-		cbLanguages.clear();
-		
+		ListStore<BaseModel> slocales = new ListStore<BaseModel>();
 		List<Locale> locales = Context.getLocales();
+		
 		if(locales == null)
 			return;
 		
-		for(Locale locale : locales)
-			cbLanguages.addItem(locale.getName(), locale.getKey());
+		for(Locale locale : locales){
+			BaseModel bm = new BaseModel();
+			bm.set("key", locale.getKey());
+			bm.set("name",locale.getName());
+			slocales.add(bm);
+		}
+		
+		cb.setStore(slocales);
 	}
 	
 	

@@ -2,6 +2,41 @@ body, html {
   height: 100%;
 }
 
+.myMenuButton {
+  width: 150px;
+  text-align: left;
+}
+
+.myMenu {
+  text-align: left;
+}
+
+.x-btn-group{
+	margin-left: auto;
+	margin-right: auto;	
+}
+
+.myPropsStyle{
+	background-color: #FFFFFF;
+	border: 1px solid #99AACC;
+}
+
+.myFormTreeView{
+	border: 1px solid #99AACC;
+	background-color: #FFFFFF;
+
+}
+
+.myGroupStyle{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.x-btn-mc {
+	text-align: left;
+}
+
 .cw-StackPanelHeader {
   padding-left: 7px;
   font-weight: bold;

@@ -56,7 +56,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(TAB_INDEX_DESIGN);
-		initWidget(tabs);
+		
+		//////////////////////////////!!!!!!!!!!!!!!!!!
+		initWidget(designWidget);   /// <<<<<<---------------------- This is a gruesome shortcut
+		///////////////////////////////////////////////   The whole 'CenterWidget' should be removed
+		// and designWidget should be directly called from FormDesignWidget.java
+		
 		//tabs.addSelectionHandler(this);
 
 		FormUtil.maximizeWidget(tabs);

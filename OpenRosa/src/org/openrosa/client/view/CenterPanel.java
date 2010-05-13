@@ -146,11 +146,13 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		initLanguageXml();
 		initPreview();
 		initModelXml();*/
-
+		
+		
+		propertiesView.addStyleName("myPropsStyle");
 		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(0);
-		initWidget(tabs);
+		initWidget(propertiesView);
 		tabs.addSelectionHandler(this);
 
 		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);

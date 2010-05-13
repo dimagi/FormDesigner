@@ -15,6 +15,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -37,7 +38,7 @@ public class LeftPanel extends Composite {
 	}
 
 	/** The GWT stack panel which serves as the main or root widget. */
-	private DecoratedStackPanel stackPanel = new DecoratedStackPanel();
+	private FlowPanel stackPanel = new FlowPanel();
 	
 	/** Widgets which displays the list of forms in a tree view. */
 	private FormsTreeView formsTreeView;
@@ -50,10 +51,12 @@ public class LeftPanel extends Composite {
 	 */
 	public LeftPanel(Images images, IFormSelectionListener formSelectionListener) {
 		formsTreeView = new FormsTreeView(images,formSelectionListener);
-		add(images,formsTreeView , images.tasksgroup(), "Form Outline");
+		stackPanel.add(formsTreeView);
+//		add(images,formsTreeView , images.tasksgroup(), "Form Outline");
 		FormUtil.maximizeWidget(stackPanel);
 
 		initWidget(stackPanel);
+		stackPanel.addStyleName("myFormTreeView");
 	}
 
 	/**
@@ -79,7 +82,7 @@ public class LeftPanel extends Composite {
 	}
 
 	private void add(Images images, Widget widget, ImageResource imageProto,String caption) {
-		stackPanel.add(widget, FormDesignerUtil.createHeaderHTML(imageProto, caption), true);
+//		stackPanel.add(widget, FormDesignerUtil.createHeaderHTML(imageProto, caption), true);
 	}
 
 	/**

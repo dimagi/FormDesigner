@@ -9,6 +9,12 @@ import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,7 +31,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class DesignTabWidget extends Composite implements IFormSelectionListener{
 	
 	/** The main widget for the form designer. */
-	private VerticalPanel panel;
+	private ContentPanel panel;
 
 
 	/**
@@ -45,7 +51,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	private FormDesignerController controller = new FormDesignerController(centerPanel,leftPanel);
 
 	/** The splitter between the left and center panel. */
-	private HorizontalSplitPanel hsplitClient;
+
 
 	/** Flag to tell whether we in in the resize mode of the splitter. */
 	private boolean isResizing = false;
@@ -69,8 +75,42 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 
 
 	private void initDesigner(){
-		panel = new VerticalPanel();
+		
+		
+	    panel = new ContentPanel();  
+	    panel.setCollapsible(false);  
+	    panel.setFrame(true);  
+	    panel.setHeading("Purc Form Designer");  
+	    BorderLayout layout = new BorderLayout();
+	    panel.setLayout(layout); 
+	    panel.setBorders(false);
+	    
+		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller);
+		Context.addLocaleListChangeListener(toolbar);
+		panel.setTopComponent(toolbar.getToolBar());
+	    
+	    BorderLayoutData leftData = new BorderLayoutData(LayoutRegion.WEST,300);  
+	    leftData.setSplit(true);  
+	    leftData.setCollapsible(true);  
+	    leftData.setMargins(new Margins(10,5,10,10));
+	    
+	    panel.add(leftPanel,leftData);
+	    
+	    BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER,300);  
+	    centerData.setMargins(new Margins(10,10,10,0));  
+	    centerData.setSplit(true); 
+	    panel.add(centerPanel,centerData);
+	    
+//	    panel.setSize(1500,768);
+		panel.expand();
+		layout.expand(LayoutRegion.CENTER);
+		layout.expand(LayoutRegion.WEST);
+		initWidget(panel);
 
+		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
+/*		
+ 		panel = new VerticalPanel();
+ 
 		hsplitClient = new HorizontalSplitPanel();
 		hsplitClient.setLeftWidget(leftPanel);
 		hsplitClient.setRightWidget(centerPanel);
@@ -84,14 +124,15 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 
 		panel.add(hsplitClient);
 
-		//dockPanel.add(panel/*, DockPanel.CENTER*/);
+		//dockPanel.add(panel, DockPanel.CENTER);
 
 		//FormUtil.maximizeWidget(panel);
 		//FormUtil.maximizeWidget(hsplitClient);
 
 		initWidget(panel);
-
+		
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
+		*/
 	}
 	
 	
@@ -109,23 +150,23 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 		if(shortcutHeight > 100){
 			//centerPanel.adjustHeight(shortcutHeight + PurcConstants.UNITS);
 			//centerPanel.onWindowResized(width, height);
-			hsplitClient.setHeight(shortcutHeight+60+PurcConstants.UNITS);
+			panel.setHeight(shortcutHeight+60+PurcConstants.UNITS);
 		}
 	}
 	
 	
-	@Override
-	public void onBrowserEvent(Event event) {
-		//TODO Firefox doesn't seem to give us mouse events when resizing.
-		if(isResizing)
-			centerPanel.onVerticalResize();
-
-		isResizing = false;
-		if(hsplitClient.isResizing()){
-			isResizing = true;
-			centerPanel.onVerticalResize();
-		}
-	}
+//	@Override
+//	public void onBrowserEvent(Event event) {
+//		//TODO Firefox doesn't seem to give us mouse events when resizing.
+//		if(isResizing)
+//			centerPanel.onVerticalResize();
+//
+//		isResizing = false;
+//		if(hsplitClient.isResizing()){
+//			isResizing = true;
+//			centerPanel.onVerticalResize();
+//		}
+//	}
 	
 	public void loadForm(FormDef formDef){
 		leftPanel.loadForm(formDef);

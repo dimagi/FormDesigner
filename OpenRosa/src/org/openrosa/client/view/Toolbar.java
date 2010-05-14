@@ -2,6 +2,7 @@ package org.openrosa.client.view;
 
 import java.util.List;
 
+import org.openrosa.client.controller.IFileListener;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.ILocaleListChangeListener;
@@ -27,6 +28,8 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -78,6 +81,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		ImageResource localization();
 		ImageResource showxml();
 		ImageResource newformmenu();
+		ImageResource validate();
 	}
 	 
 	/** Main widget for this tool bar. */
@@ -102,20 +106,21 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	private SplitButton splitItem;
 	private Button bcut,bcopy,bpaste;
 	
+	private IFileListener fileListener;
 
 	
 	/** Widget to display the list of languages or locales. */
 	private ComboBox<BaseModel> cb;
 	
 	/** The images for the tool bar icons. */
-	private final Images images;
+	public final Images images;
 	
 	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
 	
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
-			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Show XML",
+			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
 			"New Xform"};
 	
 	
@@ -127,10 +132,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	 * @param images the images for tool bar icons.
 	 * @param controller listener to the tool bar button click events.
 	 */
-	public Toolbar(Images images,IFormDesignerListener controller){
+	public Toolbar(Images images,IFormDesignerListener controller,IFileListener fileListener){
 		this.images = images;
 		this.controller = controller;
-		setupToolbar();
+		setupToolbar(fileListener);
 		setupClickListeners();
 //		initWidget(toolBar);
 	}
@@ -138,9 +143,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	/**
 	 * Sets up the tool bar.
 	 */
-	private void setupToolbar(){
+	private void setupToolbar(IFileListener fileListener){
 	    toolBar = new ToolBar();  
-	    
+	    this.fileListener = fileListener;
 	    ButtonGroup group = new ButtonGroup(1);
 	    group.setHeading("Main Menu");
 	  
@@ -423,6 +428,29 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 			}	
 		}
 	});
+	
+	saveBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+		@Override
+		public void componentSelected(ButtonEvent ce) {
+			// TODO Auto-generated method stub
+			fileListener.onSave();
+			menuBut.hideMenu();
+			
+		}
+	});
+	
+	xmlBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+		@Override
+		public void componentSelected(ButtonEvent ce) {
+			// TODO Auto-generated method stub
+			fileListener.onSave();
+			menuBut.hideMenu();
+			
+		}
+	});
+	
 	
 		/*
 		btnNewForm.addClickHandler(new ClickHandler(){

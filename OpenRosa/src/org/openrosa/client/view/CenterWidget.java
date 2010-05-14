@@ -42,7 +42,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
 
 	private XformsTabWidget xformsWidget = new XformsTabWidget();
-	private DesignTabWidget designWidget = new DesignTabWidget();
+	private DesignTabWidget designWidget = new DesignTabWidget(this);
 	private TextTabWidget itextWidget = new TextTabWidget();
 
 	private FormDef formDef;
@@ -214,7 +214,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			itextWidget.loadItext(new ListStore<ItextModel>());
 
 		xformsWidget.setXform(xml);
-		tabs.selectTab(TAB_INDEX_XFORMS);
+		xformsWidget.showWindow();
+//		tabs.selectTab(TAB_INDEX_XFORMS);
+		
 	}
 
 	public void onFormItemSelected(Object formItem){

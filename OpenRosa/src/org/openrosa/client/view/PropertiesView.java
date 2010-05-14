@@ -266,8 +266,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
 
-		table.setWidth("100%");
-		cellFormatter.setWidth(0, 0, "20%");
+//		table.setWidth("100%");
+//		cellFormatter.setWidth(0, 0, "20%");
 		//cellFormatter.setColSpan(0, 0, 2);
 		
 		//cellFormatter.setWidth(9, 0, "20"+PurcConstants.UNITS);

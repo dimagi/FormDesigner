@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrosa.client.controller.FormDesignerController;
+import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.fx.FxConfig;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -59,8 +61,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	/** List of form item selection listeners. */
 	private List<IFormSelectionListener> formSelectionListeners = new ArrayList<IFormSelectionListener>();
 	
-	
-	public DesignTabWidget(){
+	public DesignTabWidget(IFileListener fileListener){
 		leftPanel.showFormAsRoot();
 
 		leftPanel.setFormDesignerListener(controller);
@@ -69,12 +70,12 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 		
 		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
 		
-		initDesigner();  
+		initDesigner(fileListener);  
 		centerPanel.setFormChangeListener(leftPanel.getFormChangeListener());
 	}
 
 
-	private void initDesigner(){
+	private void initDesigner(IFileListener fileListener){
 		
 		
 	    panel = new ContentPanel();  
@@ -85,7 +86,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    panel.setLayout(layout); 
 	    panel.setBorders(false);
 	    
-		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller);
+		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller,fileListener);
 		Context.addLocaleListChangeListener(toolbar);
 		panel.setTopComponent(toolbar.getToolBar());
 	    
@@ -95,6 +96,8 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    leftData.setMargins(new Margins(10,5,10,10));
 	    
 	    panel.add(leftPanel,leftData);
+	    
+	    
 	    
 	    BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER,300);  
 	    centerData.setMargins(new Margins(10,10,10,0));  

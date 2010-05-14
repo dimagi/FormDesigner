@@ -43,9 +43,9 @@ body, html {
   font-size: 1.4em;
 }
 
-.cw-FlexTable td {
-  border: 1px solid #BBBBBB;
-  padding: 3px;
+.cw-FlexTable {
+  border: 0px solid #BBBBBB;
+  padding: 0px;
 }
 
 .formDesigner-AboutText {

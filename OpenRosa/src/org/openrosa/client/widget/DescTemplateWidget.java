@@ -2,9 +2,9 @@ package org.openrosa.client.widget;
 
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormDesignerUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

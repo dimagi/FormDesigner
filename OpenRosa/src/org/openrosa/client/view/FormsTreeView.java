@@ -739,28 +739,76 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
 
-				addNewOptionDef(questionDef, item);
+				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+					addNewOptionDef(questionDef, item);
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
 			}
 			else if(userObj instanceof OptionDef){
 				//addNewOptionDef();
-			}
-			else if(userObj instanceof PageDef){
-				int id = ++nextPageId;
-				PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)((TreeModelItem)item.getParent()).getUserObject());
-				//item = addImageItem(item.getParent(), pageDef.getName(), images.drafts(),pageDef,null);
-				item = addImageItem((TreeModelItem)item.getParent(), pageDef.getName(),pageDef);
-				addFormDefItem(pageDef,(TreeModelItem)item.getParent());
+				
+				int id = ++nextQuestionId;
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)item.getParent()).getUserObject());
+				questionDef.setDataType(dataType);
+				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
+				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
+
+				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+					addNewOptionDef(questionDef, item);
+
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
 			}
-			else if(userObj instanceof FormDef)
-				addNewForm();
+			else if(userObj instanceof PageDef){				
+				int id = ++nextQuestionId;
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)item.getParent()).getUserObject());
+				questionDef.setDataType(dataType);
+				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
+				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
+
+				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+					addNewOptionDef(questionDef, item);
+
+				//tree.setSelectedItem(item);
+				treePanel.getSelectionModel().select(item, false);
+			}
+			else if(userObj instanceof FormDef){
+				//addNewForm();
+				
+				//If not yet got pages, just quit.
+				if(item.getChildCount() == 0)
+					return;
+				
+				TreeModelItem parentItem = (TreeModelItem)item.getChild(0);
+				
+				int id = ++nextQuestionId;
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,parentItem.getUserObject());
+				questionDef.setDataType(dataType);
+				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
+				
+				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+					addNewOptionDef(questionDef, item);
+				
+				treePanel.getSelectionModel().select(item, false);
+			}
 		}
-		else
+		else{
 			addNewForm();
+			
+			item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+			QuestionDef questionDef = (QuestionDef)item.getUserObject();
+			questionDef.setDataType(dataType);
+			
+			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				addNewOptionDef(questionDef, item);
+			
+			treePanel.getSelectionModel().select(item, false);
+		}
+		
 	}
 
 

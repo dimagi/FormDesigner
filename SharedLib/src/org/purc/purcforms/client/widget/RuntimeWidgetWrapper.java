@@ -442,8 +442,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			if(defaultValue.contains(binding))
 				((CheckBox)widget).setValue(true);
 		}
-		else if(type == QuestionDef.QTN_TYPE_DATE_TIME && widget instanceof DateTimeWidget)
+		else if(type == QuestionDef.QTN_TYPE_DATE_TIME && widget instanceof DateTimeWidget){
+			if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
+				defaultValue = questionDef.getDefaultValueDisplay();
+			else if(defaultValue.trim().length() > 0 && questionDef.isDate())
+				defaultValue = fromSubmit2DisplayDate(defaultValue);
+			
 			((DateTimeWidget)widget).setText(defaultValue);
+		}
 
 
 		if(widget instanceof TextBoxBase){

@@ -29,7 +29,7 @@ public class DateTimeWidget extends Composite{
 	private DatePickerWidget dateWidget = new DatePickerWidget();
 	private TimeWidget timeWidget = new TimeWidget();
 
-	
+
 	/**
 	 * Creates a new instance of the date and time widget.
 	 */
@@ -42,18 +42,18 @@ public class DateTimeWidget extends Composite{
 
 		panel.add(dateWidget);
 		panel.add(timeWidget);
-		
+
 		panel.setCellWidth(timeWidget, "48%");
 		panel.setCellWidth(dateWidget, "52%");
-		
+
 		dateWidget.setWidth("100%");
 		timeWidget.setWidth("100%");
-		
+
 		dateWidget.setHeight("100%");
 		timeWidget.setHeight("100%");
 
 		sinkEvents(Event.getTypeInt(KeyDownEvent.getType().getName()));
-		
+
 		addEventHandlers();
 	}
 
@@ -90,7 +90,7 @@ public class DateTimeWidget extends Composite{
 		super.onBrowserEvent(event);
 	}
 
-	
+
 	/**
 	 * Sets the widget tab index.
 	 * 
@@ -101,7 +101,7 @@ public class DateTimeWidget extends Composite{
 		timeWidget.setTabIndex(index);
 	}
 
-	
+
 	/**
 	 * Gets the widget tab index;
 	 * 
@@ -123,7 +123,7 @@ public class DateTimeWidget extends Composite{
 		return dateWidget.getText() + " " + timeWidget.getTextWithMask();
 	}
 
-	
+
 	/**
 	 * Sets the display text for the widget.
 	 * 
@@ -135,13 +135,19 @@ public class DateTimeWidget extends Composite{
 			timeWidget.setText(null);
 		}
 		else{
-			Date date = FormUtil.getDateTimeSubmitFormat().parse(text);
-			dateWidget.setText(FormUtil.getDateDisplayFormat().format(date));
-			timeWidget.setText(FormUtil.getTimeDisplayFormat().format(date));
+			//try{
+				//Date date = FormUtil.getDateTimeSubmitFormat().parse(text);
+				Date date = FormUtil.getDateTimeDisplayFormat().parse(text);
+				dateWidget.setText(FormUtil.getDateDisplayFormat().format(date));
+				timeWidget.setText(FormUtil.getTimeDisplayFormat().format(date));
+			/*}
+			catch(Exception ex){
+				ex.printStackTrace();
+			}*/
 		}
 	}
 
-	
+
 	/**
 	 * @see com.google.gwt.user.client.ui.FocusWidget#setFocus(boolean)
 	 */
@@ -149,7 +155,7 @@ public class DateTimeWidget extends Composite{
 		dateWidget.setFocus(focused);
 	}
 
-	
+
 	/**
 	 * @see com.google.gwt.user.client.ui.FocusWidget#setEnabled(boolean)
 	 * @param enabled
@@ -158,7 +164,7 @@ public class DateTimeWidget extends Composite{
 		dateWidget.setEnabled(enabled);
 		timeWidget.setEnabled(enabled);
 	}
-	
+
 	/**
 	 * Sets any css style for the widget.
 	 * 
@@ -169,27 +175,27 @@ public class DateTimeWidget extends Composite{
 		DOM.setStyleAttribute(dateWidget.getElement(), "cursor", value);
 		DOM.setStyleAttribute(timeWidget.getElement(), "cursor", value);
 	}
-	
+
 	/**
 	 * @see com.google.gwt.user.client.ui.FocusWidget#isEnabled()
 	 */
 	public boolean isEnabled(){
 		return dateWidget.isEnabled();
 	}
-	
-	
+
+
 	public void addChangeHandler(ChangeHandler handler) {
 		dateWidget.addChangeHandler(handler);
 		timeWidget.addChangeHandler(handler);
 	}
-	
-	
+
+
 	public void addKeyUpHandler(KeyUpHandler handler) {
 		dateWidget.addKeyUpHandler(handler);
 		timeWidget.addKeyUpHandler(handler);
 	}
-	
-	
+
+
 	public void setFontFamily(String fontFamily){
 		try{
 			DOM.setStyleAttribute(dateWidget.getElement(), "fontFamily", fontFamily);
@@ -199,7 +205,7 @@ public class DateTimeWidget extends Composite{
 			//ex.printStackTrace();
 		}
 	}
-	
+
 	public void setFontSize(String fontSize){
 		try{
 			DOM.setStyleAttribute(dateWidget.getElement(), "fontSize", fontSize);

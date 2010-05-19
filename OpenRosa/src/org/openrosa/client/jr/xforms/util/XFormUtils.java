@@ -37,7 +37,8 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public class XFormUtils {
-	public static FormDef getFormFromResource (String resource) {
+	
+	/*public static FormDef getFormFromResource (String resource) {
 		InputStream is = System.class.getResourceAsStream(resource);
 		if (is == null) {
 			System.err.println("Can't find form resource \"" + resource + "\". Is it in the JAR?");
@@ -45,9 +46,9 @@ public class XFormUtils {
 		}
 		
 		return getFormFromInputStream(is);
-	}
+	}*/
 
-	public static FormDef getFormFromInputStream(InputStream is) {
+	/*public static FormDef getFormFromInputStream(InputStream is) {
 		FormDef returnForm = null;
 		InputStreamReader isr;
 		try {
@@ -68,7 +69,7 @@ public class XFormUtils {
 			e.printStackTrace();
 		}
 		return returnForm;
-	}
+	}*/
 
 	public static FormDef getFormFromSerializedResource(String resource) {
 		FormDef returnForm = null;

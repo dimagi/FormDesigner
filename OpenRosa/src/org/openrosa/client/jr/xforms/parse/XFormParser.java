@@ -56,6 +56,7 @@ import org.openrosa.client.jr.xforms.util.XFormUtils;
 import org.openrosa.client.jr.xpath.XPathConditional;
 import org.openrosa.client.jr.xpath.expr.XPathPathExpr;
 import org.openrosa.client.jr.xpath.parser.XPathSyntaxException;
+import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -217,16 +218,10 @@ public class XFormParser {
 		defaultNamespace = null;
 	}
 
-	public static FormDef getFormDef(Reader reader) {
+	public static FormDef getFormDef(String reader) {
 		System.out.println("Parsing form...");
 		
-		Document doc = getXMLDocument(reader);
-		try {
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("Error closing reader");
-			e.printStackTrace();
-		}
+		Document doc = XmlUtil.getDocument(reader); //getXMLDocument(reader);
 		
 		if (doc != null) {
 			try {
@@ -240,7 +235,7 @@ public class XFormParser {
 		}
 	}
 
-	public static Document getXMLDocument(Reader reader){
+	/*public static Document getXMLDocuments(Reader reader){
 		Document doc = new Document();
 
 		try{
@@ -262,7 +257,7 @@ public class XFormParser {
 		}
 
 		return doc;
-	}
+	}*/
 
 	public static FormDef getFormDef(Document doc){
 		FormDef formDef = new FormDef();
@@ -337,8 +332,8 @@ public class XFormParser {
 		Vector usedAtts = new Vector();
 		int attributes = e.getAttributes().getLength();
 		for(int i = 0 ; i < attributes ; ++i) {
-			String name = e.getAttributeName(i);
-			String value = e.getAttributeValue(i);
+			String name = e.getAttributes().item(i).getNodeName();
+			String value = e.getAttributes().item(i).getNodeValue();
 			if("name".equals(name)) {
 				f.setName(value);
 			}
@@ -370,8 +365,10 @@ public class XFormParser {
 		
 		for (int i = 0; i < e.getChildNodes().getLength(); i++) {
 			
-			int type = e.getType(i);
-			Element child = (type == Node.ELEMENT ? e.getElement(i) : null);
+			Node kid = e.getChildNodes().item(i); //???????????????
+			
+			int type = kid.getNodeType();
+			Element child = (Element)(type == Node.ELEMENT_NODE ? kid : null);
 			String childName = (child != null ? child.getNodeName() : null);
 			
 			if ("itext".equals(childName)) {
@@ -383,9 +380,9 @@ public class XFormParser {
 			} else if ("bind".equals(childName)) { //<instance> must come before <bind>s
 				parseBind(f, child);
 			} else { //invalid model content
-				if (type == Node.ELEMENT) {
+				if (type == Node.ELEMENT_NODE) {
 					throw new XFormParseException("Unrecognized top-level tag [" + childName + "] found within <model>",child);
-				} else if (type == Node.TEXT && getXMLText(e, i, true).length() != 0) {
+				} else if (type == Node.TEXT_NODE && getXMLText(e, i, true).length() != 0) {
 					throw new XFormParseException("Unrecognized text content found within <model>: \"" + getXMLText(e, i, true) + "\"",child);					
 				}
 			}
@@ -412,11 +409,14 @@ public class XFormParser {
 		}
 			
 		for (int i = 0; i < instance.getChildNodes().getLength(); i++) {
-			if (instance.getType(i) == Node.ELEMENT) {
+			
+			Node child =  instance.getChildNodes().item(i);
+			
+			if (child.getNodeType() == Node.ELEMENT_NODE) {  //?????????????????
 				if (instanceNode != null) {
 					throw new XFormParseException("XForm Parse: <instance> has more than one child element", instance);
 				} else {
-					instanceNode = instance.getElement(i);
+					instanceNode = (Element)child;
 				}
 			}
 		}
@@ -500,8 +500,9 @@ public class XFormParser {
 		question.setAppearanceAttr(e.getAttribute("appearance"));
 
 		for (int i = 0; i < e.getChildNodes().getLength(); i++) {
-			int type = e.getType(i);
-			Element child = (type == Node.ELEMENT ? e.getElement(i) : null);
+			Node kid = e.getChildNodes().item(i);
+			int type = kid.getNodeType();
+			Element child = (Element)(type == Node.ELEMENT_NODE ? kid : null);
 			String childName = (child != null ? child.getNodeName() : null);
 
 			if ("label".equals(childName)) {
@@ -596,12 +597,13 @@ public class XFormParser {
 		
 		StringBuffer sb = new StringBuffer();
 		for(int i = 0; i<e.getChildNodes().getLength();i++){
-			if(e.getType(i)!=Node.TEXT && !(e.getChild(i) instanceof String)){
-				Object b = e.getChild(i);
+			Node kid = e.getChildNodes().item(i); //????????????
+			if(kid.getNodeType()!=Node.TEXT_NODE /*&& !(e.getChild(i) instanceof String)*/){
+				Object b = kid;
 				Element child = (Element)b;
 				
 				//If the child is in the HTML namespace, retain it. 
-				if(NAMESPACE_HTML.equals(child.getNamespace())) {
+				if(NAMESPACE_HTML.equals(child.getNamespaceURI())) {
 					sb.append(XFormSerializer.elementToString(child));
 				} else {
 					//Otherwise, ignore it.
@@ -610,7 +612,7 @@ public class XFormParser {
 							"the HTML namespace.");
 				}
 			}else{
-				sb.append(e.getText(i));
+				sb.append(XmlUtil.getTextValue(kid));
 			}
 		}
 		
@@ -623,16 +625,17 @@ public class XFormParser {
 		if(e.getChildNodes().getLength() == 0) return;
 		
 		for(int i=0;i<e.getChildNodes().getLength();i++){
-			int kidType = e.getType(i);
-			if(kidType == Node.TEXT) { continue; }
-			if(e.getChild(i) instanceof String) { continue; }
-			Element kid = (Element)e.getChild(i);
+			Node child = e.getChildNodes().item(i); //???????????????
+			int kidType = child.getNodeType();
+			if(kidType == Node.TEXT_NODE) { continue; }
+			//if(e.getChild(i) instanceof String) { continue; }
+			Element kid = (Element)child;
 			
 				//is just text
-			if(kidType == Node.ELEMENT && XFormUtils.isOutput(kid)){
+			if(kidType == Node.ELEMENT_NODE && XFormUtils.isOutput(kid)){
 				String s = "${"+parseOutput(kid, f)+"}";
-				e.removeChild(i);
-				e.addChild(i, Node.TEXT, s);
+				e.removeChild(child); //e.removeChild(i);
+				XmlUtil.setTextNodeValue(e, s); // e.addChild(i, Node.TEXT, s);
 				
 				//has kids? Recurse through them and swap output tag for parsed version
 			}else if(kid.getChildNodes().getLength() !=0){
@@ -768,8 +771,10 @@ public class XFormParser {
 		String value = null;
 
 		for (int i = 0; i < e.getChildNodes().getLength(); i++) {
-			int type = e.getType(i);
-			Element child = (type == Node.ELEMENT ? e.getElement(i) : null);
+			
+			Node kid = e.getChildNodes().item(i); //??????????
+			int type = kid.getNodeType(); //e.getType(i);
+			Element child = (Element)(type == Node.ELEMENT_NODE ? kid : null);
 			String childName = (child != null ? child.getNodeName() : null);
 
 			if ("label".equals(childName)) {
@@ -859,8 +864,9 @@ public class XFormParser {
 		itemset.nodesetRef = FormInstance.unpackReference(getAbsRef(new XPathReference(path.getReference(true)), itemset.contextRef));
 		
 		for (int i = 0; i < e.getChildNodes().getLength(); i++) {
-			int type = e.getType(i);
-			Element child = (type == Node.ELEMENT ? e.getElement(i) : null);
+			Node kid = e.getChildNodes().item(i);
+			int type = kid.getNodeType();
+			Element child = (Element)(type == Node.ELEMENT_NODE ? kid : null);
 			String childName = (child != null ? child.getNodeName() : null);
 
 			if ("label".equals(childName)) {
@@ -1006,8 +1012,9 @@ public class XFormParser {
 		//the case of a group wrapping a repeat is cleaned up in a post-processing step (collapseRepeatGroups)
 		
 		for (int i = 0; i < e.getChildNodes().getLength(); i++) {
-			if (e.getType(i) == Element.ELEMENT) {
-				parseElement(f, e.getElement(i), group, groupLevelHandlers);
+			Node child = e.getChildNodes().item(i);
+			if (child.getNodeType() == Element.ELEMENT_NODE) {
+				parseElement(f, (Element)child, group, groupLevelHandlers);
 			}
 		}
 		
@@ -1106,7 +1113,7 @@ public class XFormParser {
 		Vector usedAtts = new Vector(); //used for warning message
 		
 		for (int i = 0; i < itext.getChildNodes().getLength(); i++) {
-			Element trans = itext.getElement(i);
+			Element trans = (Element) itext.getChildNodes().item(i); //????????????? itext.getElement(i);
 			if (trans == null || !trans.getNodeName().equals("translation"))
 				continue;
 
@@ -1149,7 +1156,7 @@ public class XFormParser {
 		TableLocaleSource source = new TableLocaleSource();
 
 		for (int j = 0; j < trans.getChildNodes().getLength(); j++) {
-			Element text = trans.getElement(j);
+			Element text = (Element)trans.getChildNodes().item(j); //?????????? trans.getElement(j);
 			if (text == null || !text.getNodeName().equals("text"))
 				continue;
 
@@ -1188,7 +1195,7 @@ public class XFormParser {
 			throw new XFormParseException("no id defined for <text>",text);
 
 		for (int k = 0; k < text.getChildNodes().getLength(); k++) {
-			Element value = text.getElement(k);
+			Element value = (Element)text.getChildNodes().item(k); //???????????????? text.getElement(k);
 			if (value == null) continue;
 			if(!value.getNodeName().equals("value")){
 				throw new XFormParseException("Unrecognized element ["+value.getNodeName()+"] in Itext->translation->text");
@@ -1433,9 +1440,9 @@ public class XFormParser {
 	
 	private static Hashtable loadNamespaces(Element e, FormInstance tree) {
 		Hashtable prefixes = new Hashtable();
-		for(int i = 0 ; i < e.getNamespaceCount(); ++i ) {
-			String uri = e.getNamespaceUri(i);
-			String prefix = e.getNamespacePrefix(i);
+		for(int i = 0 ; i < 0 /*e.getNamespaceCount()*/; ++i ) { //???????????
+			String uri = e.getNamespaceURI(); //???????? e.getNamespaceUri(i);
+			String prefix = e.getPrefix(); //e.getNamespacePrefix(i);
 			if(uri != null && prefix != null) {
 				tree.addNamespace(prefix, uri);
 			}
@@ -1452,11 +1459,12 @@ public class XFormParser {
 		boolean hasText = false;
 		boolean hasElements = false;
 		for (int i = 0; i < numChildren; i++) {
-			switch (node.getType(i)) {
-			case Node.ELEMENT:
+			Node child = node.getChildNodes().item(i); //????????????
+			switch (child.getNodeType()) {
+			case Node.ELEMENT_NODE:
 				hasElements = true; break;
-			case Node.TEXT:
-				if (node.getText(i).trim().length() > 0)
+			case Node.TEXT_NODE:
+				if (XmlUtil.getTextValue(child).trim().length() > 0)
 					hasText = true;
 				break;
 			}
@@ -1498,8 +1506,9 @@ public class XFormParser {
 
 		if (hasElements) {
 			for (int i = 0; i < numChildren; i++) {
-				if (node.getType(i) == Node.ELEMENT) {
-					element.addChild(buildInstanceStructure(node.getElement(i), element));
+				Node child = node.getChildNodes().item(i); //??????????
+				if (child.getNodeType() == Node.ELEMENT_NODE) {
+					element.addChild(buildInstanceStructure((Element)child, element));
 				}
 			}
 		}
@@ -1507,14 +1516,14 @@ public class XFormParser {
 		//handle attributes
 		if (node.getAttributes().getLength() > 0) {
 			for (int i = 0; i < node.getAttributes().getLength(); i++) {
-				String attrNamespace = node.getAttributeNamespace(i);
-				String attrName = node.getAttributeName(i);
+				String attrNamespace = node.getAttributes().item(i).getNamespaceURI(); // node.getAttributeNamespace(i);
+				String attrName = node.getAttributes().item(i).getNodeName(); //node.getAttributeName(i);
 				if (attrNamespace.equals(NAMESPACE_JAVAROSA) && attrName.equals("template"))
 					continue;
 				if (attrNamespace.equals(NAMESPACE_JAVAROSA) && attrName.equals("recordset"))
 					continue;
 				
-				element.setAttribute(attrNamespace, attrName, node.getAttributeValue(i));
+				element.setAttribute(attrNamespace, attrName, node.getAttributes().item(i).getNodeValue());
 			}
 		}
 		
@@ -1627,7 +1636,7 @@ public class XFormParser {
 	
 	//helper function for checkRepeatsForTemplate
 	private static void checkRepeatsForTemplate (TreeElement repeatTreeNode, TreeReference ref, FormInstance instance, Vector missing) {
-		String name = repeatTreeNode.getNodeName();
+		String name = repeatTreeNode.getName();
 		int mult = (repeatTreeNode.repeatable ? TreeReference.INDEX_TEMPLATE : 0);
 		ref = ref.extendRef(name, mult);
 		
@@ -1657,10 +1666,10 @@ public class XFormParser {
 		
 		if (mult == TreeReference.INDEX_TEMPLATE) {
 			if (!templateAllowed) {
-				System.out.println("Warning: template nodes for sub-repeats must be located within the template node of the parent repeat; ignoring template... [" + instanceNode.getNodeName() + "]");
+				System.out.println("Warning: template nodes for sub-repeats must be located within the template node of the parent repeat; ignoring template... [" + instanceNode.getName() + "]");
 				return true;
 			} else if (!repeatable) {
-				System.out.println("Warning: template node found for ref that is not repeatable; ignoring... [" + instanceNode.getNodeName() + "]");
+				System.out.println("Warning: template node found for ref that is not repeatable; ignoring... [" + instanceNode.getName() + "]");
 				return true;
 			}
 		}
@@ -1670,7 +1679,7 @@ public class XFormParser {
 		
 		for (int i = 0; i < instanceNode.getNumChildren(); i++) {
 			TreeElement child = instanceNode.getChildAt(i);
-			TreeElement rchild = (repeatTreeNode == null ? null : repeatTreeNode.getChild(child.getNodeName(), 0));
+			TreeElement rchild = (repeatTreeNode == null ? null : repeatTreeNode.getChild(child.getName(), 0));
 			
 			if (removeInvalidTemplates(child, rchild, templateAllowed)) {
 				instanceNode.removeChildAt(i);
@@ -1729,7 +1738,7 @@ public class XFormParser {
 		int mult = node.getMult();
 		if (mult > 0) { //repeated node
 			if (!node.repeatable) {
-				System.out.println("Warning: repeated nodes [" + node.getNodeName() + "] detected that have no repeat binding in the form; DO NOT bind questions to these nodes or their children!");
+				System.out.println("Warning: repeated nodes [" + node.getName() + "] detected that have no repeat binding in the form; DO NOT bind questions to these nodes or their children!");
 				//we could do a more comprehensive safety check in the future
 			}
 		}
@@ -2028,15 +2037,17 @@ public class XFormParser {
 		int numChildren = node.getChildNodes().getLength();		
 		boolean hasElements = false;
 		for (int i = 0; i < numChildren; i++) {
-			if (node.getType(i) == Node.ELEMENT)
+			Node kid = node.getChildNodes().item(i);
+			if (kid.getNodeType() == Node.ELEMENT_NODE)
 				hasElements = true;
 		}
 
 		if (hasElements) {
 			Hashtable multiplicities = new Hashtable(); //stores max multiplicity seen for a given node name thus far
 			for (int i = 0; i < numChildren; i++) {
-				if (node.getType(i) == Node.ELEMENT) {
-					Element child = node.getElement(i);
+				Node kid = node.getChildNodes().item(i);
+				if (kid.getNodeType() == Node.ELEMENT_NODE) {
+					Element child = (Element)kid;
 					
 					String name = child.getNodeName();
 					int index;
@@ -2149,7 +2160,7 @@ public class XFormParser {
 	//not only do we have to re-parse the entire formdef, but it is not guaranteed that you can drop in a submitted instance
 	//back into its original form def and it will still parse. in particular, non-relevant nodes will be missing, which will
 	//really confuse the binding verifier and repeat homogeneity checker.
-	public static FormInstance parseDataModelGhettoooooo (InputStream instanceXMLStream, InputStream formDefXMLStream, String locale) {
+	/*public static FormInstance parseDataModelGhettoooooo (InputStream instanceXMLStream, InputStream formDefXMLStream, String locale) {
 		Document formDefXML = getXMLDocument(new InputStreamReader(formDefXMLStream));
 		Document instanceXML = getXMLDocument(new InputStreamReader(instanceXMLStream));
 
@@ -2174,7 +2185,7 @@ public class XFormParser {
 		}
 		
 		return formDef.getInstance();
-	}
+	}*/
 		
 	//returns data type corresponding to type string; doesn't handle defaulting to 'text' if type unrecognized/unknown
 	private static int getDataType(String type) {
@@ -2234,15 +2245,15 @@ public class XFormParser {
 	public static String getXMLText (Node node, int i, boolean trim) {
 		StringBuffer strBuff = null;
 
-		String text = node.getText(i);
+		String text = XmlUtil.getTextValue(node); //node.getText(i);
 		if (text == null)
 			return null;
 
-		for (i++; i < node.getChildNodes().getLength() && node.getType(i) == Node.TEXT; i++) {
+		for (i++; i < node.getChildNodes().getLength() && node.getChildNodes().item(i).getNodeType() == Node.TEXT_NODE; i++) {
 			if (strBuff == null)
 				strBuff = new StringBuffer(text);
 
-			strBuff.append(node.getText(i));
+			strBuff.append(XmlUtil.getTextValue(node.getChildNodes().item(i)));
 		}
 		if (strBuff != null)
 			text = strBuff.toString();
@@ -2253,7 +2264,7 @@ public class XFormParser {
 		return text;
 	}
 	
-	public static FormInstance restoreDataModel (byte[] data, Class restorableType) {
+	/*public static FormInstance restoreDataModel (byte[] data, Class restorableType) {
 		Restorable r = (restorableType != null ? (Restorable)PrototypeFactory.getInstance(restorableType) : null);
 		
 		Document doc = getXMLDocument(new InputStreamReader(new ByteArrayInputStream(data)));
@@ -2272,7 +2283,7 @@ public class XFormParser {
 		loadInstanceData(e, te, null);
 		
 		return dm;
-	}
+	}*/
 	
 	public static String getVagueLocation(Element e) {
 		String path = e.getNodeName();
@@ -2283,8 +2294,8 @@ public class XFormParser {
 				walker = (Element)n;
 				String step = walker.getNodeName();
 				for(int i = 0; i <  walker.getAttributes().getLength() ; ++i) {
-					step += "[@" +walker.getAttributeName(i) + "=";
-					step += walker.getAttributeValue(i) + "]";
+					step += "[@" +walker.getAttributes().item(i).getNodeName() + "="; //????????????
+					step += walker.getAttributes().item(i).getNodeValue() + "]";
 				}
 				path = step + "/" + path;
 			} else {
@@ -2308,9 +2319,9 @@ public class XFormParser {
 		}
 		if(e.getChildNodes().getLength() > 0) {
 			elementString += ">";
-			if(e.getType(0) ==Element.ELEMENT) {
+			if(e.getChildNodes().item(0).getNodeType() == Node.ELEMENT_NODE) {
 				if(maxDepth > 0) {
-					elementString += getVagueElementPrintout((Element)e.getChild(0),maxDepth -1);
+					elementString += getVagueElementPrintout((Element)e.getChildNodes().item(0),maxDepth -1);
 				} else {
 					elementString += "...";
 				}

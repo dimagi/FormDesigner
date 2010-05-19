@@ -24,8 +24,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.UTFDataFormatException;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.services.PrototypeManager;
@@ -301,7 +301,7 @@ public class ExtUtil {
 		return (v == null ? null : (v.size() == 0 ? null : v));
 	}
 	
-	public static Hashtable nullIfEmpty (Hashtable h) {
+	public static HashMap nullIfEmpty (HashMap h) {
 		return (h == null ? null : (h.size() == 0 ? null : h));
 	}
 	
@@ -317,8 +317,8 @@ public class ExtUtil {
 		return v == null ? new Vector() : v;
 	}
 
-	public static Hashtable emptyIfNull (Hashtable h) {
-		return h == null ? new Hashtable() : h;
+	public static HashMap emptyIfNull (HashMap h) {
+		return h == null ? new HashMap() : h;
 	}	
 	
 	public static Object unwrap (Object o) {
@@ -333,8 +333,8 @@ public class ExtUtil {
 			return b == null;
 		} else if (a instanceof Vector) {
 			return (b instanceof Vector && vectorEquals((Vector)a, (Vector)b));
-		} else if (a instanceof Hashtable) {
-			return (b instanceof Hashtable && hashtableEquals((Hashtable)a, (Hashtable)b));
+		} else if (a instanceof HashMap) {
+			return (b instanceof HashMap && hashtableEquals((HashMap)a, (HashMap)b));
 		} else {
 			return a.equals(b);
 		}		
@@ -368,14 +368,14 @@ public class ExtUtil {
 		}
 	}
 	
-	public static boolean hashtableEquals (Hashtable a, Hashtable b) {
+	public static boolean hashtableEquals (HashMap a, HashMap b) {
 		if (a.size() != b.size()) {
 			return false;
 		} else if (a instanceof OrderedHashtable != b instanceof OrderedHashtable) {
 			return false;
 		} else {
-			for (Enumeration ea = a.keys(); ea.hasMoreElements(); ) {
-				Object keyA = ea.nextElement();
+			for (Iterator ea = a.keySet().iterator(); ea.hasNext(); ) {
+				Object keyA = ea.next();
 
 				if (!equals(a.get(keyA), b.get(keyA))) {
 					return false;
@@ -383,12 +383,12 @@ public class ExtUtil {
 			}
 			
 			if (a instanceof OrderedHashtable && b instanceof OrderedHashtable) {
-				Enumeration ea = a.keys();
-				Enumeration eb = b.keys();
+				Iterator ea = a.keySet().iterator();
+				Iterator eb = b.keySet().iterator();
 				
-				while (ea.hasMoreElements()) {
-					Object keyA = ea.nextElement();
-					Object keyB = eb.nextElement();
+				while (ea.hasNext()) {
+					Object keyA = ea.next();
+					Object keyB = eb.next();
 					
 					if (!keyA.equals(keyB)) { //must use built-in equals for keys, as that's what hashtable uses
 						return false;

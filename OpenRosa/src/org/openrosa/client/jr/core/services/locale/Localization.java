@@ -1,6 +1,6 @@
 package org.openrosa.client.jr.core.services.locale;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.openrosa.client.jr.core.reference.ReferenceDataSource;
 
@@ -16,7 +16,7 @@ public class Localization {
 		return globalLocalizer.getText(key, args);
 	}
 	
-	public static String get(String key, Hashtable args) {
+	public static String get(String key, HashMap args) {
 		checkRep();
 		return globalLocalizer.getText(key, args);
 	}

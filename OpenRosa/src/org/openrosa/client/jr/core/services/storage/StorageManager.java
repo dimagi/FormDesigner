@@ -17,7 +17,8 @@
 package org.openrosa.client.jr.core.services.storage;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /* droos: what is the future of this class? i think it will take a different form with the new storage API */
 
@@ -32,7 +33,7 @@ import java.util.Hashtable;
  */
 public class StorageManager {
 	
-	private static Hashtable<String, IStorageUtility> storageRegistry = new Hashtable<String, IStorageUtility>();
+	private static HashMap<String, IStorageUtility> storageRegistry = new HashMap<String, IStorageUtility>();
 	private static IStorageFactory storageFactory;
 	
 	public static void setStorageFactory (IStorageFactory fact) {
@@ -64,16 +65,16 @@ public class StorageManager {
 	}
 	
 	public static void repairAll () {
-		for (Enumeration e = storageRegistry.elements(); e.hasMoreElements(); ) {
-			((IStorageUtility)e.nextElement()).repair();
+		for (Iterator e = storageRegistry.entrySet().iterator(); e.hasNext(); ) {
+			((IStorageUtility)e.next()).repair();
 		}
 	}
 	
 	public static String[] listRegisteredUtilities() {
 		String[] returnVal = new String[storageRegistry.size()];
 		int i = 0;
-		for (Enumeration e = storageRegistry.keys(); e.hasMoreElements(); ) {
-			returnVal[i] = (String)e.nextElement();
+		for (Iterator e = storageRegistry.entrySet().iterator(); e.hasNext(); ) {
+			returnVal[i] = (String)e.next();
 			i++;
 		}
 		return returnVal;

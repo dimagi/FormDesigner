@@ -17,7 +17,7 @@
 package org.openrosa.client.jr.core.model.condition;
 
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.openrosa.client.jr.core.model.data.IAnswerData;
 import org.openrosa.client.jr.core.model.instance.TreeReference;
@@ -28,8 +28,8 @@ import org.openrosa.client.jr.xpath.IExprDataType;
  */
 public class EvaluationContext {
 	private TreeReference contextNode; //unambiguous ref used as the anchor for relative paths
-	private Hashtable functionHandlers;
-	private Hashtable variables;
+	private HashMap functionHandlers;
+	private HashMap variables;
 	
 	public boolean isConstraint; //true if we are evaluating a constraint
 	public IAnswerData candidateValue; //if isConstraint, this is the value being validated
@@ -40,12 +40,12 @@ public class EvaluationContext {
 	public EvaluationContext (EvaluationContext base, TreeReference context) {
 		this.functionHandlers = base.functionHandlers;
 		this.contextNode = context;
-		this.variables = new Hashtable();
+		this.variables = new HashMap();
 	}
 	
 	public EvaluationContext () {
-		functionHandlers = new Hashtable();
-		variables = new Hashtable();
+		functionHandlers = new HashMap();
+		variables = new HashMap();
 	}
 	
 	public TreeReference getContextRef () {
@@ -56,7 +56,7 @@ public class EvaluationContext {
 		functionHandlers.put(fh.getName(), fh);
 	}
 	
-	public Hashtable getFunctionHandlers () {
+	public HashMap getFunctionHandlers () {
 		return functionHandlers;
 	}
 	

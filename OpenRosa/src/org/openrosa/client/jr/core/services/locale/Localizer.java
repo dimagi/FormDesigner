@@ -20,7 +20,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.util.NoLocalizedTextException;
@@ -454,7 +454,7 @@ public class Localizer implements Externalizable {
 	 * @throws NullPointerException if textID is null
 	 * @throws NoLocalizedTextException If there is no text for the specified id
 	 */
-	public String getText (String textID, Hashtable args) {
+	public String getText (String textID, HashMap args) {
 		String text = getText(textID, currentLocale);
 		if(text != null) {
 			text = processArguments(text, args);
@@ -604,7 +604,7 @@ public class Localizer implements Externalizable {
 		return args;
 	}
 	
-	public static String processArguments(String text, Hashtable args) {
+	public static String processArguments(String text, HashMap args) {
 		int i = text.indexOf("${");
 		while (i != -1) {
 			int j = text.indexOf("}", i);

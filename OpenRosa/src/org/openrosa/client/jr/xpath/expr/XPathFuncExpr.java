@@ -21,7 +21,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.model.condition.EvaluationContext;
@@ -126,7 +126,7 @@ public class XPathFuncExpr extends XPathExpression {
 		String name = id.toString();
 		Object[] argVals = new Object[args.length];
 		
-		Hashtable funcHandlers = evalContext.getFunctionHandlers();
+		HashMap funcHandlers = evalContext.getFunctionHandlers();
 		
 		for (int i = 0; i < args.length; i++) {
 			argVals[i] = args[i].eval(model, evalContext);

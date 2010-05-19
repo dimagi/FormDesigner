@@ -19,8 +19,8 @@ package org.openrosa.client.jr.core.util.externalizable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 
@@ -32,15 +32,15 @@ public class ExtWrapMap extends ExternalizableWrapper {
 	
 	/* serialization */
 	
-	public ExtWrapMap (Hashtable val) {
+	public ExtWrapMap (HashMap val) {
 		this(val, null, null);
 	}
 	
-	public ExtWrapMap (Hashtable val, ExternalizableWrapper dataType) {
+	public ExtWrapMap (HashMap val, ExternalizableWrapper dataType) {
 		this(val, null, dataType);
 	}
 		
-	public ExtWrapMap (Hashtable val, ExternalizableWrapper keyType, ExternalizableWrapper dataType) {
+	public ExtWrapMap (HashMap val, ExternalizableWrapper keyType, ExternalizableWrapper dataType) {
 		if (val == null) {
 			throw new NullPointerException();
 		}
@@ -88,11 +88,11 @@ public class ExtWrapMap extends ExternalizableWrapper {
 	}
 	
 	public ExternalizableWrapper clone (Object val) {
-		return new ExtWrapMap((Hashtable)val, keyType, dataType);
+		return new ExtWrapMap((HashMap)val, keyType, dataType);
 	}
 	
 	public void readExternal(DataInputStream in, PrototypeFactory pf) throws IOException, DeserializationException {
-		Hashtable h = ordered ? new OrderedHashtable() : new Hashtable();
+		HashMap h = ordered ? new OrderedHashtable() : new HashMap();
 
 		long size = ExtUtil.readNumeric(in);
 		for (int i = 0; i < size; i++) {
@@ -105,11 +105,11 @@ public class ExtWrapMap extends ExternalizableWrapper {
 	}
 
 	public void writeExternal(DataOutputStream out) throws IOException {
-		Hashtable h = (Hashtable)val;
+		HashMap h = (HashMap)val;
 
 		ExtUtil.writeNumeric(out, h.size());
-		for (Enumeration e = h.keys(); e.hasMoreElements(); ) {
-			Object key = e.nextElement();
+		for (Iterator e = h.keySet().iterator(); e.hasNext(); ) {
+			Object key = e.next();
 			Object elem = h.get(key);
 			
 			ExtUtil.write(out, keyType == null ? key : keyType.clone(key));
@@ -124,11 +124,11 @@ public class ExtWrapMap extends ExternalizableWrapper {
 	}
 
 	public void metaWriteExternal (DataOutputStream out) throws IOException {
-		Hashtable h = (Hashtable)val;
+		HashMap h = (HashMap)val;
 		Object keyTagObj, elemTagObj;
 		
-		keyTagObj = (keyType == null ? (h.size() == 0 ? new Object() : h.keys().nextElement()) : keyType);
-		elemTagObj = (dataType == null ? (h.size() == 0 ? new Object() : h.elements().nextElement()) : dataType);
+		keyTagObj = (keyType == null ? (h.size() == 0 ? new Object() : h.keySet().iterator().next()) : keyType);
+		elemTagObj = (dataType == null ? (h.size() == 0 ? new Object() : h.entrySet().iterator().next()) : dataType);
 		
 		ExtUtil.writeBool(out, ordered);
 		ExtWrapTagged.writeTag(out, keyTagObj);

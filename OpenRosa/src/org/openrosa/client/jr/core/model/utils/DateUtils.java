@@ -77,17 +77,17 @@ public class DateUtils {
 	}
 	
 	public static DateFields getFields (Date d) {
-		Calendar cd = Calendar.getInstance();
-		cd.setTime(d);
+		//Calendar cd = Calendar.getInstance();
+		//cd.setTime(d);
 		
 		DateFields fields = new DateFields();
-		fields.year = cd.get(Calendar.YEAR);
+		/*fields.year = cd.get(Calendar.YEAR);
 		fields.month = cd.get(Calendar.MONTH) + MONTH_OFFSET;
 		fields.day = cd.get(Calendar.DAY_OF_MONTH);
 		fields.hour = cd.get(Calendar.HOUR_OF_DAY);
 		fields.minute = cd.get(Calendar.MINUTE);
 		fields.second = cd.get(Calendar.SECOND);
-		fields.secTicks = cd.get(Calendar.MILLISECOND);
+		fields.secTicks = cd.get(Calendar.MILLISECOND);*/
 		
 		return fields;
 	}

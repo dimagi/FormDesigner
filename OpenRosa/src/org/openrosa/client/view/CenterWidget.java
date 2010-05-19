@@ -122,6 +122,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		tabs.selectTab(TAB_INDEX_DESIGN);
 		
+		org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
+		
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
 

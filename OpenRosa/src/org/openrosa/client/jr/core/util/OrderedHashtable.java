@@ -17,10 +17,10 @@
 package org.openrosa.client.jr.core.util;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 
-public class OrderedHashtable extends Hashtable {
+public class OrderedHashtable extends HashMap {
     private Vector orderedKeys;
 
     public OrderedHashtable() {

@@ -20,7 +20,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Vector;
 
@@ -85,8 +85,8 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 	// tags that serve as parameterized
 	// arguments to captions
 
-	public Hashtable triggerIndex; // <TreeReference, Vector<Triggerable>>
-	private Hashtable conditionRepeatTargetIndex; // <TreeReference, Condition>;
+	public HashMap triggerIndex; // <TreeReference, Vector<Triggerable>>
+	private HashMap conditionRepeatTargetIndex; // <TreeReference, Condition>;
 	// associates repeatable
 	// nodes with the Condition
 	// that determines their
@@ -103,8 +103,8 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 		setChildren(null);
 		triggerables = new Vector();
 		triggerablesInOrder = true;
-		triggerIndex = new Hashtable();
-		conditionRepeatTargetIndex = new Hashtable();
+		triggerIndex = new HashMap();
+		conditionRepeatTargetIndex = new HashMap();
 		setEvaluationContext(new EvaluationContext());
 		outputFragments = new Vector();
 	}
@@ -329,7 +329,7 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 		}
 					
 		//delete existing dest nodes that are not in the answer selection
-		Hashtable<String, TreeElement> existingValues = new Hashtable<String, TreeElement>();
+		HashMap<String, TreeElement> existingValues = new HashMap<String, TreeElement>();
 		Vector<TreeReference> existingNodes = getInstance().expandReference(destRef);
 		for (int i = 0; i < existingNodes.size(); i++) {
 			TreeElement node = getInstance().resolveReference(existingNodes.elementAt(i));
@@ -626,7 +626,7 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 	}
 
 	public String fillTemplateString(String template, TreeReference contextRef) {
-		Hashtable args = new Hashtable();
+		HashMap args = new HashMap();
 
 		int depth = 0;
 		Vector outstandingArgs = Localizer.getArgs(template);
@@ -1186,8 +1186,8 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 		this.outputFragments = outputFragments;
 	}
 
-	public Hashtable getMetaData() {
-		Hashtable metadata = new Hashtable();
+	public HashMap getMetaData() {
+		HashMap metadata = new HashMap();
 		String[] fields = getMetaDataFields();
 		
 		for (int i = 0; i < fields.length; i++) {

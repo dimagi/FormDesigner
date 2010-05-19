@@ -21,7 +21,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.model.Constants;
@@ -69,7 +70,7 @@ public class FormInstance implements Persistable, Restorable {
 	public String formVersion;
 	public String uiVersion;
 	
-	private Hashtable namespaces = new Hashtable();
+	private HashMap namespaces = new HashMap();
 
 	public FormInstance() {
 	}
@@ -428,7 +429,7 @@ public class FormInstance implements Persistable, Restorable {
 		schema = (String) ExtUtil.read(in, new ExtWrapNullable(String.class), pf);
 		dateSaved = (Date) ExtUtil.read(in, new ExtWrapNullable(Date.class), pf);
 		
-		namespaces = (Hashtable)ExtUtil.read(in, new ExtWrapMap(String.class, String.class));
+		namespaces = (HashMap)ExtUtil.read(in, new ExtWrapMap(String.class, String.class));
 		setRoot((TreeElement) ExtUtil.read(in, TreeElement.class, pf));
 	}
 
@@ -576,8 +577,8 @@ public class FormInstance implements Persistable, Restorable {
 	public String[] getNamespacePrefixes() {
 		String[] prefixes = new String[namespaces.size()];
 		int i = 0;
-		for(Enumeration en = namespaces.keys() ; en.hasMoreElements(); ) {
-			prefixes[i] = (String)en.nextElement();
+		for(Iterator en = namespaces.keySet().iterator() ; en.hasNext(); ) {
+			prefixes[i] = (String)en.next();
 			++i;
 		}
 		return prefixes;
@@ -684,9 +685,9 @@ public class FormInstance implements Persistable, Restorable {
 		cloned.schema = this.schema;
 		cloned.formVersion = this.formVersion;
 		cloned.uiVersion = this.uiVersion;
-		cloned.namespaces = new Hashtable();
-		for (Enumeration e = this.namespaces.keys(); e.hasMoreElements(); ) {
-			Object key = e.nextElement();
+		cloned.namespaces = new HashMap();
+		for (Iterator e = this.namespaces.keySet().iterator(); e.hasNext(); ) {
+			Object key = e.next();
 			cloned.namespaces.put(key, this.namespaces.get(key));
 		}
 		

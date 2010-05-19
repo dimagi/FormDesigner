@@ -16,13 +16,9 @@
 
 package org.openrosa.client.jr.xforms.parse;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.model.Constants;
@@ -42,11 +38,8 @@ import org.openrosa.client.jr.core.model.instance.FormInstance;
 import org.openrosa.client.jr.core.model.instance.InvalidReferenceException;
 import org.openrosa.client.jr.core.model.instance.TreeElement;
 import org.openrosa.client.jr.core.model.instance.TreeReference;
-import org.openrosa.client.jr.core.model.util.restorable.Restorable;
-import org.openrosa.client.jr.core.model.util.restorable.RestoreUtils;
 import org.openrosa.client.jr.core.services.locale.Localizer;
 import org.openrosa.client.jr.core.services.locale.TableLocaleSource;
-import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
 import org.openrosa.client.jr.core.util.externalizable.PrototypeFactoryDeprecated;
 import org.openrosa.client.jr.model.xform.XPathReference;
 import org.openrosa.client.jr.xforms.util.IXFormBindHandler;
@@ -75,9 +68,9 @@ public class XFormParser {
 	public static final String NAMESPACE_JAVAROSA = "http://openrosa.org/javarosa";
 	public static final String NAMESPACE_HTML = "http://www.w3.org/1999/xhtml";
 
-	private static Hashtable topLevelHandlers;
-	private static Hashtable groupLevelHandlers;
-	private static Hashtable typeMappings;
+	private static HashMap topLevelHandlers;
+	private static HashMap groupLevelHandlers;
+	private static HashMap typeMappings;
 	private static PrototypeFactoryDeprecated modelPrototypes;
 
 	/** IXFormBindHandler */
@@ -86,7 +79,7 @@ public class XFormParser {
 	/* THIS CLASS IS NOT THREAD-SAFE */
 	//state variables -- not a good idea since this class is static, but that's not really a good idea either, now is it
 	private static boolean modelFound;
-	private static Hashtable bindingsByID;
+	private static HashMap bindingsByID;
 	private static Vector bindings; //DataBinding
 	private static Vector repeats; //TreeReference
 	private static Vector itemsets; //ItemsetBinding
@@ -137,7 +130,7 @@ public class XFormParser {
 		IElementHandler upload = new IElementHandler () {
 			public void handle (FormDef f, Element e, Object parent) { parseUpload((IFormElement)parent, e, f, Constants.CONTROL_UPLOAD); } };
 
-		groupLevelHandlers = new Hashtable();
+		groupLevelHandlers = new HashMap();
 		groupLevelHandlers.put("input", input);
 		groupLevelHandlers.put("select", select);
 		groupLevelHandlers.put("select1", select1);
@@ -146,9 +139,9 @@ public class XFormParser {
 		groupLevelHandlers.put("trigger", trigger); //multi-purpose now; need to dig deeper
 		groupLevelHandlers.put(Constants.XFTAG_UPLOAD, upload);
 
-		topLevelHandlers = new Hashtable();
-		for (Enumeration en = groupLevelHandlers.keys(); en.hasMoreElements(); ) {
-			String key = (String)en.nextElement();
+		topLevelHandlers = new HashMap();
+		for (Iterator en = groupLevelHandlers.keySet().iterator(); en.hasNext(); ) { //??????????
+			String key = (String)en.next();
 			topLevelHandlers.put(key, groupLevelHandlers.get(key));
 		}
 		topLevelHandlers.put("model", model);
@@ -159,7 +152,7 @@ public class XFormParser {
 	}
 
 	private static void initTypeMappings () {
-		typeMappings = new Hashtable();
+		typeMappings = new HashMap();
 		typeMappings.put("string", new Integer(Constants.DATATYPE_TEXT));               //xsd:
 		typeMappings.put("integer", new Integer(Constants.DATATYPE_INTEGER));           //xsd:
 		typeMappings.put("int", new Integer(Constants.DATATYPE_INTEGER));               //xsd:
@@ -207,7 +200,7 @@ public class XFormParser {
 
 	private static void initStateVars () {
 		modelFound = false;
-		bindingsByID = new Hashtable();
+		bindingsByID = new HashMap();
 		bindings = new Vector();
 		repeats = new Vector();
 		itemsets = new Vector();
@@ -284,7 +277,7 @@ public class XFormParser {
 	private static final int CONTAINER_GROUP = 1;
 	private static final int CONTAINER_REPEAT = 2;
 
-	private static void parseElement (FormDef f, Element e, Object parent, Hashtable handlers) { //,
+	private static void parseElement (FormDef f, Element e, Object parent, HashMap handlers) { //,
 //			boolean allowUnknownElements, boolean allowText, boolean recurseUnknown) {
 		String name = e.getNodeName();
 
@@ -1438,8 +1431,8 @@ public class XFormParser {
 		}
 	}
 	
-	private static Hashtable loadNamespaces(Element e, FormInstance tree) {
-		Hashtable prefixes = new Hashtable();
+	private static HashMap loadNamespaces(Element e, FormInstance tree) {
+		HashMap prefixes = new HashMap();
 		for(int i = 0 ; i < 0 /*e.getNamespaceCount()*/; ++i ) { //???????????
 			String uri = e.getNamespaceURI(); //???????? e.getNamespaceUri(i);
 			String prefix = e.getPrefix(); //e.getNamespacePrefix(i);
@@ -2043,7 +2036,7 @@ public class XFormParser {
 		}
 
 		if (hasElements) {
-			Hashtable multiplicities = new Hashtable(); //stores max multiplicity seen for a given node name thus far
+			HashMap multiplicities = new HashMap(); //stores max multiplicity seen for a given node name thus far
 			for (int i = 0; i < numChildren; i++) {
 				Node kid = node.getChildNodes().item(i);
 				if (kid.getNodeType() == Node.ELEMENT_NODE) {
@@ -2089,8 +2082,8 @@ public class XFormParser {
 		Vector edges = new Vector();
 		
 		//build graph
-		for (Enumeration e = f.triggerIndex.keys(); e.hasMoreElements(); ) {
-			TreeReference trigger = (TreeReference)e.nextElement();
+		for (Iterator e = f.triggerIndex.keySet().iterator(); e.hasNext(); ) {
+			TreeReference trigger = (TreeReference)e.next();
 			if (!vertices.contains(trigger))
 				vertices.addElement(trigger);
 			

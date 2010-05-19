@@ -19,16 +19,16 @@ package org.openrosa.client.jr.core.util.externalizable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class ExtWrapTagged extends ExternalizableWrapper {
 	public final static byte[] WRAPPER_TAG = {(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff}; //must be same length as PrototypeFactory.CLASS_HASH_SIZE
 	
-	public static Hashtable WRAPPER_CODES;
+	public static HashMap WRAPPER_CODES;
 	
 	static {
-		WRAPPER_CODES = new Hashtable();
+		WRAPPER_CODES = new HashMap();
 		WRAPPER_CODES.put(ExtWrapNullable.class, new Integer(0x00));
 		WRAPPER_CODES.put(ExtWrapList.class, new Integer(0x20));
 		WRAPPER_CODES.put(ExtWrapListPoly.class, new Integer(0x21));
@@ -79,8 +79,8 @@ public class ExtWrapTagged extends ExternalizableWrapper {
 			
 			//find wrapper indicated by code
 			ExternalizableWrapper type = null;
-			for (Enumeration e = WRAPPER_CODES.keys(); e.hasMoreElements(); ) {
-				Class t = (Class)e.nextElement();
+			for (Iterator e = WRAPPER_CODES.keySet().iterator(); e.hasNext(); ) {
+				Class t = (Class)e.next();
 				if (((Integer)WRAPPER_CODES.get(t)).intValue() == wrapperCode) {
 					try {
 						type = (ExternalizableWrapper)PrototypeFactory.getInstance(t);

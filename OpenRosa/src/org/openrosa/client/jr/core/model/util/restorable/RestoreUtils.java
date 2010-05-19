@@ -36,7 +36,6 @@ import org.openrosa.client.jr.core.services.storage.IStorageUtility;
 import org.openrosa.client.jr.core.services.storage.Persistable;
 import org.openrosa.client.jr.core.services.transport.payload.ByteArrayPayload;
 import org.openrosa.client.jr.core.util.externalizable.Externalizable;
-import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
 
 public class RestoreUtils {
 	public static final String RECORD_ID_TAG = "rec-id";
@@ -226,7 +225,7 @@ public class RestoreUtils {
 		parentNode.addChild(childNode);
 	}
 	
-	public static FormInstance exportRMS (IStorageUtility storage, Class type, String parentTag, IRecordFilter filter) {
+	/*public static FormInstance exportRMS (IStorageUtility storage, Class type, String parentTag, IRecordFilter filter) {
 		if (!Externalizable.class.isAssignableFrom(type) || !Restorable.class.isAssignableFrom(type)) {
 			return null;
 		}
@@ -244,7 +243,7 @@ public class RestoreUtils {
 		}
 		
 		return dm;
-	}
+	}*/
 	
 	public static FormInstance subDataModel (TreeElement top) {
 		TreeElement newTop = top.shallowCopy();
@@ -252,12 +251,12 @@ public class RestoreUtils {
 		return new FormInstance(newTop);
 	}
 	
-	public static void exportRMS (FormInstance parent, Class type, String grouperName, IStorageUtility storage, IRecordFilter filter) {
+	/*public static void exportRMS (FormInstance parent, Class type, String grouperName, IStorageUtility storage, IRecordFilter filter) {
 		FormInstance entities = RestoreUtils.exportRMS(storage, type, grouperName, filter);
 		RestoreUtils.mergeDataModel(parent, entities, ".");
-	}
+	}*/
 	
-	public static void importRMS (FormInstance dm, IStorageUtility storage, Class type, String path) {
+	/*public static void importRMS (FormInstance dm, IStorageUtility storage, Class type, String path) {
 		if (!Externalizable.class.isAssignableFrom(type) || !Restorable.class.isAssignableFrom(type)) {
 			return;
 		}
@@ -292,7 +291,7 @@ public class RestoreUtils {
 				throw new RuntimeException("Error importing RMS during restore! [" + type.getName() + ":" + recID + "]; " + ex.getMessage());
 			}
 		}
-	}
+	}*/
 	
 	public static ByteArrayPayload dispatch (FormInstance dm) {
 		return (ByteArrayPayload)xfFact.serializeInstance(dm);

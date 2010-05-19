@@ -16,10 +16,10 @@
 
 package org.openrosa.client.jr.core.model.data.helper;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.QuestionDef;
 import org.openrosa.client.jr.core.model.SelectChoice;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;

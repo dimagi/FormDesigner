@@ -19,12 +19,10 @@
  */
 package org.openrosa.client.jr.core.services.locale;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
@@ -62,7 +60,7 @@ public class ResourceFileDataSource implements LocaleDataSource {
 	 * @see org.javarosa.core.services.locale.LocaleDataSource#getLocalizedText()
 	 */
 	public OrderedHashtable getLocalizedText() {
-		return loadLocaleResource(resourceURI);
+		return null;//loadLocaleResource(resourceURI);
 	}
 
 	/* (non-Javadoc)
@@ -78,76 +76,6 @@ public class ResourceFileDataSource implements LocaleDataSource {
 	 */
 	public void writeExternal(DataOutputStream out) throws IOException {
 		out.writeUTF(resourceURI);
-	}
-
-	/**
-	 * @param resourceName A path to a resource file provided in the current environment
-	 *
-	 * @return a dictionary of key/value locale pairs from a file in the resource directory 
-	 */
-	private OrderedHashtable loadLocaleResource(String resourceName) {
-		InputStream is = System.class.getResourceAsStream(resourceName);
-		// TODO: This might very well fail. Best way to handle?
-		OrderedHashtable locale = new OrderedHashtable();
-		int chunk = 100;
-		InputStreamReader isr;
-		try {
-			isr = new InputStreamReader(is,"UTF-8");
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Failed to load locale resource " + resourceName + ". Is it in the jar?");
-		}
-		boolean done = false;
-		char[] cbuf = new char[chunk];
-		int offset = 0;
-		int curline = 0;
-
-		try {
-			String line = "";
-			while (!done) {
-				int read = isr.read(cbuf, offset, chunk - offset);
-				if(read == -1) {
-					done = true;
-					if(line != "") {
-						parseAndAdd(locale, line, curline);
-					}
-					break;
-				}
-				String stringchunk = String.valueOf(cbuf,offset,read);
-				
-				int index = 0;
-				
-				while(index != -1) {
-					int nindex = stringchunk.indexOf('\n',index);
-					//UTF-8 often doesn't encode with newline, but with CR, so if we 
-					//didn't find one, we'll try that
-					if(nindex == -1) { nindex = stringchunk.indexOf('\r',index); }
-					if(nindex == -1) {
-						line += stringchunk.substring(index);
-						break;
-					}
-					else {
-						line += stringchunk.substring(index,nindex);
-						//Newline. process our string and start the next one.
-						curline++;
-						parseAndAdd(locale, line, curline);
-						line = "";
-					}
-					index = nindex + 1;
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				System.out.println("Input Stream for resource file " + resourceURI + " failed to close. This will eat up your memory! Fix Problem! [" + e.getMessage() + "]");
-				e.printStackTrace();
-			}
-		}
-		return locale;
 	}
 
 	private void parseAndAdd(OrderedHashtable locale, String line, int curline) {

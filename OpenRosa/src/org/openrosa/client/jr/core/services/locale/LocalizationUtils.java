@@ -4,8 +4,6 @@
 package org.openrosa.client.jr.core.services.locale;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 
@@ -20,7 +18,7 @@ public class LocalizationUtils {
 	 * @return a dictionary of key/value locale pairs from a file in the resource directory 
 	 * @throws IOException 
 	 */
-	public static OrderedHashtable parseLocaleInput(InputStream is) throws IOException {
+	/*public static OrderedHashtable parseLocaleInput(InputStream is) throws IOException {
 			// TODO: This might very well fail. Best way to handle?
 			OrderedHashtable locale = new OrderedHashtable();
 			int chunk = 100;
@@ -66,7 +64,7 @@ public class LocalizationUtils {
 				}
 				is.close();
 			return locale;
-		}
+		}*/
 
 		private static void parseAndAdd(OrderedHashtable locale, String line, int curline) {
 

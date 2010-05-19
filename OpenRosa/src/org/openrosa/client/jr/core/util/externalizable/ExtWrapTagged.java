@@ -16,11 +16,12 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 
 public class ExtWrapTagged extends ExternalizableWrapper {
 	public final static byte[] WRAPPER_TAG = {(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff}; //must be same length as PrototypeFactory.CLASS_HASH_SIZE
@@ -83,7 +84,7 @@ public class ExtWrapTagged extends ExternalizableWrapper {
 				Class t = (Class)e.next();
 				if (((Integer)WRAPPER_CODES.get(t)).intValue() == wrapperCode) {
 					try {
-						type = (ExternalizableWrapper)PrototypeFactory.getInstance(t);
+						type = null; //(ExternalizableWrapper)PrototypeFactory.getInstance(t);
 					} catch (CannotCreateObjectException ccoe) {
 						throw new CannotCreateObjectException("Serious problem: cannot create built-in ExternalizableWrapper [" + t.getName() + "]");
 					}
@@ -96,7 +97,7 @@ public class ExtWrapTagged extends ExternalizableWrapper {
 			type.metaReadExternal(in, pf);
 			return type;
 		} else {
-			Class type = pf.getClass(tag);
+			Class type = null; //pf.getClass(tag);
 			if (type == null) {
 				throw new DeserializationException("No datatype registered to serialization code " + ExtUtil.printBytes(tag));
 			}
@@ -125,7 +126,7 @@ public class ExtWrapTagged extends ExternalizableWrapper {
 				type = o.getClass();
 			}
 				
-			byte[] tag = PrototypeFactory.getClassHash(type); //cache this?
+			byte[] tag = null; //PrototypeFactory.getClassHash(type); //cache this?
 			out.write(tag, 0, tag.length);
 		}
 	}

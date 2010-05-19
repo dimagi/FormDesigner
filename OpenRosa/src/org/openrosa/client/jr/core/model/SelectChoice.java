@@ -1,9 +1,9 @@
 package org.openrosa.client.jr.core.model;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.data.helper.Selection;
 import org.openrosa.client.jr.core.model.instance.TreeElement;
 import org.openrosa.client.jr.core.services.locale.Localizable;

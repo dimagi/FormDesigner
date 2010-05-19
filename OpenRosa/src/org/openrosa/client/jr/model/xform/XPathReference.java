@@ -19,10 +19,10 @@
  */
 package org.openrosa.client.jr.model.xform;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.IDataReference;
 import org.openrosa.client.jr.core.model.instance.TreeReference;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;

@@ -15,12 +15,12 @@
  */
 package org.openrosa.client.jr.core.model.instance;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.Constants;
 import org.openrosa.client.jr.core.model.FormDef;
 import org.openrosa.client.jr.core.model.FormElementStateListener;
@@ -791,7 +791,7 @@ import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
 				
 				if (classType == null) {
 					throw new RuntimeException("data type [" + value.getClass().getName() + "] not supported inside itemset");
-				} else if (classType.isAssignableFrom(value.getClass()) &&
+				} else if (true /*classType.isAssignableFrom(value.getClass())*/ &&
 							!(value instanceof SelectOneData || value instanceof SelectMultiData)) {
 					this.setValue(value);
 				} else {

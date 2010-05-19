@@ -19,14 +19,11 @@
  */
 package org.openrosa.client.jr.core.reference;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.services.locale.LocaleDataSource;
-import org.openrosa.client.jr.core.services.locale.LocalizationUtils;
-import org.openrosa.client.jr.core.util.OrderedHashtable;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
 
@@ -65,7 +62,7 @@ public class ReferenceDataSource implements LocaleDataSource {
 	/* (non-Javadoc)
 	 * @see org.javarosa.core.services.locale.LocaleDataSource#getLocalizedText()
 	 */
-	public OrderedHashtable getLocalizedText() {
+	/*public OrderedHashtable getLocalizedText() {
 		try {
 			InputStream is = ReferenceManager._().DeriveReference(referenceURI).getStream();
 			return LocalizationUtils.parseLocaleInput(is);
@@ -76,7 +73,7 @@ public class ReferenceDataSource implements LocaleDataSource {
 			e.printStackTrace();
 			throw new RuntimeException("Invalid Reference! " + referenceURI);
 		}
-	}
+	}*/
 
 	/* (non-Javadoc)
 	 * @see org.javarosa.core.util.externalizable.Externalizable#readExternal(java.io.DataInputStream, org.javarosa.core.util.externalizable.PrototypeFactory)

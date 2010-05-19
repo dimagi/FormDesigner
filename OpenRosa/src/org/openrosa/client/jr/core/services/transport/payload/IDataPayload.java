@@ -44,7 +44,7 @@ public interface IDataPayload extends Externalizable {
 	 * 
 	 * @return A stream for the data in this payload.
 	 */
-	public InputStream getPayloadStream();
+	//public InputStream getPayloadStream();
 	
 	/**
 	 * @return A string identifying the contents of the payload

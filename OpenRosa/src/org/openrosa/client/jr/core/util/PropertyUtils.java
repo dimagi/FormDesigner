@@ -19,8 +19,6 @@ package org.openrosa.client.jr.core.util;
 import java.util.Random;
 import java.util.Vector;
 
-import com.sun.org.apache.xerces.internal.impl.PropertyManager;
-
 public class PropertyUtils {
 
 	//need 'addpropery' too.

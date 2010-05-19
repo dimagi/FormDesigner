@@ -4,8 +4,6 @@
 package org.openrosa.client.jr.core.reference;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * A Reference is essentially a pointer to interact in a limited
@@ -37,7 +35,7 @@ public interface Reference {
 	 * @throws IOException If there is a problem reading the
 	 * stream.
 	 */
-	public InputStream getStream() throws IOException;
+	//public InputStream getStream() throws IOException;
 	
 	
 	/**
@@ -70,7 +68,7 @@ public interface Reference {
 	 * @throws IOException If there is a problem writing or the
 	 * reference is read only
 	 */
-	public OutputStream getOutputStream() throws IOException;
+	//public OutputStream getOutputStream() throws IOException;
 	
 	/**
 	 * Removes the binary data located by this reference.

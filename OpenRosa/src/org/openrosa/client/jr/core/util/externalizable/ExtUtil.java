@@ -16,61 +16,18 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.UTFDataFormatException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.services.PrototypeManager;
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 
 public class ExtUtil {
-	public static byte[] serialize (Object o) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			write(new DataOutputStream(baos), o);
-		} catch (IOException ioe) {
-			throw new RuntimeException("IOException writing to ByteArrayOutputStream; shouldn't happen!");
-		}
-		return baos.toByteArray();
-	}
-
-	public static Object deserialize (byte[] data, Class type) throws DeserializationException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		try {
-			return read(new DataInputStream(bais), type);
-		} catch (EOFException eofe) {
-			throw new DeserializationException("Unexpectedly reached end of stream when deserializing");
-		} catch (UTFDataFormatException udfe) {
-			throw new DeserializationException("Unexpectedly reached end of stream when deserializing");			
-		} catch (IOException e) {
-			throw new RuntimeException("Unknown IOException reading from ByteArrayInputStream; shouldn't happen!");
-		}
-	}
-	
-	public static Object deserialize (byte[] data, ExternalizableWrapper ew) throws DeserializationException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(data);
-		try {
-			return read(new DataInputStream(bais), ew);
-		} catch (EOFException eofe) {
-			throw new DeserializationException("Unexpectedly reached end of stream when deserializing");
-		} catch (UTFDataFormatException udfe) {
-			throw new DeserializationException("Unexpectedly reached end of stream when deserializing");			
-		} catch (IOException e) {
-			throw new RuntimeException("Unknown IOException reading from ByteArrayInputStream; shouldn't happen!");
-		}
-	}
-	
-	public static int getSize (Object o) {
-		return serialize(o).length;
-	}
 	
 	public static PrototypeFactory defaultPrototypes () {
 		return new PrototypeFactory(PrototypeManager.getPrototypes());
@@ -151,8 +108,8 @@ public class ExtUtil {
 	}
 	
 	public static Object read (DataInputStream in, Class type, PrototypeFactory pf) throws IOException, DeserializationException {
-		if (Externalizable.class.isAssignableFrom(type)) {
-			Externalizable ext = (Externalizable)PrototypeFactory.getInstance(type);
+		if (true /*Externalizable.class.isAssignableFrom(type)*/) {
+			Externalizable ext = null; //(Externalizable)PrototypeFactory.getInstance(type);
 			ext.readExternal(in, pf == null ? defaultPrototypes() : pf);
 			return ext;
 		} else if (type == Byte.class) {
@@ -430,10 +387,10 @@ public class ExtUtil {
 	//**REMOVE THESE TWO FUNCTIONS//
 	//original deserialization API (whose limits made us make this whole new framework!); here for backwards compatibility
 	public static void deserialize (byte[] data, Externalizable ext) throws IOException, DeserializationException {
-		ext.readExternal(new DataInputStream(new ByteArrayInputStream(data)), defaultPrototypes());
+		ext.readExternal(new DataInputStream(), defaultPrototypes());
 	}
 	public static Object deserialize (byte[] data, Class type, PrototypeFactory pf) throws IOException, DeserializationException {
-        return read(new DataInputStream(new ByteArrayInputStream(data)), type, pf);
+        return read(new DataInputStream(), type, pf);
 	}
 	////
 }

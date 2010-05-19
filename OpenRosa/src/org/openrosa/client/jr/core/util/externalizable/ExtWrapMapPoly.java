@@ -16,12 +16,12 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 
 //map of objects where elements are multiple types, keys are still assumed to be of a single (non-polymorphic) type

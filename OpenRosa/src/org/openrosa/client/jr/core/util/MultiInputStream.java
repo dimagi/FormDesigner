@@ -19,9 +19,6 @@
  */
 package org.openrosa.client.jr.core.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -38,16 +35,16 @@ import java.util.Vector;
  * @date Dec 18, 2008 
  *
  */
-public class MultiInputStream extends InputStream {
+public class MultiInputStream /*extends InputStream*/ {
 
 	/** InputStream **/
 	Vector streams = new Vector();
 	
 	int currentStream = -1;
 	
-	public void addStream(InputStream stream) {
+	/*public void addStream(InputStream stream) {
 		streams.addElement(stream);
-	}
+	}*/
 	
 	/**
 	 * Finalize the stream and allow it to be read
@@ -70,7 +67,7 @@ public class MultiInputStream extends InputStream {
 	/* (non-Javadoc)
 	 * @see java.io.InputStream#read()
 	 */
-	public int read() throws IOException {
+	/*public int read() throws IOException {
 		if(currentStream == -1) {
 			throw new IOException("Cannot read from unprepared MultiInputStream!");
 		}
@@ -93,22 +90,22 @@ public class MultiInputStream extends InputStream {
 		
 		//Will be either a valid value or -1 if we've run out of streams.
 		return next;
-	}
+	}*/
 
 	/* (non-Javadoc)
 	 * @see java.io.InputStream#available()
 	 */
-	public int available() throws IOException {
+	/*public int available() throws IOException {
 		if(currentStream == -1) {
 			throw new IOException("Cannot read from unprepared MultiInputStream!");
 		}
 		return ((InputStream)streams.elementAt(currentStream)).available();
-	}
+	}*/
 
 	/* (non-Javadoc)
 	 * @see java.io.InputStream#close()
 	 */
-	public void close() throws IOException {
+	/*public void close() throws IOException {
 		if(currentStream == -1) {
 			throw new IOException("Cannot read from unprepared MultiInputStream!");
 		}
@@ -116,6 +113,6 @@ public class MultiInputStream extends InputStream {
 		while(en.hasMoreElements()) {
 			((InputStream)en.nextElement()).close();
 		}
-	}
+	}*/
 
 }

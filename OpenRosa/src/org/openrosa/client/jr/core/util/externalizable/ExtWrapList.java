@@ -16,10 +16,11 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
+
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 
 
 //list of objects of single (non-polymorphic) type

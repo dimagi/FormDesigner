@@ -16,7 +16,6 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.util.Date;
 import java.util.Vector;
 
 import org.openrosa.client.jr.core.util.MD5;
@@ -41,7 +40,7 @@ public class PrototypeFactory {
 		initialized = false;
 	}		
 		
-	private void lazyInit () {
+	/*private void lazyInit () {
 		initialized = true;
 		
 		classes = new Vector();
@@ -62,9 +61,9 @@ public class PrototypeFactory {
 			}
 			classNames = null;
 		}
-	}
+	}*/
 
-	private void addDefaultClasses () {
+	/*private void addDefaultClasses () {
 		Class[] baseTypes = {
 				Object.class,
 				Integer.class,
@@ -82,9 +81,9 @@ public class PrototypeFactory {
 		for (int i = 0; i < baseTypes.length; i++) {
 			addClass(baseTypes[i]);
 		}
-	}
+	}*/
 
-	public void addClass (Class c) {
+	/*public void addClass (Class c) {
 		if (!initialized) {
 			lazyInit();
 		}
@@ -102,9 +101,9 @@ public class PrototypeFactory {
 		
 		classes.addElement(c);
 		hashes.addElement(hash);
-	}
+	}*/
 	
-	public Class getClass (byte[] hash) {
+	/*public Class getClass (byte[] hash) {
 		if (!initialized) {
 			lazyInit();
 		}
@@ -116,13 +115,13 @@ public class PrototypeFactory {
 		}
 		
 		return null;
-	}
+	}*/
 	
-	public Object getInstance (byte[] hash) {
+	/*public Object getInstance (byte[] hash) {
 		return getInstance(getClass(hash));
-	}
+	}*/
 	
-	public static Object getInstance (Class c) {
+	/*public static Object getInstance (Class c) {
 		try {
 			return c.newInstance();
 		} catch (IllegalAccessException iae) {
@@ -130,9 +129,9 @@ public class PrototypeFactory {
 		} catch (InstantiationException e) {
 			throw new CannotCreateObjectException(c.getName() + ": not instantiable");
 		}
-	}
+	}*/
 	
-	public static byte[] getClassHash (Class type) {
+	/*public static byte[] getClassHash (Class type) {
 		byte[] hash = new byte[CLASS_HASH_SIZE];
 		byte[] md5 = MD5.hash(type.getName().getBytes()); //add support for a salt, in case of collision?
 		
@@ -140,7 +139,7 @@ public class PrototypeFactory {
 			hash[i] = md5[i];
 		
 		return hash;
-	}
+	}*/
 	
 	public static boolean compareHash (byte[] a, byte[] b) {
 		if (a.length != b.length) {

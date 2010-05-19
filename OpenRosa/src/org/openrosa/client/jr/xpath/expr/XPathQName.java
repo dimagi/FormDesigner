@@ -16,10 +16,10 @@
 
 package org.openrosa.client.jr.xpath.expr;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.ExtUtil;
 import org.openrosa.client.jr.core.util.externalizable.ExtWrapNullable;

@@ -45,7 +45,7 @@ public interface IDataPointer extends Externalizable {
 	 * Get the data from the underlying storage.  
 	 * @return
 	 */
-	public InputStream getDataStream();
+	//public InputStream getDataStream();
 
 	/**
 	 * Deletes the underlying data from storage.

@@ -19,7 +19,6 @@
  */
 package org.openrosa.client.jr.core.services.locale;
 
-import org.openrosa.client.jr.core.util.OrderedHashtable;
 import org.openrosa.client.jr.core.util.externalizable.Externalizable;
 
 /**
@@ -28,5 +27,5 @@ import org.openrosa.client.jr.core.util.externalizable.Externalizable;
  *
  */
 public interface LocaleDataSource extends Externalizable {
-	public OrderedHashtable getLocalizedText();
+	//public OrderedHashtable getLocalizedText();
 }

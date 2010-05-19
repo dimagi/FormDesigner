@@ -16,13 +16,13 @@
 
 package org.openrosa.client.jr.xforms.util;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
 import org.openrosa.client.jr.core.model.FormDef;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.ExtUtil;
@@ -71,12 +71,12 @@ public class XFormUtils {
 		return returnForm;
 	}*/
 
-	public static FormDef getFormFromSerializedResource(String resource) {
+	/*public static FormDef getFormFromSerializedResource(String resource) {
 		FormDef returnForm = null;
 		InputStream is = System.class.getResourceAsStream(resource);
 		try {
 			if(is != null) {
-				DataInputStream dis = new DataInputStream(is);
+				DataInputStream dis = new DataInputStream();
 				returnForm = (FormDef)ExtUtil.read(dis, FormDef.class);
 				dis.close();
 				is.close();
@@ -92,7 +92,7 @@ public class XFormUtils {
 			e.printStackTrace();
 		}
 		return returnForm;
-	}
+	}*/
 	
 	
 	/////Parser Attribute warning stuff

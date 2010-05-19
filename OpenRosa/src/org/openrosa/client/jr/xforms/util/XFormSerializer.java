@@ -25,41 +25,7 @@ import com.google.gwt.xml.client.Element;
 
 public class XFormSerializer {
 	
-	/*public static ByteArrayOutputStream getStream(Document doc) {
-		KXmlSerializer serializer = new KXmlSerializer();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bos);
-		try {
-			serializer.setOutput(dos, null);
-			doc.write(serializer);
-			serializer.flush();
-			return bos;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}*/
-	
 	public static String elementToString(Element e){
-		/*KXmlSerializer serializer = new KXmlSerializer();
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bos);
-		String s=null;
-		try {
-			serializer.setOutput(dos, null);
-			e.write(serializer);
-			serializer.flush();
-			s = new String(bos.toByteArray(),"UTF-8");
-			return s;
-		}catch (UnsupportedEncodingException uce){
-			uce.printStackTrace();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-		
-		return null;*/
 		
 		return e.toString();
 		
@@ -67,13 +33,5 @@ public class XFormSerializer {
 
 	public static String getString(Document doc) {
 		return doc.toString();
-		/*ByteArrayOutputStream bos = getStream(doc);
-
-		byte[] byteArr = bos.toByteArray();
-		char[] charArray = new char[byteArr.length];
-		for (int i = 0; i < byteArr.length; i++)
-			charArray[i] = (char) byteArr[i];
-
-		return String.valueOf(charArray);*/
 	}
 }

@@ -19,14 +19,12 @@
  */
 package org.openrosa.client.jr.core.services.transport.payload;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.openrosa.client.jr.core.util.MultiInputStream;
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.ExtUtil;
 import org.openrosa.client.jr.core.util.externalizable.ExtWrapListPoly;
@@ -65,20 +63,6 @@ public class MultiMessagePayload implements IDataPayload {
 		return payloads;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see org.javarosa.core.services.transport.IDataPayload#getPayloadStream()
-	 */
-	public InputStream getPayloadStream() {
-		MultiInputStream bigStream = new MultiInputStream();
-		Enumeration en = payloads.elements();
-		while(en.hasMoreElements()) {
-			IDataPayload payload = (IDataPayload)en.nextElement();
-			bigStream.addStream(payload.getPayloadStream());
-		}
-		bigStream.prepare();
-		return bigStream;
-	}
 
 	/*
 	 * (non-Javadoc)

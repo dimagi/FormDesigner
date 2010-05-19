@@ -16,13 +16,13 @@
 
 package org.openrosa.client.jr.core.services.locale;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.NoLocalizedTextException;
 import org.openrosa.client.jr.core.util.OrderedHashtable;
 import org.openrosa.client.jr.core.util.UnregisteredLocaleException;
@@ -242,7 +242,7 @@ public class Localizer implements Externalizable {
 	 * 4. For each resource file for the current locale, load each definition
 	 */
 	private void loadCurrentLocaleResources() {
-		this.currentLocaleData = getLocaleData(currentLocale);
+		//this.currentLocaleData = getLocaleData(currentLocale);
 	}
 	
 	/**
@@ -293,7 +293,7 @@ public class Localizer implements Externalizable {
 	 * @param locale Locale
 	 * @returns Hashtable representing text mappings for this locale. Returns null if locale not defined or null.
 	 */
-	public OrderedHashtable getLocaleData (String locale) {
+	/*public OrderedHashtable getLocaleData (String locale) {
 		if(locale == null || !this.locales.contains(locale)) {
 			return null;
 		}
@@ -349,7 +349,7 @@ public class Localizer implements Externalizable {
 		}
 		
 		return data;
-	}
+	}*/
 
 	/**
 	 * Get the mappings for a locale, but throw an exception if locale is not defined.
@@ -358,12 +358,12 @@ public class Localizer implements Externalizable {
 	 * @return Text mappings for locale.
 	 * @throws UnregisteredLocaleException If locale is not defined or null.
 	 */
-	public OrderedHashtable getLocaleMap (String locale) {
+	/*public OrderedHashtable getLocaleMap (String locale) {
 		OrderedHashtable mapping = getLocaleData(locale);
 		if (mapping == null)
 			throw new UnregisteredLocaleException("Attempted to access an undefined locale.");
 		return mapping;
-	}
+	}*/
 	
 	/**
 	 * Determine whether a locale has a mapping for a given text handle. Only tests the specified locale and form; does
@@ -381,9 +381,9 @@ public class Localizer implements Externalizable {
 		Vector resources = (Vector)localeResources.get(locale);
 		for(Enumeration en = resources.elements(); en.hasMoreElements(); ) {
 			LocaleDataSource source = (LocaleDataSource)en.nextElement();
-			if(source.getLocalizedText().containsKey(textID)) {
+			/*if(source.getLocalizedText().containsKey(textID)) {
 				return true;
-			}
+			}*/
 		}
 		return false;
 	}
@@ -531,7 +531,7 @@ public class Localizer implements Externalizable {
 		if(locale.equals(currentLocale)) {
 			return (String)currentLocaleData.get(textID);
 		} else {
-			return (String)getLocaleMap(locale).get(textID);
+			return null; //(String)getLocaleMap(locale).get(textID);
 		}
 	}
 	

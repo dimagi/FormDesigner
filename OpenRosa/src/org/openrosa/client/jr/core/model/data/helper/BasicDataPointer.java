@@ -16,12 +16,10 @@
 
 package org.openrosa.client.jr.core.model.data.helper;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.data.IDataPointer;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.ExtUtil;
@@ -79,10 +77,10 @@ public class BasicDataPointer implements IDataPointer {
 	 * (non-Javadoc)
 	 * @see org.javarosa.core.model.data.IDataPointer#getDataStream()
 	 */
-	public InputStream getDataStream() {
+	/*public InputStream getDataStream() {
 		ByteArrayInputStream bis = new ByteArrayInputStream(data);
 		return bis;
-	}
+	}*/
 
 	public void readExternal(DataInputStream in, PrototypeFactory pf)
 			throws IOException, DeserializationException {

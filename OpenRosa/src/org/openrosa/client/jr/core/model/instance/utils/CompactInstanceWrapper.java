@@ -16,12 +16,12 @@
 
 package org.openrosa.client.jr.core.model.instance.utils;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.Constants;
 import org.openrosa.client.jr.core.model.FormDef;
 import org.openrosa.client.jr.core.model.data.BooleanData;

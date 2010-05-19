@@ -16,11 +16,11 @@
 
 package org.openrosa.client.jr.xpath;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.log.FatalException;
 import org.openrosa.client.jr.core.model.condition.EvaluationContext;
 import org.openrosa.client.jr.core.model.condition.IConditionExpr;

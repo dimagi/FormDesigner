@@ -16,9 +16,10 @@
 
 package org.openrosa.client.jr.core.util.externalizable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 
 
 public class ExtWrapBase extends ExternalizableWrapper {
@@ -41,7 +42,7 @@ public class ExtWrapBase extends ExternalizableWrapper {
 	public ExtWrapBase (Class type) {
 		if (type == null) {
 			throw new NullPointerException();
-		} else if (ExternalizableWrapper.class.isAssignableFrom(type)) {
+		} else if (false /*ExternalizableWrapper.class.isAssignableFrom(type)*/) {
 			throw new IllegalArgumentException("ExtWrapBase can only contain base types");
 		}
 			

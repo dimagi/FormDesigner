@@ -19,12 +19,10 @@
  */
 package org.openrosa.client.jr.core.services.transport.payload;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.util.externalizable.DeserializationException;
 import org.openrosa.client.jr.core.util.externalizable.ExtUtil;
 import org.openrosa.client.jr.core.util.externalizable.PrototypeFactory;
@@ -60,14 +58,6 @@ public class ByteArrayPayload implements IDataPayload {
 		this.payload = payload;
 		this.id = id;
 		this.type = type;
-	}
-	
-
-	/* (non-Javadoc)
-	 * @see org.javarosa.core.services.transport.IDataPayload#getPayloadStream()
-	 */
-	public InputStream getPayloadStream() {
-		return new ByteArrayInputStream(payload);
 	}
 
 	/* (non-Javadoc)

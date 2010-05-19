@@ -225,7 +225,7 @@ public class QuestionPreloader {
 					nAgo = 1;
 				}
 	
-				d = DateUtils.getPastPeriodDate(new Date(), type, start, beginning, includeToday, nAgo);
+				d = new Date(); //DateUtils.getPastPeriodDate(new Date(), type, start, beginning, includeToday, nAgo);
 			} catch (Exception e) {
 				throw new IllegalArgumentException("invalid preload params for preload mode 'date'");
 			}	

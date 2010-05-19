@@ -59,12 +59,12 @@ public class PrototypeFactoryDeprecated {
 		if(prototypes.get(prototypeName) == null) {
 			return null;
 		}
-		try {
-			return ((Class)prototypes.get(prototypeName)).newInstance();
-		} catch (InstantiationException e) {
+		//try {
+			return null; //((Class)prototypes.get(prototypeName)).newInstance();
+		/*} catch (InstantiationException e) {
 			throw new CannotCreateObjectException(prototypeName);
 		} catch (IllegalAccessException e) {
 			throw new CannotCreateObjectException(prototypeName);
-		}
+		}*/
 	}
 }

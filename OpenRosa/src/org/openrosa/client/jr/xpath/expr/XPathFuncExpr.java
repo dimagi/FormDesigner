@@ -16,14 +16,14 @@
 
 package org.openrosa.client.jr.xpath.expr;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.condition.EvaluationContext;
 import org.openrosa.client.jr.core.model.condition.IFunctionHandler;
 import org.openrosa.client.jr.core.model.instance.FormInstance;
@@ -38,7 +38,6 @@ import org.openrosa.client.jr.xpath.IExprDataType;
 import org.openrosa.client.jr.xpath.XPathTypeMismatchException;
 import org.openrosa.client.jr.xpath.XPathUnhandledException;
 
-import com.sun.org.apache.regexp.internal.RE;
 
 /**
  * Representation of an xpath function expression.
@@ -225,7 +224,7 @@ public class XPathFuncExpr extends XPathExpression {
 		Object[] typedArgs = null;
 
 		while (typedArgs == null && e.hasMoreElements()) {
-			typedArgs = matchPrototype(args, (Class[])e.nextElement());
+			typedArgs = null; //matchPrototype(args, (Class[])e.nextElement());
 		}
 
 		if (typedArgs != null) {
@@ -237,49 +236,6 @@ public class XPathFuncExpr extends XPathExpression {
 		}
 	}
 	
-	/**
-	 * Given a prototype defined by the function handler, attempt to coerce the function arguments
-	 * to match that prototype (checking # args, type conversion, etc.). If it is coercible, return
-	 * the type-converted argument list -- these will be the arguments used to evaluate the function.
-	 * If not coercible, return null.
-	 * 
-	 * @param args
-	 * @param prototype
-	 * @return
-	 */
-	private static Object[] matchPrototype (Object[] args, Class[] prototype) {
-		Object[] typed = null;
-
-		if (prototype.length == args.length) {
-			typed = new Object[args.length];
-
-			for (int i = 0; i < prototype.length; i++) {
-				typed[i] = null;
-
-				//how to handle type conversions of custom types?
-				if (prototype[i].isAssignableFrom(args[i].getClass())) {
-					typed[i] = args[i];
-				} else {
-					try {
-						if (prototype[i] == Boolean.class) {
-							typed[i] = toBoolean(args[i]);
-						} else if (prototype[i] == Double.class) {
-							typed[i] = toNumeric(args[i]);
-						} else if (prototype[i] == String.class) {
-							typed[i] = toString(args[i]);
-						} else if (prototype[i] == Date.class) {
-							typed[i] = toDate(args[i]);
-						}
-					} catch (XPathTypeMismatchException xptme) { /* swallow type mismatch exception */ }
-				}
-
-				if (typed[i] == null)
-					return null;
-			}
-		}
-
-		return typed;
-	}
 	
 	/******** HANDLERS FOR BUILT-IN FUNCTIONS ********
 	 * 
@@ -659,9 +615,11 @@ public class XPathFuncExpr extends XPathExpression {
 		String str = toString(o1);
 		String re = toString(o2);
 		
-		RE regexp = new RE(re);
+		/*RE regexp = new RE(re);
 		boolean result = regexp.match(str);
-		return new Boolean(result);
+		return new Boolean(result);*/
+		
+		return true; //?????????????
 	}
 
 	/**

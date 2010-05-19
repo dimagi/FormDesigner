@@ -16,10 +16,10 @@
 
 package org.openrosa.client.jr.core.model;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.openrosa.client.java.io.DataInputStream;
+import org.openrosa.client.java.io.DataOutputStream;
 import org.openrosa.client.jr.core.model.condition.Condition;
 import org.openrosa.client.jr.core.model.condition.IConditionExpr;
 import org.openrosa.client.jr.core.model.condition.Recalculate;

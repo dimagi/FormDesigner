@@ -16,7 +16,6 @@
 
 package org.openrosa.client.jr.core.model.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
@@ -31,7 +30,7 @@ import org.openrosa.client.jr.core.util.MathUtils;
  */
 
 public class DateUtils {
-	private static final int MONTH_OFFSET = (1 - Calendar.JANUARY);
+	private static final int MONTH_OFFSET = 0; //(1 - Calendar.JANUARY);
 		
 	public static final int FORMAT_ISO8601 = 1;
 	public static final int FORMAT_HUMAN_READABLE_SHORT = 2;
@@ -71,8 +70,8 @@ public class DateUtils {
 //		public int tzOffset; //s ahead of UTC
 		
 		public boolean check () {
-			return (inRange(month, 1, 12) && inRange(day, 1, daysInMonth(month - MONTH_OFFSET, year)) &&
-					inRange(hour, 0, 23) && inRange(minute, 0, 59) && inRange(second, 0, 59) && inRange(secTicks, 0, 999));
+			return true; //(inRange(month, 1, 12) && inRange(day, 1, daysInMonth(month - MONTH_OFFSET, year)) &&
+					//inRange(hour, 0, 23) && inRange(minute, 0, 59) && inRange(second, 0, 59) && inRange(secTicks, 0, 999));
 		}
 	}
 	
@@ -93,16 +92,16 @@ public class DateUtils {
 	}
 	
 	public static Date getDate (DateFields f) {
-		Calendar cd = Calendar.getInstance();
+		/*Calendar cd = Calendar.getInstance();
 		cd.set(Calendar.YEAR, f.year);
 		cd.set(Calendar.MONTH, f.month - MONTH_OFFSET);
 		cd.set(Calendar.DAY_OF_MONTH, f.day);
 		cd.set(Calendar.HOUR_OF_DAY, f.hour);
 		cd.set(Calendar.MINUTE, f.minute);
 		cd.set(Calendar.SECOND, f.second);
-		cd.set(Calendar.MILLISECOND, f.secTicks);
+		cd.set(Calendar.MILLISECOND, f.secTicks);*/
 		
-		return cd.getTime();		
+		return new Date(); //cd.getTime();		
 	}
 	
 	/* ==== FORMATTING DATES/TIMES TO STANDARD STRINGS ==== */
@@ -287,7 +286,7 @@ public class DateUtils {
 	 * @return the number of days in the given month on the given
 	 * year.
 	 */
-	public static int daysInMonth (int month, int year) {
+	/*public static int daysInMonth (int month, int year) {
 		if (month == Calendar.APRIL || month == Calendar.JUNE || month == Calendar.SEPTEMBER || month == Calendar.NOVEMBER) {
 			return 30;
 		} else if (month == Calendar.FEBRUARY) {
@@ -295,7 +294,7 @@ public class DateUtils {
 		} else {
 			return 31;
 		}
-	}
+	}*/
 	
 	/**
 	 * Determines whether a year is a leap year in the
@@ -355,7 +354,7 @@ public class DateUtils {
      * @return a Date object representing the amount of time between the
      * reference date, and the given parameters.
      */
-	public static Date getPastPeriodDate (Date ref, String type, String start, boolean beginning, boolean includeToday, int nAgo) {
+	/*public static Date getPastPeriodDate (Date ref, String type, String start, boolean beginning, boolean includeToday, int nAgo) {
 		Date d = null;
 		
 		if (type.equals("week")) {
@@ -402,7 +401,7 @@ public class DateUtils {
 		}
 		
 		return d;
-	}
+	}*/
 	
 	/**
 	 * Gets the number of months separating the two dates.
@@ -410,7 +409,7 @@ public class DateUtils {
 	 * @param laterDate The later date, chronologically
 	 * @return the number of months separating the two dates.
 	 */
-	public static int getMonthsDifference(Date earlierDate, Date laterDate) {
+	/*public static int getMonthsDifference(Date earlierDate, Date laterDate) {
 		Date span = new Date(laterDate.getTime() - earlierDate.getTime());
 		Date firstDate = new Date(0);
 		Calendar calendar = Calendar.getInstance();
@@ -423,7 +422,7 @@ public class DateUtils {
 		int spanMonth = calendar.get(Calendar.MONTH);
 		int months = (spanYear - firstYear)*12 + (spanMonth - firstMonth);
 		return months;
-	}
+	}*/
 	
 	/**
 	 * @param date the date object to be analyzed

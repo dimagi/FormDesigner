@@ -720,7 +720,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		for(int index = 0; index < selectedPanel.getWidgetCount(); index++){
 			RuntimeWidgetWrapper widget = (RuntimeWidgetWrapper)selectedPanel.getWidget(index);
 			Widget wrappedWidget = widget.getWrappedWidget();
-			if(wrappedWidget instanceof Image || wrappedWidget instanceof HTML || wrappedWidget instanceof Label){
+			if(wrappedWidget instanceof Image || wrappedWidget instanceof HTML /*|| wrappedWidget instanceof Label*/){
 				String binding  = widget.getBinding();
 				if(binding != null && binding.equalsIgnoreCase(button.getParentBinding()))
 					return widget;

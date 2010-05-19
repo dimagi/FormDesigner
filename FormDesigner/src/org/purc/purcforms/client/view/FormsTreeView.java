@@ -286,6 +286,10 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 			if(nextQuestionId <= count)
 				nextQuestionId = count;
 
+			count = formDef.getPageCount();
+			if(nextPageId <= count)
+				nextPageId = count;
+			
 			this.formDef = formDef;
 
 			if(formExists(formDef.getId()))

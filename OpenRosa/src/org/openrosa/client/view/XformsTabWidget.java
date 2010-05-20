@@ -1,13 +1,16 @@
 package org.openrosa.client.view;
 
+import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.view.FormDesignerWidget.Images;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.IconAlign;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -32,12 +35,13 @@ public class XformsTabWidget extends Composite {
 
 	private TextArea txtXforms = new TextArea();
 	private Window window = new Window();
-
+	private final IFileListener fileListener;
 	
 	Images images;
 	
-	public XformsTabWidget(){
+	public XformsTabWidget(IFileListener fileListenerr){
 		this.images = FormDesignerWidget.images;
+		this.fileListener = fileListenerr;
 		window.setMaximizable(true);  
 		window.setHeading("Xform Source");  
 				
@@ -46,7 +50,7 @@ public class XformsTabWidget extends Composite {
 		ToolBar tb = new ToolBar();
 			
 		VerticalPanel verticalPanel = new VerticalPanel();
-		Button validate,update,saveas;
+		Button validate,update,saveas,openBut;
 		validate = new Button("Validate Xform");
 		validate.setIcon(AbstractImagePrototype.create(images.validate()));
 		validate.setIconAlign(IconAlign.LEFT);
@@ -62,8 +66,18 @@ public class XformsTabWidget extends Composite {
 		saveas = new Button("Save As");
 		tb.add(saveas);
 		
-		window.setTopComponent(tb);
+		openBut = new Button("Open Pasted Text");
+		openBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				fileListener.onOpen();
+			}
+		});
 		
+		tb.add(openBut);
+		
+		window.setTopComponent(tb);
+		window.setWidth(800);
+		window.setMinWidth(500);
 		cp.setHeading("XForm Editor Output");
 		cp.add(txtXforms);
 //		txtXforms.
@@ -88,6 +102,7 @@ public class XformsTabWidget extends Composite {
 	}
 	
 	public String getXform(){
+		
 		return txtXforms.getText();
 	}
 	

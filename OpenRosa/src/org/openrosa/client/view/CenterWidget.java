@@ -42,7 +42,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	 */
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
 
-	private XformsTabWidget xformsWidget = new XformsTabWidget();
+	private XformsTabWidget xformsWidget = new XformsTabWidget(this);
 	private DesignTabWidget designWidget = new DesignTabWidget(this);
 	private TextTabWidget itextWidget = new TextTabWidget();
 
@@ -121,11 +121,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	private void openFile(){
 		String xml = xformsWidget.getXform();
 		if(xml == null || xml.trim().length() == 0){
-			tabs.selectTab(TAB_INDEX_XFORMS);
+			xformsWidget.showWindow();
 			return;
 		}
 
-		tabs.selectTab(TAB_INDEX_DESIGN);
+//		tabs.selectTab(TAB_INDEX_DESIGN);
 		
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
 		
@@ -164,7 +164,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	
 	public void showIText(){
 		
-		this.onSave(false);
+		this.saveFile(false);
 		
 		String xml = null;
 		

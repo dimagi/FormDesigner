@@ -462,11 +462,21 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	
 	editLocale.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
-			GWT.log("EditLocale button pressed");
 			fileListener.showIText();
 		}
 	});
 	
+	openBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			fileListener.onOpen();
+		}
+	});
+	
+	newBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			fileListener.onNew();
+		}
+	});
 		/*
 		btnNewForm.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){controller.newForm();}});

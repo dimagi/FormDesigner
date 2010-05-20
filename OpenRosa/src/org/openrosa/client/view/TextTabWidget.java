@@ -7,7 +7,14 @@ import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.model.Locale;
 
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.event.WidgetListener;
+import com.extjs.gxt.ui.client.event.WindowEvent;
+import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -37,14 +44,23 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), getColumnModel());
 		grid.setBorders(true);
 		grid.setStripeRows(true);
-
+		grid.setWidth(700);
 		contentPanel.setHeaderVisible(false);
 		contentPanel.setLayout(new FitLayout());
 		contentPanel.add(grid);
-
+		contentPanel.setWidth(700);
+		
 //		initComponent(contentPanel);
 		window.add(contentPanel);
-//		window.show();
+		window.setWidth(700);
+		window.setMinHeight(400);
+		window.setMinWidth(400);
+		
+//		menuBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+//			public void componentSelected(ButtonEvent ce) {
+//				menuBut.showMenu();
+//			}
+//		});
 	}
 	
 	public void showWindow(){

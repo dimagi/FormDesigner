@@ -28,6 +28,7 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
@@ -105,6 +106,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bcut,bcopy,bpaste;
+	private Button editLocale;
 	
 	private IFileListener fileListener;
 
@@ -290,12 +292,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    group.setHeight(97);
 	    group.setBodyStyle("myGroupStyle");
 		AbstractImagePrototype spacer = AbstractImagePrototype.create(images.emptyIcon());
-		Button b = new Button();
-		b.setText("Edit Locales");
-		b.setBorders(true);
+		
+		editLocale = new Button();
+		editLocale.setText("Edit Locales");
+		editLocale.setBorders(true);
 //		b.setIcon(spacer);
-		b.setScale(ButtonScale.SMALL);
-		group.addButton(b);
+		editLocale.setScale(ButtonScale.SMALL);
+		group.addButton(editLocale);
 		
 //		b = new Button(); //blank
 //		group.addButton(b);
@@ -434,7 +437,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		@Override
 		public void componentSelected(ButtonEvent ce) {
 			// TODO Auto-generated method stub
-			fileListener.onSave();
+			fileListener.onSave(true);
 			menuBut.hideMenu();
 			
 		}
@@ -445,12 +448,24 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		@Override
 		public void componentSelected(ButtonEvent ce) {
 			// TODO Auto-generated method stub
-			fileListener.onSave();
+			fileListener.onSave(true);
 			menuBut.hideMenu();
 			
 		}
 	});
 	
+	menuBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			menuBut.showMenu();
+		}
+	});
+	
+	editLocale.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			GWT.log("EditLocale button pressed");
+			fileListener.showIText();
+		}
+	});
 	
 		/*
 		btnNewForm.addClickHandler(new ClickHandler(){

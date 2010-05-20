@@ -16,6 +16,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
@@ -47,6 +48,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 	private FormDef formDef;
 
+	/**
+	 * this is a flag the onSave() method checks to see if it should show the xml window when it saves.
+	 */
+	private boolean showXMLWindowFlag = true; 
 
 	public CenterWidget() {		
 		initDesignTab();
@@ -79,7 +84,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 	private void initItextTab(){
-		tabs.add(itextWidget, "Internationalization");
+//		tabs.add(itextWidget, "Internationalization");
 	}
 
 	public void onWindowResized(int width, int height){
@@ -140,14 +145,14 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//itextWidget.loadItext(list); on loading, form item is selected and this is eventually called.
 	}
 
-	public void onSave(){
+	public void onSave(boolean showWindow){
 		FormUtil.dlg.setText("Saving...");
 		FormUtil.dlg.show();
-
+		showXMLWindowFlag = showWindow;
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				try{
-					saveFile();
+					saveFile(showXMLWindowFlag);
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -156,8 +161,36 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			}
 		});
 	}
+	
+	public void showIText(){
+		
+		this.onSave(false);
+		
+		String xml = null;
+		
+		if(Context.getFormDef() == null)
+			formDef = null;
+		
+		if(formDef == null || formDef.getDoc() == null)
+			return;
 
-	private void saveFile(){
+		//this line is necessary for gxt to load the form with text on the design tab.
+		tabs.selectTab(TAB_INDEX_DESIGN);
+		
+		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
+		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
+		
+		//update form outline with the itext changes
+		ListStore<ItextModel> list = new ListStore<ItextModel>();
+		formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+		designWidget.refreshForm(formDef);
+//		itextWidget.loadItext(list);
+		
+		itextWidget.showWindow();
+		
+	}
+
+	private void saveFile(boolean showWindow){
 		//FormDef formDef = Context.getFormDef();
 		
 		if(Context.getFormDef() == null)
@@ -216,7 +249,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			itextWidget.loadItext(new ListStore<ItextModel>());
 
 		xformsWidget.setXform(xml);
-		xformsWidget.showWindow();
+		if(showWindow){
+			xformsWidget.showWindow();
+		}
 //		tabs.selectTab(TAB_INDEX_XFORMS);
 		
 	}

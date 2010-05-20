@@ -63,7 +63,7 @@ public class FileToolbar extends Composite {
 		
 		btnSave.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				fileListener.onSave();}}
+				fileListener.onSave(true);}}
 		);
 	}
 }

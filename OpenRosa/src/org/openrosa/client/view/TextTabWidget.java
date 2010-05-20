@@ -9,6 +9,7 @@ import org.purc.purcforms.client.model.Locale;
 
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.grid.CellEditor;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
@@ -27,9 +28,12 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	private EditorGrid<ItextModel> grid;
 	private ContentPanel contentPanel = new ContentPanel();
+	private Window window = new Window();
 	
 
 	public TextTabWidget(){
+		window.setMaximizable(true);  
+		window.setHeading("Xform Source");  
 		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), getColumnModel());
 		grid.setBorders(true);
 		grid.setStripeRows(true);
@@ -38,7 +42,17 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		contentPanel.setLayout(new FitLayout());
 		contentPanel.add(grid);
 
-		initComponent(contentPanel);
+//		initComponent(contentPanel);
+		window.add(contentPanel);
+//		window.show();
+	}
+	
+	public void showWindow(){
+		window.show();
+	}
+	
+	public void hideWindow(){
+		window.hide();
 	}
 	
 	private ColumnModel getColumnModel(){

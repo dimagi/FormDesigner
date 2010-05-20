@@ -177,6 +177,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		saveasBut.setScale(ButtonScale.LARGE);
 		saveasBut.setIconAlign(IconAlign.LEFT);
 		saveasBut.addStyleName("myMenuButton");
+		saveasBut.disable(); //feature not ready yet.
 		
 		openBut = new Button(buttonLabels[10]);
 		openBut.setIcon(AbstractImagePrototype.create(images.load()));
@@ -195,6 +196,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		locBut.setScale(ButtonScale.LARGE);
 		locBut.setIconAlign(IconAlign.LEFT);
 		locBut.addStyleName("myMenuButton");
+		locBut.disable(); //feature not ready yet.
 		
 		menu.add(newBut);
 		menu.add(openBut);
@@ -281,6 +283,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    bpaste = new Button("Paste", AbstractImagePrototype.create(images.paste()));
 	    bpaste.setScale(ButtonScale.LARGE);
 	    bpaste.setIconAlign(IconAlign.TOP);
+	    bpaste.disable(); //feature not ready yet
 	    group.addButton(bcut);
 	    group.addButton(bcopy);
 	    group.addButton(bpaste);
@@ -296,19 +299,18 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		editLocale = new Button();
 		editLocale.setText("Edit Locales");
 		editLocale.setBorders(true);
-//		b.setIcon(spacer);
 		editLocale.setScale(ButtonScale.SMALL);
+		editLocale.disable(); //feature not ready yet
 		group.addButton(editLocale);
 		
-//		b = new Button(); //blank
-//		group.addButton(b);
 		group.setButtonAlign(HorizontalAlignment.CENTER);
 	    Text lang = new Text();
 	    lang.setText("Language :");
 	    group.add(lang);
-	    
+
 		cb = new ComboBox<BaseModel>();
 		cb.setDisplayField("name");
+		
 		populateLocales();
 		cb.setValue(cb.getStore().getAt(0));
 		cb.addSelectionChangedListener(new SelectionChangedListener<BaseModel>() {
@@ -320,6 +322,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		        }
 			 }});
 		group.add(cb);
+		group.addStyleName("localizationGroup");
 		
 		
 		toolBar.add(group);    
@@ -462,7 +465,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	
 	editLocale.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
-			fileListener.showIText();
+			fileListener.showSave();
 		}
 	});
 	

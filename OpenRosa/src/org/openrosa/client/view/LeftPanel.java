@@ -12,6 +12,7 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
@@ -51,7 +52,10 @@ public class LeftPanel extends Composite {
 	 */
 	public LeftPanel(Images images, IFormSelectionListener formSelectionListener) {
 		formsTreeView = new FormsTreeView(images,formSelectionListener);
-		stackPanel.add(formsTreeView);
+		ContentPanel cp = new ContentPanel();
+		cp.setHeading("Form Tree View");
+		cp.add(formsTreeView);
+		stackPanel.add(cp);
 //		add(images,formsTreeView , images.tasksgroup(), "Form Outline");
 		FormUtil.maximizeWidget(stackPanel);
 

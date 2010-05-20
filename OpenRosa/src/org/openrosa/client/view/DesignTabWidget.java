@@ -93,16 +93,23 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    BorderLayoutData leftData = new BorderLayoutData(LayoutRegion.WEST,300);  
 	    leftData.setSplit(true);  
 	    leftData.setCollapsible(true);  
-	    leftData.setMargins(new Margins(10,5,10,10));
+	    leftData.setMargins(new Margins(0,5,10,0));
 	    
 	    panel.add(leftPanel,leftData);
 	    
 	    
 	    
 	    BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER,300);  
-	    centerData.setMargins(new Margins(10,10,10,0));  
+	    centerData.setMargins(new Margins(0,0,10,0));  
 	    centerData.setSplit(true); 
-	    panel.add(centerPanel,centerData);
+	    ContentPanel cp = new ContentPanel();
+	    
+	    cp.expand();
+	    cp.setHeading("Properties View");
+	    centerPanel.setWidth("100%");
+	    centerPanel.setHeight("100%");
+	    cp.add(centerPanel);
+	    panel.add(cp,centerData);
 	    
 //	    panel.setSize(1500,768);
 		panel.expand();

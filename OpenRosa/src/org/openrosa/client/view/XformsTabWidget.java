@@ -54,17 +54,22 @@ public class XformsTabWidget extends Composite {
 		validate = new Button("Validate Xform");
 		validate.setIcon(AbstractImagePrototype.create(images.validate()));
 		validate.setIconAlign(IconAlign.LEFT);
+		validate.disable(); //feature not ready yet
 		tb.add(validate);
 		
 		tb.add(new SeparatorToolItem());
 		
 		update = new Button("Update to URL");
+		update.disable(); //feature not ready yet
 		tb.add(update);
 		
 		tb.add(new SeparatorToolItem());
 		
 		saveas = new Button("Save As");
+		saveas.disable(); //feature not ready yet
 		tb.add(saveas);
+		
+		tb.add(new SeparatorToolItem());
 		
 		openBut = new Button("Open Pasted Text");
 		openBut.addSelectionListener(new SelectionListener<ButtonEvent>() {

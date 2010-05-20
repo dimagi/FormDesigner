@@ -11,6 +11,7 @@ public interface IFileListener {
 
 	void onNew();
 	void onOpen();
+	void showOpen();
 	void onSave(boolean showWindow);
-	void showIText();
+	void showSave();
 }

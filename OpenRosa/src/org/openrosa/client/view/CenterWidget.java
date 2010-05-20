@@ -100,7 +100,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	public void onNew(){
 		designWidget.addNewForm();
 	}
-
+	public void showOpen(){
+		xformsWidget.showWindow();
+	}
 	public void onOpen(){
 		FormUtil.dlg.setText("Opening...");
 		FormUtil.dlg.show();
@@ -121,7 +123,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	private void openFile(){
 		String xml = xformsWidget.getXform();
 		if(xml == null || xml.trim().length() == 0){
-			xformsWidget.showWindow();
+			showOpen();
 			return;
 		}
 
@@ -162,7 +164,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		});
 	}
 	
-	public void showIText(){
+	public void showSave(){
 		
 		this.saveFile(false);
 		

@@ -343,6 +343,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){
+		
+		//We do not support loading of more than one form at the same time.
+		treePanel.getStore().removeAll();
+		
 		if(formDef.getId() == ModelConstants.NULL_ID)
 			formDef.setId(++nextFormId);
 

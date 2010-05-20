@@ -97,8 +97,8 @@ public class XformsTabWidget extends Composite {
 	
 	public void setXform(String xml){
 		txtXforms.setText(xml);
-	    txtXforms.setCharacterWidth(80);
-	    txtXforms.setVisibleLines(15);
+	    txtXforms.setCharacterWidth(800);
+	    txtXforms.setVisibleLines(150);
 	}
 	
 	public String getXform(){

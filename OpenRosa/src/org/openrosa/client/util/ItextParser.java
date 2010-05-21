@@ -28,8 +28,8 @@ public class ItextParser {
 
 	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
-	 * as represented by their itext ids. The first locale in the itext block is the one
-	 * taken as the default.
+	 * as represented by their itext ids. The translation element with the "default" attribute (default="") OR the first locale in the itext block
+	 * (if no default attribute is found) is the one taken as the default.
 	 * 
 	 * @param xml the xforms xml.
 	 * @param list the itext model which can be displayed in a gxt grid.
@@ -62,7 +62,7 @@ public class ItextParser {
 			translations.put(lang, itext);
 			fillItextMap(translationNode,itext,defText);
 
-			if(index == 0){
+			if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0){
 				defaultItext = itext; //first language acts as the default
 				defaultText = defText;
 				Context.setLocale(new Locale(lang,lang));
@@ -121,9 +121,11 @@ public class ItextParser {
 			String form = ((Element)valueNode).getAttribute("form");
 			String text = XmlUtil.getTextValue(valueNode);
 			if(text != null){
-				itext.put(form == null ? id : id + ":" + form, text);
+				itext.put(form == null ? id : id + ";" + form, text);
 
-				if(form.equalsIgnoreCase("long"))
+				if(form == null)
+					defaultValue = text;
+				else if(form.equalsIgnoreCase("long"))
 					longValue = text;
 				else if(form.equalsIgnoreCase("short"))
 					shortValue = text;

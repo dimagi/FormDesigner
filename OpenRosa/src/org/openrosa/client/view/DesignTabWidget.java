@@ -86,7 +86,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    panel.setLayout(layout); 
 	    panel.setBorders(false);
 	    
-		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller,fileListener);
+		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller,fileListener,this);
 		Context.addLocaleListChangeListener(toolbar);
 		panel.setTopComponent(toolbar.getToolBar());
 	    

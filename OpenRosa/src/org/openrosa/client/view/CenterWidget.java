@@ -43,7 +43,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	private DecoratedTabPanel tabs = new DecoratedTabPanel();
 
 	private XformsTabWidget xformsWidget = new XformsTabWidget(this);
-	private DesignTabWidget designWidget = new DesignTabWidget(this);
+	DesignTabWidget designWidget = new DesignTabWidget(this);
 	private TextTabWidget itextWidget = new TextTabWidget();
 
 	private FormDef formDef;
@@ -164,7 +164,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		});
 	}
 	
-	public void showSave(){
+	public void showItext(){
 		
 		this.saveFile(false);
 		

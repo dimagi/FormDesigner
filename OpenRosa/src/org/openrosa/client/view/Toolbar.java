@@ -3,12 +3,13 @@ package org.openrosa.client.view;
 import java.util.List;
 
 import org.openrosa.client.controller.IFileListener;
+import org.openrosa.client.model.OptionDef;
+import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
+import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ILocaleListChangeListener;
-import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.model.QuestionDef;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
@@ -83,6 +84,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		ImageResource showxml();
 		ImageResource newformmenu();
 		ImageResource validate();
+		ImageResource blankbutton();
 	}
 	 
 	/** Main widget for this tool bar. */
@@ -102,7 +104,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bcut,bcopy,bpaste;
@@ -110,6 +112,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	
 	private IFileListener fileListener;
 
+	private DesignTabWidget dtabWidget;
 	
 	/** Widget to display the list of languages or locales. */
 	private ComboBox<BaseModel> cb;
@@ -123,7 +126,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
-			"New Xform"};
+			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question"};
 	
 	
 
@@ -134,8 +137,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	 * @param images the images for tool bar icons.
 	 * @param controller listener to the tool bar button click events.
 	 */
-	public Toolbar(Images images,IFormDesignerListener controller,IFileListener fileListener){
+	public Toolbar(Images images,IFormDesignerListener controller,IFileListener fileListener,DesignTabWidget dtab){
 		this.images = images;
+		this.dtabWidget = dtab;
 		this.controller = controller;
 		setupToolbar(fileListener);
 		setupClickListeners();
@@ -148,6 +152,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	private void setupToolbar(IFileListener fileListener){
 	    toolBar = new ToolBar();  
 	    this.fileListener = fileListener;
+	    
+	    //////////////////////FIRST GROUP/////////////////////////////////
 	    ButtonGroup group = new ButtonGroup(1);
 	    group.setHeading("Main Menu");
 	  
@@ -208,7 +214,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		menuBut.setMenu(menu);
 		group.addButton(menuBut);
 		toolBar.add(group);
+		///////////////////////////////////////////////////////////////////
 		
+		
+		//////////////////////SECOND GROUP/////////////////////////////////
 	    group = new ButtonGroup(2);
 	    group.setHeading("Add Questions");
 	    splitItem = new SplitButton(buttonLabels[0]);  
@@ -222,8 +231,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    txtBut.setIcon(AbstractImagePrototype.create(images.addText()));
 	    txtBut.setScale(ButtonScale.LARGE);
 	    txtBut.setIconAlign(IconAlign.LEFT);
-	    txtBut.addStyleName("myMenuButton");
-	    
+	    txtBut.addStyleName("myMenuButton"); 
 	    
 	    intBut = new Button(buttonLabels[2]);
 	    intBut.setIcon(AbstractImagePrototype.create(images.addNumeric()));
@@ -250,13 +258,50 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    singBut.setScale(ButtonScale.LARGE);
 	    singBut.setIconAlign(IconAlign.LEFT);
 	    singBut.addStyleName("myMenuButton");
+	    timeBut = new Button(buttonLabels[14]);
+	    timeBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    timeBut.setScale(ButtonScale.LARGE);
+	    timeBut.setIconAlign(IconAlign.LEFT);
+	    timeBut.addStyleName("myMenuButton");
+	    datetimeBut = new Button(buttonLabels[15]);
+	    datetimeBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    datetimeBut.setScale(ButtonScale.LARGE);
+	    datetimeBut.setIconAlign(IconAlign.LEFT);
+	    datetimeBut.addStyleName("myMenuButton");	    
+	    picBut = new Button(buttonLabels[16]);
+	    picBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    picBut.setScale(ButtonScale.LARGE);
+	    picBut.setIconAlign(IconAlign.LEFT);
+	    picBut.addStyleName("myMenuButton");	    
+	    vidBut = new Button(buttonLabels[17]);
+	    vidBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    vidBut.setScale(ButtonScale.LARGE);
+	    vidBut.setIconAlign(IconAlign.LEFT);
+	    vidBut.addStyleName("myMenuButton");	    
+	    audBut = new Button(buttonLabels[18]);
+	    audBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    audBut.setScale(ButtonScale.LARGE);
+	    audBut.setIconAlign(IconAlign.LEFT);
+	    audBut.addStyleName("myMenuButton");	    
+	    gpsBut = new Button(buttonLabels[19]);
+	    gpsBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    gpsBut.setScale(ButtonScale.LARGE);
+	    gpsBut.setIconAlign(IconAlign.LEFT);
+	    gpsBut.addStyleName("myMenuButton");
 
 	    menu.add(txtBut);  
 	    menu.add(intBut);  
 	    menu.add(decBut);
 	    menu.add(dateBut);
 	    menu.add(multBut);
-	    menu.add(singBut);
+	    menu.add(singBut); 
+	    menu.add(timeBut);
+	    menu.add(datetimeBut);
+	    menu.add(picBut);
+	    menu.add(vidBut);
+	    menu.add(audBut);
+	    menu.add(gpsBut);
+	    
 	    splitItem.setMenu(menu);  
 	    group.addButton(splitItem);
 	    
@@ -270,7 +315,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 //	    group.setWidth(500);
 	    
 	    toolBar.add(group);
-	    
+		///////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////THIRD GROUP/////////////////////////////////
 	    group = new ButtonGroup(3);
 	    group.setHeading("Clipboard");
 	    
@@ -290,6 +338,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    group.setHeight(95);
 	    toolBar.add(group);
 	    
+		///////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////FOURTH GROUP/////////////////////////////////
 	    group = new ButtonGroup(2);
 	    group.setHeading("Localization");
 	    group.setHeight(97);
@@ -300,7 +352,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		editLocale.setText("Edit Locales");
 		editLocale.setBorders(true);
 		editLocale.setScale(ButtonScale.SMALL);
-		editLocale.disable(); //feature not ready yet
+//		editLocale.disable(); //feature not ready yet
 		group.addButton(editLocale);
 		
 		group.setButtonAlign(HorizontalAlignment.CENTER);
@@ -343,6 +395,35 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 				
 			}
 		});
+		
+		dtabWidget.addFormSelectionListener(new IFormSelectionListener() {		
+				@Override
+				public void onFormItemSelected(Object formItem) {
+					GWT.log("Is question? " + (formItem instanceof QuestionDef));
+
+					if(formItem instanceof QuestionDef){
+						GWT.log("Is Multiple Question?"+(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE));
+					}
+					// TODO Auto-generated method stub
+					if(formItem instanceof QuestionDef &&
+							((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
+							 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
+							 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)))
+					{	
+						addSelect.enable();
+					}else if(formItem instanceof OptionDef){
+						addSelect.enable();
+					}else{
+						addSelect.disable();
+					}
+					
+				}
+		});
+		
+		
+//		addSelect.addListener(Events., listener)
+		
+		
 		
 		bcut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
@@ -412,6 +493,56 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 			splitItem.hideMenu();
 		}
 	});
+//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut
+	timeBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_TIME);
+			splitItem.setText(timeBut.getText());
+			splitItem.setIcon(timeBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	datetimeBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_DATE_TIME);
+			splitItem.setText(datetimeBut.getText());
+			splitItem.setIcon(datetimeBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	picBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_IMAGE);
+			splitItem.setText(picBut.getText());
+			splitItem.setIcon(picBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	vidBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_VIDEO);
+			splitItem.setText(vidBut.getText());
+			splitItem.setIcon(vidBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	audBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_AUDIO);
+			splitItem.setText(audBut.getText());
+			splitItem.setIcon(audBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	gpsBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_GPS);
+			splitItem.setText(gpsBut.getText());
+			splitItem.setIcon(gpsBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	
 	splitItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
 			String t = splitItem.getText();
@@ -465,7 +596,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	
 	editLocale.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
-			fileListener.showSave();
+			fileListener.showItext();
 		}
 	});
 	

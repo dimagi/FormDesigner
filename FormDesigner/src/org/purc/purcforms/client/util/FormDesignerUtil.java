@@ -70,6 +70,17 @@ public class FormDesignerUtil {
 	    elem.oncontextmenu=function() {  return false};
 	}-*/; 
 	
+	
+	/**
+	 * Enabled the browsers default context menu for the specified element.
+	 *
+	 * @param elem the element whose context menu will be enabled
+	 */
+	public static native void enableContextMenu(Element elem) /*-{
+	    elem.oncontextmenu=function() {  return true};
+	}-*/; 
+	
+	
 
 	/**
 	 * Puts a widget at a given position.

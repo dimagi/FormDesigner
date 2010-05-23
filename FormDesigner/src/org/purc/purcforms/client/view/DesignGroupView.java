@@ -1500,7 +1500,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 
 		switch (DOM.eventGetType(event)) {
 		case Event.ONMOUSEDOWN:  
-
+			
+			FormDesignerUtil.enableContextMenu(getElement());
+			
 			mouseMoved = false;
 			x = event.getClientX();
 			y = event.getClientY();
@@ -1522,8 +1524,9 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 				if(Window.getClientWidth() - xpos < 170)
 					xpos = event.getClientX() - 170;
 
-				popup.setPopupPosition(xpos, ypos);
 				FormDesignerUtil.disableContextMenu(popup.getElement());
+				FormDesignerUtil.disableContextMenu(getElement());
+				popup.setPopupPosition(xpos, ypos);
 				popup.show();
 			}
 			else{

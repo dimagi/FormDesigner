@@ -145,6 +145,9 @@ public class PreviewView extends FormRunnerView {
 
 		switch (type) {
 		case Event.ONMOUSEDOWN:
+			
+			FormDesignerUtil.enableContextMenu(getElement());
+			
 			if( (event.getButton() & Event.BUTTON_RIGHT) != 0){
 				if(event.getTarget().getClassName().length() == 0){
 					
@@ -156,9 +159,10 @@ public class PreviewView extends FormRunnerView {
 					if(Window.getClientWidth() - xpos < 110)
 						xpos = event.getClientX() - 110;
 					
+					FormDesignerUtil.disableContextMenu(popup.getElement());
+					FormDesignerUtil.disableContextMenu(getElement());
 					popup.setPopupPosition(xpos, ypos);
 					popup.show();
-					FormDesignerUtil.disableContextMenu(popup.getElement());
 				}
 			}
 			break;

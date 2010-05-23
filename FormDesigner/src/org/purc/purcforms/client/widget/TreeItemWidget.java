@@ -66,8 +66,8 @@ public class TreeItemWidget extends Composite{
 				if(Window.getClientHeight() - ypos < 350)
 					ypos = event.getClientY() - 350;
 					
-				popup.setPopupPosition(event.getClientX(), ypos);
 				FormDesignerUtil.disableContextMenu(popup.getElement());
+				popup.setPopupPosition(event.getClientX(), ypos);
 				popup.show();
 			}
 		}

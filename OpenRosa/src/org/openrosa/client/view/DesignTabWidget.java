@@ -11,6 +11,7 @@ import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
+import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.fx.FxConfig;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
@@ -94,7 +95,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    leftData.setSplit(true);  
 	    leftData.setCollapsible(true);  
 	    leftData.setMargins(new Margins(0,5,10,0));
-	    
+	    panel.setScrollMode(Scroll.AUTOY);
 	    panel.add(leftPanel,leftData);
 	    
 	    

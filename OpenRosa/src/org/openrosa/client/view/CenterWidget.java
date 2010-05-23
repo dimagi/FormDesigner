@@ -185,8 +185,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//update form outline with the itext changes
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
 		formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
-		designWidget.refreshForm(formDef);
-//		itextWidget.loadItext(list);
+//		designWidget.refreshForm(formDef);
+		itextWidget.loadItext(list);
 		
 		itextWidget.showWindow();
 		

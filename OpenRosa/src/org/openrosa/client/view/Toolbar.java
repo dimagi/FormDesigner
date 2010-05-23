@@ -309,6 +309,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    addSelect.setIcon(AbstractImagePrototype.create(images.addchild()));
 	    addSelect.setIconAlign(IconAlign.TOP);
 	    addSelect.setScale(ButtonScale.LARGE);
+	    addSelect.disable();
 	    group.addButton(addSelect);
 	    group.setHeight(85);
 //	    group.setAutoWidth(false);
@@ -399,11 +400,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		dtabWidget.addFormSelectionListener(new IFormSelectionListener() {		
 				@Override
 				public void onFormItemSelected(Object formItem) {
-					GWT.log("Is question? " + (formItem instanceof QuestionDef));
-
-					if(formItem instanceof QuestionDef){
-						GWT.log("Is Multiple Question?"+(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE));
-					}
 					// TODO Auto-generated method stub
 					if(formItem instanceof QuestionDef &&
 							((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||

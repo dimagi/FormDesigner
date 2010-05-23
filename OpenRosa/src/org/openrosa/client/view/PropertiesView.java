@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -121,14 +122,17 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private CheckBox chkRequired = new CheckBox();
 
 	/** Widget for setting the text property. */
-	private TextBox txtText = new TextBox();
+	private TextArea txtText = new TextArea();
 
 	/** Widget for setting the help text property. */
 	private TextBox txtHelpText = new TextBox();
 
 	/** Widget for setting the binding property. */
 	private TextBox txtBinding = new TextBox();
-
+	
+	/** Widget for setting the Question ID property. */
+	private TextBox qtnID = new TextBox();
+	
 	/** Widget for setting the default value property. */
 	private TextBox txtDefaultValue = new TextBox();
 
@@ -166,6 +170,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private IFormActionListener formActionListener;
 
 	Label lblText = new Label(LocaleText.get("text"));
+	Label lblQtnID = new Label("ID");
 	Label lblHelpText = new Label(LocaleText.get("helpText"));
 	Label lblType = new Label(LocaleText.get("type"));
 	Label lblBinding = new Label(LocaleText.get("binding"));
@@ -200,30 +205,32 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		Label lblDefault = new Label(LocaleText.get("defaultValue"));
 		Label lblCalculate = new Label(LocaleText.get("calculation"));*/
 		
-		table.setWidget(0, 0, lblText);
-		table.setWidget(1, 0, lblHelpText);
-		table.setWidget(2, 0, lblType);
-		table.setWidget(3, 0, lblBinding);
-		table.setWidget(4, 0, lblVisible);
-		table.setWidget(5, 0, lblEnabled);
-		table.setWidget(6, 0, lblLocked);
-		table.setWidget(7, 0, lblRequired);
-		table.setWidget(8, 0, lblDefault);
-		table.setWidget(9, 0, lblCalculate);
+		table.setWidget(0, 0, lblQtnID);
+		table.setWidget(1, 0, lblText);
+		table.setWidget(2, 0, lblHelpText);
+		table.setWidget(3, 0, lblType);
+		table.setWidget(4, 0, lblBinding);
+		table.setWidget(5, 0, lblVisible);
+		table.setWidget(6, 0, lblEnabled);
+		table.setWidget(7, 0, lblLocked);
+		table.setWidget(8, 0, lblRequired);
+		table.setWidget(9, 0, lblDefault);
+		table.setWidget(10, 0, lblCalculate);
 		
 		lblDescTemplate = new Label(LocaleText.get("descriptionTemplate"));
-		table.setWidget(10, 0, lblDescTemplate);
-		table.setWidget(11, 0, lblFormKey);
+		table.setWidget(11, 0, lblDescTemplate);
+		table.setWidget(12, 0, lblFormKey);
 
-		table.setWidget(0, 1, txtText);
-		table.setWidget(1, 1, txtHelpText);
-		table.setWidget(2, 1, cbDataType);
-		table.setWidget(3, 1, txtBinding);
-		table.setWidget(4, 1, chkVisible);
-		table.setWidget(5, 1, chkEnabled);
-		table.setWidget(6, 1, chkLocked);
-		table.setWidget(7, 1, chkRequired);
-		table.setWidget(8, 1, txtDefaultValue);
+		table.setWidget(0, 1, qtnID);
+		table.setWidget(1, 1, txtText);
+		table.setWidget(2, 1, txtHelpText);
+		table.setWidget(3, 1, cbDataType);
+		table.setWidget(4, 1, txtBinding);
+		table.setWidget(5, 1, chkVisible);
+		table.setWidget(6, 1, chkEnabled);
+		table.setWidget(7, 1, chkLocked);
+		table.setWidget(8, 1, chkRequired);
+		table.setWidget(9, 1, txtDefaultValue);
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(txtCalculation);
@@ -273,6 +280,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//cellFormatter.setWidth(9, 0, "20"+PurcConstants.UNITS);
 		//cellFormatter.setWidth(9, 1, "20"+PurcConstants.UNITS);
 
+		qtnID.setWidth("100%");
 		txtText.setWidth("100%");
 		txtHelpText.setWidth("100%");
 		txtBinding.setWidth("100%");
@@ -300,6 +308,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.setSelectedIndex(-1);
 
 		enableQuestionOnlyProperties(false);
+		qtnID.setVisible(false);
 		txtText.setVisible(false);
 		lblText.setVisible(false);
 		//txtDescTemplate.setVisible(false);
@@ -315,6 +324,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtFormKey.setVisible(false);
 		lblFormKey.setVisible(false);
 
+		qtnID.setTitle(LocaleText.get("questionIdDesc"));
 		txtText.setTitle(LocaleText.get("questionTextDesc"));
 		txtHelpText.setTitle(LocaleText.get("questionDescDesc"));
 		txtBinding.setTitle(LocaleText.get("questionIdDesc"));
@@ -464,6 +474,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				String orgText = getSelObjetOriginalText();
 				updateText();
 				updateSelObjBinding(orgText);
+				qtnID.setFocus(true);
 			}
 		});
 
@@ -472,6 +483,27 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
 					if(txtHelpText.isEnabled())
 						txtHelpText.setFocus(true);
+					else{
+						txtBinding.setFocus(true);
+						txtBinding.selectAll();
+					}
+				}
+			}
+		});
+		
+		qtnID.addKeyUpHandler(new KeyUpHandler(){
+			public void onKeyUp(KeyUpEvent event) {
+				String orgText = getSelObjetOriginalText();
+				updateText();
+				updateSelObjBinding(orgText);
+			}
+		});
+		
+		qtnID.addKeyDownHandler(new KeyDownHandler(){
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
+					if(txtText.isEnabled())
+						txtText.setFocus(true);
 					else{
 						txtBinding.setFocus(true);
 						txtBinding.selectAll();
@@ -905,6 +937,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//txtDescTemplate.setVisible(false);
 		enableDescriptionTemplate(false);
 
+		qtnID.setVisible(true);
 		txtText.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getVariableName());
 		txtHelpText.setText(questionDef.getHelpText());

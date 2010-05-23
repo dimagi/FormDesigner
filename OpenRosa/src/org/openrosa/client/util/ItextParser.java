@@ -60,7 +60,7 @@ public class ItextParser {
 			HashMap<String, String> defText = new HashMap<String,String>();
 			String lang = translationNode.getAttribute("lang");
 			translations.put(lang, itext);
-			fillItextMap(translationNode,itext,defText);
+			fillItextMap(translationNode,itext,defText,lang,list);
 
 			if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0){
 				defaultItext = itext; //first language acts as the default
@@ -89,7 +89,7 @@ public class ItextParser {
 	 * @param translationNode the translation node.
 	 * @param itext the itext map.
 	 */
-	private static void fillItextMap(Element translationNode, HashMap<String,String> itext, HashMap<String,String> defaultText){
+	private static void fillItextMap(Element translationNode, HashMap<String,String> itext, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list){
 		NodeList nodes = translationNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node textNode = nodes.item(index);
@@ -97,7 +97,7 @@ public class ItextParser {
 				continue;
 
 			//itext.put(((Element)textNode).getAttribute("id"), getValueText(textNode));
-			setValueText(itext,((Element)textNode).getAttribute("id"), textNode, defaultText);
+			setValueText(itext,((Element)textNode).getAttribute("id"), textNode, defaultText,localeKey,list);
 		}
 
 	}
@@ -109,7 +109,7 @@ public class ItextParser {
 	 * @param textNode the node.
 	 * @return the text value.
 	 */
-	private static void setValueText(HashMap<String,String> itext, String id, Node textNode, HashMap<String,String> defaultText){
+	private static void setValueText(HashMap<String,String> itext, String id, Node textNode, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list){
 		String defaultValue = null, longValue = null, shortValue = null;
 
 		NodeList nodes = textNode.getChildNodes();
@@ -127,10 +127,15 @@ public class ItextParser {
 					defaultValue = text;
 				else if(form.equalsIgnoreCase("long"))
 					longValue = text;
-				else if(form.equalsIgnoreCase("short"))
+				else if(form != null && form.equalsIgnoreCase("short"))
 					shortValue = text;
 				else
 					defaultValue = text;
+				
+				ItextModel itextModel = new ItextModel();
+				itextModel.set("id", id);
+				itextModel.set(localeKey, text);
+				list.add(itextModel);
 			}
 		}
 

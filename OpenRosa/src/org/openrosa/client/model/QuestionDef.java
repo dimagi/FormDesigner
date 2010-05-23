@@ -31,7 +31,7 @@ import com.google.gwt.xml.client.NodeList;
  * @author Daniel Kayiwa
  *
  */
-public class QuestionDef implements Serializable{
+public class QuestionDef implements IFormElement, Serializable{
 
 	/** The value to save for boolean questions when one selects the yes option. */
 	public static final String TRUE_VALUE = "true";
@@ -86,7 +86,7 @@ public class QuestionDef implements Serializable{
 
 	/** The allowed set of values (OptionDef) for an answer of the question. 
 	 * This also holds repeat sets of questions (RepeatQtnsDef) for the QTN_TYPE_REPEAT.
-	 * This is an optimization aspect to prevent storing these guys diffently as 
+	 * This is an optimization aspect to prevent storing these guys differently as 
 	 * they can't both happen at the same time. The internal storage implementation of these
 	 * repeats is hidden from the user by means of getRepeatQtnsDef() and setRepeatQtnsDef().
 	 */
@@ -1439,6 +1439,22 @@ public class QuestionDef implements Serializable{
 		if(pos1 > -1 && pos2 > -1 && (pos2 > pos1))
 			displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
 		return displayText;
+	}
+	
+	public String getBinding(){
+		return variableName;
+	}
+	
+	public void setBinding(String binding){
+		setVariableName(binding);
+	}
+	
+	public List<IFormElement> getChildren(){
+		return (List<IFormElement>)options;
+	}
+	
+	public void setChildren(List<IFormElement> children){
+		this.options = children;
 	}
 }
 

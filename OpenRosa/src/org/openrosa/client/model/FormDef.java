@@ -28,7 +28,7 @@ import com.google.gwt.xml.client.XMLParser;
  * @author Daniel Kayiwa
  *
  */
-public class FormDef implements Serializable{
+public class FormDef implements IFormElement, Serializable{
 
 	/** A collection of page definitions (PageDef objects). */
 	private Vector pages;
@@ -98,6 +98,8 @@ public class FormDef implements Serializable{
 	 */
 	private boolean readOnly = false;
 
+	List<IFormElement> children;
+	
 
 	/** Constructs a form definition object. */
 	public FormDef() {
@@ -1376,5 +1378,30 @@ public class FormDef implements Serializable{
 
 		for(int i=0; i<pages.size(); i++)
 			((PageDef)pages.elementAt(i)).clearChangeListeners();
+	}
+	
+	
+	public String getText(){
+		return name;
+	}
+	
+	public void setText(String text){
+		setName(text);
+	}
+	
+	public String getBinding(){
+		return variableName;
+	}
+	
+	public void setBinding(String binding){
+		setVariableName(binding);
+	}
+	
+	public List<IFormElement> getChildren(){
+		return children;
+	}
+	
+	public void setChildren(List<IFormElement> children){
+		this.children = children;
 	}
 }

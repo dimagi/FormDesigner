@@ -1,6 +1,7 @@
 package org.openrosa.client.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Vector;
 
 import com.google.gwt.xml.client.Document;
@@ -14,7 +15,7 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class RepeatQtnsDef implements Serializable {
+public class RepeatQtnsDef implements IFormElement, Serializable {
 	
 	/** A list of questions (QuestionDef objects) on a repeat questions row. */
 	private Vector questions;
@@ -236,5 +237,33 @@ public class RepeatQtnsDef implements Serializable {
 
 		for(int i=0; i<questions.size(); i++)
 			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(parentXpath,doc,parentXformNode,parentLangNode);
+	}
+	
+	public void setId(int id){
+		qtnDef.setId(id);
+	}
+	
+	public int getId(){
+		return qtnDef.getId();
+	}
+	
+	public void setText(String text){
+		qtnDef.setText(text);
+	}
+	
+	public String getBinding(){
+		return qtnDef.getVariableName();
+	}
+	
+	public void setBinding(String binding){
+		qtnDef.setVariableName(binding);
+	}
+	
+	public List<IFormElement> getChildren(){
+		return questions;
+	}
+	
+	public void setChildren(List<IFormElement> children){
+		this.questions = (Vector)children;
 	}
 }

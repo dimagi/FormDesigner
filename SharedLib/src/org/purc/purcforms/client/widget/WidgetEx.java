@@ -619,6 +619,8 @@ public class WidgetEx extends Composite{
 			 widget.setFontStyle(value);
 		 
 		 value = node.getAttribute("fontSize");
+		 if(value == null || value.trim().length() == 0)
+			 value = FormUtil.getDefaultFontSize();
 		 if(value != null && value.trim().length() > 0){
 			 widget.setFontSize(value);
 			 if(widget.getWrappedWidget() instanceof DateTimeWidget)
@@ -626,6 +628,8 @@ public class WidgetEx extends Composite{
 		 }
 		 
 		 value = node.getAttribute("fontFamily");
+		 if(value == null || value.trim().length() == 0)
+			 value = FormUtil.getDefaultFontFamily();
 		 if(value != null && value.trim().length() > 0){
 			 widget.setFontFamily(value);
 			 if(widget.getWrappedWidget() instanceof DateTimeWidget)

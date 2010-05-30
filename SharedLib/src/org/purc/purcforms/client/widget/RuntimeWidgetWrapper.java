@@ -271,7 +271,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			public void onKeyUp(KeyUpEvent event) {
 				if(event.getNativeKeyCode() == KeyCodes.KEY_TAB)
 					return;
-				
+
 				if(questionDef != null && !(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 					questionDef.setAnswer(getTextBoxAnswer());
 
@@ -303,7 +303,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						//editListener.onMoveToNextWidget((RuntimeWidgetWrapper)panel.getParent());
 						return;
 					}
-					
+
 					((TextBox) event.getSource()).cancelKey(); 
 					while(panel.getWidgetCount() > 1)
 						panel.remove(1);
@@ -315,7 +315,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 
 						return;
 					}
-					
+
 					Label label = new Label("");
 					label.setVisible(false);
 					panel.add(label);
@@ -443,12 +443,14 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 				((CheckBox)widget).setValue(true);
 		}
 		else if(type == QuestionDef.QTN_TYPE_DATE_TIME && widget instanceof DateTimeWidget){
-			if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
-				defaultValue = questionDef.getDefaultValueDisplay();
-			else if(defaultValue.trim().length() > 0 && questionDef.isDate())
-				defaultValue = fromSubmit2DisplayDate(defaultValue);
-			
-			((DateTimeWidget)widget).setText(defaultValue);
+			if(defaultValue != null && defaultValue.trim().length() > 0 && questionDef.isDate()){
+				if(QuestionDef.isDateFunction(defaultValue))
+					defaultValue = questionDef.getDefaultValueDisplay();
+				else
+					defaultValue = fromSubmit2DisplayDate(defaultValue);
+
+				((DateTimeWidget)widget).setText(defaultValue);
+			}
 		}
 
 

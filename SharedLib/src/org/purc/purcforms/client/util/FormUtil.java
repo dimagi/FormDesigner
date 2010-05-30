@@ -21,6 +21,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -625,7 +626,7 @@ public class FormUtil {
 			dialogBox.setErrorMessage(s);
 			dialogBox.setCallStack(text);
 			dialogBox.center();
-		}
+		}//Window.prompt("Please enter the language", "Language");
 		//else
 		//	Window.alert("Trapped");
 	}

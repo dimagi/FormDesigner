@@ -1,5 +1,7 @@
 package org.openrosa.client.view;
 
+import java.util.HashMap;
+
 import org.openrosa.client.Context;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
@@ -47,6 +49,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	private TextTabWidget itextWidget = new TextTabWidget();
 
 	private FormDef formDef;
+	private static HashMap<String,String> formAttrMap = new HashMap<String,String>();
+	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
 
 	/**
 	 * this is a flag the onSave() method checks to see if it should show the xml window when it saves.
@@ -131,8 +135,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
 		
+		formAttrMap.clear();
+	    itextMap.clear();
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
-		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list,formAttrMap,itextMap));
 
 		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
 		if(formDef.getQuestionCount() > 0){
@@ -179,12 +185,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//this line is necessary for gxt to load the form with text on the design tab.
 		tabs.selectTab(TAB_INDEX_DESIGN);
 		
-		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
+		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
 		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 		
 		//update form outline with the itext changes
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
-		formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+		formDef = XformParser.getFormDef(ItextParser.parse(xml,list,formAttrMap,itextMap));
 //		designWidget.refreshForm(formDef);
 		itextWidget.loadItext(list);
 		
@@ -207,12 +213,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			//this line is necessary for gxt to load the form with text on the design tab.
 			tabs.selectTab(TAB_INDEX_DESIGN);
 			
-			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext());
+			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 
 			//update form outline with the itext changes
 			ListStore<ItextModel> list = new ListStore<ItextModel>();
-			formDef = XformParser.getFormDef(ItextParser.parse(xml,list));
+			formDef = XformParser.getFormDef(ItextParser.parse(xml,list,formAttrMap,itextMap));
 			designWidget.refreshForm(formDef);
 		}
 		else if(formDef != null){
@@ -231,7 +237,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			}
 
 			ListStore<ItextModel> list = new ListStore<ItextModel>();
-			ItextBuilder.updateItextBlock(doc,formDef,list);
+			ItextBuilder.updateItextBlock(doc,formDef,list,formAttrMap,itextMap);
 			itextWidget.loadItext(list);
 
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
@@ -270,7 +276,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			ListStore<ItextModel> list = new ListStore<ItextModel>();
 
 			if(formDef != null && formDef.getDoc() != null)
-				ItextBuilder.updateItextBlock(formDef.getDoc(),formDef,list);
+				ItextBuilder.updateItextBlock(formDef.getDoc(),formDef,list,formAttrMap,itextMap);
 
 			itextWidget.loadItext(list);
 		}

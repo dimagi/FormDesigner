@@ -28,7 +28,7 @@ import com.google.gwt.xml.client.NodeList;
  */
 public class ItextBuilder {
 
-	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list){
+	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		/*List<Locale> locales = Context.getLocales();
 		if(locales == null)
 			return;
@@ -36,11 +36,11 @@ public class ItextBuilder {
 		for(Locale locale : locales)
 			updateItextBlock(doc,formDef,list,locale);*/
 
-		updateItextBlock(doc,formDef,list,Context.getLocale());
+		updateItextBlock(doc,formDef,list,Context.getLocale(),formAttrMap,itextMap);
 	}
 
 
-	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, Locale locale){
+	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, Locale locale, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
 		assert(modelNode != null); //we must have a model in an xform.
@@ -131,7 +131,7 @@ public class ItextBuilder {
 				else
 					duplicatesMap.put(id, id);
 				
-				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey());
+				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey(),formAttrMap,itextMap);
 			}
 			else if(index == 0){
 				//NodeList titles = doc.getElementsByTagName("title");
@@ -153,7 +153,7 @@ public class ItextBuilder {
 	 * @param value the itext value of the given id.
 	 * @param localeKey the locale key
 	 */
-	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey){
+	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		if(value.trim().length() == 0)
 			return;
 		
@@ -169,9 +169,19 @@ public class ItextBuilder {
 
 		valueNode.appendChild(doc.createTextNode(value));
 
-		ItextModel itextModel = new ItextModel();
+		String fullId = id;
+		String formAttr = formAttrMap.get(id);
+		if(formAttr != null)
+			fullId = id + ";" + formAttr;
+		
+		ItextModel itextModel = itextMap.get(fullId);
+		if(itextModel == null){
+			itextModel = new ItextModel();
+			itextMap.put(fullId, itextModel);
+		}
+		
 		itextModel.set("xpath", xpath);
-		itextModel.set("id", id);
+		itextModel.set("id", fullId);
 		itextModel.set(localeKey, value);
 		list.add(itextModel);
 	}
@@ -195,13 +205,13 @@ public class ItextBuilder {
 	 * @param formDef the form definition object.
 	 * @param list the gxt grid itext model.
 	 */
-	public static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list){
+	public static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		List<Locale> locales = Context.getLocales();
 		if(locales == null)
 			return;
 
 		for(Locale locale : locales)
-			updateItextBlock(doc,formDef,list,locale);
+			updateItextBlock(doc,formDef,list,locale,formAttrMap,itextMap);
 	}
 
 	
@@ -213,7 +223,7 @@ public class ItextBuilder {
 	 * @param list the gxt grid itext model.
 	 * @param locale the locale.
 	 */
-	private static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, Locale locale){
+	private static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, Locale locale, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
 		assert(modelNode != null); //we must have a model in an xform.

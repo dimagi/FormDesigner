@@ -24,8 +24,8 @@ import com.google.gwt.xml.client.NodeList;
  * @author daniel
  *
  */
-public class ItextParser {
-
+public class ItextParser {	
+	
 	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
 	 * as represented by their itext ids. The translation element with the "default" attribute (default="") OR the first locale in the itext block
@@ -35,7 +35,7 @@ public class ItextParser {
 	 * @param list the itext model which can be displayed in a gxt grid.
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
-	public static Document parse(String xml, ListStore<ItextModel> list){
+	public static Document parse(String xml, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		Document doc = XmlUtil.getDocument(xml);
 
 		//Check if we have an itext block in this xform.
@@ -60,7 +60,7 @@ public class ItextParser {
 			HashMap<String, String> defText = new HashMap<String,String>();
 			String lang = translationNode.getAttribute("lang");
 			translations.put(lang, itext);
-			fillItextMap(translationNode,itext,defText,lang,list);
+			fillItextMap(translationNode,itext,defText,lang,list,formAttrMap,itextMap);
 
 			if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0){
 				defaultItext = itext; //first language acts as the default
@@ -73,9 +73,9 @@ public class ItextParser {
 			locales.add(new Locale(lang,lang));
 		}
 
-		tranlateNodes("label", doc, defaultText, list, Context.getLocale().getKey());
-		tranlateNodes("hint", doc, defaultText, list, Context.getLocale().getKey());
-		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getKey());
+		tranlateNodes("label", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
+		tranlateNodes("hint", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
+		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
 
 		Context.setLocales(locales);
 
@@ -89,7 +89,7 @@ public class ItextParser {
 	 * @param translationNode the translation node.
 	 * @param itext the itext map.
 	 */
-	private static void fillItextMap(Element translationNode, HashMap<String,String> itext, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list){
+	private static void fillItextMap(Element translationNode, HashMap<String,String> itext, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		NodeList nodes = translationNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node textNode = nodes.item(index);
@@ -97,7 +97,7 @@ public class ItextParser {
 				continue;
 
 			//itext.put(((Element)textNode).getAttribute("id"), getValueText(textNode));
-			setValueText(itext,((Element)textNode).getAttribute("id"), textNode, defaultText,localeKey,list);
+			setValueText(itext,((Element)textNode).getAttribute("id"), textNode, defaultText,localeKey,list,formAttrMap,itextMap);
 		}
 
 	}
@@ -109,7 +109,7 @@ public class ItextParser {
 	 * @param textNode the node.
 	 * @return the text value.
 	 */
-	private static void setValueText(HashMap<String,String> itext, String id, Node textNode, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list){
+	private static void setValueText(HashMap<String,String> itext, String id, Node textNode, HashMap<String,String> defaultText, String localeKey, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		String defaultValue = null, longValue = null, shortValue = null;
 
 		NodeList nodes = textNode.getChildNodes();
@@ -132,17 +132,27 @@ public class ItextParser {
 				else
 					defaultValue = text;
 				
-				ItextModel itextModel = new ItextModel();
-				itextModel.set("id", id);
+				String fullId = form == null ? id : id + ";" + form;
+				ItextModel itextModel = itextMap.get(fullId);
+				if(itextModel == null){
+					itextModel = new ItextModel();
+					itextMap.put(fullId, itextModel);
+				}
+				
+				itextModel.set("id", fullId);
 				itextModel.set(localeKey, text);
 				list.add(itextModel);
 			}
 		}
 
-		if(longValue != null)
+		if(longValue != null){
 			defaultValue = longValue;
-		else if(shortValue != null)
+			formAttrMap.put(id, "long");
+		}
+		else if(shortValue != null){
 			defaultValue = shortValue;
+			formAttrMap.put(id, "short");
+		}
 
 		defaultText.put(id, defaultValue);
 	}
@@ -157,7 +167,7 @@ public class ItextParser {
 	 * @param itext the id to itext map.
 	 * @param list the itext model as required by gxt grids.
 	 */
-	private static void tranlateNodes(String name, Document doc, HashMap<String,String> itext, ListStore<ItextModel> list, String localeKey){
+	private static void tranlateNodes(String name, Document doc, HashMap<String,String> itext, ListStore<ItextModel> list, String localeKey, HashMap<String,ItextModel> itextMap){
 		NodeList nodes = doc.getElementsByTagName(name);
 		if(nodes == null || nodes.getLength() == 0)
 			return;
@@ -201,11 +211,17 @@ public class ItextParser {
 				ref = parentNode.getAttribute("bind");
 
 			//Create and add an itext model object as required by the gxt grid.
-			ItextModel itextModel = new ItextModel();
+			
+			ItextModel itextModel = itextMap.get(id);
+			if(itextModel == null){
+				itextModel = new ItextModel();
+				itextMap.put(id, itextModel);
+			}
+			
 			itextModel.set("xpath", FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + id + "']" + "/" + name);
 			itextModel.set("id", id);
 			itextModel.set(localeKey, text);
-			list.add(itextModel);
+			//list.add(itextModel);
 		}
 	}
 }

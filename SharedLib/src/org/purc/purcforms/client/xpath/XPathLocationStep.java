@@ -109,7 +109,9 @@ public class XPathLocationStep implements Serializable{
 		if (axis.equals("child") || axis.equals("descendant")) {
 			for (i = 0; i < nodeCount; i++) {
 				Node node = (Node) contextNodeSet.elementAt(i);
-				int childCount = node.getChildNodes().getLength();
+				int childCount = 0;
+				if(node != null && node.getChildNodes() != null)
+					childCount = node.getChildNodes().getLength();
 
 				for (int j = 0; j < childCount; j++) {
 					if (node.getChildNodes().item(j).getNodeType() == Node.ELEMENT_NODE) {

@@ -984,7 +984,7 @@ public class FormDef implements Serializable{
 	 * @param qtn the question to move.
 	 * @param pageNo the new page number where to take the question.
 	 */
-	public void moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
+	public boolean moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
 		if(pages.size() < pageNo)
 			pages.add(new PageDef(formDef));
 
@@ -992,12 +992,14 @@ public class FormDef implements Serializable{
 			PageDef page = (PageDef)pages.elementAt(i);
 			if(page.contains(qtn)){
 				if(i == pageNo-1)
-					return;
+					return true; //Makes no sense to move question from and back to the same page.
 				page.getQuestions().removeElement(qtn);
 				((PageDef)pages.elementAt(pageNo-1)).addQuestion(qtn);
-				return;
+				return true;
 			}
 		}
+		
+		return false;
 	}
 
 	/**

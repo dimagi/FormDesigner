@@ -33,6 +33,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
 
 /**
@@ -179,7 +180,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 		MenuItem addLang = new MenuItem();  
 		addLang.setText("Add Language");  
-		// addLang.setIcon(AbstractImagePrototype.create(images.smallAdd()));  
+		addLang.setIcon(AbstractImagePrototype.create(images.smallAdd()));  
 		addLang.addSelectionListener(new SelectionListener<MenuEvent>() {  
 			public void componentSelected(MenuEvent ce) {  
 
@@ -200,7 +201,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 		MenuItem removeLang = new MenuItem();  
 		removeLang.setText("Remove Language");  
-		//removeLang.setIcon(AbstractImagePrototype.create(images.smallRemove()));  
+		removeLang.setIcon(AbstractImagePrototype.create(images.smallRemove()));  
 		removeLang.addSelectionListener(new SelectionListener<MenuEvent>() {  
 			public void componentSelected(MenuEvent ce) {  
 

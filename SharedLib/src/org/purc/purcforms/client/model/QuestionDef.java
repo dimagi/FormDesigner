@@ -560,6 +560,7 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			options = new RepeatQtnsDef(qtn);
 		((RepeatQtnsDef)options).addQuestion(qtn);
+		qtn.setParent(this);
 	}
 
 	public void setRepeatQtnsDef(RepeatQtnsDef repeatQtnsDef){

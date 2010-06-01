@@ -396,8 +396,17 @@ public class XformParser {
 				questionDef.setText(nodeContext.getLabel());
 				int pageNo = currentPageNo;
 				if(pageNo == 0) pageNo = 1; //Xform may not have groups for pages.
-				if(!formDef.moveQuestion2Page(questionDef, pageNo, formDef))
+				if(questionDef.getParent() instanceof PageDef && !formDef.moveQuestion2Page(questionDef, pageNo, formDef))
 					formDef.getPageAt(pageNo - 1).addQuestion(questionDef); //This is new attempt to solve a bug and hence may introduce other bugs.
+				else if(questionDef.getParent() instanceof QuestionDef && questionDef.getParent() == parentQtn){
+					if(formDef.getPageCount() < currentPageNo){ //Must be a repeat kid whose parent has no form added page
+						PageDef pageDef = new PageDef(formDef);
+						formDef.addPage(pageDef);
+						formDef.moveQuestion2Page(parentQtn, pageNo, formDef);
+					}
+					else if(((PageDef)parentQtn.getParent()).getPageNo() == 1 && pageNo != 1 /*!= pageNo*/)
+						formDef.moveQuestion2Page(parentQtn, pageNo, formDef);
+				}
 				
 				questionDef.setControlNode(element);
 				questionDef.setLabelNode(nodeContext.getLabelNode());

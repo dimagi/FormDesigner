@@ -32,6 +32,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 
 
 /**
@@ -55,8 +56,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	public final Images images;
 
 	public interface Images extends ClientBundle{
-		//ImageResource smallAdd();
-		//ImageResource smallRemove();
+		ImageResource smallAdd();
+		ImageResource smallRemove();
 	}
 
 	public TextTabWidget(){

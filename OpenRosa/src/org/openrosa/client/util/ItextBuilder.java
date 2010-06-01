@@ -27,7 +27,7 @@ import com.google.gwt.xml.client.NodeList;
  *
  */
 public class ItextBuilder {
-
+	
 	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		/*List<Locale> locales = Context.getLocales();
 		if(locales == null)
@@ -178,12 +178,13 @@ public class ItextBuilder {
 		if(itextModel == null){
 			itextModel = new ItextModel();
 			itextMap.put(fullId, itextModel);
+			list.add(itextModel);
 		}
 		
 		itextModel.set("xpath", xpath);
 		itextModel.set("id", fullId);
 		itextModel.set(localeKey, value);
-		list.add(itextModel);
+		//list.add(itextModel);
 	}
 
 	

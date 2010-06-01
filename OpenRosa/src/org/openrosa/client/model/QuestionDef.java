@@ -558,6 +558,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(options == null)
 			options = new RepeatQtnsDef(qtn);
 		((RepeatQtnsDef)options).addQuestion(qtn);
+		qtn.setParent(this);
 	}
 
 	public void setRepeatQtnsDef(RepeatQtnsDef repeatQtnsDef){

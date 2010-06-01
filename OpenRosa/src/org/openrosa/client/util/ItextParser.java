@@ -25,6 +25,12 @@ import com.google.gwt.xml.client.NodeList;
  *
  */
 public class ItextParser {	
+
+	/**
+	 * key could be "baseball" and list is {image|jr://images/baseball.gif, long|Baseball, short|bball}
+	 */
+	public static HashMap<String,List<String>> itextFormAttrList = new HashMap<String,List<String>>();
+	
 	
 	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
@@ -143,6 +149,15 @@ public class ItextParser {
 				itextModel.set(localeKey, text);
 				list.add(itextModel);
 			}
+			
+			if(form != null){
+				List<String> attrList = itextFormAttrList.get(id);
+				if(attrList == null){
+					attrList = new ArrayList<String>();
+					itextFormAttrList.put(id, attrList);
+				}
+				attrList.add(form + "|" + text);
+			}
 		}
 
 		if(longValue != null){
@@ -213,13 +228,20 @@ public class ItextParser {
 			//Create and add an itext model object as required by the gxt grid.
 			
 			ItextModel itextModel = itextMap.get(id);
+			if(itextModel == null)
+				itextModel = itextMap.get(id+";long");
+			if(itextModel == null)
+				itextModel = itextMap.get(id+";short");
+			
 			if(itextModel == null){
 				itextModel = new ItextModel();
 				itextMap.put(id, itextModel);
+				itextModel.set("id", id);
+				list.add(itextModel);
 			}
 			
 			itextModel.set("xpath", FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + id + "']" + "/" + name);
-			itextModel.set("id", id);
+			//itextModel.set("id", id);
 			itextModel.set(localeKey, text);
 			//list.add(itextModel);
 		}

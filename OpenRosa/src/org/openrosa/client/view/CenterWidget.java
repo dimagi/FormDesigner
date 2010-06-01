@@ -137,6 +137,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		
 		formAttrMap.clear();
 	    itextMap.clear();
+	    ItextParser.itextFormAttrList.clear();
+	    
 		ListStore<ItextModel> list = new ListStore<ItextModel>();
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,list,formAttrMap,itextMap));
 

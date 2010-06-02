@@ -405,7 +405,7 @@ public class XformParser {
 						formDef.moveQuestion2Page(parentQtn, pageNo, formDef);
 					}
 					else if(((PageDef)parentQtn.getParent()).getPageNo() == 1 && pageNo != 1 /*!= pageNo*/)
-						formDef.moveQuestion2Page(parentQtn, pageNo, formDef);
+						formDef.moveQuestion2Page(parentQtn, pageNo, formDef); //Must be a repeat kid in a wrong page. (page 1)
 				}
 				
 				questionDef.setControlNode(element);

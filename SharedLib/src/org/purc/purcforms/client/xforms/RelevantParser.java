@@ -178,8 +178,10 @@ public class RelevantParser {
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid
 		}
+		else if(condition.getOperator() == ModelConstants.OPERATOR_NOT_EQUAL)
+			condition.setOperator(ModelConstants.OPERATOR_IS_NOT_NULL); //must be != ''
 		else
-			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);
+			condition.setOperator(ModelConstants.OPERATOR_IS_NULL); //must be = ''
 
 		return condition;
 	}

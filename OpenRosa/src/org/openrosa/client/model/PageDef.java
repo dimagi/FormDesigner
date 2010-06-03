@@ -140,7 +140,8 @@ public class PageDef implements Serializable{
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
 		
-		setItextId(ItextParser.getItextId(labelNode));
+		if(itextId == null)
+			setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**

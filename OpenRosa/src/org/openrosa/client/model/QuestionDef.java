@@ -178,8 +178,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	private Object parent;
 
 	private String itextId;
-	
-	
+
+
 	/** This constructor is used mainly during deserialization. */
 	public QuestionDef(Object parent){
 		this.parent = parent;
@@ -490,8 +490,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
-		
-		setItextId(ItextParser.getItextId(labelNode));
+
+		if(itextId == null)
+			setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**
@@ -759,7 +760,7 @@ public class QuestionDef implements IFormElement, Serializable{
 					node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE,"geopoint");
 				else
 					node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE,"binary");
-				
+
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
 			}
 
@@ -1248,7 +1249,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
 
-	
+
 	public int getOptionIndex(String varName){
 		if(options == null)
 			return -1;
@@ -1258,33 +1259,33 @@ public class QuestionDef implements IFormElement, Serializable{
 			if(def.getVariableName().equals(varName))
 				return i;
 		}
-		
+
 		return -1;
 	}
-	
+
 	private void refreshOptions(QuestionDef questionDef){
 		List options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
 			return;
 
 		Vector<OptionDef> orderedOptns = new Vector<OptionDef>();
-		
+
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
 			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
 			if(optionDef == null)
 				continue;
 			optionDef.setText(optn.getText());
-			
+
 			orderedOptns.add(optionDef); //add the option in the order it was before the refresh.
-			
+
 			/*int index1 = this.getOptionIndex(optn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getOptionCount() - 1){
 				((List)this.getOptions()).remove(optionDef);
 				((List)this.getOptions()).set(index, optionDef);
 			}*/
 		}
-		
+
 		//now add the new questions which have just been added by refresh.
 		int count = getOptionCount();
 		for(int index = 0; index < count; index++){
@@ -1292,7 +1293,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null)
 				orderedOptns.add(optionDef);
 		}
-		
+
 		options = orderedOptns;
 	}
 
@@ -1459,19 +1460,19 @@ public class QuestionDef implements IFormElement, Serializable{
 			displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
 		return displayText;
 	}
-	
+
 	public String getBinding(){
 		return variableName;
 	}
-	
+
 	public void setBinding(String binding){
 		setVariableName(binding);
 	}
-	
+
 	public List<IFormElement> getChildren(){
 		return (List<IFormElement>)options;
 	}
-	
+
 	public void setChildren(List<IFormElement> children){
 		this.options = children;
 	}

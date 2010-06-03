@@ -3,8 +3,9 @@ package org.openrosa.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.Context;
+import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.ItextModel;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.model.Locale;
 
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -51,7 +52,10 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	private ListStore<ItextModel> store;
 	private ColumnModel cm;
 	private int currentColumnIndex = 0;
+	private int currentRowIndex = 0;
 
+	private ITextListener listener;
+	
 
 	/** The images for the tool bar icons. */
 	public final Images images;
@@ -61,7 +65,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		ImageResource smallRemove();
 	}
 
-	public TextTabWidget(){
+	public TextTabWidget(ITextListener listener){
+		this.listener = listener;
 		this.images = GWT.create(Images.class);
 		window.setMaximizable(true);  
 		window.setHeading("Xform Source");  
@@ -136,14 +141,25 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				}
 			}
 		});
+		
+		
+		grid.addListener(Events.CellClick, new Listener<GridEvent<ModelData>>(){
+			public void handleEvent(final GridEvent<ModelData> ge)
+			{
+				currentColumnIndex = ge.getColIndex();
+				currentRowIndex = ge.getRowIndex();
+			}
+		});
 	}
 
 	public void makeToolbar(){
-		Button addLang,removeLang, btnSave;
+		Button addLang,removeLang, btnSave, btnAddRow, btnRemoveRow;
 		btnSave = new Button("Save");
 		addLang = new Button("Add Language");
 		removeLang = new Button("Remove Language");
-		ButtonGroup group = new ButtonGroup(3);
+		btnAddRow = new Button("Add Row");
+		btnRemoveRow = new Button("Remove Row");
+		ButtonGroup group = new ButtonGroup(5);
 		ToolBar tb = new ToolBar();
 		//		group.addButton(addLang);
 		//		group.add(new SeparatorToolItem());
@@ -155,6 +171,10 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		tb.add(addLang);
 		tb.add(new SeparatorToolItem());
 		tb.add(removeLang);
+		tb.add(new SeparatorToolItem());
+		tb.add(btnAddRow);
+		tb.add(new SeparatorToolItem());
+		tb.add(btnRemoveRow);
 
 		contentPanel.setTopComponent(tb);
 		
@@ -169,6 +189,27 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			public void handleEvent(ButtonEvent be)
 			{
 				addNewLanguage();
+			}
+		});
+		
+		removeLang.addListener(Events.Select, new Listener<ButtonEvent>(){
+			public void handleEvent(ButtonEvent be)
+			{
+				removeActiveColumnLang();
+			}
+		});
+		
+		btnAddRow.addListener(Events.Select, new Listener<ButtonEvent>(){
+			public void handleEvent(ButtonEvent be)
+			{
+				addNewRow();
+			}
+		});
+		
+		btnRemoveRow.addListener(Events.Select, new Listener<ButtonEvent>(){
+			public void handleEvent(ButtonEvent be)
+			{
+				removeRow();
 			}
 		});
 	}
@@ -214,11 +255,37 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				//NEED TO PUT HOOK to removeLanguage() here
 
 				//removeLanguage();
+				
+				removeActiveColumnLang();
 			}  
 		});  
 		contextMenu.add(removeLang);  
+		
+		MenuItem addRow = new MenuItem();  
+		addRow.setText("Add Row");   
+		addRow.addSelectionListener(new SelectionListener<MenuEvent>() {  
+			public void componentSelected(MenuEvent ce) {  
+				addNewRow();
+			}  
+		});  
+		contextMenu.add(addRow); 
+		
+		MenuItem btnRemoveRow = new MenuItem();  
+		btnRemoveRow.setText("Remove Row");   
+		btnRemoveRow.addSelectionListener(new SelectionListener<MenuEvent>() {  
+			public void componentSelected(MenuEvent ce) {  
+				removeRow();
+			}  
+		});  
+		contextMenu.add(btnRemoveRow); 
+		
 
 		grid.setContextMenu(contextMenu);  
+	}
+	
+	private void removeActiveColumnLang(){		
+		if(currentColumnIndex > 2)
+			removeLanguage();
 	}
 
 
@@ -247,7 +314,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		List<Locale> locales = Context.getLocales();
 		if(locales != null){
 			for(Locale locale : locales){
-				ColumnConfig columnConfig = new ColumnConfig(locale.getKey(), locale.getName(), 200);
+				ColumnConfig columnConfig = new ColumnConfig(locale.getName(), locale.getName(), 200); //getKey()??????
 				configs.add(columnConfig);
 				columnConfig.setEditor(new CellEditor(new TextField<String>()));
 				columnConfig.setStyle("font-size: 20px");
@@ -295,7 +362,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void addNewLanguage() {
-		String lang = com.google.gwt.user.client.Window.prompt("Please enter the language", "Language");
+		String lang = com.google.gwt.user.client.Window.prompt("Please enter the language name", "Language");
 		if(lang != null && lang.trim().length() > 0){
 			ColumnConfig columnConfig = new ColumnConfig(lang, lang, 200);
 			grid.getColumnModel().getColumns().add(columnConfig);
@@ -331,7 +398,25 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		}
 	}
 	
-	public void save(){
+	public void addNewRow(){
+		grid.getStore().add(new ItextModel());
+		grid.reconfigure(store, cm);
+	}
+	
+	public void removeRow(){
+		if(currentRowIndex < 0)
+			return;
 		
+		String id = store.getModels().get(currentRowIndex).get("id");
+		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + id + " row?"))
+			return;
+		
+		ItextModel model = store.getModels().get(currentRowIndex);
+		grid.getStore().remove(model);
+		grid.reconfigure(store, cm);
+	}
+	
+	public void save(){
+		listener.onSaveItext(getItext());
 	}
 }

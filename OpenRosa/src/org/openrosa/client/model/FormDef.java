@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.openrosa.client.OpenRosaConstants;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
@@ -97,6 +98,9 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 */
 	private boolean readOnly = false;
+	
+	private String itextId;
+	
 
 	List<IFormElement> children;
 	
@@ -280,6 +284,14 @@ public class FormDef implements IFormElement, Serializable{
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
 	}
 
 	public Vector getSkipRules() {
@@ -1326,6 +1338,8 @@ public class FormDef implements IFormElement, Serializable{
 			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, FormUtil.getNodePath(dataNode)+"[@name]");
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "FormDef"+id);
 			rootNode.appendChild(node);
 
 			if(pages != null){

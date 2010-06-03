@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.OpenRosaConstants;
+import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformBuilder;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -42,6 +44,8 @@ public class PageDef implements Serializable{
 
 	/** The form definition to which this page belongs. */
 	private FormDef parent;
+	
+	private String itextId;
 
 
 	/**
@@ -135,6 +139,8 @@ public class PageDef implements Serializable{
 	 */
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
+		
+		setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**
@@ -155,6 +161,13 @@ public class PageDef implements Serializable{
 		this.questions = questions;
 	}
 
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
+	}
 
 	/**
 	 * Gets the number of questions on this page.
@@ -825,6 +838,8 @@ public class PageDef implements Serializable{
 			Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "PageDef"+id);
 			parentLangNode.appendChild(node);
 		}
 

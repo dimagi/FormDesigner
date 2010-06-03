@@ -12,6 +12,7 @@ import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.PageDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.RepeatQtnsDef;
+import org.openrosa.client.util.ItextParser;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
@@ -278,8 +279,10 @@ public class XformParser {
 			else if (XmlUtil.nodeNameEquals(tagname,"body"))
 				parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 			else if (XmlUtil.nodeNameEquals(tagname,"title")){
-				if(child.getChildNodes().getLength() != 0)
+				if(child.getChildNodes().getLength() != 0){
 					formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
+					formDef.setItextId(ItextParser.getItextId(child));
+				}
 			}
 			//else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_MODEL_MINUS_PREFIX)){

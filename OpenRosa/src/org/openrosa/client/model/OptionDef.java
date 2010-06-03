@@ -2,6 +2,8 @@ package org.openrosa.client.model;
 
 import java.io.Serializable;
 
+import org.openrosa.client.OpenRosaConstants;
+import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
@@ -44,6 +46,8 @@ public class OptionDef implements Serializable {
 	/** The question to which this option belongs. */
 	private QuestionDef parent;
 
+	private String itextId;
+	
 	
 	/** Constructs the answer option definition object where
 	 * initialization parameters are not supplied. */
@@ -105,6 +109,14 @@ public class OptionDef implements Serializable {
 		this.parent = parent;
 	}
 
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
+	}
+
 	/**
 	 * @return the labelNode
 	 */
@@ -117,6 +129,8 @@ public class OptionDef implements Serializable {
 	 */
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
+		
+		setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**
@@ -196,6 +210,8 @@ public class OptionDef implements Serializable {
     		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath);
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "OptionDef"+id);
 			parentNode.appendChild(node);
 		}
     }

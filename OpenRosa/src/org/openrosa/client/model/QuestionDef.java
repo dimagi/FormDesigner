@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.controller.QuestionChangeListener;
+import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -175,7 +177,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	private Object parent;
 
-
+	private String itextId;
+	
+	
 	/** This constructor is used mainly during deserialization. */
 	public QuestionDef(Object parent){
 		this.parent = parent;
@@ -387,6 +391,14 @@ public class QuestionDef implements IFormElement, Serializable{
 		return dataType;
 	}
 
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
+	}
+
 	public void setDataType(int dataType) {
 		boolean changed = this.dataType != dataType;
 
@@ -478,6 +490,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
+		
+		setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**
@@ -1394,6 +1408,8 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(labelNode));
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			parentLangNode.appendChild(node);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDef"+id);
 		}
 
 		if(hintNode != null){
@@ -1401,6 +1417,8 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, helpText);
 			parentLangNode.appendChild(node);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId + "hint");
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDefHint"+id);
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)

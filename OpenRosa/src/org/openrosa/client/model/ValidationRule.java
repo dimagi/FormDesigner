@@ -40,6 +40,9 @@ public class ValidationRule implements Serializable{
 	/** The form to which the validation rule belongs. */
 	private FormDef formDef;
 	
+	private String itextId;
+	
+	
 	/** Constructs a rule object ready to be initialized. */
 	public ValidationRule(FormDef formDef){
 		this.formDef = formDef;
@@ -116,6 +119,14 @@ public class ValidationRule implements Serializable{
 		this.errorMessage = errorMessage;
 	}
 	
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
+	}
+
 	public FormDef getFormDef() {
 		return formDef;
 	}

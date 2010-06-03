@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Vector;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
@@ -28,6 +28,18 @@ import com.google.gwt.xml.client.NodeList;
  */
 public class ItextBuilder {
 	
+	public static HashMap<String, String> itextIds = new HashMap<String, String>();
+	
+	
+	/**
+	 * Updates the itext block in an xforms document, and itext list, with the latest itext changes.
+	 * 
+	 * @param doc
+	 * @param formDef
+	 * @param list
+	 * @param formAttrMap
+	 * @param itextMap
+	 */
 	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		/*List<Locale> locales = Context.getLocales();
 		if(locales == null)
@@ -40,6 +52,16 @@ public class ItextBuilder {
 	}
 
 
+	/**
+	 * Updates an itext block in an xforms document, and itext list, with the latest itext changes for a given locale.
+	 * 
+	 * @param doc
+	 * @param formDef
+	 * @param list
+	 * @param locale
+	 * @param formAttrMap
+	 * @param itextMap
+	 */
 	public static void updateItextBlock(Document doc, FormDef formDef, ListStore<ItextModel> list, Locale locale, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
@@ -82,7 +104,7 @@ public class ItextBuilder {
 			translationNode.appendChild(textNode);*/
 
 			String value = ((Element)node).getAttribute("value");
-			String id = FormDesignerUtil.getXmlTagName(value);
+			String id = ((Element)node).getAttribute("id"); //FormDesignerUtil.getXmlTagName(value);
 			/*textNode.setAttribute("id", id);
 
 			Element valueNode = doc.createElement("value");
@@ -131,7 +153,7 @@ public class ItextBuilder {
 				else
 					duplicatesMap.put(id, id);
 				
-				addTextNode(doc,translationNode, list,xpath,id,value,locale.getKey(),formAttrMap,itextMap);
+				addTextNode(doc,translationNode, list,xpath,id,value,locale.getName(),formAttrMap,itextMap,((Element)node).getAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID)); //getKey()??????
 			}
 			else if(index == 0){
 				//NodeList titles = doc.getElementsByTagName("title");
@@ -153,7 +175,7 @@ public class ItextBuilder {
 	 * @param value the itext value of the given id.
 	 * @param localeKey the locale key
 	 */
-	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
+	private static void addTextNode(Document doc, Element translationNode, ListStore<ItextModel> list, String xpath, String id, String value, String localeKey, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap, String uniqueId){
 		if(value.trim().length() == 0)
 			return;
 		
@@ -176,6 +198,15 @@ public class ItextBuilder {
 		
 		ItextModel itextModel = itextMap.get(fullId);
 		if(itextModel == null){
+			String prevId = itextIds.get(uniqueId);
+			itextModel = itextMap.get(prevId);
+			if(itextModel != null){
+				itextMap.remove(itextModel);
+				itextMap.put(fullId, itextModel);
+			}
+		}
+		
+		if(itextModel == null){
 			itextModel = new ItextModel();
 			itextMap.put(fullId, itextModel);
 			list.add(itextModel);
@@ -185,6 +216,8 @@ public class ItextBuilder {
 		itextModel.set("id", fullId);
 		itextModel.set(localeKey, value);
 		//list.add(itextModel);
+		
+		itextIds.put(uniqueId, fullId);
 	}
 
 	
@@ -259,7 +292,7 @@ public class ItextBuilder {
 		for(ItextModel itext : list){
 			
 			String id = itext.get("id");
-			String value = itext.get(locale.getKey());
+			String value = itext.get(locale.getName()); //getKey()??????
 			
 			//Do not create a duplicate itext element if we have already processed this itext id.
 			if(!duplicatesMap.containsKey(id)){
@@ -276,13 +309,16 @@ public class ItextBuilder {
 				duplicatesMap.put(id, id);
 
 			String xpath = (String)itext.get("xpath");
+			if(xpath == null)
+				continue;
+			
 			Vector result = new XPathExpression(doc, xpath).getResult();
 			if(result != null && result.size() > 0){
 				Element targetNode = (Element)result.get(0);
 				targetNode.setAttribute("ref", "jr:itext('" + id + "')");
 				assert(result.size() == 1); //each xpath expression should point to not more than one node.
 
-				if(locale.getKey().equalsIgnoreCase(Context.getDefaultLocale().getKey()))
+				if(locale.getName().equalsIgnoreCase(Context.getDefaultLocale().getName())) //getKey()??????
 					XmlUtil.setTextNodeValue(targetNode, value);
 			}
 		}

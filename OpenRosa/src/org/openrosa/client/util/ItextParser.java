@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openrosa.client.Context;
 import org.openrosa.client.model.ItextModel;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -79,9 +79,9 @@ public class ItextParser {
 			locales.add(new Locale(lang,lang));
 		}
 
-		tranlateNodes("label", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
-		tranlateNodes("hint", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
-		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getKey(),itextMap);
+		tranlateNodes("label", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
+		tranlateNodes("hint", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
+		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
 
 		Context.setLocales(locales);
 
@@ -142,12 +142,14 @@ public class ItextParser {
 				ItextModel itextModel = itextMap.get(fullId);
 				if(itextModel == null){
 					itextModel = new ItextModel();
+					itextModel.set("id", fullId);
 					itextMap.put(fullId, itextModel);
+					list.add(itextModel);
 				}
 				
-				itextModel.set("id", fullId);
+				//itextModel.set("id", fullId);
 				itextModel.set(localeKey, text);
-				list.add(itextModel);
+				//list.add(itextModel);
 			}
 			
 			if(form != null){
@@ -193,7 +195,7 @@ public class ItextParser {
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element node = (Element)nodes.item(index);
 
-			//Check if current node has a ref attribute.
+			/*//Check if current node has a ref attribute.
 			String ref = node.getAttribute("ref");
 			if(ref == null)
 				continue;
@@ -203,8 +205,12 @@ public class ItextParser {
 			if(pos < 0)
 				continue;
 
-			//Get the itext id which starts at the 11th character.
-			String id = ref.substring(10,ref.lastIndexOf("'"));
+			//Get the itext id which starts at the 11th character.*/
+			
+			String id = getItextId(node);
+			if(id == null)
+				continue;
+			
 			String text = itext.get(id);
 
 			//If the text node does not already exist, add it, else just update itx text.
@@ -219,7 +225,7 @@ public class ItextParser {
 
 			Element parentNode = (Element)node.getParentNode();
 			String idname = "bind";
-			ref = parentNode.getAttribute("ref");
+			String ref = parentNode.getAttribute("ref");
 			if(ref != null)
 				idname = "ref";
 			else
@@ -245,5 +251,21 @@ public class ItextParser {
 			itextModel.set(localeKey, text);
 			//list.add(itextModel);
 		}
+	}
+	
+	
+	public static String getItextId(Element node) {		
+		//Check if node has a ref attribute.
+		String ref = node.getAttribute("ref");
+		if(ref == null)
+			return null;
+
+		//Check if node has jr:itext value in the ref attribute value.
+		int pos = ref.indexOf("jr:itext('");
+		if(pos < 0)
+			return null;
+
+		//Get the itext id which starts at the 11th character.
+		return ref.substring(10,ref.lastIndexOf("'"));
 	}
 }

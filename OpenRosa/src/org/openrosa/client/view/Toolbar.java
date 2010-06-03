@@ -2,10 +2,10 @@ package org.openrosa.client.view;
 
 import java.util.List;
 
+import org.openrosa.client.Context;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ILocaleListChangeListener;
@@ -29,9 +29,6 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -377,8 +374,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		group.add(cb);
 		group.addStyleName("localizationGroup");
 		
-		
 		toolBar.add(group);    
+		
+		Context.addLocaleListChangeListener(this);
 	}
 	
 	public ToolBar getToolBar(){

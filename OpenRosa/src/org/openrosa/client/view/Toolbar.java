@@ -20,7 +20,6 @@ import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -29,10 +28,13 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * This widget is the tool bar for the form designer.
@@ -124,8 +126,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
 			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question"};
-	
-	
+
+	ListBox cbLocales = new ListBox(false);
 
 	
 	/**
@@ -362,7 +364,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		cb.setDisplayField("name");
 		
 		populateLocales();
-		cb.setValue(cb.getStore().getAt(0));
+		//cb.setValue(cb.getStore().getAt(0));
 		cb.addSelectionChangedListener(new SelectionChangedListener<BaseModel>() {
 			public void selectionChanged(SelectionChangedEvent<BaseModel> se) {
 				
@@ -371,7 +373,18 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		        	Info.display("Alert","Language Selected: "+se.getSelectedItem().get("name"));
 		        }
 			 }});
-		group.add(cb);
+		
+		cbLocales.addChangeHandler(new ChangeHandler(){
+			public void onChange(ChangeEvent event){
+				int index = getCurrentLocaleIndex();
+				ListBox listBox = (ListBox)event.getSource();
+				if(!controller.changeLocale(new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()))))
+					cbLocales.setSelectedIndex(index);
+			}
+		});
+		
+		
+		group.add(/*cb*/ cbLocales);
 		group.addStyleName("localizationGroup");
 		
 		toolBar.add(group);    
@@ -688,12 +701,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	 * Populates the locale drop down with a list of locales supported by the form designer.
 	 */
 	public void populateLocales(){
-		ListStore<BaseModel> slocales = new ListStore<BaseModel>();
+		/*ListStore<BaseModel> slocales = new ListStore<BaseModel>();
 		List<Locale> locales = Context.getLocales();
-		
+				
 		if(locales == null)
 			return;
-		
+				
 		for(Locale locale : locales){
 			BaseModel bm = new BaseModel();
 			bm.set("key", locale.getKey());
@@ -701,7 +714,32 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 			slocales.add(bm);
 		}
 		
+		BaseModel bm = new BaseModel();
+		bm.set("key", "AAAAAA");
+		bm.set("name","AAAAAA");
+		slocales.add(bm);
+		
+		bm = new BaseModel();
+		bm.set("key", "BBBBBB");
+		bm.set("name","BBBBBB");
+		slocales.add(bm);
+		
+		cb.setDisplayField("name");
+		cb.setFieldLabel("name");
+		cb.setValueField("key");
 		cb.setStore(slocales);
+		
+		cb.clear();
+		slocales.getModels().clear();*/
+		
+		cbLocales.clear();
+		
+		List<Locale> locales = Context.getLocales();
+		if(locales == null)
+			return;
+		
+		for(Locale locale : locales)
+			cbLocales.addItem(locale.getName(), locale.getKey());	
 	}
 	
 	

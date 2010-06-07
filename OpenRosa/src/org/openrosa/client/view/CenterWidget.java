@@ -49,9 +49,16 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	DesignTabWidget designWidget = new DesignTabWidget(this);
 	private TextTabWidget itextWidget = new TextTabWidget(this);
 
+	/** The current form definition object. */
 	private FormDef formDef;
+	
+	/** Mapping of itext id's to their form attribute values. eg id=name, form=short */
 	private static HashMap<String,String> formAttrMap = new HashMap<String,String>();
+	
+	/** Mapping of ItextModel objects to their ids as they are in the id column of the grid. */
 	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
+	
+	/** Lost of ItextModel objects as they are shown in the grid. */
 	ListStore<ItextModel> itextList = new ListStore<ItextModel>();
 
 	/**

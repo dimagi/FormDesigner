@@ -115,7 +115,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				ge.getMenu().add(menuItem);
 
 
-				if(currentColumnIndex > 2){
+				if(cm.getColumnCount() > 3){
 					menuItem = new MenuItem("Remove Language");
 					menuItem.addListener(Events.Select, new Listener<BaseEvent>(){
 						public void handleEvent(BaseEvent be)
@@ -284,7 +284,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 	
 	private void removeActiveColumnLang(){		
-		if(currentColumnIndex > 2)
+		if(cm.getColumnCount() > 3)
 			removeLanguage();
 	}
 
@@ -373,6 +373,9 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				model.set(lang, model.get(id));
 
 			grid.reconfigure(store, cm);
+			
+			Context.getLocales().add(new Locale(lang,lang));
+			Context.setLocales(Context.getLocales()); //for locale change notification
 		}
 	}  
 
@@ -381,20 +384,48 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + language + " language?"))
 			return;
 
+		for(ItextModel model : store.getModels())
+			model.remove(language);
+		
 		cm.getColumns().remove(currentColumnIndex);
-
 		grid.reconfigure(store, cm);
+		
+		List<Locale> locales = Context.getLocales();
+		for(Locale locale : locales){
+			if(locale.getName().equals(language)){
+				locales.remove(locale);
+				break;
+			}
+		}
+		
+		Context.setLocales(locales);
 	}
 
 	public void renameLanguage(){
-		String language = cm.getColumnHeader(currentColumnIndex);
+		String oldLanguage = cm.getColumnHeader(currentColumnIndex);
 
-		String lang = com.google.gwt.user.client.Window.prompt("Please enter the new name", language);
-		if(lang != null && lang.trim().length() > 0){
+		String newLanguage = com.google.gwt.user.client.Window.prompt("Please enter the new name", oldLanguage);
+		if(newLanguage != null && newLanguage.trim().length() > 0){
 
-			cm.getColumns().get(currentColumnIndex).setHeader(lang);
-
+			List<ItextModel> models = store.getModels();
+			for(ItextModel model : models){
+				model.set(newLanguage, model.get(oldLanguage));
+				//model.remove(oldLanguage);
+			}
+			
+			cm.getColumns().get(currentColumnIndex).setHeader(newLanguage);
 			grid.reconfigure(store, cm);
+			
+			List<Locale> locales = Context.getLocales();
+			for(Locale locale : locales){
+				if(locale.getName().equals(oldLanguage)){
+					locale.setName(newLanguage);
+					locale.setKey(newLanguage);
+					break;
+				}
+			}
+			
+			Context.setLocales(Context.getLocales()); //for locale change notification
 		}
 	}
 	

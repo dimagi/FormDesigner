@@ -16,9 +16,10 @@ public interface IFormSaveListener {
 	 * @param formId the identifier of the form.
 	 * @param xformsXml the xforms xml for the form.
 	 * @param layoutXml the layout xml of the form.
+	 * @param javaScriptSrc the JavaScript source.
 	 * @return true if saving was successful, else false.
 	 */
-	public boolean onSaveForm(int formId, String xformsXml, String layoutXml);
+	public boolean onSaveForm(int formId, String xformsXml, String layoutXml, String javaScriptSrc);
 	
 	/**
 	 * Called to save a form's xforms and layout locale text.

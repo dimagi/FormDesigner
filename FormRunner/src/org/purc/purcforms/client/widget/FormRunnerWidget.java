@@ -134,4 +134,8 @@ public class FormRunnerWidget extends Composite{
 		formDef.setId(formId);
 		view.loadForm(formDef, layoutXml,javaScriptSource, null,false);
 	}
+	
+	public void clear(){
+		view.clear();
+	}
 }

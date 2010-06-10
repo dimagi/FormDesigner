@@ -190,15 +190,17 @@ public class FormDesignerWidget extends Composite{
 	 * @param formId the form identifier.
 	 * @param xform the form's xforms xml.
 	 * @param layout the form's layout xml.
+	 * @param javaScript the form's JavaScript.
 	 * @param readOnly set to true to prevent changing of form structure and allow 
 	 * 				   changing only text and help text.
 	 */
-	public void loadForm(int formId,String xform, String layout, boolean readOnly){
+	public void loadForm(int formId,String xform, String layout, String javaScript, boolean readOnly){
 		if(leftPanel.formExists(formId))
 			return;
 
 		centerPanel.setXformsSource(xform, false);
 		centerPanel.setLayoutXml(layout, false);
+		centerPanel.setJavaScriptSource(javaScript);
 		controller.openFormDeffered(formId,readOnly);
 	}
 

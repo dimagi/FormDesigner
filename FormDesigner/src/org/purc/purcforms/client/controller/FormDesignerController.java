@@ -403,7 +403,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 					boolean saveLocaleText = false;
 					if(formSaveListener != null)
-						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());
+						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml(), centerPanel.getJavaScriptSource());
 
 					if(isOfflineMode() || formSaveListener != null)
 						FormUtil.dlg.hide();

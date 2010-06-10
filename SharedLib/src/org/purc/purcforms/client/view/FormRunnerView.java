@@ -1097,9 +1097,9 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	}
 
 	/**
-	 * Clears the preview window.
+	 * Clears the window.
 	 */
-	public void clearPreview(){
+	public void clear(){
 		tabs.clear();
 	}
 

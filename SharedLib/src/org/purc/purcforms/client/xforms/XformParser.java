@@ -172,9 +172,10 @@ public class XformParser {
 
 		//If model xml has been supplied, use it to replace the existing one.
 		if(modelXml != null){
-			Element node = XmlUtil.getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
+			Node node = XmlUtil.getDocument(modelXml).getDocumentElement();//XformConverter.getNode(XformConverter.getDocument(modelXml).getDocumentElement().toString());
 			Element dataNode = XformUtil.getInstanceDataNode(doc);
 			Node parent = dataNode.getParentNode();
+			node = parent.getOwnerDocument().importNode(node, true);
 			parent.appendChild(node);
 			parent.replaceChild(node,dataNode);
 		}

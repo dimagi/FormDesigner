@@ -9,7 +9,6 @@ import org.purc.purcforms.client.xforms.XformParser;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -197,10 +196,10 @@ public class LanguageUtil {
 		Document doc = createNewLanguageDoc();
 
 		if(xform != null && xform.trim().length() > 0)
-			doc.getDocumentElement().appendChild(XMLParser.parse(xform).getDocumentElement());
+			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(xform).getDocumentElement(),true));
 
 		if(layout != null && layout.trim().length() > 0)
-			doc.getDocumentElement().appendChild(XMLParser.parse(layout).getDocumentElement());
+			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(layout).getDocumentElement(),true));
 
 		return doc.toString();
 	}

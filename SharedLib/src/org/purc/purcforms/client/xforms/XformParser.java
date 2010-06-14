@@ -435,7 +435,7 @@ public class XformParser {
 	 * 					This is only non null for kids of repeat question types.
 	 */
 	private static void setQuestionDataNode(QuestionDef qtn, FormDef formDef,QuestionDef parentQtn){
-		String xpath = qtn.getVariableName();
+		String xpath = qtn.getBinding();
 
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
@@ -476,10 +476,10 @@ public class XformParser {
 	private static boolean addRepeatChildQtn(QuestionDef qtn, Vector repeats,Element child,HashMap map,HashMap rptKidmap){
 		for(int i=0; i<repeats.size(); i++){
 			QuestionDef rptQtn = (QuestionDef)repeats.get(i);
-			if(qtn.getVariableName().contains(rptQtn.getVariableName())){
+			if(qtn.getBinding().contains(rptQtn.getBinding())){
 				RepeatQtnsDef rptQtnsDef = rptQtn.getRepeatQtnsDef();
 				//rptQtnsDef.addQuestion(qtn); //TODO This is temporarily removed to solve the wiered problem list bug
-				String varname = qtn.getVariableName().substring(rptQtn.getVariableName().length()+1);
+				String varname = qtn.getBinding().substring(rptQtn.getBinding().length()+1);
 				//varname = varname.substring(0, varname.indexOf('/'));
 				//map.put(child.getAttribute(ATTRIBUTE_NAME_ID), varname);
 				map.put(varname, varname);
@@ -536,7 +536,7 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE) != null)
 			formDef.addCalculation(new Calculation(qtn.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
 
-		return qtn.getVariableName();
+		return qtn.getBinding();
 	}
 
 
@@ -647,7 +647,7 @@ public class XformParser {
 
 		if(!addRepeatChildQtn(qtn,repeatQtns,child,id2VarNameMap,rptKidMap)){
 			String id = child.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
-			id2VarNameMap.put(id != null ? id : qtn.getVariableName(), qtn.getVariableName());
+			id2VarNameMap.put(id != null ? id : qtn.getBinding(), qtn.getBinding());
 			formDef.addQuestion(qtn);
 		}
 

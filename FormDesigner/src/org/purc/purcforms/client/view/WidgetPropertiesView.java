@@ -778,11 +778,11 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			}
 
 			if(hasParentBinding()){
-				widget.setParentBinding(questionDef.getVariableName());
+				widget.setParentBinding(questionDef.getBinding());
 				updateQuestionOptionsOracle();
 			}
 			else{
-				widget.setBinding(questionDef.getVariableName());
+				widget.setBinding(questionDef.getBinding());
 				widget.setQuestionDef(questionDef);
 
 				if((widget.getWrappedWidget() instanceof Label) && ((Label)widget.getWrappedWidget()).getText().equals("Label")){

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.ItemsetBuilder;
 import org.purc.purcforms.client.xforms.ItemsetUtil;
-import org.purc.purcforms.client.xforms.XformBuilder;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
@@ -223,19 +222,19 @@ public class DynamicOptionDef  implements Serializable{
 				return;
 			
 			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
-				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
 
 			
 			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);
-			if(!(instanceId == null || instanceId.equals(questionDef.getVariableName()))){
-				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getVariableName()+"'");
+			if(!(instanceId == null || instanceId.equals(questionDef.getBinding()))){
+				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getBinding()+"'");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 
 			//Update the nodeset parent instance id
 			instanceId = ItemsetUtil.getParentQuestionBindId(nodeset);
-			if(!(instanceId == null || instanceId.equals(parentQuestionDef.getVariableName()))){
-				nodeset = nodeset.replace("')/"+instanceId+"]", "')/"+parentQuestionDef.getVariableName()+"]");
+			if(!(instanceId == null || instanceId.equals(parentQuestionDef.getBinding()))){
+				nodeset = nodeset.replace("')/"+instanceId+"]", "')/"+parentQuestionDef.getBinding()+"]");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 			
@@ -248,7 +247,7 @@ public class DynamicOptionDef  implements Serializable{
 			
 			//Update the instance id
 			if(dataNode.getParentNode() != null)
-				((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+				((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getBinding());
 		
 			ItemsetBuilder.updateDynamicOptionDef(formDef, parentQuestionDef, this);
 		}
@@ -394,7 +393,7 @@ public class DynamicOptionDef  implements Serializable{
 		String xpath = FormUtil.getNodePath(dataNode.getParentNode());
 		String id = ((Element)dataNode.getParentNode()).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + questionDef.getVariableName() + "']";
+			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + questionDef.getBinding() + "']";
 		
 		xpath += "/" + FormUtil.getNodeName(dataNode);
 		

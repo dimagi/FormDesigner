@@ -398,7 +398,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 			//extension = ".wav";
 
-			contentType += "&name="+questionDef.getVariableName()+".3gp";
+			contentType += "&name="+questionDef.getBinding()+".3gp";
 
 			((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 
@@ -697,7 +697,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 					xpath = "/" + formDef.getVariableName() + "/" + wrapper.getBinding();
 
 				String contentType = "&contentType=video/3gpp";
-				contentType += "&name="+wrapper.getQuestionDef().getVariableName()+".3gp";
+				contentType += "&name="+wrapper.getQuestionDef().getBinding()+".3gp";
 
 				//TODO What if the multimedia url suffix already has a ?
 				String url = FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime();
@@ -968,7 +968,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 					contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 				//extension = ".wav";
 
-				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
+				contentType += "&name="+widgetWrapper.getQuestionDef().getBinding()+".3gp";
 
 				html.setVisible(true);
 				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				

@@ -236,10 +236,10 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 	}
 
 	private static String getFieldName(QuestionDef questionDef){
-		int index = questionDef.getVariableName().lastIndexOf('/');
+		int index = questionDef.getBinding().lastIndexOf('/');
 		if(index > -1)
-			return questionDef.getVariableName().substring(index+1);
-		return questionDef.getVariableName();
+			return questionDef.getBinding().substring(index+1);
+		return questionDef.getBinding();
 	}
 
 	public FormDef getFormDef(){

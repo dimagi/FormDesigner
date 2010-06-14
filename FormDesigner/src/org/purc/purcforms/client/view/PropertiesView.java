@@ -533,7 +533,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				((FormDef)propertiesObj).setVariableName(name);
 				txtBinding.setText(name);
 			}
-			else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*startsWith("question")*/){
+			else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getBinding().equals(orgTextDefBinding) /*startsWith("question")*/){
 				((QuestionDef)propertiesObj).setVariableName(name);
 				txtBinding.setText(name);
 			}
@@ -875,7 +875,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableDescriptionTemplate(false);
 
 		txtText.setText(questionDef.getText());
-		txtBinding.setText(questionDef.getVariableName());
+		txtBinding.setText(questionDef.getBinding());
 		txtHelpText.setText(questionDef.getHelpText());
 		txtDefaultValue.setText(questionDef.getDefaultValue());
 

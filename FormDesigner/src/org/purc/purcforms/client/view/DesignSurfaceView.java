@@ -823,7 +823,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			
 			if(!(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_IMAGE)){
 				widgetWrapper = addNewLabel(questionDef.getText(),false);
-				widgetWrapper.setBinding(questionDef.getVariableName());
+				widgetWrapper.setBinding(questionDef.getBinding());
 				widgetWrapper.setTitle(questionDef.getText());
 				
 				if(select)
@@ -858,15 +858,15 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			else if(type == QuestionDef.QTN_TYPE_REPEAT)
 				widgetWrapper = addNewRepeatSet(questionDef,false);
 			else if(type == QuestionDef.QTN_TYPE_IMAGE)
-				widgetWrapper = addNewPictureSection(questionDef.getVariableName(),questionDef.getText(),false);
+				widgetWrapper = addNewPictureSection(questionDef.getBinding(),questionDef.getText(),false);
 			else if(type == QuestionDef.QTN_TYPE_VIDEO || type == QuestionDef.QTN_TYPE_AUDIO)
-				widgetWrapper = addNewVideoAudioSection(questionDef.getVariableName(),questionDef.getText(),false);
+				widgetWrapper = addNewVideoAudioSection(questionDef.getBinding(),questionDef.getText(),false);
 			else
 				widgetWrapper = addNewTextBox(false);
 
 			if(widgetWrapper != null){
 				if(!(type == QuestionDef.QTN_TYPE_IMAGE|| type == QuestionDef.QTN_TYPE_VIDEO|| type == QuestionDef.QTN_TYPE_AUDIO))
-					widgetWrapper.setBinding(questionDef.getVariableName());
+					widgetWrapper.setBinding(questionDef.getBinding());
 
 				widgetWrapper.setQuestionDef(questionDef);
 
@@ -963,7 +963,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 			wrapper.setFontSize(FormUtil.getDefaultFontSize());
 			wrapper.setBinding(optionDef.getVariableName());
-			wrapper.setParentBinding(questionDef.getVariableName());
+			wrapper.setParentBinding(questionDef.getBinding());
 			wrapper.setText(optionDef.getText());
 			wrapper.setTitle(optionDef.getText());
 			wrapper.setTabIndex(++tabIndex);
@@ -998,7 +998,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 			if(index > 0)
 				x += 210;
 			DesignWidgetWrapper label = addNewLabel(qtn.getText(),select);
-			label.setBinding(qtn.getVariableName());
+			label.setBinding(qtn.getBinding());
 			label.setTitle(qtn.getText());
 			label.setTextDecoration("underline");
 		}
@@ -1067,7 +1067,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 				widgetWrapper = addNewTextBox(select);
 
 			if(widgetWrapper != null){//addNewCheckBoxSet returns null
-				widgetWrapper.setBinding(qtn.getVariableName());
+				widgetWrapper.setBinding(qtn.getBinding());
 				widgetWrapper.setQuestionDef(qtn);
 				widgetWrapper.setTitle(qtn.getText());
 				widgetWrapper.setTabIndex(index + 1);
@@ -1279,7 +1279,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 	private void fillNewQuestions(PageDef pageDef, List<QuestionDef> newQuestions, HashMap<String,String> bindings){
 		for(int index = 0; index < pageDef.getQuestionCount(); index ++){
 			QuestionDef questionDef = pageDef.getQuestionAt(index);
-			if(!bindings.containsKey(questionDef.getVariableName()))
+			if(!bindings.containsKey(questionDef.getBinding()))
 				newQuestions.add(questionDef);
 		}
 	}

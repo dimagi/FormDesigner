@@ -161,7 +161,7 @@ public class RepeatQtnsDef implements Serializable {
 		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef def = (QuestionDef)questions.elementAt(i);
-			if(def.getVariableName().equals(varName))
+			if(def.getBinding().equals(varName))
 				return def;
 		}
 		
@@ -189,7 +189,7 @@ public class RepeatQtnsDef implements Serializable {
 		
 		for(int index = 0; index < questions2.size(); index++){
 			QuestionDef qtn = (QuestionDef)questions2.get(index);
-			QuestionDef questionDef = getQuestion(qtn.getVariableName());
+			QuestionDef questionDef = getQuestion(qtn.getBinding());
 			if(questionDef != null){
 				questionDef.refresh(qtn);
 				orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
@@ -200,7 +200,7 @@ public class RepeatQtnsDef implements Serializable {
 		int count = questions.size();
 		for(int index = 0; index < count; index++){
 			QuestionDef questionDef = getQuestionAt(index);
-			if(pepeatQtnsDef.getQuestion(questionDef.getVariableName()) == null)
+			if(pepeatQtnsDef.getQuestion(questionDef.getBinding()) == null)
 				orderedQtns.add(questionDef);
 		}
 		

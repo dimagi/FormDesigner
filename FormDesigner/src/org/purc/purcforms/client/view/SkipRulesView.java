@@ -426,7 +426,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			if(qtnDef == questionDef)
 				continue; //Ignore the question for which we are editing the skip rule.
 
-			if(qtnDef == null || !questions.contains(qtnDef.getVariableName())){
+			if(qtnDef == null || !questions.contains(qtnDef.getBinding())){
 				actnTargets.remove(index);
 				index = index - 1;
 			}

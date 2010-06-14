@@ -50,7 +50,7 @@ public class ItemsetBuilder {
 
 		Element modelNode = formDef.getModelNode();
 		Element instanceNode =  doc.createElement(XformConstants.NODE_NAME_INSTANCE);
-		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getBinding());
 		NodeList nodes = modelNode.getElementsByTagName(XformConstants.NODE_NAME_INSTANCE);
 		if(nodes.getLength() == 0)
 			nodes = modelNode.getElementsByTagName(XformConstants.NODE_NAME_INSTANCE_MINUS_PREFIX); //TODO What happens when we pass a name with a prefix?
@@ -65,7 +65,7 @@ public class ItemsetBuilder {
 		if(questionDef.getFirstOptionNode() == null)
 			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
 		Element itemSetNode = questionDef.getFirstOptionNode();
-		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
 
 		
 		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();

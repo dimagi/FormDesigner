@@ -1240,7 +1240,7 @@ public class FormDef implements Serializable{
 				if(oldParentQtnDef == null)
 					continue; //How can this be missing in the original formdef???
 
-				QuestionDef newParentQtnDef = getQuestion(oldParentQtnDef.getVariableName());
+				QuestionDef newParentQtnDef = getQuestion(oldParentQtnDef.getBinding());
 				if(newParentQtnDef == null)
 					continue; //My be deleted by refresh source.
 
@@ -1249,7 +1249,7 @@ public class FormDef implements Serializable{
 				if(oldChildQtnDef == null)
 					return; //can this be lost in the old formdef????
 
-				QuestionDef newChildQtnDef = getQuestion(oldChildQtnDef.getVariableName());
+				QuestionDef newChildQtnDef = getQuestion(oldChildQtnDef.getBinding());
 				if(newChildQtnDef == null)
 					continue; //possibly deleted by refresh sourced (eg server).
 
@@ -1264,7 +1264,7 @@ public class FormDef implements Serializable{
 		calculations = new Vector();
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
-			QuestionDef questionDef = getQuestion(formDef.getQuestion(calculation.getQuestionId()).getVariableName());
+			QuestionDef questionDef = getQuestion(formDef.getQuestion(calculation.getQuestionId()).getBinding());
 			if(questionDef != null)
 				addCalculation(new Calculation(questionDef.getId(),calculation.getCalculateExpression()));
 		}

@@ -1801,7 +1801,7 @@ public class DesignGroupView extends Composite implements WidgetSelectionListene
 			wrapper.setFontFamily(FormUtil.getDefaultFontFamily());
 			wrapper.setFontSize(FormUtil.getDefaultFontSize());
 			wrapper.setBinding(optionDef.getVariableName());
-			wrapper.setParentBinding(questionDef.getVariableName());
+			wrapper.setParentBinding(questionDef.getBinding());
 			wrapper.setText(optionDef.getText());
 			wrapper.setTitle(optionDef.getText());
 

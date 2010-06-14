@@ -88,7 +88,7 @@ public class RuntimeGroupView extends Composite implements OpenFileDialogEventLi
 					contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 				//extension = ".wav";
 
-				contentType += "&name="+widgetWrapper.getQuestionDef().getVariableName()+".3gp";
+				contentType += "&name="+widgetWrapper.getQuestionDef().getBinding()+".3gp";
 
 				html.setVisible(true);
 				html.setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension + "?formId="+formDef.getId()+"&xpath="+xpath+contentType+"&time="+ new java.util.Date().getTime()) + ">"+html.getText()+"</a>");				

@@ -195,7 +195,7 @@ public class QuestionDef implements Serializable{
 		setEnabled(questionDef.isEnabled());
 		setLocked(questionDef.isLocked());
 		setRequired(questionDef.isRequired());
-		setVariableName(questionDef.getVariableName());
+		setVariableName(questionDef.getBinding());
 
 		if(getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			copyQuestionOptions(questionDef.getOptions());
@@ -403,7 +403,7 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
-	public String getVariableName() {
+	public String getBinding() {
 		return variableName;
 	}
 

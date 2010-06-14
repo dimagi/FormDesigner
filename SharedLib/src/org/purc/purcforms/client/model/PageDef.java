@@ -205,7 +205,7 @@ public class PageDef implements Serializable{
 
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
-			if(def.getVariableName().equals(varName))
+			if(def.getBinding().equals(varName))
 				return def;
 
 			//Without this, then we have not validation and skip rules in repeat questions.
@@ -243,7 +243,7 @@ public class PageDef implements Serializable{
 
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
-			if(def.getVariableName().equals(varName))
+			if(def.getBinding().equals(varName))
 				return i;
 		}
 
@@ -314,7 +314,7 @@ public class PageDef implements Serializable{
 		}
 
 		//Either no / or just one occurrence. More than one nestings are avoided to make things simple
-		if(qtnDef.getVariableName().indexOf('/') == qtnDef.getVariableName().lastIndexOf('/')){
+		if(qtnDef.getBinding().indexOf('/') == qtnDef.getBinding().lastIndexOf('/')){
 			if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
 				qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
 			if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
@@ -390,7 +390,7 @@ public class PageDef implements Serializable{
 		if(controlNode != null && parentNode != null && currentQuestionDef.getControlNode() != null)
 			parentNode.removeChild(controlNode);
 
-		if(!(questionDef.getVariableName().indexOf('/') > -1)){
+		if(!(questionDef.getBinding().indexOf('/') > -1)){
 			if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentQuestionDef.getDataNode() != null)
 				questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
 		}
@@ -417,7 +417,7 @@ public class PageDef implements Serializable{
 				}
 
 				//move data node (We are not moving nested data nodes just to avoid complications
-				if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1)){
+				if(!(questionDef.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1)){
 					if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
 						qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
 				}
@@ -500,12 +500,12 @@ public class PageDef implements Serializable{
 
 
 					//move data node (We are not moving nested data nodes just to avoid complications
-					if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1))
+					if(!(questionDef.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1))
 						if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null){
 							parentDataNode.removeChild(questionDef.getDataNode());
 
 							if(qtnDef.getDataNode() != null){
-								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getVariableName().contains("/"))
+								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getBinding().contains("/"))
 									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode().getParentNode());
 								else
 									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
@@ -539,7 +539,7 @@ public class PageDef implements Serializable{
 					parentNode.appendChild(controlNode);
 				}
 
-				if(!(questionDef.getVariableName().indexOf('/') > -1)){
+				if(!(questionDef.getBinding().indexOf('/') > -1)){
 					if(questionDef.getDataNode() != null && parentDataNode != null){
 						parentDataNode.removeChild(questionDef.getDataNode());
 						parentDataNode.appendChild(questionDef.getDataNode());
@@ -631,7 +631,7 @@ public class PageDef implements Serializable{
 			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
 
 			//We do not update data nodes which deal with attributes.
-			if(questionDef.getDataNode() == null && !questionDef.getVariableName().contains("@")){
+			if(questionDef.getDataNode() == null && !questionDef.getBinding().contains("@")){
 				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
 				continue; //TODO This is a bug which should be resolved
 			}
@@ -725,7 +725,7 @@ public class PageDef implements Serializable{
 		int count = pageDef.getQuestionCount();
 		for(int index = 0; index < count; index++){
 			QuestionDef qtn = pageDef.getQuestionAt(index);
-			QuestionDef questionDef = this.getQuestion(qtn.getVariableName());
+			QuestionDef questionDef = this.getQuestion(qtn.getBinding());
 			if(questionDef == null)
 				continue; //Possibly this question was deleted on server
 			questionDef.refresh(qtn);
@@ -743,7 +743,7 @@ public class PageDef implements Serializable{
 		count = getQuestionCount();
 		for(int index = 0; index < count; index++){
 			QuestionDef questionDef = getQuestionAt(index);
-			if(pageDef.getQuestion(questionDef.getVariableName()) == null)
+			if(pageDef.getQuestion(questionDef.getBinding()) == null)
 				orderedQtns.add(questionDef);
 		}
 

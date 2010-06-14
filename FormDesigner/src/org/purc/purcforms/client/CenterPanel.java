@@ -556,12 +556,12 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		if(formDef != null){
 			node = formDef.getLanguageNode();
 			if(node != null)
-				rootNode.appendChild(node);
+				rootNode.appendChild(doc.importNode(node, true));
 		}
 
 		node = designSurfaceView.getLanguageNode();
 		if(node != null)
-			rootNode.appendChild(node);
+			rootNode.appendChild(doc.importNode(node, true));
 
 		txtLanguageXml.setText(FormDesignerUtil.formatXml(doc.toString()));
 

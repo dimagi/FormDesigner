@@ -598,7 +598,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 					if(questionDef.getDataType() == QuestionDef.QTN_TYPE_AUDIO)
 						contentType = "&contentType=audio/3gpp"; //"&contentType=audio/x-wav";
 
-					contentType += "&name="+questionDef.getVariableName()+".3gp";
+					contentType += "&name="+questionDef.getBinding()+".3gp";
 
 					((HTML)widget).setHTML("<a href=" + URL.encode(FormUtil.getMultimediaUrl()+extension+"?formId="+formDef.getId()+"&xpath="+xpath+contentType) + ">"+node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT)+"</a>");
 				}

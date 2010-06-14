@@ -41,20 +41,20 @@ public class UiElementBuilder {
 	 * @param groupNode the xforms group node to which the question belongs.
 	 */
 	public static void fromQuestionDef2Xform(QuestionDef qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
-		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getVariableName(),formDef,formNode);
+		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0)
 			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(XformConstants.NODE_NAME_BIND);
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtn.getVariableName(),false);
+		String id = XformBuilderUtil.getBindIdFromVariableName(qtn.getBinding(),false);
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 
-		String nodeset = qtn.getVariableName();
+		String nodeset = qtn.getBinding();
 		if(!nodeset.startsWith("/"))
 			nodeset = "/" + nodeset;
 		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/"))
-			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getVariableName();
+			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
@@ -127,7 +127,7 @@ public class UiElementBuilder {
 	 * @param doc the xforms document.
 	 */
 	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
-		String name = qtnDef.getVariableName();
+		String name = qtnDef.getBinding();
 
 		//TODO Should do this for all invalid characters in node names.
 		name = name.replace("/", "");
@@ -196,12 +196,12 @@ public class UiElementBuilder {
 		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			name = XformConstants.NODE_NAME_GROUP;
 
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getVariableName(), isRepeatKid);
+		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = doc.createElement(name);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
 		else
-			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getVariableName());
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getBinding());
 
 		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 		//	node.setAttribute("selection", "closed");

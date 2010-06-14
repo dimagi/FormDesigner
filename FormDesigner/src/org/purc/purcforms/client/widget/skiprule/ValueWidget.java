@@ -534,7 +534,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(chkQuestionValue.getValue() == true){
 			valueQtnDef = formDef.getQuestionWithText(val);
 			if(valueQtnDef != null)
-				val = valueQtnDef.getVariableName();
+				val = valueQtnDef.getBinding();
 			else
 				val = EMPTY_VALUE;
 		}
@@ -594,7 +594,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 					sValue = qtn.getText();
 				else{ //possibly varname changed.
 					if(valueQtnDef != null){
-						qtn = formDef.getQuestion(valueQtnDef.getVariableName());
+						qtn = formDef.getQuestion(valueQtnDef.getBinding());
 						if(qtn != null)
 							sValue = qtn.getText();
 						else

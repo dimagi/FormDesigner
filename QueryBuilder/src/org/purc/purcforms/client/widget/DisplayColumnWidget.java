@@ -164,7 +164,7 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 	}
 	
 	public String getName(){
-		return questionDef.getVariableName();
+		return questionDef.getBinding();
 	}
 	
 	public int getSortOrder(){

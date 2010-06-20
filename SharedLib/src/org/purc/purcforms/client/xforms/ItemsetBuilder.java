@@ -65,7 +65,7 @@ public class ItemsetBuilder {
 		if(questionDef.getFirstOptionNode() == null)
 			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
 		Element itemSetNode = questionDef.getFirstOptionNode();
-		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
+		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getBinding()+"')/"+parentQuestionDef.getBinding()+"]");
 
 		
 		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();

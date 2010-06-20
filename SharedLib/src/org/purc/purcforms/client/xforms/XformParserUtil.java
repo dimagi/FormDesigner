@@ -180,8 +180,8 @@ public class XformParserUtil {
 	public static String getQuestionVariableName(Element bindNode, FormDef formDef){
 		String name = bindNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
 
-		if(name.startsWith("/"+formDef.getVariableName()+"/"))
-			name = name.replace("/"+formDef.getVariableName()+"/", "");
+		if(name.startsWith("/"+formDef.getBinding()+"/"))
+			name = name.replace("/"+formDef.getBinding()+"/", "");
 		
 		return name;
 	}

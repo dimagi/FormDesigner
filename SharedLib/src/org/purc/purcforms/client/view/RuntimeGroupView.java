@@ -76,8 +76,8 @@ public class RuntimeGroupView extends Composite implements OpenFileDialogEventLi
 				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
 
 			String xpath = widgetWrapper.getBinding();
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
+			if(!xpath.startsWith(formDef.getBinding()))
+				xpath = "/" + formDef.getBinding() + "/" + widgetWrapper.getBinding();
 
 			if(image != null)
 				image.setUrl(FormUtil.getMultimediaUrl()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);

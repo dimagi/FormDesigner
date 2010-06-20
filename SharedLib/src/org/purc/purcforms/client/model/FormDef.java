@@ -35,7 +35,7 @@ public class FormDef implements Serializable{
 	//TODO May not need to serialize this property for smaller pay load. Then we may just rely on the id.
 	//afterall it is not even guaranteed to be unique.
 	/** The string unique identifier of the form definition. */
-	private String variableName = ModelConstants.EMPTY_STRING;
+	private String binding = ModelConstants.EMPTY_STRING;
 
 	/** The display name of the form. */
 	private String name = ModelConstants.EMPTY_STRING;
@@ -125,7 +125,7 @@ public class FormDef implements Serializable{
 		setFormKey(formDef.getFormKey());
 
 		//I just don't think we need this in addition to the id
-		setVariableName(formDef.getVariableName());
+		setVariableName(formDef.getBinding());
 
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
 		copyPages(formDef.getPages());
@@ -263,12 +263,12 @@ public class FormDef implements Serializable{
 	}
 
 	//I just don't think we need this in addition to the id
-	public String getVariableName() {
-		return variableName;
+	public String getBinding() {
+		return binding;
 	}
 
 	public void setVariableName(String variableName) {
-		this.variableName = variableName;
+		this.binding = variableName;
 	}
 
 	public int getId() {
@@ -420,7 +420,11 @@ public class FormDef implements Serializable{
 	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
-		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
+		
+		if(formKey != null && formKey.trim().length() > 0)
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
+		else
+			dataNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY);
 
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
@@ -439,10 +443,10 @@ public class FormDef implements Serializable{
 			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
 
 		String orgVarName = dataNode.getNodeName();
-		if(!orgVarName.equalsIgnoreCase(variableName)){
-			dataNode = XformUtil.renameNode(dataNode,variableName);
+		if(!orgVarName.equalsIgnoreCase(binding)){
+			dataNode = XformUtil.renameNode(dataNode,binding);
 			updateDataNodes();
-			((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
+			((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, binding);
 		}
 
 		if(dataNode != null){
@@ -1207,7 +1211,7 @@ public class FormDef implements Serializable{
 	public void refresh(FormDef formDef){
 		this.id = formDef.getId();
 
-		if(variableName.equals(formDef.getVariableName()))
+		if(binding.equals(formDef.getBinding()))
 			name = formDef.getName();
 
 		for(int index = 0; index < formDef.getPageCount(); index++)

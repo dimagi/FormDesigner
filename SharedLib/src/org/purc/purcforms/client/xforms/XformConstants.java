@@ -9,13 +9,16 @@ package org.purc.purcforms.client.xforms;
  */
 public class XformConstants {
 
+	public static final String XML_NAMESPACE = "xmlns";
+	
 	/** The xmlns prefix. */
 	public static final String XML_NAMESPACE_PREFIX = "xmlns:";
 
 	/** Namespace prefix for XForms. */
 	public static final String PREFIX_XFORMS = "xf";
 
-	public static final String PREFIX_XFORMS_AND_COLON = "xf:";
+	//Not made constant because we need to change it at runtime when parsing xforms with their custom prefix.
+	public static String PREFIX_XFORMS_AND_COLON = ""; //"xf:";
 
 	/** Namespace prefix for XML schema. */
 	public static final String PREFIX_XML_SCHEMA = "xsd";
@@ -35,7 +38,6 @@ public class XformConstants {
 	/** Namespace for XML schema instance. */
 	public static final String NAMESPACE_XML_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
 
-
 	public static final String NODE_NAME_XFORMS = PREFIX_XFORMS_AND_COLON+"xforms";
 	public static final String NODE_NAME_INSTANCE = PREFIX_XFORMS_AND_COLON+"instance";
 	public static final String NODE_NAME_MODEL = PREFIX_XFORMS_AND_COLON+"model";
@@ -45,7 +47,7 @@ public class XformConstants {
 	public static final String NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
 	public static final String NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
 	public static final String NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
-	public static final String NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"input";
+	public static final String NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"upload";
 	public static final String NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
 	public static final String NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
 	public static final String NODE_NAME_REPEAT = PREFIX_XFORMS_AND_COLON+"repeat";
@@ -99,6 +101,7 @@ public class XformConstants {
 	public static final String ATTRIBUTE_NAME_ACTION = "action";
 	public static final String ATTRIBUTE_NAME_PARENT = "parent";
 	public static final String ATTRIBUTE_NAME_FORMAT = "format";
+	public static final String ATTRIBUTE_NAME_MEDIATYPE = "mediatype";
 
 	public static final String ATTRIBUTE_VALUE_ENABLE = "enable";
 	public static final String ATTRIBUTE_VALUE_DISABLE = "disable";
@@ -114,6 +117,9 @@ public class XformConstants {
 	public static final String DATA_TYPE_TEXT = "xsd:string";
 	public static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
 	public static final String DATA_TYPE_BINARY = "xsd:base64Binary";
+	public static final String DATA_TYPE_DATE_TIME = "xsd:dateTime";
+	public static final String DATA_TYPE_TIME = "xsd:time";
+	public static final String DATA_TYPE_DECIMAL = "xsd:decimal";
 	public static final String DATA_TYPE_BARCODE = "barcode";
 
 	public static final String XPATH_VALUE_TRUE = "true()";

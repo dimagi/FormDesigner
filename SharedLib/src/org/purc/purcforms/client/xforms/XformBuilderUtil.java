@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -52,19 +53,20 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_DATE:
 			return XformConstants.DATA_TYPE_DATE;
 		case QuestionDef.QTN_TYPE_DATE_TIME:
-			return "xsd:dateTime";
+			return XformConstants.DATA_TYPE_DATE_TIME;
 		case QuestionDef.QTN_TYPE_TIME:
-			return "xsd:time";
+			return XformConstants.DATA_TYPE_TIME;
 		case QuestionDef.QTN_TYPE_DECIMAL:
-			return "xsd:decimal";
+			return XformConstants.DATA_TYPE_DECIMAL;
 		case QuestionDef.QTN_TYPE_NUMERIC:
 			return XformConstants.DATA_TYPE_INT;
 		case QuestionDef.QTN_TYPE_TEXT:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
-		case QuestionDef.QTN_TYPE_GPS:
 			return XformConstants.DATA_TYPE_TEXT;
+		case QuestionDef.QTN_TYPE_GPS:
+			return FormUtil.getGpsTypeName();
 		case QuestionDef.QTN_TYPE_IMAGE:
 		case QuestionDef.QTN_TYPE_VIDEO:
 		case QuestionDef.QTN_TYPE_AUDIO:
@@ -107,8 +109,8 @@ public class XformBuilderUtil {
 		String name = variableName;
 		//TODO May need to be smarter than this. Avoid invalid node
 		//names. eg those having slashes (form1/question1)
-		if(name.startsWith(formDef.getVariableName()))
-			name = name.substring(formDef.getVariableName().length()+1);
+		if(name.startsWith(formDef.getBinding()))
+			name = name.substring(formDef.getBinding().length()+1);
 
 		//TODO Should do this for all invalid characters in node names.
 		/*name = name.replace("/", "");

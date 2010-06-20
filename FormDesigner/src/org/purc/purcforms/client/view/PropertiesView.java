@@ -529,7 +529,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj != null && Context.allowBindEdit() && !Context.isStructureReadOnly()){
 			String text = getTextWithoutDecTemplate(txtText.getText().trim());
 			String name = FormDesignerUtil.getXmlTagName(text);
-			if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*startsWith("newform")*/){
+			if(propertiesObj instanceof FormDef && ((FormDef)propertiesObj).getBinding().equals(orgTextDefBinding) /*startsWith("newform")*/){
 				((FormDef)propertiesObj).setVariableName(name);
 				txtBinding.setText(name);
 			}
@@ -717,7 +717,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				!(index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT)){
-			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
+			if(questionDef.getOptionCount() > 0 && !Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
 				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_INDEX_SINGLE_SELECT : DT_INDEX_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
 				return;
@@ -833,7 +833,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		enableDescriptionTemplate(Context.isStructureReadOnly() ? false : true);
 
 		txtText.setText(formDef.getName());
-		txtBinding.setText(formDef.getVariableName());
+		txtBinding.setText(formDef.getBinding());
 		txtFormKey.setText(formDef.getFormKey());
 		//skipRulesView.setFormDef(formDef);
 

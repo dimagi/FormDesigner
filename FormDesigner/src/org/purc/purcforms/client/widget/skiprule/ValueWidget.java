@@ -578,7 +578,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		}
 
 		if(val != null && this.chkQuestionValue.getValue() == true)
-			val = formDef.getVariableName() + "/" + val;
+			val = formDef.getBinding() + "/" + val;
 
 		return val;
 	}
@@ -587,7 +587,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		String sValue = value;
 
 		if(sValue != null){
-			if(sValue.startsWith(formDef.getVariableName() + "/")){
+			if(sValue.startsWith(formDef.getBinding() + "/")){
 				sValue = sValue.substring(sValue.indexOf('/')+1);
 				QuestionDef qtn = formDef.getQuestion(sValue);
 				if(qtn != null)

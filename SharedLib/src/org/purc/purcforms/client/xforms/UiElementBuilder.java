@@ -53,8 +53,8 @@ public class UiElementBuilder {
 		String nodeset = qtn.getBinding();
 		if(!nodeset.startsWith("/"))
 			nodeset = "/" + nodeset;
-		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/"))
-			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
+		if(!nodeset.startsWith("/" + formDef.getBinding() + "/"))
+			nodeset = "/" + formDef.getBinding() + "/" + qtn.getBinding();
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
@@ -189,24 +189,43 @@ public class UiElementBuilder {
 
 		String name = XformConstants.NODE_NAME_INPUT;
 
-		if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+		int type = qtnDef.getDataType();
+		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 			name = XformConstants.NODE_NAME_SELECT1;
-		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			name = XformConstants.NODE_NAME_SELECT;
-		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		else if(type == QuestionDef.QTN_TYPE_REPEAT)
 			name = XformConstants.NODE_NAME_GROUP;
+		else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO)
+			name = XformConstants.NODE_NAME_UPLOAD;
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = doc.createElement(name);
-		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
+		if(type != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
 		else
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getBinding());
 
-		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		//Make ODK happy.
+		setMediaType(node, type);
+		
+		//if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 		//	node.setAttribute("selection", "closed");
 
 		return node;
+	}
+	
+	public static void setMediaType(Element node, int type){
+		String mediatype = null;
+		if(type == QuestionDef.QTN_TYPE_IMAGE)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_IMAGE;
+		else if(type == QuestionDef.QTN_TYPE_AUDIO)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_AUDIO;
+		else if(type == QuestionDef.QTN_TYPE_VIDEO)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_VIDEO;
+		
+		if(mediatype != null)
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE, mediatype + "/*");
 	}
 
 

@@ -55,7 +55,7 @@ public class XformBuilder {
 		formDef.setXformsNode(xformsNode);
 
 		//Set the xf and xsd prefix values and then add the root node to the document. 
-		xformsNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS, XformConstants.NAMESPACE_XFORMS);
+		xformsNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
 		xformsNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 		doc.appendChild(xformsNode);
 
@@ -84,12 +84,12 @@ public class XformBuilder {
 
 		//Create the instance node and add it to the model node.
 		Element instanceNode =  doc.createElement(XformConstants.NODE_NAME_INSTANCE);
-		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getVariableName());
+		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getBinding());
 		modelNode.appendChild(instanceNode);
 		formDef.setModelNode(modelNode);
 
 		//Create the form data node and add it to the instance node.
-		Element formNode =  doc.createElement(formDef.getVariableName());
+		Element formNode =  doc.createElement(formDef.getBinding());
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, String.valueOf(formDef.getId()));
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));

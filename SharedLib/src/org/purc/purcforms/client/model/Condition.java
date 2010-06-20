@@ -130,7 +130,7 @@ public class Condition implements Serializable{
 			if(qn == null)
 				return false; //possibly question deleted
 
-			if(value.startsWith(formDef.getVariableName()+"/")){
+			if(value.startsWith(formDef.getBinding()+"/")){
 				QuestionDef qn2 = formDef.getQuestion(value.substring(value.indexOf('/')+1));
 				if(qn2 != null){
 					value = qn2.getAnswer();
@@ -553,7 +553,7 @@ public class Condition implements Serializable{
 	 * @return the text value.
 	 */
 	public String getValue(FormDef formDef){	
-		if(value.startsWith(formDef.getVariableName()+"/")){
+		if(value.startsWith(formDef.getBinding()+"/")){
 			QuestionDef qn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
 			if(qn != null)
 				return qn.getAnswer();
@@ -588,7 +588,7 @@ public class Condition implements Serializable{
 	 * @return true if it does, else false.
 	 */
 	public boolean hasQuestion(QuestionDef questionDef, FormDef formDef){
-		if(value.startsWith(formDef.getVariableName()+"/")){
+		if(value.startsWith(formDef.getBinding()+"/")){
 			QuestionDef qtn = formDef.getQuestion(value.substring(value.indexOf('/')+1));
 			if(qtn != null && qtn == questionDef)
 				return true;
@@ -609,7 +609,7 @@ public class Condition implements Serializable{
 	 * @return the question if any is found.
 	 */
 	public QuestionDef getQuestion(FormDef formDef){
-		if(value.startsWith(formDef.getVariableName()+"/"))
+		if(value.startsWith(formDef.getBinding()+"/"))
 			return formDef.getQuestion(value.substring(value.indexOf('/')+1));
 
 		return null;

@@ -207,13 +207,23 @@ public class XformParser {
 		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints,orphanDynOptionQns);
 
 		if(formDef.getName() == null || formDef.getName().length() == 0)
-			formDef.setName(formDef.getVariableName());
+			formDef.setName(formDef.getBinding());
 
 		DefaultValueUtil.setDefaultValues(XformUtil.getInstanceDataNode(doc),formDef,id2VarNameMap); //TODO Very slow needs optimisation for very big forms
 		RelevantParser.addSkipRules(formDef,relevants);
 		ConstraintParser.addValidationRules(formDef,constraints);
 
 		ItemsetParser.parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
+		
+		//Remove all that we had created as questions when parsing bindings but will not require
+		//user input (eg JR's DeviceId, EndTime), since questions are only for cases where we want user input.
+		for(int index = 0; index < formDef.getQuestionCount(); index++){
+			QuestionDef questionDef = formDef.getQuestionAt(index);
+			if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){
+				formDef.removeQuestion(questionDef);
+				index--;
+			}
+		}
 
 		return formDef;
 	}
@@ -266,8 +276,8 @@ public class XformParser {
 			else if (XmlUtil.nodeNameEquals(tagname,"body"))
 				parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 			else if (XmlUtil.nodeNameEquals(tagname,"title")){
-				if(child.getChildNodes().getLength() != 0)
-					formDef.setName(child.getChildNodes().item(0).getNodeValue().trim());
+				if(true /*child.getChildNodes().getLength() != 0*/)
+					formDef.setName(getText(child));
 			}
 			//else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_MODEL_MINUS_PREFIX)){
@@ -293,7 +303,8 @@ public class XformParser {
 			//else if (tagname.equals(NODE_NAME_INPUT) || tagname.equals(NODE_NAME_SELECT1) || tagname.equals(NODE_NAME_SELECT) || tagname.equals(NODE_NAME_REPEAT)
 			//		|| tagname.equals(NODE_NAME_INPUT_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) {
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
-					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
+					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX) ||
+					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)){
 
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);
 				questionDef = parseUiElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns,nodeContext);
@@ -342,8 +353,8 @@ public class XformParser {
 				parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 			//else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_VALUE_MINUS_PREFIX)){
-				if(child.getChildNodes().getLength() != 0){
-					value = child.getChildNodes().item(0).getNodeValue().trim();
+				if(true /*child.getChildNodes().getLength() != 0*/){
+					value = getText(child);
 					valueNode = child;
 				}
 			}
@@ -784,21 +795,22 @@ public class XformParser {
 		//if(parentName.equalsIgnoreCase(NODE_NAME_INPUT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1) || parentName.equalsIgnoreCase(NODE_NAME_ITEM)
 		//		||parentName.equalsIgnoreCase(NODE_NAME_INPUT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_ITEM_MINUS_PREFIX)){
 		if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) ||
-				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_ITEM_MINUS_PREFIX)){
-			if(child.getChildNodes().getLength() != 0){
-				nodeContext.setLabel(child.getChildNodes().item(0).getNodeValue().trim()); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
+				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_ITEM_MINUS_PREFIX) ||
+				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)){
+			if(true /*child.getChildNodes().getLength() != 0*/){
+				nodeContext.setLabel(getText(child)); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 				nodeContext.setLabelNode(child);
 			}
 		}
 		//else if(parentName.equalsIgnoreCase(NODE_NAME_REPEAT)||parentName.equalsIgnoreCase(NODE_NAME_REPEAT_MINUS_PREFIX)){
 		else if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
-			if(questionDef != null && child.getChildNodes().getLength() != 0)
-				questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
+			if(questionDef != null && true /*child.getChildNodes().getLength() != 0*/)
+				questionDef.setText(getText(child));
 		}
 		//else if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
 		else if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
-			if(child.getChildNodes().getLength() != 0){
-				nodeContext.setLabel(child.getChildNodes().item(0).getNodeValue().trim());
+			if(true /*child.getChildNodes().getLength() != 0*/){
+				nodeContext.setLabel(getText(child));
 				nodeContext.setLabelNode(child);
 			}
 		}
@@ -817,16 +829,23 @@ public class XformParser {
 		String parentName = ((Element)child.getParentNode()).getNodeName();
 		//if(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX)){
 		if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
-			if(child.getChildNodes().getLength() != 0){
-				nodeContext.setHint(child.getChildNodes().item(0).getNodeValue().trim());
+			if(true /*child.getChildNodes().getLength() != 0*/){
+				nodeContext.setHint(getText(child));
 				nodeContext.setHintNode(child);
 			}
 		}
 		else if(questionDef != null){
-			if(child.getChildNodes().getLength() != 0){
-				questionDef.setHelpText(child.getChildNodes().item(0).getNodeValue().trim());
+			if(true /*child.getChildNodes().getLength() != 0*/){
+				questionDef.setHelpText(getText(child));
 				questionDef.setHintNode(child /*element*/);
 			}
 		}
+	}
+	
+	
+	private static String getText(Element node){
+		if(node.getChildNodes().getLength() != 0)
+			return node.getChildNodes().item(0).getNodeValue().trim();
+		return node.getAttribute("ref");
 	}
 }

@@ -367,8 +367,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				labelReplaceText.put((Label)widget, "${"+varname+"}$");
 
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
-				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
-					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
+				if(varname.startsWith("/"+ formDef.getBinding()+"/"))
+					varname = varname.substring(("/"+ formDef.getBinding()+"/").length(),varname.length());
 
 				QuestionDef qtnDef = formDef.getQuestion(varname);
 				List<Label> labels = labelMap.get(qtnDef);
@@ -382,15 +382,15 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
 			String xpath = binding;
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + binding;
+			if(!xpath.startsWith(formDef.getBinding()))
+				xpath = "/" + formDef.getBinding() + "/" + binding;
 			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath+"&time="+ new java.util.Date().getTime()));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
 			widget = new HTML();
 			String xpath = binding;
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + binding;
+			if(!xpath.startsWith(formDef.getBinding()))
+				xpath = "/" + formDef.getBinding() + "/" + binding;
 
 			String extension = "";//.3gp ".mpeg";
 			String contentType = "&contentType=video/3gpp";
@@ -693,8 +693,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 					html = (HTML)wrapper.getWrappedWidget();
 
 				String xpath = wrapper.getBinding();
-				if(!xpath.startsWith(formDef.getVariableName()))
-					xpath = "/" + formDef.getVariableName() + "/" + wrapper.getBinding();
+				if(!xpath.startsWith(formDef.getBinding()))
+					xpath = "/" + formDef.getBinding() + "/" + wrapper.getBinding();
 
 				String contentType = "&contentType=video/3gpp";
 				contentType += "&name="+wrapper.getQuestionDef().getBinding()+".3gp";
@@ -956,8 +956,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				widgetWrapper = (RuntimeWidgetWrapper)html.getParent().getParent();
 
 			String xpath = widgetWrapper.getBinding();
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + widgetWrapper.getBinding();
+			if(!xpath.startsWith(formDef.getBinding()))
+				xpath = "/" + formDef.getBinding() + "/" + widgetWrapper.getBinding();
 
 			if(image != null)
 				image.setUrl(FormUtil.getMultimediaUrl()+"?action=recentbinary&time="+ new java.util.Date().getTime()+"&formId="+formDef.getId()+"&xpath="+xpath);

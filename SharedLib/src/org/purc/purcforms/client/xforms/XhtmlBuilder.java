@@ -35,26 +35,26 @@ public class XhtmlBuilder {
 		Document doc = XMLParser.createDocument();
 		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
 
-		Element htmlNode = doc.createElement("html");
+		Element htmlNode = doc.createElement("h:html");
 		//formDef.setXformsNode(htmlNode);
 
-		htmlNode.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS, XformConstants.NAMESPACE_XFORMS);
+		htmlNode.setAttribute("xmlns:h", "http://www.w3.org/1999/xhtml");
+		htmlNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 
 		doc.appendChild(htmlNode);
 
 		//add head
-		Element headNode =  doc.createElement("head");
+		Element headNode =  doc.createElement("h:head");
 		htmlNode.appendChild(headNode);
 
 		//add title
-		Element titleNode =  doc.createElement("title");
+		Element titleNode =  doc.createElement("h:title");
 		titleNode.appendChild(doc.createTextNode(formDef.getName()));
 		headNode.appendChild(titleNode);
 
 		//add body
-		Element bodyNode =  doc.createElement("body");
+		Element bodyNode =  doc.createElement("h:body");
 		htmlNode.appendChild(bodyNode);
 
 		//add model

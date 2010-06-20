@@ -144,7 +144,7 @@ public class QuestionDef implements Serializable{
 
 	/** Question with GPS cordinates. */
 	public static final int QTN_TYPE_GPS = 15;
-	
+
 	/** Question with barcode cordinates. */
 	public static final int QTN_TYPE_BARCODE = 16;
 
@@ -701,10 +701,10 @@ public class QuestionDef implements Serializable{
 
 		if(node != null){
 			String binding = variableName;
-			if(!binding.startsWith("/"+ formDef.getVariableName()+"/") && appendParentBinding){
+			if(!binding.startsWith("/"+ formDef.getBinding()+"/") && appendParentBinding){
 				//if(!binding.contains("/"+ formDef.getVariableName()+"/"))
-				if(!binding.startsWith(formDef.getVariableName()+"/"))
-					binding = "/"+ formDef.getVariableName()+"/" + binding;
+				if(!binding.startsWith(formDef.getBinding()+"/"))
+					binding = "/"+ formDef.getBinding()+"/" + binding;
 				else{
 					variableName = "/" + variableName; //correct user binding syntax error
 					binding = variableName;
@@ -743,6 +743,12 @@ public class QuestionDef implements Serializable{
 					dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_GPS))
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
 
+			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+					dataType == QuestionDef.QTN_TYPE_VIDEO))
+				controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
+			else
+				UiElementBuilder.setMediaType(controlNode, dataType);
+			
 
 			if(dataNode != null)
 				updateDataNode(doc,formDef,orgFormVarName);
@@ -944,7 +950,7 @@ public class QuestionDef implements Serializable{
 		if(name.equals(variableName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
 				return;
-			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getVariableName().equals(dataNode.getParentNode().getNodeName()))
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getBinding().equals(dataNode.getParentNode().getNodeName()))
 				return;
 		}
 
@@ -956,8 +962,9 @@ public class QuestionDef implements Serializable{
 		if(!variableName.contains("/")){
 			xml = xml.replace(name, variableName);
 			Element node = XformUtil.getNode(xml);
+			node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
 			Element parent = (Element)dataNode.getParentNode();
-			if(formDef.getVariableName().equals(parent.getNodeName()))
+			if(formDef.getBinding().equals(parent.getNodeName()))
 				parent.replaceChild(node, dataNode);
 			else
 				parent.replaceChild(node, dataNode);
@@ -970,6 +977,7 @@ public class QuestionDef implements Serializable{
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
 				Element node = XformUtil.getNode(xml);
+				node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
 				Element parent = (Element)dataNode.getParentNode();
 				parent.replaceChild(node, dataNode);
 				dataNode = node;
@@ -986,7 +994,7 @@ public class QuestionDef implements Serializable{
 				Element parent = (Element)dataNode.getParentNode();
 				Element node = (Element)dataNode.cloneNode(true);
 				parentNode.appendChild(node);
-				if(formDef.getVariableName().equals(parent.getNodeName()))
+				if(formDef.getBinding().equals(parent.getNodeName()))
 					parent.replaceChild(parentNode, dataNode);
 				else
 					//if(dataNode.getParentNode().getParentNode() != null)
@@ -1019,7 +1027,7 @@ public class QuestionDef implements Serializable{
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
 			getRepeatQtnsDef().updateDataNodes(dataNode);
 
-		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getVariableName()+"/"+variableName);
+		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getBinding()+"/"+variableName);
 	}
 
 
@@ -1033,45 +1041,68 @@ public class QuestionDef implements Serializable{
 		Element parent = (Element)controlNode.getParentNode();
 		String xml = controlNode.toString();
 		boolean modified = false;
+		
+		String prefix = "";
+		if(name.contains(":"))
+			prefix = name.substring(0,name.indexOf(':')+1);
 
-		if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		else if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
 		else if(name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) &&
 				!name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX)) && 
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX)) &&
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
-						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
+						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC ||
+						isMultiMedia(dataType))){
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_INPUT);
+			modified = true;
+		}
+		else if(!(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
+				(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+						dataType == QuestionDef.QTN_TYPE_VIDEO)){
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_UPLOAD);
+			modified = true;
+		}
+		else if(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) &&
+				!isMultiMedia(dataType)){
+			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
 
 		if(modified){
 			Element child = XformUtil.getNode(xml);
+			child = (Element)controlNode.getOwnerDocument().importNode(child, true);
 			parent.replaceChild(child, controlNode);
 			controlNode =  child;
 			updateControlNodeChildren();
 		}
 	}
 
+	private boolean isMultiMedia(int dataType){
+		return dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+		dataType == QuestionDef.QTN_TYPE_VIDEO;
+	}
 
 	/**
 	 * Updates xforms ui nodes of the child nodes when the name of xforms ui 
@@ -1228,7 +1259,7 @@ public class QuestionDef implements Serializable{
 			getRepeatQtnsDef().refresh(questionDef.getRepeatQtnsDef()); //TODO Finish this
 	}
 
-	
+
 	public int getOptionIndex(String varName){
 		if(options == null)
 			return -1;
@@ -1238,33 +1269,33 @@ public class QuestionDef implements Serializable{
 			if(def.getVariableName().equals(varName))
 				return i;
 		}
-		
+
 		return -1;
 	}
-	
+
 	private void refreshOptions(QuestionDef questionDef){
 		List options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
 			return;
 
 		Vector<OptionDef> orderedOptns = new Vector<OptionDef>();
-		
+
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
 			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
 			if(optionDef == null)
 				continue;
 			optionDef.setText(optn.getText());
-			
+
 			orderedOptns.add(optionDef); //add the option in the order it was before the refresh.
-			
+
 			/*int index1 = this.getOptionIndex(optn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getOptionCount() - 1){
 				((List)this.getOptions()).remove(optionDef);
 				((List)this.getOptions()).set(index, optionDef);
 			}*/
 		}
-		
+
 		//now add the new questions which have just been added by refresh.
 		int count = getOptionCount();
 		for(int index = 0; index < count; index++){
@@ -1272,7 +1303,7 @@ public class QuestionDef implements Serializable{
 			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null)
 				orderedOptns.add(optionDef);
 		}
-		
+
 		options = orderedOptns;
 	}
 

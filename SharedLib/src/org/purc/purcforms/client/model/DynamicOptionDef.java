@@ -222,7 +222,7 @@ public class DynamicOptionDef  implements Serializable{
 				return;
 			
 			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
-				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getBinding()+"')/"+parentQuestionDef.getBinding()+"]");
 
 			
 			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);
@@ -240,8 +240,8 @@ public class DynamicOptionDef  implements Serializable{
 			
 			//update the nodeset form instance id
 			instanceId = ItemsetUtil.getFormInstanceId(nodeset);
-			if(!(instanceId == null || instanceId.equals(formDef.getVariableName()))){
-				nodeset = nodeset.replace("'"+instanceId+"'", "'"+formDef.getVariableName()+"'");
+			if(!(instanceId == null || instanceId.equals(formDef.getBinding()))){
+				nodeset = nodeset.replace("'"+instanceId+"'", "'"+formDef.getBinding()+"'");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 			

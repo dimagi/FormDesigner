@@ -27,7 +27,7 @@ public class SqlBuilder {
 		if(formDef == null || filterConditionGroup == null)
 			return null;
 
-		String sql = "SELECT " + getSelectList(displayFields) + " \r\nFROM " + formDef.getVariableName();
+		String sql = "SELECT " + getSelectList(displayFields) + " \r\nFROM " + formDef.getBinding();
 
 		String filter = "";
 		if(filterConditionGroup.getConditionCount() > 0)

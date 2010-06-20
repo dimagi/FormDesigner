@@ -149,7 +149,7 @@ public class ConstraintParser {
 			condition.setValue(value);
 
 			//This is just for the designer
-			if(value.startsWith(formDef.getVariableName() + "/"))
+			if(value.startsWith(formDef.getBinding() + "/"))
 				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
 
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)

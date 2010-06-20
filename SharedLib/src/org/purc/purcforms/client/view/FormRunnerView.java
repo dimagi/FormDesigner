@@ -545,8 +545,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				labelReplaceText.put((Label)widget, "${"+varname+"}$");
 
 				((Label)widget).setText(text.replace("${"+varname+"}$", ""));
-				if(varname.startsWith("/"+ formDef.getVariableName()+"/"))
-					varname = varname.substring(("/"+ formDef.getVariableName()+"/").length(),varname.length());
+				if(varname.startsWith("/"+ formDef.getBinding()+"/"))
+					varname = varname.substring(("/"+ formDef.getBinding()+"/").length(),varname.length());
 
 				QuestionDef qtnDef = formDef.getQuestion(varname);
 				List<Label> labels = labelMap.get(qtnDef);
@@ -580,8 +580,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			widget = new Image();
 			String xpath = binding;
-			if(!xpath.startsWith(formDef.getVariableName()))
-				xpath = "/" + formDef.getVariableName() + "/" + binding;
+			if(!xpath.startsWith(formDef.getBinding()))
+				xpath = "/" + formDef.getBinding() + "/" + binding;
 			((Image)widget).setUrl(URL.encode(FormUtil.getMultimediaUrl()+"?formId="+formDef.getId()+"&xpath="+xpath));
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) && questionDef != null){
@@ -590,8 +590,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 				widget = new HTML();
 				if(binding != null && binding.trim().length() > 0){
 					String xpath = binding;
-					if(!xpath.startsWith(formDef.getVariableName()))
-						xpath = "/" + formDef.getVariableName() + "/" + binding;
+					if(!xpath.startsWith(formDef.getBinding()))
+						xpath = "/" + formDef.getBinding() + "/" + binding;
 
 					String extension = "";//.3gp ".mpeg";
 					String contentType = "&contentType=video/3gpp";
@@ -1584,7 +1584,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	public static HashMap<QuestionDef,List<QuestionDef>> getCalcQtnMappings(FormDef formDef){
 		HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings = new HashMap<QuestionDef,List<QuestionDef>>();
 
-		String qtnBinding, formBinding = "/" + formDef.getVariableName() + "/";
+		String qtnBinding, formBinding = "/" + formDef.getBinding() + "/";
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
 			String expression = calculation.getCalculateExpression();
@@ -1646,7 +1646,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		String expression = calcExpression;
 
-		String qtnBinding, formBinding = "/" + formDef.getVariableName() + "/";
+		String qtnBinding, formBinding = "/" + formDef.getBinding() + "/";
 
 		int pos = expression.indexOf(formBinding);
 		while(pos > -1){

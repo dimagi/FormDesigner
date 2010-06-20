@@ -21,7 +21,6 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -69,6 +68,7 @@ public class FormUtil {
 	private static String multimediaUrlSuffix;
 	private static String fileOpenUrlSuffix;
 	private static String fileSaveUrlSuffix;
+	private static String gpsTypeName;
 
 
 	/** 
@@ -410,6 +410,10 @@ public class FormUtil {
 		/*s = getDivValue("showLanguageTab");
 		if("1".equals(s) || "true".equals(s))
 			showLanguageTab = true;*/
+		
+		gpsTypeName = getDivValue("gpsTypeName");
+		if(gpsTypeName == null || gpsTypeName.trim().length() == 0)
+			gpsTypeName = XformConstants.DATA_TYPE_TEXT;
 	}
 
 	public static String getDivValue(String id){
@@ -540,6 +544,10 @@ public class FormUtil {
 	/*public static boolean getShowLanguageTab(){
 		return showLanguageTab;
 	}*/
+	
+	public static String getGpsTypeName(){
+		return gpsTypeName;
+	}
 
 	public static String getHostPageBaseURL(){
 		//return "http://127.0.0.1:8080/openmrs/";

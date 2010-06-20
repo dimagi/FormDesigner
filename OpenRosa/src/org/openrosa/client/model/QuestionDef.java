@@ -150,8 +150,11 @@ public class QuestionDef implements IFormElement, Serializable{
 	/** Question with GPS cordinates. */
 	public static final int QTN_TYPE_GPS = 15;
 	
-	/** Question with GPS cordinates. */
-	public static final int QTN_TYPE_GROUP = 16;
+	/** Question with barcode cordinates. */
+	public static final int QTN_TYPE_BARCODE = 16;
+	
+	/** Question which is a group. */
+	public static final int QTN_TYPE_GROUP = 17;
 
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;

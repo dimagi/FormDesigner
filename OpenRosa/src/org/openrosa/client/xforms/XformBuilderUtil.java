@@ -71,6 +71,8 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_VIDEO:
 		case QuestionDef.QTN_TYPE_AUDIO:
 			return XformConstants.DATA_TYPE_BINARY;
+		case QuestionDef.QTN_TYPE_BARCODE:
+			return XformConstants.DATA_TYPE_BARCODE;
 		}
 
 		return "";

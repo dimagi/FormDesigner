@@ -104,8 +104,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** List box index for gps data type. */
 	private static final byte DT_INDEX_GPS = 14;
 	
+	/** List box index for barcode data type. */
+	private static final byte DT_INDEX_BARCODE = 15;
+	
 	/** List box index for group data type. */
-	private static final byte DT_INDEX_GROUP = 15;
+	private static final byte DT_INDEX_GROUP = 16;
 
 	/** Table used for organizing widgets in a table format. */
 	private FlexTable table = new FlexTable();
@@ -273,6 +276,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeAudio"));
 		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
+		cbDataType.addItem(LocaleText.get("qtnTypeBarcode"));
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
@@ -896,6 +900,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_INDEX_GPS:
 			dataType = QuestionDef.QTN_TYPE_GPS;
 			break;
+		case DT_INDEX_BARCODE:
+			dataType = QuestionDef.QTN_TYPE_BARCODE;
+			break;
 		case DT_INDEX_GROUP:
 			dataType = QuestionDef.QTN_TYPE_GROUP;
 			break;
@@ -1129,6 +1136,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_GPS:
 			index = DT_INDEX_GPS;
+			break;
+		case QuestionDef.QTN_TYPE_BARCODE:
+			index = DT_INDEX_BARCODE;
 			break;
 		case QuestionDef.QTN_TYPE_GROUP:
 				index = DT_INDEX_GROUP;

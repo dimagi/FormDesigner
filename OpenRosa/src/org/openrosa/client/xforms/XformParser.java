@@ -290,7 +290,7 @@ public class XformParser {
 			//else if (tagname.equals(NODE_NAME_MODEL) || tagname.equals(NODE_NAME_MODEL_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_MODEL_MINUS_PREFIX)){
 				formDef.setModelNode((Element)child);
-				formDef.setXformsNode((Element)child.getParentNode());
+				formDef.setXformsNode(child.getOwnerDocument().getDocumentElement() /*child.getParentNode()*/);
 				parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 			}
 			//else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){

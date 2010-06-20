@@ -128,7 +128,9 @@ public class ItextBuilder {
 					
 					//xpath = FormUtil.getNodePath(formDef.getPageAt(0).getGroupNode());
 					
-					NodeList titles = doc.getElementsByTagName("title");
+					NodeList titles = doc.getElementsByTagName("h:title");
+					if(titles == null || titles.getLength() == 0)
+						titles = doc.getElementsByTagName("title");
 					if(titles != null && titles.getLength() > 0){
 						xpath = FormUtil.getNodePath(titles.item(0));
 						((Element)titles.item(0)).setAttribute("ref", "jr:itext('" + id + "')");
@@ -151,6 +153,9 @@ public class ItextBuilder {
 				itextModel.set(localeKey, value);
 				list.add(itextModel);*/
 
+				if(id == null || id.trim().length() == 0)
+					continue;
+				
 				//Skip the steps below if we have already processed this itext id.
 				if(duplicatesMap.containsKey(id))
 					continue;

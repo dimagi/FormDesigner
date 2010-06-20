@@ -78,13 +78,13 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    panel = new ContentPanel();  
 	    panel.setCollapsible(false);  
 	    panel.setFrame(true);  
-	    panel.setHeading("Purc Form Designer");  
+	    panel.setHeading("OpenRosa Form Designer");  
 	    BorderLayout layout = new BorderLayout();
 	    panel.setLayout(layout); 
 	    panel.setBorders(false);
 	    
 		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller,fileListener,this);
-		Context.addLocaleListChangeListener(toolbar);
+		//Context.addLocaleListChangeListener(toolbar);
 		panel.setTopComponent(toolbar.getToolBar());
 	    
 	    BorderLayoutData leftData = new BorderLayoutData(LayoutRegion.WEST,300);  

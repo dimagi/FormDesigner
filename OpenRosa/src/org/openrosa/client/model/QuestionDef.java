@@ -1458,7 +1458,11 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH, xpath + "/" + FormUtil.getNodeName(hintNode));
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, helpText);
 			parentLangNode.appendChild(node);
-			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId + "hint");
+			
+			String id = ItextParser.getItextId(hintNode);
+			if(id == null)
+				id =  itextId + "hint";
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDefHint"+id);
 		}
 

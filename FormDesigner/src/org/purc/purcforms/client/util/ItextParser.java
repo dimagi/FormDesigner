@@ -1,7 +1,11 @@
 package org.purc.purcforms.client.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.purc.purcforms.client.Context;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
@@ -41,20 +45,33 @@ public class ItextParser {
 		if(nodes == null || nodes.getLength() == 0)
 			return doc;
 
-		HashMap<String,String> defaultText = new HashMap<String,String>(); //Map of default id and itext (for multiple values of the itext node) for the default language.
+		List<Locale> locales = new ArrayList<Locale>(); //New list of locales as it comes form the parsed xform.
+		HashMap<String,String> defaultText = null; //Map of default id and itext (for multiple values of the itext node) for the default language.
 
 		//Map of each locale key and map of its id and itext translations.
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element translationNode = (Element)nodes.item(index);
-			fillItextMap(translationNode,defaultText);
-			if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0)
-				break;
+			String lang = translationNode.getAttribute("lang");
+			
+			HashMap<String, String> defText = new HashMap<String,String>();
+			fillItextMap(translationNode,defText);
+			
+			if( ((Element)nodes.item(index)).getAttribute("default") != null || index == 0){
+				defaultText = defText;
+				Context.setLocale(new Locale(lang,lang));
+				Context.setDefaultLocale(Context.getLocale());
+			}
+			
+			//create a new locale object for the current translation.
+			locales.add(new Locale(lang,lang));
 		}
 
 		tranlateNodes("label", doc, defaultText); //getKey()??????
 		tranlateNodes("hint", doc, defaultText); //getKey()??????
 		tranlateNodes("title", doc, defaultText); //getKey()??????
 
+		Context.setLocales(locales);
+		
 		return doc;
 	}
 	
@@ -145,6 +162,26 @@ public class ItextParser {
 			//If the text node does not already exist, add it, else just update itx text.
 			if(!XmlUtil.setTextNodeValue(node, text))
 				node.appendChild(doc.createTextNode(text));
+			
+			
+			
+			//............................................................................
+			//Skip the steps below if we have already processed this itext id.
+			if(duplicatesMap.containsKey(id))
+				continue;
+			else
+				duplicatesMap.put(id, id);
+
+			Element parentNode = (Element)node.getParentNode();
+			String idname = "bind";
+			String ref = parentNode.getAttribute("ref");
+			if(ref != null)
+				idname = "ref";
+			else
+				ref = parentNode.getAttribute("bind");
+			
+			System.out.println(FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + id + "']" + "/" + name);
+		    //..........................................................................
 		}
 	}
 	

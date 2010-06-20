@@ -1,7 +1,7 @@
 package org.openrosa.client.widget;
 
 import org.openrosa.client.model.FormDef;
-import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -70,8 +70,10 @@ public class DescTemplateWidget extends Composite{
 		
 		oracle.clear();
 
-		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle,false);
+		//for(int i=0; i<formDef.getPageCount(); i++)
+		//	FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),null,oracle,false);
+		
+		FormDesignerUtil.loadQuestions(formDef.getChildren(),null,oracle,false);
 
 		setupPopup();
 	}
@@ -99,10 +101,10 @@ public class DescTemplateWidget extends Composite{
 		fieldHyperlink.setText(val);
 		horizontalPanel.remove(sgstField);
 		horizontalPanel.add(fieldHyperlink);
-		QuestionDef qtn = formDef.getQuestionWithText(sgstField.getText());
+		IFormElement qtn = formDef.getQuestionWithText(sgstField.getText());
 		if(qtn != null){
 			fieldHyperlink.setText(LocaleText.get("addField"));
-			itemSelectionListener.onItemSelected(this,"/"+formDef.getVariableName()+"/"+qtn.getVariableName());
+			itemSelectionListener.onItemSelected(this,"/"+formDef.getVariableName()+"/"+qtn.getBinding());
 		}
 	}
 

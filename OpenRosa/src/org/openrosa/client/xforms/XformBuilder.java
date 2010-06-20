@@ -10,7 +10,8 @@ import java.util.Map.Entry;
 import org.openrosa.client.model.Calculation;
 import org.openrosa.client.model.DynamicOptionDef;
 import org.openrosa.client.model.FormDef;
-import org.openrosa.client.model.PageDef;
+import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
@@ -57,7 +58,7 @@ public class XformBuilder {
 		formDef.setXformsNode(xformsNode);
 
 		//Set the xf and xsd prefix values and then add the root node to the document. 
-		xformsNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS, XformConstants.NAMESPACE_XFORMS);
+		xformsNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
 		xformsNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 		doc.appendChild(xformsNode);
 
@@ -102,13 +103,16 @@ public class XformBuilder {
 			formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, formDef.getDescriptionTemplate());
 
 		//Check if we have any pages.
-		if(formDef.getPages() == null)
+		if(formDef.getChildren() == null)
 			return;
 
 		//Build the ui nodes for all questions in each page.
-		for(int pageNo=0; pageNo<formDef.getPages().size(); pageNo++){
-			PageDef pageDef = (PageDef)formDef.getPages().elementAt(pageNo);
-			fromPageDef2Xform(pageDef,doc,parentNode,formDef,formNode,modelNode);
+		for(int pageNo=0; pageNo<formDef.getChildCount(); pageNo++){
+			IFormElement element = formDef.getChildAt(pageNo);
+			if(element instanceof GroupDef)
+				fromPageDef2Xform((GroupDef)element,doc,parentNode,formDef,formNode,modelNode);
+			else
+				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,parentNode,formDef,formNode,modelNode,parentNode);
 		}
 
 		//Build relevant s for the skip rules.
@@ -169,7 +173,7 @@ public class XformBuilder {
 	 * @param formNode the xforms instance data node.
 	 * @param modelNode the xforms model node.
 	 */
-	public static void fromPageDef2Xform(PageDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
+	public static void fromPageDef2Xform(GroupDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
 
 		//Create a group node
 		Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
@@ -181,17 +185,20 @@ public class XformBuilder {
 		pageDef.setGroupNode(groupNode);
 
 		//Set the identifier of the group node to be used for localisation.
-		groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getPageNo()+"");
+		groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getText()+"");
 		
 		//Check if we have any questions in this page.
-		Vector questions = pageDef.getQuestions();
+		List<IFormElement> questions = pageDef.getChildren();
 		if(questions == null)
 			return;
 
 		//Create ui nodes for each question.
 		for(int i=0; i<questions.size(); i++){
-			QuestionDef qtn = (QuestionDef)questions.elementAt(i);
-			UiElementBuilder.fromQuestionDef2Xform(qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+			IFormElement qtn = questions.get(i);
+			if(qtn instanceof QuestionDef)
+				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+			else
+				fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
 		}
 	}
 }

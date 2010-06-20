@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -141,11 +142,11 @@ public class RelevantParser {
 			return null;
 
 		String varName = relevant.substring(0, pos);
-		QuestionDef questionDef = formDef.getQuestion(varName.trim());
+		IFormElement questionDef = formDef.getElement(varName.trim());
 		if(questionDef == null){
 			String prefix = "/" + formDef.getVariableName() + "/";
 			if(varName.startsWith(prefix))
-				questionDef = formDef.getQuestion(varName.trim().substring(prefix.length(), varName.trim().length()));
+				questionDef = formDef.getElement(varName.trim().substring(prefix.length(), varName.trim().length()));
 			if(questionDef == null)
 				return null;
 		}
@@ -173,7 +174,7 @@ public class RelevantParser {
 
 			//This is just for the designer
 			if(value.startsWith(formDef.getVariableName() + "/"))
-				condition.setValueQtnDef(formDef.getQuestion(value.substring(value.indexOf('/')+1)));
+				condition.setValueQtnDef((QuestionDef)formDef.getElement(value.substring(value.indexOf('/')+1)));
 
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
 				return null; //no operator set hence making the condition invalid

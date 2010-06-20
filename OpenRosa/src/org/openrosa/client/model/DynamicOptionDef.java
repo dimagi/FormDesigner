@@ -222,19 +222,19 @@ public class DynamicOptionDef  implements Serializable{
 				return;
 			
 			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
-				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
 
 			
 			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);
-			if(!(instanceId == null || instanceId.equals(questionDef.getVariableName()))){
-				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getVariableName()+"'");
+			if(!(instanceId == null || instanceId.equals(questionDef.getBinding()))){
+				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getBinding()+"'");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 
 			//Update the nodeset parent instance id
 			instanceId = ItemsetUtil.getParentQuestionBindId(nodeset);
-			if(!(instanceId == null || instanceId.equals(parentQuestionDef.getVariableName()))){
-				nodeset = nodeset.replace("')/"+instanceId+"]", "')/"+parentQuestionDef.getVariableName()+"]");
+			if(!(instanceId == null || instanceId.equals(parentQuestionDef.getBinding()))){
+				nodeset = nodeset.replace("')/"+instanceId+"]", "')/"+parentQuestionDef.getBinding()+"]");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 			}
 			
@@ -247,7 +247,7 @@ public class DynamicOptionDef  implements Serializable{
 			
 			//Update the instance id
 			if(dataNode.getParentNode() != null)
-				((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+				((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getBinding());
 		
 			ItemsetBuilder.updateDynamicOptionDef(formDef, parentQuestionDef, this);
 		}
@@ -328,7 +328,7 @@ public class DynamicOptionDef  implements Serializable{
 		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
-			if(optionDef.getVariableName().equals(value))
+			if(optionDef.getBinding().equals(value))
 				return optionDef;
 		}
 		return null;
@@ -393,7 +393,7 @@ public class DynamicOptionDef  implements Serializable{
 		String xpath = FormUtil.getNodePath(dataNode.getParentNode());
 		String id = ((Element)dataNode.getParentNode()).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
-			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + questionDef.getVariableName() + "']";
+			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + questionDef.getBinding() + "']";
 		
 		xpath += "/" + FormUtil.getNodeName(dataNode);
 		
@@ -429,7 +429,7 @@ public class DynamicOptionDef  implements Serializable{
 			if(optionDef == null)
 				continue; //how can this be????.
 			
-			optionDef = newParentQtnDef.getOptionWithValue(optionDef.getVariableName());
+			optionDef = newParentQtnDef.getOptionWithValue(optionDef.getBinding());
 			if(optionDef == null)
 				continue; //possibly option deleted.
 			
@@ -445,7 +445,7 @@ public class DynamicOptionDef  implements Serializable{
 		for(int index = 0; index < list.size(); index++){
 			OptionDef oldOptionDef = list.get(index);
 			
-			OptionDef newOptionDef = newParentQtnDef.getOptionWithValue(oldOptionDef.getVariableName());
+			OptionDef newOptionDef = newParentQtnDef.getOptionWithValue(oldOptionDef.getBinding());
 			if(newOptionDef == null){
 				//We do not want to lose options we had created before refresh.
 				//The user should manually delete them after a refresh, if they don't want them.

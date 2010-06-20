@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrosa.client.model.FormDef;
-import org.openrosa.client.model.PageDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.purc.purcforms.client.PurcConstants;
@@ -115,8 +115,10 @@ public class SkipQtnsDialog  extends DialogBox {
 		lbAllQtns.clear();
 		lbSelQtns.clear();
 		
-		for(int index = 0; index < formDef.getPageCount(); index++)
-			loadPageQnts(formDef.getPageAt(index),questionDef,skipRule);
+		//for(int index = 0; index < formDef.getPageCount(); index++)
+		//	loadPageQnts(formDef.getPageAt(index),questionDef,skipRule);
+		
+		loadPageQnts(formDef.getChildren(), questionDef,skipRule);
 		
 		if(skipRule != null && skipRule.getActionTargets() != null)
 			loadSelQuestions(formDef, questionDef, skipRule.getActionTargets());
@@ -141,7 +143,7 @@ public class SkipQtnsDialog  extends DialogBox {
 			if(qtnDef == questionDef)
 				continue;
 			
-			lbSelQtns.addItem(qtnDef.getDisplayText(), qtnDef.getVariableName());
+			lbSelQtns.addItem(qtnDef.getDisplayText(), qtnDef.getBinding());
 		}
 	}
 	
@@ -153,16 +155,16 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * @param questionDef the question definition object.
 	 * @param skipRule the current skip rule.
 	 */
-	private void loadPageQnts(PageDef pageDef,QuestionDef questionDef, SkipRule skipRule){
-		for(int index = 0; index < pageDef.getQuestionCount(); index++){
-			QuestionDef qtnDef = pageDef.getQuestionAt(index);
+	private void loadPageQnts(List<IFormElement> elements, QuestionDef questionDef, SkipRule skipRule){
+		for(int index = 0; index < elements.size(); index++){
+			IFormElement qtnDef = elements.get(index);
 			if(qtnDef == questionDef)
 				continue;
 			
 			if(skipRule != null && skipRule.containsActionTarget(qtnDef.getId()))
 				continue;
 			
-			lbAllQtns.addItem(qtnDef.getDisplayText(), qtnDef.getVariableName());
+			lbAllQtns.addItem(qtnDef.getDisplayText(), qtnDef.getBinding());
 		}
 	}
 	

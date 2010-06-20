@@ -250,7 +250,7 @@ public class XformParserUtil {
 		Iterator keys = constraints.keySet().iterator();
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
-			if(qtn.getVariableName().equals(questionDef.getVariableName())){
+			if(qtn.getBinding().equals(questionDef.getBinding())){
 				String constraint = (String)constraints.get(qtn);
 				if(constraint != null){
 					constraints.remove(qtn);

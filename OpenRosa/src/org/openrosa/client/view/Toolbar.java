@@ -3,7 +3,9 @@ package org.openrosa.client.view;
 import java.util.List;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.controller.IDataTypeChangeListener;
 import org.openrosa.client.controller.IFileListener;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.controller.IFormDesignerListener;
@@ -42,7 +44,7 @@ import com.google.gwt.user.client.ui.ListBox;
  * @author adewinter
  *
  */
-public class Toolbar extends Composite implements ILocaleListChangeListener{
+public class Toolbar extends Composite implements ILocaleListChangeListener, IDataTypeChangeListener{
 
 	/**
 	 * Tool bar images.
@@ -103,7 +105,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, grpBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bcut,bcopy,bpaste;
@@ -125,7 +127,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
-			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question"};
+			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question"};
 
 	ListBox cbLocales = new ListBox(false);
 
@@ -142,6 +144,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		this.controller = controller;
 		setupToolbar(fileListener);
 		setupClickListeners();
+		
+		Context.getEventBus().addDataTypeChangeListener(this);
 //		initWidget(toolBar);
 	}
 	
@@ -287,6 +291,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    gpsBut.setScale(ButtonScale.LARGE);
 	    gpsBut.setIconAlign(IconAlign.LEFT);
 	    gpsBut.addStyleName("myMenuButton");
+	    grpBut = new Button(buttonLabels[20]);
+	    grpBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    grpBut.setScale(ButtonScale.LARGE);
+	    grpBut.setIconAlign(IconAlign.LEFT);
+	    grpBut.addStyleName("myMenuButton");
 
 	    menu.add(txtBut);  
 	    menu.add(intBut);  
@@ -300,6 +309,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	    menu.add(vidBut);
 	    menu.add(audBut);
 	    menu.add(gpsBut);
+	    menu.add(grpBut);
 	    
 	    splitItem.setMenu(menu);  
 	    group.addButton(splitItem);
@@ -412,17 +422,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 				@Override
 				public void onFormItemSelected(Object formItem) {
 					// TODO Auto-generated method stub
-					if(formItem instanceof QuestionDef &&
-							((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
-							 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
-							 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)))
-					{	
-						addSelect.enable();
-					}else if(formItem instanceof OptionDef){
-						addSelect.enable();
-					}else{
-						addSelect.disable();
-					}
+					checkEnableAddSelect(formItem);
 					
 				}
 		});
@@ -500,7 +500,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 			splitItem.hideMenu();
 		}
 	});
-//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut
+//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut,grpBut
 	timeBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
 			controller.addNewQuestion(QuestionDef.QTN_TYPE_TIME);
@@ -546,6 +546,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 			controller.addNewQuestion(QuestionDef.QTN_TYPE_GPS);
 			splitItem.setText(gpsBut.getText());
 			splitItem.setIcon(gpsBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	grpBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_GROUP);
+			splitItem.setText(grpBut.getText());
+			splitItem.setIcon(grpBut.getIcon());
 			splitItem.hideMenu();
 		}
 	});
@@ -760,5 +768,24 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 	
 	public void onLocaleListChanged(){
 		populateLocales();
+	}
+	
+	public void checkEnableAddSelect(Object formItem){
+		if(formItem instanceof QuestionDef &&
+				((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
+				 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
+				 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)))
+		{	
+			addSelect.enable();
+		}else if(formItem instanceof OptionDef){
+			addSelect.enable();
+		}else{
+			addSelect.disable();
+		}
+	}
+
+	@Override
+	public void onDataTypeChanged(IFormElement element, int prevDataType) {
+		checkEnableAddSelect(element);
 	}
 }

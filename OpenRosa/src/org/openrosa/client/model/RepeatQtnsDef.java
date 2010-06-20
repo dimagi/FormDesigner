@@ -15,7 +15,7 @@ import com.google.gwt.xml.client.Element;
  * @author daniel
  *
  */
-public class RepeatQtnsDef implements IFormElement, Serializable {
+public class RepeatQtnsDef extends GroupDef implements Serializable {
 	
 	/** A list of questions (QuestionDef objects) on a repeat questions row. */
 	private Vector questions;
@@ -132,13 +132,13 @@ public class RepeatQtnsDef implements IFormElement, Serializable {
 			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),qtnDef));
 	}
 	
-	public void moveQuestionUp(QuestionDef questionDef){		
+	/*public void moveQuestionUp(QuestionDef questionDef){		
 		PageDef.moveQuestionUp(questions, questionDef);
 	}
 	
 	public void moveQuestionDown(QuestionDef questionDef){		
 		PageDef.moveQuestionDown(questions, questionDef);
-	}
+	}*/
 	
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode, boolean withData, String orgFormVarName){
 		if(questions == null)
@@ -162,7 +162,7 @@ public class RepeatQtnsDef implements IFormElement, Serializable {
 		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef def = (QuestionDef)questions.elementAt(i);
-			if(def.getVariableName().equals(varName))
+			if(def.getBinding().equals(varName))
 				return def;
 		}
 		
@@ -190,7 +190,7 @@ public class RepeatQtnsDef implements IFormElement, Serializable {
 		
 		for(int index = 0; index < questions2.size(); index++){
 			QuestionDef qtn = (QuestionDef)questions2.get(index);
-			QuestionDef questionDef = getQuestion(qtn.getVariableName());
+			QuestionDef questionDef = getQuestion(qtn.getBinding());
 			if(questionDef != null){
 				questionDef.refresh(qtn);
 				orderedQtns.add(questionDef); //add the question in the order it was before the refresh.
@@ -201,7 +201,7 @@ public class RepeatQtnsDef implements IFormElement, Serializable {
 		int count = questions.size();
 		for(int index = 0; index < count; index++){
 			QuestionDef questionDef = getQuestionAt(index);
-			if(pepeatQtnsDef.getQuestion(questionDef.getVariableName()) == null)
+			if(pepeatQtnsDef.getQuestion(questionDef.getBinding()) == null)
 				orderedQtns.add(questionDef);
 		}
 		
@@ -252,7 +252,7 @@ public class RepeatQtnsDef implements IFormElement, Serializable {
 	}
 	
 	public String getBinding(){
-		return qtnDef.getVariableName();
+		return qtnDef.getBinding();
 	}
 	
 	public void setBinding(String binding){

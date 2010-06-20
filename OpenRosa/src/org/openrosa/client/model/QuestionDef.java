@@ -99,6 +99,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * a form with more than 127 questions for a mobile device (It would be too big).
 	 */
 	private int id = ModelConstants.NULL_ID;
+	
+	public static final int QTN_TYPE_NULL = 0;
 
 	/** Text question type. */
 	public static final int QTN_TYPE_TEXT = 1;
@@ -147,6 +149,9 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	/** Question with GPS cordinates. */
 	public static final int QTN_TYPE_GPS = 15;
+	
+	/** Question with GPS cordinates. */
+	public static final int QTN_TYPE_GROUP = 16;
 
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;
@@ -175,18 +180,18 @@ public class QuestionDef implements IFormElement, Serializable{
 	/** The parent object for this question. It could be a page or
 	 * just another question as for repeat question kids. 
 	 */
-	private Object parent;
+	private IFormElement parent;
 
 	private String itextId;
 
 
 	/** This constructor is used mainly during deserialization. */
-	public QuestionDef(Object parent){
+	public QuestionDef(IFormElement parent){
 		this.parent = parent;
 	}
 
 	/** The copy constructor. */
-	public QuestionDef(QuestionDef questionDef, Object parent){
+	public QuestionDef(QuestionDef questionDef, IFormElement parent){
 		this(parent);
 		setId(questionDef.getId());
 		setText(questionDef.getText());
@@ -197,7 +202,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		setEnabled(questionDef.isEnabled());
 		setLocked(questionDef.isLocked());
 		setRequired(questionDef.isRequired());
-		setVariableName(questionDef.getVariableName());
+		setVariableName(questionDef.getBinding());
 
 		if(getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			copyQuestionOptions(questionDef.getOptions());
@@ -205,7 +210,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			this.options = new RepeatQtnsDef(questionDef.getRepeatQtnsDef());
 	}
 
-	public QuestionDef(int id,String text,  int type, String variableName,Object parent) {
+	public QuestionDef(int id,String text,  int type, String variableName, IFormElement parent) {
 		this(parent);
 		setId(id);
 		setText(text);
@@ -230,7 +235,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * @param variableName
 	 * @param options
 	 */
-	public QuestionDef(int id,String text, String helpText, boolean mandatory, int type, String defaultValue, boolean visible, boolean enabled, boolean locked, String variableName, Object options,Object parent) {
+	public QuestionDef(int id,String text, String helpText, boolean mandatory, int type, String defaultValue, boolean visible, boolean enabled, boolean locked, String variableName, Object options,IFormElement parent) {
 		this(parent);
 		setId(id);
 		setText(text);
@@ -413,7 +418,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 	}
 
-	public String getVariableName() {
+	public String getBinding() {
 		return variableName;
 	}
 
@@ -428,11 +433,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 	}
 
-	public Object getParent() {
+	public IFormElement getParent() {
 		return parent;
 	}
 
-	public void setParent(Object parent) {
+	public void setParent(IFormElement parent) {
 		this.parent = parent;
 	}
 
@@ -763,6 +768,12 @@ public class QuestionDef implements IFormElement, Serializable{
 
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
 			}
+			
+			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+					dataType == QuestionDef.QTN_TYPE_VIDEO))
+				controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
+			else
+				UiElementBuilder.setMediaType(controlNode, dataType);
 
 
 			if(dataNode != null)
@@ -977,6 +988,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(!variableName.contains("/")){
 			xml = xml.replace(name, variableName);
 			Element node = XformUtil.getNode(xml);
+			node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
 			Element parent = (Element)dataNode.getParentNode();
 			if(formDef.getVariableName().equals(parent.getNodeName()))
 				parent.replaceChild(node, dataNode);
@@ -991,6 +1003,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
 				Element node = XformUtil.getNode(xml);
+				node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
 				Element parent = (Element)dataNode.getParentNode();
 				parent.replaceChild(node, dataNode);
 				dataNode = node;
@@ -1055,12 +1068,18 @@ public class QuestionDef implements IFormElement, Serializable{
 		String xml = controlNode.toString();
 		boolean modified = false;
 
-		if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		//TODO We need to use the prefix, if any, on node names.
+		if(name.contains(":"))
+			XformConstants.PREFIX_XFORMS_AND_COLON = name.substring(0,name.indexOf(':')+1);
+		
+		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
-		else if(name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) &&
+		else if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
@@ -1080,17 +1099,35 @@ public class QuestionDef implements IFormElement, Serializable{
 				name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX)) &&
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
-						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
+						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC ||
+						isMultiMedia(dataType))){
+			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
+			modified = true;
+		}
+		else if(!(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
+				(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+						dataType == QuestionDef.QTN_TYPE_VIDEO)){
+			xml = xml.replace(name, XformConstants.NODE_NAME_UPLOAD);
+			modified = true;
+		}
+		else if(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) &&
+				!isMultiMedia(dataType)){
 			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
 
 		if(modified){
 			Element child = XformUtil.getNode(xml);
+			child = (Element)controlNode.getOwnerDocument().importNode(child, true);
 			parent.replaceChild(child, controlNode);
 			controlNode =  child;
 			updateControlNodeChildren();
 		}
+	}
+	
+	private boolean isMultiMedia(int dataType){
+		return dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+				dataType == QuestionDef.QTN_TYPE_VIDEO;
 	}
 
 
@@ -1205,7 +1242,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
-			if(optionDef.getVariableName().equals(value))
+			if(optionDef.getBinding().equals(value))
 				return optionDef;
 		}
 		return null;
@@ -1256,7 +1293,7 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		for(int i=0; i<getOptions().size(); i++){
 			OptionDef def = (OptionDef)getOptions().get(i);
-			if(def.getVariableName().equals(varName))
+			if(def.getBinding().equals(varName))
 				return i;
 		}
 
@@ -1272,7 +1309,7 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
-			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
+			OptionDef optionDef = this.getOptionWithValue(optn.getBinding());
 			if(optionDef == null)
 				continue;
 			optionDef.setText(optn.getText());
@@ -1290,7 +1327,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		int count = getOptionCount();
 		for(int index = 0; index < count; index++){
 			OptionDef optionDef = getOptionAt(index);
-			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null)
+			if(questionDef.getOptionWithValue(optionDef.getBinding()) == null)
 				orderedOptns.add(optionDef);
 		}
 
@@ -1383,7 +1420,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(controlNode == null)
 			return;
 
-		String xpath = parentXpath + FormUtil.getNodePath(controlNode,parentXformNode);
+		String xpath = parentXpath + "/" + FormUtil.getNodePath(controlNode,parentXformNode);
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT){
 			Element parent = (Element)controlNode.getParentNode();
@@ -1440,16 +1477,14 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * @return the form.
 	 */
 	public FormDef getParentFormDef(){
-		return getParentFormDef(this);
+		return (FormDef)getParentFormDef(this);
 	}
 
-	private FormDef getParentFormDef(QuestionDef questionDef){
-		Object parent = questionDef.getParent();
-		if(parent instanceof PageDef)
-			return ((PageDef)parent).getParent();
-		else if(parent instanceof QuestionDef)
-			return getParentFormDef((QuestionDef)parent);
-		return null;
+	private IFormElement getParentFormDef(QuestionDef questionDef){
+		IFormElement parent = questionDef.getParent();
+		if(parent instanceof FormDef)
+			return parent;
+		return parent.getParent();
 	}
 
 	public String getDisplayText(){
@@ -1459,10 +1494,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(pos1 > -1 && pos2 > -1 && (pos2 > pos1))
 			displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
 		return displayText;
-	}
-
-	public String getBinding(){
-		return variableName;
 	}
 
 	public void setBinding(String binding){
@@ -1475,6 +1506,22 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setChildren(List<IFormElement> children){
 		this.options = children;
+	}
+	
+	public void refresh(IFormElement element){
+		
+	}
+	
+	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
+		
+	}
+	
+	public IFormElement copy(IFormElement parent){
+		return new QuestionDef(this, parent);
+	}
+	
+	public void addChild(IFormElement element){
+		addOption((OptionDef)element);
 	}
 }
 

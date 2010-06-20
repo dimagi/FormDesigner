@@ -48,7 +48,7 @@ public class DefaultValueUtil {
 			id = (String)keys.next();
 			String variableName = (String)id2VarNameMap.get(id);
 
-			QuestionDef def = formDef.getQuestion(variableName);
+			QuestionDef def = (QuestionDef)formDef.getElement(variableName);
 			if(def == null)
 				continue;
 

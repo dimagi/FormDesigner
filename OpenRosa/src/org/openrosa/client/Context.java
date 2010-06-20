@@ -71,6 +71,8 @@ public class Context {
 	/** List of those interested in being notified whenever the locale list changes. */
 	private static List<ILocaleListChangeListener> localeListeners = new ArrayList<ILocaleListChangeListener>();
 	
+	private static EventBus eventBus = new EventBus();
+	
 	
 	/**
 	 * Sets the default locale.
@@ -240,5 +242,9 @@ public class Context {
 				offlineMode = false;
 		}
 		catch(Exception ex){}
+	}
+	
+	public static EventBus getEventBus(){
+		return eventBus;
 	}
 }

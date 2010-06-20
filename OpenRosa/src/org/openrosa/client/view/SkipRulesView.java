@@ -6,6 +6,7 @@ import java.util.Vector;
 import org.openrosa.client.controller.IConditionController;
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
@@ -412,7 +413,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		List<Integer> actnTargets = skipRule.getActionTargets();
 		if(actnTargets == null){
 			for(String varName : questions)
-				skipRule.addActionTarget(formDef.getQuestion(varName).getId());
+				skipRule.addActionTarget(formDef.getElement(varName).getId());
 			
 			return;
 		}
@@ -425,7 +426,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			if(qtnDef == questionDef)
 				continue; //Ignore the question for which we are editing the skip rule.
 
-			if(qtnDef == null || !questions.contains(qtnDef.getVariableName())){
+			if(qtnDef == null || !questions.contains(qtnDef.getBinding())){
 				actnTargets.remove(index);
 				index = index - 1;
 			}
@@ -433,7 +434,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		
 		//Add any newly added questions as action targets.
 		for(String varName : questions){
-			QuestionDef qtnDef = formDef.getQuestion(varName);
+			IFormElement qtnDef = formDef.getElement(varName);
 			if(!skipRule.containsActionTarget(qtnDef.getId()))
 				skipRule.addActionTarget(qtnDef.getId());
 		}

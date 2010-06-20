@@ -4,24 +4,19 @@ import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.view.FormDesignerWidget.Images;
 import org.purc.purcforms.client.util.FormUtil;
 
-import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.EventType;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.event.WindowEvent;
-import com.extjs.gxt.ui.client.event.WindowListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
-
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -86,7 +81,12 @@ public class XformsTabWidget extends Composite {
 		cp.setHeading("XForm Editor Output");
 		cp.add(txtXforms);
 //		txtXforms.
-//		FormUtil.maximizeWidget(txtXforms);
+		FormUtil.maximizeWidget(txtXforms);
+		
+		/*window.addListener(Events.Resize, new Listener<ComponentEvent>() {
+	        public void handleEvent(final ComponentEvent event) {
+	                txtXforms.setWidth(/*window.getWidth() +*//* "100%");
+	        }});*/
 				
 		window.add(cp);
 		

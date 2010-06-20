@@ -1,8 +1,10 @@
 package org.openrosa.client.widget.skiprule;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
@@ -123,7 +125,7 @@ public class FieldWidget extends Composite{
 		fieldHyperlink.setText(val);
 		horizontalPanel.remove(sgstField);
 		horizontalPanel.add(fieldHyperlink);
-		QuestionDef qtn = formDef.getQuestionWithText(txtField.getText());
+		IFormElement qtn = formDef.getQuestionWithText(txtField.getText());
 		if(qtn != null)
 			itemSelectionListener.onItemSelected(this,qtn);
 	}
@@ -131,9 +133,11 @@ public class FieldWidget extends Composite{
 	private void setupPopup(){
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
-		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
+		//for(int i=0; i<formDef.getPageCount(); i++)
+		//	FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
 		
+		FormDesignerUtil.loadQuestions(formDef.getChildren(),dynamicQuestionDef,oracle,forDynamicOptions);
+
 		txtField = new TextBox(); //TODO New and hence could be buggy
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();
@@ -151,23 +155,26 @@ public class FieldWidget extends Composite{
 		});*/
 	}
 	
-	public void selectQuestion(QuestionDef questionDef){
+	public void selectQuestion(IFormElement questionDef){
 		fieldHyperlink.setText(questionDef.getText());
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}
 	
 	private void selectFirstQuestion(){
-		for(int i=0; i<formDef.getPageCount(); i++){
+		/*for(int i=0; i<formDef.getPageCount(); i++){
 			if(selectFirstQuestion(formDef.getPageAt(i).getQuestions()))
 				return;
-		}
+		}*/
+		selectFirstQuestion(formDef.getChildren());
 	}
 	
-	private boolean selectFirstQuestion(Vector questions){
+	private boolean selectFirstQuestion(List<IFormElement> questions){
 		for(int i=0; i<questions.size(); i++){
-			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				selectFirstQuestion(questionDef.getRepeatQtnsDef().getQuestions());
+			IFormElement questionDef = questions.get(i);
+			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			//	selectFirstQuestion(questionDef.getRepeatQtnsDef().getQuestions());
+			if(questionDef instanceof GroupDef)
+				selectFirstQuestion(((GroupDef)questionDef).getChildren());
 			else{
 				selectQuestion(questionDef);
 				return true;
@@ -182,7 +189,7 @@ public class FieldWidget extends Composite{
 	 * 
 	 * @param questionDef the question definition object.
 	 */
-	public void setQuestion(QuestionDef questionDef){
+	public void setQuestion(IFormElement questionDef){
 		if(questionDef != null)
 			fieldHyperlink.setText(questionDef.getText());
 		else{

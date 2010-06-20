@@ -89,6 +89,10 @@ public class ItextBuilder {
 		Element translationNode = doc.createElement("translation");
 		translationNode.setAttribute("lang", locale.getName());
 		itextNode.appendChild(translationNode);
+		
+		//we need to have the itext block below any newly added bindings, if any.
+		modelNode.removeChild(itextNode);
+		modelNode.appendChild(itextNode);
 
 		//Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
 		HashMap<String,String> duplicatesMap = new HashMap<String, String>();

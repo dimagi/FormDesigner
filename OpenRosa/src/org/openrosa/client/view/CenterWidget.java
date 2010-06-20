@@ -8,8 +8,6 @@ import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
-import org.openrosa.client.model.PageDef;
-import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.ItextBuilder;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformParser;
@@ -25,7 +23,6 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -37,7 +34,7 @@ import com.google.gwt.xml.client.Element;
 public class CenterWidget extends Composite implements IFileListener,IFormSelectionListener,ITextListener {
 
 	private static final int TAB_INDEX_DESIGN = 0;
-	private static final int TAB_INDEX_XFORMS = 1;
+	//private static final int TAB_INDEX_XFORMS = 1;
 	private static final int TAB_INDEX_ITEXT = 2;
 
 	/**
@@ -153,12 +150,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
 
 		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
-		if(formDef.getQuestionCount() > 0){
+		/*if(formDef.getQuestionCount() > 0){
 			PageDef pageDef = formDef.getPageAt(0);
-			QuestionDef questionDef = pageDef.getQuestionAt(0);
+			QuestionDef questionDef = pageDef.getElementAt(0);
 			if(questionDef.getControlNode() != null)
 				pageDef.setGroupNode((Element)questionDef.getControlNode().getParentNode());
-		}
+		}*/
 
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);

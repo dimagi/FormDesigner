@@ -1,6 +1,7 @@
 package org.openrosa.client.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.util.ItextParser;
@@ -20,7 +21,7 @@ import com.google.gwt.xml.client.Element;
  * @author Daniel Kayiwa
  *
  */
-public class OptionDef implements Serializable {
+public class OptionDef implements IFormElement, Serializable {
 	
 	/** The numeric unique identifier of an answer option. */
 	private int id = ModelConstants.NULL_ID;
@@ -30,7 +31,7 @@ public class OptionDef implements Serializable {
 	
 	//TODO May not need to serialize this property for smaller pay load. Then we would just rely on the id.
 	/** The unique text identifier of an answer option. */
-	private String variableName = ModelConstants.EMPTY_STRING;
+	private String binding = ModelConstants.EMPTY_STRING;
 	
 	public static final char SEPARATOR_CHAR = ',';
 	
@@ -44,7 +45,7 @@ public class OptionDef implements Serializable {
 	private Element controlNode;
 	
 	/** The question to which this option belongs. */
-	private QuestionDef parent;
+	private IFormElement parent;
 
 	private String itextId;
 	
@@ -60,7 +61,7 @@ public class OptionDef implements Serializable {
 		 this(parent);
 		 setId(optionDef.getId());
 		 setText(optionDef.getText());
-		 setVariableName(optionDef.getVariableName());
+		 setBinding(optionDef.getBinding());
 		 //setParent(parent /*optionDef.getParent()*/);
 	}
 	
@@ -74,7 +75,7 @@ public class OptionDef implements Serializable {
 		this(parent);
 		setId(id);
 		setText(text);
-		setVariableName(variableName);
+		setBinding(variableName);
 	}
 	
 	public int getId() {
@@ -93,19 +94,19 @@ public class OptionDef implements Serializable {
 		this.text = text;
 	}
 	
-	public String getVariableName() {
-		return variableName;
+	public String getBinding() {
+		return binding;
 	}
 	
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
+	public void setBinding(String variableName) {
+		this.binding = variableName;
 	}
 
-	public QuestionDef getParent() {
+	public IFormElement getParent() {
 		return parent;
 	}
 
-	public void setParent(QuestionDef parent) {
+	public void setParent(IFormElement parent) {
 		this.parent = parent;
 	}
 
@@ -177,13 +178,13 @@ public class OptionDef implements Serializable {
     		XmlUtil.setTextNodeValue(labelNode,text);
     	
     	if(valueNode != null)
-    		XmlUtil.setTextNodeValue(valueNode,variableName);
+    		XmlUtil.setTextNodeValue(valueNode,binding);
     	
     	if(labelNode == null && valueNode == null) ////Must be new option.
     		UiElementBuilder.fromOptionDef2Xform(this,doc,selectNode);
     	
     	if(controlNode != null)
-    		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
+    		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, binding);
 	}
     
     /**
@@ -216,4 +217,80 @@ public class OptionDef implements Serializable {
 			parentNode.appendChild(node);
 		}
     }
+    
+    public int getDataType(){
+    	return QuestionDef.QTN_TYPE_NULL;
+    }
+    
+    public void setDataType(int dataType){
+    	
+    }
+	
+    public List<IFormElement> getChildren(){
+    	return null;
+    }
+    
+    public void setChildren(List<IFormElement> children){
+    	
+    }
+	
+	public Element getBindNode(){
+		return null;
+	}
+	
+	public void setBindNode(Element bindNode){
+		
+	}
+	
+	public Element getDataNode(){
+		return null;
+	}
+	
+	public void setDataNode(Element dataNode){
+		
+	}
+	
+	public void refresh(IFormElement element){
+		
+	}
+	
+	public void updateDoc(Document doc, Element xformsNode, IFormElement formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
+		
+	}
+	
+	public void updateDataNodes(Element parentDataNode){
+		
+	}
+	
+	public IFormElement copy(IFormElement parent){
+		return new OptionDef(this, (QuestionDef)parent);
+	}
+	
+	public void clearChangeListeners(){
+		
+	}
+	
+	public String getDisplayText(){
+		return text;
+	}
+	
+	public void addChild(IFormElement element){
+		
+	}
+	
+	public String getHelpText(){
+		return null;
+	}
+	
+	public void setHelpText(String helpText){
+		
+	}
+	
+	public Element getHintNode(){
+		return null;
+	}
+	
+	public void setHintNode(Element hintNode){
+		
+	}
 }

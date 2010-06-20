@@ -180,7 +180,7 @@ public class SkipRule implements Serializable{
 		conditions.remove(condition);
 	}
 	
-	public void removeActionTarget(QuestionDef questionDef){
+	public void removeActionTarget(IFormElement questionDef){
 		
 		if(questionDef.getBindNode() != null){
 			questionDef.getBindNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
@@ -196,7 +196,7 @@ public class SkipRule implements Serializable{
 		}
 	}
 	
-	public void removeQuestion(QuestionDef questionDef){
+	public void removeQuestion(IFormElement questionDef){
 		for(int index = 0; index < getConditionCount(); index++){
 			Condition condition = getConditionAt(index);
 			if(condition.getQuestionId() == questionDef.getId()){
@@ -243,7 +243,7 @@ public class SkipRule implements Serializable{
 	public void ExecuteAction(FormDef formDef,boolean conditionTrue){
 		Vector qtns = this.getActionTargets();
 		for(int i=0; i<qtns.size(); i++)
-			ExecuteAction(formDef.getQuestion(Integer.parseInt(qtns.elementAt(i).toString())),conditionTrue);
+			ExecuteAction((QuestionDef)formDef.getElement(Integer.parseInt(qtns.elementAt(i).toString())),conditionTrue);
 	}
 	
 	/** Executes the rule action on the supplied question. */
@@ -292,7 +292,7 @@ public class SkipRule implements Serializable{
 			QuestionDef qtn = srcFormDef.getQuestion(condition.getQuestionId());
 			if(qtn == null)
 				continue;
-			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
 			if(questionDef == null)
 				continue;
 				
@@ -308,7 +308,7 @@ public class SkipRule implements Serializable{
 			QuestionDef qtn = srcFormDef.getQuestion(actionTarget);
 			if(qtn == null)
 				continue;
-			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
 			if(questionDef == null)
 				continue;
 			skipRule.addActionTarget(questionDef.getId());

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openrosa.client.model.DynamicOptionDef;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
@@ -532,9 +533,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			return val; //could be IS NULL or IS NOT NULL
 
 		if(chkQuestionValue.getValue() == true){
-			valueQtnDef = formDef.getQuestionWithText(val);
+			valueQtnDef = (QuestionDef)formDef.getQuestionWithText(val);
 			if(valueQtnDef != null)
-				val = valueQtnDef.getVariableName();
+				val = valueQtnDef.getBinding();
 			else
 				val = EMPTY_VALUE;
 		}
@@ -542,7 +543,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			OptionDef optionDef = questionDef.getOptionWithText(val);
 			if(optionDef != null)
-				val = optionDef.getVariableName();
+				val = optionDef.getBinding();
 			else
 				val = null;
 		}
@@ -551,7 +552,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			if(dynamicOptionDef != null){
 				OptionDef optionDef = dynamicOptionDef.getOptionWithText(val);
 				if(optionDef != null)
-					val = optionDef.getVariableName();
+					val = optionDef.getBinding();
 			}
 		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
@@ -565,7 +566,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 					if(optionDef != null){
 						if(val.length() > 0)
 							val += LIST_SEPARATOR;
-						val += optionDef.getVariableName();
+						val += optionDef.getBinding();
 					}
 				}
 			}
@@ -589,12 +590,12 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(sValue != null){
 			if(sValue.startsWith(formDef.getVariableName() + "/")){
 				sValue = sValue.substring(sValue.indexOf('/')+1);
-				QuestionDef qtn = formDef.getQuestion(sValue);
+				IFormElement qtn = formDef.getElement(sValue);
 				if(qtn != null)
 					sValue = qtn.getText();
 				else{ //possibly varname changed.
 					if(valueQtnDef != null){
-						qtn = formDef.getQuestion(valueQtnDef.getVariableName());
+						qtn = formDef.getElement(valueQtnDef.getBinding());
 						if(qtn != null)
 							sValue = qtn.getText();
 						else
@@ -669,8 +670,10 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
-		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
+		//for(int i=0; i<formDef.getPageCount(); i++)
+		//	FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
+
+		FormDesignerUtil.loadQuestions(formDef.getChildren(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
 
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();

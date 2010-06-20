@@ -3,6 +3,7 @@ package org.openrosa.client.view;
 import org.openrosa.client.Context;
 import org.openrosa.client.controller.ICenterPanel;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.view.FormDesignerWidget.Images;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormActionListener;
@@ -369,7 +370,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
 			propertiesView.setFocus();
 
-		FormDef form = FormDef.getFormDef(formItem);
+		FormDef form = FormDef.getFormDef((IFormElement)formItem);
 
 		if(this.formDef != form){
 			setFormDef(form);

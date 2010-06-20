@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.dnd.JrTreePanelDropTarget;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
-import org.openrosa.client.model.PageDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.TreeModelItem;
 import org.purc.purcforms.client.controller.IFormActionListener;
@@ -96,9 +96,6 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	/** The next available form id. */
 	private int nextFormId = 0;
 
-	/** The next available page id. */
-	private int nextPageId = 0;
-
 	/** The next available question id. */
 	private int nextQuestionId = 0;
 
@@ -137,7 +134,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					return;
 
 				Object selObject = te.getSelectedItem().getUserObject();
-				Context.setFormDef(FormDef.getFormDef(selObject));
+				Context.setFormDef(FormDef.getFormDef((IFormElement)selObject));
 				formDef = Context.getFormDef();
 				fireFormItemSelected(selObject);
 			}
@@ -318,7 +315,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		//Should not call this more than once for the same selected item.
 		if(item != this.item){
-			Context.setFormDef(FormDef.getFormDef(item.getUserObject()));
+			Context.setFormDef(FormDef.getFormDef((IFormElement)item.getUserObject()));
 			formDef = Context.getFormDef();
 
 			fireFormItemSelected(item.getUserObject());
@@ -374,12 +371,18 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			treePanel.getStore().add(formRoot, true);
 		}
 
-		if(formDef.getPages() != null){
-			for(int currentPageNo =0; currentPageNo<formDef.getPages().size(); currentPageNo++){
-				TreeModelItem pageRoot = loadPage((PageDef)formDef.getPages().elementAt(currentPageNo),formRoot);
+		if(formDef.getChildren() != null){
+			for(int index = 0; index < formDef.getChildren().size(); index++){
+				IFormElement element = formDef.getChildAt(index);
+				TreeModelItem pageRoot = null;
+				
+				if(element instanceof GroupDef)
+					loadGroup((GroupDef)element,formRoot);
+				else
+					this.loadQuestion((QuestionDef)element, formRoot);
 
 				//We expand only the first page.
-				if(currentPageNo == 0)
+				if(index == 0)
 					treePanel.setExpanded(pageRoot, true);
 				//pageRoot.setState(true);    
 			}
@@ -468,18 +471,18 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		}
 	}
 
-	private TreeModelItem loadPage(PageDef pageDef,TreeModelItem formRoot){
+	private TreeModelItem loadGroup(GroupDef pageDef,TreeModelItem formRoot){
 		//TreeItem pageRoot = addImageItem(formRoot, pageDef.getName(), images.drafts(),pageDef,null);
 
 		TreeModelItem pageRoot = addImageItem(formRoot, pageDef.getName(),pageDef);
-		loadQuestions(pageDef.getQuestions(),pageRoot);
+		loadQuestions(pageDef.getChildren(),pageRoot);
 		return pageRoot;
 	}
 
-	private void loadQuestions(Vector questions,TreeModelItem root){
+	private void loadQuestions(List<IFormElement> questions,TreeModelItem root){
 		if(questions != null){
 			for(int currentQtnNo=0; currentQtnNo<questions.size(); currentQtnNo++)
-				loadQuestion((QuestionDef)questions.elementAt(currentQtnNo),root);
+				loadQuestion((QuestionDef)questions.get(currentQtnNo),root);
 		}
 	}
 
@@ -595,7 +598,6 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			fireFormItemSelected(null);
 
 			nextFormId = 0;
-			nextPageId = 0;
 			nextQuestionId = 0;
 			nextOptionId = 0;
 		}
@@ -642,13 +644,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(parentUserObj instanceof QuestionDef)
 				((QuestionDef)parentUserObj).getRepeatQtnsDef().removeQuestion((QuestionDef)userObj,formDef);
 			else
-				((PageDef)parentUserObj).removeQuestion((QuestionDef)userObj,formDef);			
+				;//((PageDef)parentUserObj).removeQuestion((QuestionDef)userObj,formDef);			
 		}
 		else if(userObj instanceof OptionDef){
 			((QuestionDef)parentUserObj).removeOption((OptionDef)userObj);
 		}
-		else if(userObj instanceof PageDef)
-			((FormDef)parentUserObj).removePage((PageDef)userObj);	
+		else if(userObj instanceof GroupDef)
+			;//((FormDef)parentUserObj).removePage((PageDef)userObj);	
 	}
 
 	/**
@@ -697,8 +699,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Object userObj = selModelItem.getUserObject();
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)selModelItem.getParent()).getUserObject());
-				questionDef.setItextId(questionDef.getVariableName());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selModelItem.getParent()).getUserObject());
+				questionDef.setItextId(questionDef.getBinding());
 				TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem.getParent());
 				addFormDefItem(questionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
@@ -707,15 +709,15 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(userObj instanceof OptionDef){
 				int id = ++nextOptionId;
 				OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
-				optionDef.setItextId(optionDef.getVariableName());
+				optionDef.setItextId(optionDef.getBinding());
 				TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem.getParent());
 				addFormDefItem(optionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
-			else if(userObj instanceof PageDef){
-				int id = ++nextPageId;
-				PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
+			else if(userObj instanceof GroupDef){
+				int id = ++nextQuestionId;
+				GroupDef pageDef = new GroupDef(LocaleText.get("page")+id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getName()));
 				TreeModelItem modelItem = new TreeModelItem(pageDef.getName(),pageDef,selModelItem.getParent());
 				addFormDefItem(pageDef,(TreeModelItem)selModelItem.getParent());
@@ -740,9 +742,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Object userObj = item.getUserObject();
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)item.getParent()).getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getVariableName());
+				questionDef.setItextId(questionDef.getBinding());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
@@ -757,9 +759,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				//addNewOptionDef();
 				
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)item.getParent()).getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getVariableName());
+				questionDef.setItextId(questionDef.getBinding());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
@@ -770,11 +772,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
 			}
-			else if(userObj instanceof PageDef){				
+			else if(userObj instanceof GroupDef){				
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,((TreeModelItem)item.getParent()).getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getVariableName());
+				questionDef.setItextId(questionDef.getBinding());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
@@ -795,11 +797,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				TreeModelItem parentItem = (TreeModelItem)item.getChild(0);
 				
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,parentItem.getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)parentItem.getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getVariableName());
-				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
-				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
+				questionDef.setItextId(questionDef.getBinding());
+				item = addImageItem(item, questionDef.getText(), questionDef);
+				addFormDefItem(questionDef, (TreeModelItem)item.getParent());
 				
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
@@ -813,7 +815,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 			QuestionDef questionDef = (QuestionDef)item.getUserObject();
 			questionDef.setDataType(dataType);
-			questionDef.setItextId(questionDef.getVariableName());
+			questionDef.setItextId(questionDef.getBinding());
 			
 			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				addNewOptionDef(questionDef, item);
@@ -840,19 +842,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else
 				((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
-		else if(parentUserObj instanceof PageDef)
-			((PageDef)parentUserObj).addQuestion((QuestionDef)obj);
-		else if(parentUserObj instanceof FormDef)
-			((FormDef)parentUserObj).addPage((PageDef)obj);
-
+		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
+			((IFormElement)parentUserObj).addChild((QuestionDef)obj);
 	}
 
 	public void addNewForm(){
 		int id = ++nextFormId;
 		addNewForm(LocaleText.get("newForm")+id,"new_form"+id,id);
-
-		//Automatically add a new page
-		addNewChildItem(false);
 
 		//Automatically add a new question
 		addNewChildItem(false);
@@ -891,51 +887,6 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(inReadOnlyMode())
 			return;
 
-		/*TreeItem item = tree.getSelectedItem();
-
-		//Check if there is any selection.
-		if(item == null){
-			if(addNewIfNoKids)
-				addNewItem();
-			return;
-		}
-
-		Object userObj = item.getUserObject();
-		if(userObj instanceof PageDef || 
-				(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_REPEAT) ){
-
-			int id = ++nextQuestionId;
-			QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,userObj);
-			item = addImageItem(item, questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-			addFormDefItem(questionDef,item.getParentItem());
-			tree.setSelectedItem(item);
-			item.getParentItem().setState(true);
-		}
-		else if(userObj instanceof QuestionDef && 
-				( ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-						((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_MULTIPLE ) ){
-
-			int id = ++nextOptionId;
-			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
-			item = addImageItem(item, optionDef.getText(), images.markRead(),optionDef,null);
-			addFormDefItem(optionDef,item.getParentItem());
-			tree.setSelectedItem(item);
-			item.getParentItem().setState(true);
-		}
-		else if(userObj instanceof FormDef){
-			int id = ++nextPageId;
-			PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)userObj);
-			item = addImageItem(item, pageDef.getName(), images.drafts(),pageDef,null);
-			addFormDefItem(pageDef,item.getParentItem());
-			tree.setSelectedItem(item);
-			item.getParentItem().setState(true);
-
-			//Automatically add a new question
-			addNewChildItem(false);
-		}
-		else if(addNewIfNoKids)
-			addNewItem();*/
-
 		TreeModelItem selModelItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 
 		//Check if there is any selection.
@@ -946,12 +897,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		}
 
 		Object userObj = selModelItem.getUserObject();
-		if(userObj instanceof PageDef || 
+		if(userObj instanceof GroupDef || userObj instanceof FormDef || 
 				(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_REPEAT) ){
 
 			int id = ++nextQuestionId;
-			QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,userObj);
-			questionDef.setItextId(questionDef.getVariableName());
+			QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)userObj);
+			questionDef.setItextId(questionDef.getBinding());
 			TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem);
 			addFormDefItem(questionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
@@ -963,23 +914,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			int id = ++nextOptionId;
 			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
-			optionDef.setItextId(optionDef.getVariableName());
+			optionDef.setItextId(optionDef.getBinding());
 			TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem);
 			addFormDefItem(optionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
 			treePanel.getSelectionModel().select(modelItem, false);
-		}
-		else if(userObj instanceof FormDef){
-			int id = ++nextPageId;
-			PageDef pageDef = new PageDef(LocaleText.get("page")+id,id,null,(FormDef)userObj);
-			pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getName()));
-			TreeModelItem modelItem = new TreeModelItem(pageDef.getName(),pageDef,selModelItem);
-			addFormDefItem(pageDef,selModelItem);
-			treePanel.getStore().add(selModelItem,modelItem, true);
-			treePanel.getSelectionModel().select(modelItem, false);
-
-			//Automatically add a new question
-			addNewChildItem(false);
 		}
 		else if(addNewIfNoKids)
 			addNewItem();
@@ -1051,12 +990,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		Object parentObj = parent.getUserObject();
 
 		//Normal question
-		if(userObj instanceof QuestionDef && parentObj instanceof PageDef)
-			((PageDef)parentObj).moveQuestionUp((QuestionDef)userObj);
-		else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
-			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionUp((QuestionDef)userObj);
-		else if(userObj instanceof PageDef)
-			((FormDef)parentObj).movePageUp((PageDef)userObj);
+		if(userObj instanceof QuestionDef && parentObj instanceof GroupDef)
+			((GroupDef)parentObj).moveElementUp((QuestionDef)userObj);
+		/*else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
+			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionUp((QuestionDef)userObj);*/
+		else if(userObj instanceof GroupDef)
+			((FormDef)parentObj).movePageUp((GroupDef)userObj);
 		else if(userObj instanceof OptionDef)
 			((QuestionDef)parentObj).moveOptionUp((OptionDef)userObj);
 	}
@@ -1066,12 +1005,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		Object parentObj = parent.getUserObject();
 
 		//Normal question
-		if(userObj instanceof QuestionDef && parentObj instanceof PageDef)
-			((PageDef)parentObj).moveQuestionDown((QuestionDef)userObj);
-		else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
-			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionDown((QuestionDef)userObj);
-		else if(userObj instanceof PageDef)
-			((FormDef)parentObj).movePageDown((PageDef)userObj);
+		if(userObj instanceof QuestionDef && parentObj instanceof GroupDef)
+			((GroupDef)parentObj).moveElementDown((QuestionDef)userObj);
+		/*else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
+			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionDown((QuestionDef)userObj);*/
+		else if(userObj instanceof GroupDef)
+			((FormDef)parentObj).movePageDown((GroupDef)userObj);
 		else if(userObj instanceof OptionDef)
 			((QuestionDef)parentObj).moveOptionDown((OptionDef)userObj);
 	}
@@ -1167,8 +1106,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			item.setText(optionDef.getText());
 			treePanel.getStore().update(item);
 		}
-		else if(formItem instanceof PageDef){
-			PageDef pageDef = (PageDef)formItem;
+		else if(formItem instanceof GroupDef){
+			GroupDef pageDef = (GroupDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.drafts(), pageDef.getName(),popup,this));
 
 			item.setText(pageDef.getName());
@@ -1245,14 +1184,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		if(clipboardItem instanceof QuestionDef){
 			//Questions can be pasted only as kids of pages or repeat questions.
-			if(! ( (userObj instanceof PageDef) || 
+			if(! ( (userObj instanceof GroupDef) || 
 					(userObj instanceof QuestionDef && 
 							((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) )){
 				return;
 			}
 
 			//create a copy of the clipboard question.
-			QuestionDef questionDef = new QuestionDef((QuestionDef)clipboardItem,userObj);
+			QuestionDef questionDef = new QuestionDef((QuestionDef)clipboardItem,(IFormElement)userObj);
 
 			//Repeat question can only be child of a page but not another question.
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && userObj instanceof QuestionDef)
@@ -1260,8 +1199,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			questionDef.setId(item.getChildCount()+1);
 
-			if(userObj instanceof PageDef)
-				((PageDef)userObj).addQuestion(questionDef);
+			if(userObj instanceof GroupDef)
+				((GroupDef)userObj).addChild(questionDef);
 			else
 				((QuestionDef)userObj).getRepeatQtnsDef().addQuestion(questionDef);
 
@@ -1273,17 +1212,17 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//item.getParentItem().setState(true);
 			//item.setState(true);
 		}
-		else if(clipboardItem instanceof PageDef){		
+		else if(clipboardItem instanceof GroupDef){		
 			//Pages can be pasted only as kids of forms.
 			if(!(userObj instanceof FormDef))
 				return;
 
 			//create a copy of the clipboard page.
-			PageDef pageDef = new PageDef((PageDef)clipboardItem,(FormDef)userObj);
+			GroupDef pageDef = new GroupDef((GroupDef)clipboardItem,(FormDef)userObj);
 
-			pageDef.setPageNo(item.getChildCount()+1);
-			((FormDef)userObj).addPage(pageDef);
-			item = loadPage(pageDef, item);
+			pageDef.setText("Group" + item.getChildCount()+1);
+			((FormDef)userObj).addElement(pageDef);
+			item = loadGroup(pageDef, item);
 
 			//tree.setSelectedItem(item);
 			treePanel.getSelectionModel().select(item, false);
@@ -1386,8 +1325,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
 		int count = parent.getChildCount();
 		for(int index = 0; index < count; index++){
-			TreeModelItem child = (TreeModelItem)parent.getChild(index);
-			PageDef pageDef = (PageDef)child.getUserObject();
+			/*TreeModelItem child = (TreeModelItem)parent.getChild(index);
+			GroupDef pageDef = (GroupDef)child.getUserObject();
 			String pageNo = String.valueOf(pageDef.getPageNo());
 			if(pageNos.containsKey(pageNo)){
 				//tree.setSelectedItem(child);
@@ -1400,7 +1339,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				pageNos.put(pageNo, pageDef.getName());
 
 			if(!isValidQuestionList(child,bindings))
-				return false;
+				return false;*/
 		}
 
 		return true;
@@ -1411,7 +1350,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		for(int index = 0; index < count; index++){
 			TreeModelItem child = (TreeModelItem)parent.getChild(index);
 			QuestionDef questionDef = (QuestionDef)child.getUserObject();
-			String variableName = questionDef.getVariableName();
+			String variableName = questionDef.getBinding();
 			if(bindings.containsKey(variableName) /*&& questionDef.getParent() == bindings.get(variableName).getParent()*/){
 				//tree.setSelectedItem(child);
 				//tree.ensureSelectedItemVisible();
@@ -1443,7 +1382,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		for(int index = 0; index < count; index++){
 			TreeModelItem child = (TreeModelItem)parent.getChild(index);
 			OptionDef optionDef = (OptionDef)child.getUserObject();
-			String variableName = optionDef.getVariableName();
+			String variableName = optionDef.getBinding();
 			if(bindings.containsKey(variableName)){
 				//tree.setSelectedItem(child);
 				//tree.ensureSelectedItemVisible();

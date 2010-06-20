@@ -53,19 +53,20 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_DATE:
 			return XformConstants.DATA_TYPE_DATE;
 		case QuestionDef.QTN_TYPE_DATE_TIME:
-			return "xsd:dateTime";
+			return XformConstants.DATA_TYPE_DATE_TIME;
 		case QuestionDef.QTN_TYPE_TIME:
-			return "xsd:time";
+			return XformConstants.DATA_TYPE_TIME;
 		case QuestionDef.QTN_TYPE_DECIMAL:
-			return "xsd:decimal";
+			return XformConstants.DATA_TYPE_DECIMAL;
 		case QuestionDef.QTN_TYPE_NUMERIC:
 			return XformConstants.DATA_TYPE_INT;
 		case QuestionDef.QTN_TYPE_TEXT:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
-		case QuestionDef.QTN_TYPE_GPS:
 			return XformConstants.DATA_TYPE_TEXT;
+		case QuestionDef.QTN_TYPE_GPS:
+			return "geopoint"; //XformConstants.DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_IMAGE:
 		case QuestionDef.QTN_TYPE_VIDEO:
 		case QuestionDef.QTN_TYPE_AUDIO:

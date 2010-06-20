@@ -3,12 +3,9 @@ package org.openrosa.client.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -24,33 +21,46 @@ import com.google.gwt.xml.client.Node;
  * @author Daniel Kayiwa
  *
  */
-public class GroupDef implements Serializable{
+public class GroupDef implements IFormElement, Serializable{
 
-	/** A list of questions in a group. */
-	private Vector questions;
-	
-	/** List of child groups for this group. */
-	private List<GroupDef> groups;
+	/** List of children for this group. */
+	private List<IFormElement> children;
 
-	/** The name of the page. */
+	/** The name of the group. */
 	private String name = ModelConstants.EMPTY_STRING;
+	
+	/** The help text of the group. */
+	private String helpText = ModelConstants.EMPTY_STRING;
 
-	/** The xforms label node for this page. */
+	/** The xforms label node for this group. */
 	private Element labelNode;
 	
+	/** The xforms hint node for this group. */
+	private Element hintNode;
+
 	/** The xforms group node for this page. */
 	private Element groupNode;
 
-	/** The form definition to which this page belongs. */
-	private FormDef parent;
+	/** The parent definition to which this group belongs. */
+	private IFormElement parent;
 
+	private String binding;
+
+	private int id;
+
+	private String itextId;
 	
+	
+	public GroupDef(){
+		
+	}
+
 	/**
 	 * Constructs a new page.
 	 * 
-	 * @param parent the form to which the page belongs.
+	 * @param parent the parent element to which the page belongs.
 	 */
-	public GroupDef(FormDef parent) {
+	public GroupDef(IFormElement parent) {
 		this.parent = parent;
 	}
 
@@ -60,10 +70,10 @@ public class GroupDef implements Serializable{
 	 * @param pageDef the page to copy.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(GroupDef pageDef,FormDef parent) {
+	public GroupDef(GroupDef pageDef,IFormElement parent) {
 		this(parent);
 		setName(pageDef.getName());
-		copyQuestions(pageDef.getQuestions());
+		setChildren(pageDef.getChildren());
 	}
 
 	/**
@@ -73,10 +83,10 @@ public class GroupDef implements Serializable{
 	 * @param pageNo the number of the page.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(String name,FormDef parent) {
+	public GroupDef(String name,IFormElement parent) {
 		this(parent);
 		setName(name);
-		setQuestions(questions);
+		setChildren(children);
 	}
 
 	/**
@@ -87,10 +97,10 @@ public class GroupDef implements Serializable{
 	 * @param questions a list of questions in the page.
 	 * @param parent the form to which the page belongs.
 	 */
-	public GroupDef(String name,Vector questions,FormDef parent) {
+	public GroupDef(String name,List<IFormElement> children, IFormElement parent) {
 		this(parent);
 		setName(name);
-		setQuestions(questions);
+		setChildren(children);
 	}
 
 	public String getName() {
@@ -101,15 +111,11 @@ public class GroupDef implements Serializable{
 		this.name = name;
 	}
 
-	public Vector getQuestions() {
-		return questions;
-	}
-
-	public FormDef getParent() {
+	public IFormElement getParent() {
 		return parent;
 	}
 
-	public void setParent(FormDef parent) {
+	public void setParent(IFormElement parent) {
 		this.parent = parent;
 	}
 
@@ -141,154 +147,168 @@ public class GroupDef implements Serializable{
 		this.groupNode = groupNode;
 	}
 
-	public void setQuestions(Vector questions) {
-		this.questions = questions;
-	}
-	
-	
 	/**
 	 * Gets the number of questions on this page.
 	 * 
 	 * @return the number of questions.
 	 */
-	public int getQuestionCount(){
-		if(questions == null)
+	public int getChildCount(){
+		if(children == null)
 			return 0;
-		return questions.size();
+		
+		int count = 0;
+		for(int index = 0; index < children.size(); index++){
+			IFormElement element = children.get(index);
+			if(element instanceof GroupDef)
+				count += ((GroupDef)element).getChildCount();
+			else{
+				assert(element instanceof QuestionDef);
+				count += 1;
+			}
+		}
+		
+		return count;
 	}
 
-	
+
 	/**
 	 * Gets the question at a given position on this page.
 	 * 
 	 * @param index the position.
 	 * @return the question.
 	 */
-	public QuestionDef getQuestionAt(int index){
-		if(questions == null)
+	public IFormElement getChildAt(int index){
+		if(children == null)
 			return null;
-		return (QuestionDef)questions.elementAt(index);
+		return (IFormElement)children.get(index);
 	}
-	
-	
+
+
 	/**
 	 * Adds a question to the page.
 	 * 
 	 * @param qtn the question to add.
 	 */
-	public void addQuestion(QuestionDef qtn){
-		if(questions == null)
-			questions = new Vector();
-		questions.addElement(qtn);
-		qtn.setParent(this);
+	public void addChild(IFormElement child){
+		if(children == null)
+			children = new ArrayList<IFormElement>();
+		children.add(child);
+		child.setParent(this);
 	}
 
-	
+
 	/**
 	 * Gets a question with a given variable name.
 	 * 
 	 * @param varName the question variable name.
 	 * @return the question.
 	 */
-	public QuestionDef getQuestion(String varName){
-		if(questions == null)
+	public IFormElement getElement(String varName){
+		if(children == null)
 			return null;
 
-		for(int i=0; i<getQuestions().size(); i++){
-			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
-			if(def.getVariableName().equals(varName))
+		for(int i=0; i<children.size(); i++){
+			IFormElement def = children.get(i);
+			if(def.getBinding().equals(varName))
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
-			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
-				def = def.getRepeatQtnsDef().getQuestion(varName);
+			if(def instanceof GroupDef){
+				IFormElement elem = ((GroupDef)def).getElement(varName);
+				if(elem != null)
+					return elem;
+			}
+			/*if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
+				def = def.getRepeatQtnsDef().getElement(varName);
 				if(def != null)
 					return def;
-			}
-			/*else{
-				String binding = def.getVariableName();
-				if(varName.endsWith(binding) && parent != null){
-					if(!binding.startsWith("/")) 
-						binding = "/"+binding;
-					binding  = parent.getVariableName() + binding;
-					if(!binding.startsWith("/")) 
-						binding = "/"+binding;
-					if(binding.equals(varName))
-						return def;
-				}
-				if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
-					def = def.getRepeatQtnsDef().getQuestion(varName);
-					if(def != null)
-						return def;
-				}
 			}*/
 		}
 
 		return null;
 	}
 	
+	public QuestionDef getQuestion(String varName){
+		return (QuestionDef)getElement(varName);
+	}
 	
-	public int getQuestionIndex(String varName){
-		if(questions == null)
+	public QuestionDef getQuestion(int id){
+		return (QuestionDef)getElement(id);
+	}
+
+
+	public int getElementIndex(String varName){
+		if(children == null)
 			return -1;
 
-		for(int i=0; i<getQuestions().size(); i++){
-			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
-			if(def.getVariableName().equals(varName))
+		for(int i=0; i<children.size(); i++){
+			IFormElement def = children.get(i);
+			if(def.getBinding().equals(varName))
 				return i;
 		}
-		
+
 		return -1;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given identifier.
 	 * 
 	 * @param id the question identifier.
 	 * @return the question.
 	 */
-	public QuestionDef getQuestion(int id){
-		if(questions == null)
+	public IFormElement getElement(int id){
+		if(children == null)
 			return null;
 
-		for(int i=0; i<getQuestions().size(); i++){
-			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
+		for(int i=0; i<children.size(); i++){
+			IFormElement def = children.get(i);
 			if(def.getId() == id)
 				return def;
-			
+
 			//Without this, then we have not validation and skip rules in repeat questions.
-			if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
-				def = def.getRepeatQtnsDef().getQuestion(id);
+			if(def instanceof GroupDef){
+				IFormElement elem = ((GroupDef)def).getElement(id);
+				if(elem != null)
+					return elem;
+			}
+			
+			/*if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
+				def = def.getRepeatQtnsDef().getElement(id);
 				if(def != null)
 					return def;
-			}
+			}*/
 		}
 
 		return null;
 	}
 
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
 
-	
+
 	/**
 	 * Copies a list of questions into this page.
 	 * 
 	 * @param questions the list of questions to copy.
 	 */
-	private void copyQuestions(Vector questions){
-		if(questions != null){
-			this.questions = new Vector();
-			for(int i=0; i<questions.size(); i++)
-				this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),this));
+	private void copyChildren(List<IFormElement> children){
+		if(children != null){
+			this.children = new ArrayList<IFormElement>();
+			for(int i=0; i<children.size(); i++){
+				IFormElement child = children.get(i);
+				if(child instanceof QuestionDef)
+					this.children.add((IFormElement)new QuestionDef((QuestionDef)children.get(i),this));
+				else if(child instanceof GroupDef)
+					this.children.add((IFormElement)new GroupDef((GroupDef)children.get(i),this));
+			}
 		}
 	}
 
-	
+
 	/**
 	 * Removes a question from this page.
 	 * 
@@ -296,7 +316,13 @@ public class GroupDef implements Serializable{
 	 * @param formDef the form to which this page belongs.
 	 * @return true if the question was found and removed successfully, else false.
 	 */
-	public boolean removeQuestion(QuestionDef qtnDef, FormDef formDef){
+	public boolean removeElement(IFormElement qtnDef, FormDef formDef){
+		removeElement2(qtnDef,formDef);
+		//TODO Need to do recursive checks for group defs before remove.
+		return children.remove(qtnDef);
+	}
+	
+	public static void removeElement2(IFormElement qtnDef, FormDef formDef){
 		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				qtnDef.getControlNode().getParentNode().getParentNode().removeChild(qtnDef.getControlNode().getParentNode());
@@ -305,7 +331,7 @@ public class GroupDef implements Serializable{
 		}
 
 		//Either no / or just one occurrence. More than one nestings are avoided to make things simple
-		if(qtnDef.getVariableName().indexOf('/') == qtnDef.getVariableName().lastIndexOf('/')){
+		if(qtnDef.getBinding().indexOf('/') == qtnDef.getBinding().lastIndexOf('/')){
 			if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
 				qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
 			if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
@@ -316,55 +342,53 @@ public class GroupDef implements Serializable{
 			formDef.removeQtnFromRules(qtnDef);
 			formDef.removeQtnFromDynamicLists(qtnDef);
 		}
-
-		return questions.removeElement(qtnDef);
 	}
 
-	
+
 	/**
 	 * Removes all questions from this page.
 	 * 
 	 * @param formDef the form to which the page belongs.
 	 */
-	public void removeAllQuestions(FormDef formDef){
-		if(questions == null)
+	public void removeAllElements(FormDef formDef){
+		if(children == null)
 			return;
 
-		while(questions.size() > 0)
-			removeQuestion((QuestionDef)questions.elementAt(0),formDef);
+		while(children.size() > 0)
+			removeElement((QuestionDef)children.get(0),formDef);
 	}
 
-	
+
 	/**
 	 * Gets the number of questions on this page.
 	 * 
 	 * @return the number of questions.
 	 */
 	public int size(){
-		if(questions == null)
+		if(children == null)
 			return 0;
-		return questions.size();
+		return children.size();
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in the page.
 	 * 
 	 * @param questionDef the question to move.
 	 */
-	public void moveQuestionUp(QuestionDef questionDef){
-		moveQuestionUp(questions,questionDef);
+	public void moveElementUp(IFormElement questionDef){
+		moveElementUp(children,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question up by one position in a list of questions.
 	 * 
 	 * @param questions the list of questions.
 	 * @param questionDef the question to move.
 	 */
-	public static void moveQuestionUp(Vector questions, QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);
+	public static void moveElementUp(List<IFormElement> children, IFormElement questionDef){
+		int index = children.indexOf(questionDef);
 
 		//Not relying on group node because some forms have no groups
 		Element controlNode = questionDef.getControlNode();
@@ -374,29 +398,29 @@ public class GroupDef implements Serializable{
 			parentNode = (Element)parentNode.getParentNode();
 		}
 
-		questions.remove(questionDef);
+		children.remove(questionDef);
 
 		//Store the question to replace
-		QuestionDef currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
-		if(controlNode != null && parentNode != null && currentQuestionDef.getControlNode() != null)
+		IFormElement currentElement = children.get(index-1);
+		if(controlNode != null && parentNode != null && currentElement.getControlNode() != null)
 			parentNode.removeChild(controlNode);
 
-		if(!(questionDef.getVariableName().indexOf('/') > -1)){
-			if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentQuestionDef.getDataNode() != null)
+		if(!(questionDef.getBinding().indexOf('/') > -1)){
+			if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentElement.getDataNode() != null)
 				questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
 		}
 
-		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null && currentQuestionDef.getBindNode() != null)
+		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null && currentElement.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
-		List list = new ArrayList();
-		while(questions.size() >= index){
-			currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
-			list.add(currentQuestionDef);
-			questions.remove(currentQuestionDef);
+		List<IFormElement> list = new ArrayList<IFormElement>();
+		while(children.size() >= index){
+			currentElement = (IFormElement)children.get(index-1);
+			list.add(currentElement);
+			children.remove(currentElement);
 		}
 
-		questions.add(questionDef);
+		children.add(questionDef);
 		for(int i=0; i<list.size(); i++){
 			if(i == 0 && controlNode != null){
 				QuestionDef qtnDef = (QuestionDef)list.get(i);
@@ -408,7 +432,7 @@ public class GroupDef implements Serializable{
 				}
 
 				//move data node (We are not moving nested data nodes just to avoid complications
-				if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1)){
+				if(!(questionDef.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1)){
 					if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
 						qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
 				}
@@ -417,42 +441,42 @@ public class GroupDef implements Serializable{
 				if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null && questionDef.getBindNode() != null)
 					qtnDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
 			}
-			questions.add(list.get(i));
+			children.add(list.get(i));
 		}
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in the page.
 	 * 
 	 * @param questionDef the question to move.
 	 */
-	public void moveQuestionDown(QuestionDef questionDef){
-		moveQuestionDown(questions,questionDef);
+	public void moveElementDown(IFormElement questionDef){
+		moveElementDown(children,questionDef);
 	}
 
-	
+
 	/**
 	 * Moves a question down by one position in a list of questions.
 	 * 
-	 * @param questions the list of questions.
-	 * @param questionDef the question to move.
+	 * @param elements the list of questions.
+	 * @param element the question to move.
 	 */
-	public static void moveQuestionDown(Vector questions, QuestionDef questionDef){
-		int index = questions.indexOf(questionDef);	
+	public static void moveElementDown(List<IFormElement> elements, IFormElement element){
+		int index = elements.indexOf(element);	
 
 		//Not relying on group node because some forms have no groups
-		Element controlNode = questionDef.getControlNode();
+		Element controlNode = element.getControlNode();
 		Element parentNode = controlNode != null ? (Element)controlNode.getParentNode() : null;
-		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && controlNode != null){
+		if(element.getDataType() == QuestionDef.QTN_TYPE_REPEAT && controlNode != null){
 			controlNode = (Element)controlNode.getParentNode();
 			parentNode = (Element)parentNode.getParentNode();
 		}
 
-		questions.remove(questionDef);
+		elements.remove(element);
 
-		Node parentDataNode = questionDef.getDataNode() != null ? questionDef.getDataNode().getParentNode() : null;
-		Node parentBindNode = questionDef.getBindNode() != null ? questionDef.getBindNode().getParentNode() : null;
+		Node parentDataNode = element.getDataNode() != null ? element.getDataNode().getParentNode() : null;
+		Node parentBindNode = element.getBindNode() != null ? element.getBindNode().getParentNode() : null;
 
 		/*if(controlNode != null && parentNode != null)
 			parentNode.removeChild(questionDef.getControlNode());
@@ -462,24 +486,24 @@ public class GroupDef implements Serializable{
 		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());*/
 
-		QuestionDef currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
+		IFormElement currentItem; // = parent.getChild(index - 1);
+		List<IFormElement> list = new ArrayList<IFormElement>();
 
-		while(questions.size() > 0 && questions.size() > index){
-			currentItem = (QuestionDef)questions.elementAt(index);
+		while(elements.size() > 0 && elements.size() > index){
+			currentItem = elements.get(index);
 			list.add(currentItem);
-			questions.remove(currentItem);
+			elements.remove(currentItem);
 		}
 
 		for(int i=0; i<list.size(); i++){
 			if(i == 1){
-				questions.add(questionDef); //Add after the first item.
+				elements.add(element); //Add after the first item.
 
 				if(controlNode != null){
 					if(controlNode != null && parentNode != null)
 						parentNode.removeChild(controlNode);
 
-					QuestionDef qtnDef = getNextSavedQuestion(list,i); //(QuestionDef)list.get(i);
+					IFormElement qtnDef = getNextSavedElement(list,i); //(QuestionDef)list.get(i);
 					if(qtnDef.getControlNode() != null){
 						Node sibNode = qtnDef.getControlNode();
 						if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
@@ -491,63 +515,63 @@ public class GroupDef implements Serializable{
 
 
 					//move data node (We are not moving nested data nodes just to avoid complications
-					if(!(questionDef.getVariableName().indexOf('/') > -1 || qtnDef.getVariableName().indexOf('/') > -1))
-						if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null){
-							parentDataNode.removeChild(questionDef.getDataNode());
+					if(!(element.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1))
+						if(element.getDataNode() != null && element.getDataNode().getParentNode() != null){
+							parentDataNode.removeChild(element.getDataNode());
 
 							if(qtnDef.getDataNode() != null){
-								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getVariableName().contains("/"))
-									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode().getParentNode());
+								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getBinding().contains("/"))
+									parentDataNode.insertBefore(element.getDataNode(), qtnDef.getDataNode().getParentNode());
 								else
-									parentDataNode.insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
+									parentDataNode.insertBefore(element.getDataNode(), qtnDef.getDataNode());
 							}
 							else
-								parentDataNode.appendChild(questionDef.getDataNode());
+								parentDataNode.appendChild(element.getDataNode());
 						}
 
 
 					//move binding node
 					if(parentBindNode != null){
-						if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null)
-							parentBindNode.removeChild(questionDef.getBindNode());
+						if(element.getBindNode() != null && element.getBindNode().getParentNode() != null)
+							parentBindNode.removeChild(element.getBindNode());
 
 						if(qtnDef.getBindNode() != null)
-							parentBindNode.insertBefore(questionDef.getBindNode(), qtnDef.getBindNode());
+							parentBindNode.insertBefore(element.getBindNode(), qtnDef.getBindNode());
 						else
-							parentBindNode.appendChild(questionDef.getBindNode());
+							parentBindNode.appendChild(element.getBindNode());
 					}
 				}
 			}
-			questions.add(list.get(i));
+			elements.add(list.get(i));
 		}
 
 		if(list.size() == 1){
-			questions.add(questionDef);
+			elements.add(element);
 
 			if(controlNode != null){
-				if(questionDef.getControlNode() != null && parentNode != null){
+				if(element.getControlNode() != null && parentNode != null){
 					parentNode.removeChild(controlNode);
 					parentNode.appendChild(controlNode);
 				}
 
-				if(!(questionDef.getVariableName().indexOf('/') > -1)){
-					if(questionDef.getDataNode() != null && parentDataNode != null){
-						parentDataNode.removeChild(questionDef.getDataNode());
-						parentDataNode.appendChild(questionDef.getDataNode());
+				if(!(element.getBinding().indexOf('/') > -1)){
+					if(element.getDataNode() != null && parentDataNode != null){
+						parentDataNode.removeChild(element.getDataNode());
+						parentDataNode.appendChild(element.getDataNode());
 					}
 				}
 
 				//parentDataNode.insertBefore(questionDef.getDataNode(), questionDef.getDataNode());
-				if(questionDef.getBindNode() != null && parentBindNode != null){
-					parentBindNode.removeChild(questionDef.getBindNode());
-					parentBindNode.appendChild(questionDef.getBindNode());
+				if(element.getBindNode() != null && parentBindNode != null){
+					parentBindNode.removeChild(element.getBindNode());
+					parentBindNode.appendChild(element.getBindNode());
 				}
 				//parentBindNode.insertBefore(questionDef.getBindNode(), questionDef.getBindNode());
 			}
 		}
 	}
 
-	
+
 	/**
 	 * Gets the next question which has been converted to xforms and 
 	 * hence attached to an xforms document node, starting at a given 
@@ -557,28 +581,28 @@ public class GroupDef implements Serializable{
 	 * @param index the index to start from in the questions list.
 	 * @return the question.
 	 */
-	private static QuestionDef getNextSavedQuestion(List questions, int index){
+	private static IFormElement getNextSavedElement(List<IFormElement> questions, int index){
 		int size = questions.size();
 		for(int i=index; i<size; i++){
-			QuestionDef questionDef = (QuestionDef)questions.get(i);
+			IFormElement questionDef = questions.get(i);
 			if(questionDef.getControlNode() != null)
 				return questionDef;
 		}
-		return (QuestionDef)questions.get(index);
+		return questions.get(index);
 	}
 
-	
+
 	/**
 	 * Checks if this page contains a particular question.
 	 * 
 	 * @param qtn the question to check.
 	 * @return true if it contains, else false.
 	 */
-	public boolean contains(QuestionDef qtn){
-		return questions.contains(qtn);
+	public boolean contains(IFormElement qtn){
+		return children.contains(qtn);
 	}
 
-	
+
 	/**
 	 * Updates the xforms document nodes referenced by this page and all its children.
 	 * 
@@ -601,39 +625,37 @@ public class GroupDef implements Serializable{
 		//if(groupNode != null)
 		//	groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
 
-		Vector newQuestions = new Vector();
-		if(questions != null){
-			for(int i=0; i<questions.size(); i++){
-				QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+		List<IFormElement> newElements = new ArrayList<IFormElement>();
+		if(children != null){
+			for(int i=0; i<children.size(); i++){
+				IFormElement questionDef = children.get(i);
 				if(!allQuestionsNew && questionDef.getDataNode() == null)
-					newQuestions.add(questionDef);
+					newElements.add(questionDef);
 
-				if(questionDef.updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData, orgFormVarName)){
-					//for(int k=0; k<i; k++)
-					//moveQuestionUp(questionDef);
-				}
+				if(questionDef instanceof QuestionDef)
+					((QuestionDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData, orgFormVarName);
 			}
 		}
 
-		for(int k = 0; k < newQuestions.size(); k++){
-			QuestionDef questionDef = (QuestionDef)newQuestions.elementAt(k);
-			
+		for(int k = 0; k < newElements.size(); k++){
+			IFormElement element = newElements.get(k);
+
 			//We do not update data nodes which deal with attributes.
-			if(questionDef.getDataNode() == null && !questionDef.getVariableName().contains("@")){
-				Window.alert(LocaleText.get("missingDataNode") + questionDef.getText());
+			if(element.getDataNode() == null && !element.getBinding().contains("@")){
+				Window.alert(LocaleText.get("missingDataNode") + element.getText());
 				continue; //TODO This is a bug which should be resolved
 			}
 
-			int proposedIndex = questions.size() - (newQuestions.size() - k);
-			int currentIndex = questions.indexOf(questionDef);
+			int proposedIndex = children.size() - (newElements.size() - k);
+			int currentIndex = children.indexOf(element);
 			if(currentIndex == proposedIndex)
 				continue;
 
-			moveQuestionNodesUp(questionDef,getRefQuestion(questions,newQuestions,currentIndex /*currentIndex+1*/));
+			moveElementNodesUp(element,getRefElemement(children,newElements,currentIndex /*currentIndex+1*/));
 		}
 	}
 
-	
+
 	/**
 	 * Gets the first question which is not new, in a given list of questions,
 	 * starting at a given position.
@@ -643,11 +665,11 @@ public class GroupDef implements Serializable{
 	 * @param index the position to start from.
 	 * @return the question.
 	 */
-	private QuestionDef getRefQuestion(Vector questions, Vector newQuestions, int index){
-		QuestionDef questionDef;
+	private IFormElement getRefElemement(List<IFormElement> questions, List<IFormElement> newQuestions, int index){
+		IFormElement questionDef;
 		int i = index + 1;
 		while(i < questions.size()){
-			questionDef = (QuestionDef)questions.get(i);
+			questionDef = questions.get(i);
 			if(!newQuestions.contains(questionDef))
 				return questionDef;
 			i++;
@@ -656,65 +678,73 @@ public class GroupDef implements Serializable{
 		return null;
 	}
 
-	
+
 	/**
 	 * Checks if all question on this page are new.
 	 * 
 	 * @return true if all are new, else false.
 	 */
 	private boolean areAllQuestionsNew(){
-		if(questions == null)
+		if(children == null)
 			return false;
 
-		for(int i=0; i<questions.size(); i++){
-			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+		for(int i=0; i<children.size(); i++){
+			QuestionDef questionDef = (QuestionDef)children.get(i);
 			if(questionDef.getControlNode() != null)
 				return false;
 		}
 		return true;
 	}
 
-	
+
 	/**
 	 * Gets a question with a given text.
 	 * 
 	 * @param text the text.
 	 * @return the question.
 	 */
-	public QuestionDef getQuestionWithText(String text){
-		if(questions == null)
+	public IFormElement getQuestionWithText(String text){
+		if(children == null)
 			return null;
 
-		for(int i=0; i<questions.size(); i++){
-			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			if(questionDef.getText().equals(text))
+		for(int i=0; i<children.size(); i++){
+			IFormElement questionDef = children.get(i);
+			if(text.equals(questionDef.getText()))
 				return questionDef;
-			else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
+			
+			if(questionDef instanceof GroupDef){
+				IFormElement elem = ((GroupDef)questionDef).getQuestionWithText(text);
+				if(elem != null)
+					return elem;
+			}
+			
+			/*else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
 				questionDef = questionDef.getRepeatQtnsDef().getQuestionWithText(text);
 				if(questionDef != null)
 					return questionDef;
-			}
+			}*/
 		}
 		return null;
 	}
+	
 
 	/**
 	 * Updates this pageDef (as the main or new from a refresh xml) with the parameter one (existing or the one being refreshed)
 	 * 
-	 * @param pageDef
+	 * @param groupDef
 	 */
-	public void refresh(GroupDef pageDef){
+	public void refresh(GroupDef groupDef){
 		//if(pageNo == pageDef.getPageNo())
 		//	name = pageDef.getName();
 
-		int count = pageDef.getQuestionCount();
+		int count = groupDef.getChildCount();
 		for(int index = 0; index < count; index++){
-			QuestionDef qtn = pageDef.getQuestionAt(index);
-			QuestionDef questionDef = this.getQuestion(qtn.getVariableName());
-			if(questionDef == null)
+			IFormElement qtn = groupDef.getChildAt(index);
+			IFormElement element = this.getElement(qtn.getBinding());
+			if(element == null)
 				continue; //Possibly this question was deleted on server
-			questionDef.refresh(qtn);
-			
+			element.refresh(qtn);
+
 			/*int index1 = this.getQuestionIndex(qtn.getVariableName());
 			if(index != index1 && index1 != -1 && index < this.getQuestionCount() - 1){
 				this.getQuestions().removeElement(questionDef);
@@ -723,19 +753,19 @@ public class GroupDef implements Serializable{
 		}
 	}
 
-	
+
 	/**
 	 * Moves the question xforms document nodes by one position upwards.
 	 * 
-	 * @param questionDef the question whose xforms nodes to move. 
-	 * @param refQuestionDef the question immediately above which we are to move.
+	 * @param element the question whose xforms nodes to move. 
+	 * @param refElement the question immediately above which we are to move.
 	 */
-	public void moveQuestionNodesUp(QuestionDef questionDef, QuestionDef refQuestionDef){
+	public void moveElementNodesUp(IFormElement element, IFormElement refElement){
 
 		//Not relying on group node because some forms have no groups
-		Element controlNode = questionDef.getControlNode();
+		Element controlNode = element.getControlNode();
 		Element parentNode = controlNode != null ? (Element)controlNode.getParentNode() : null;
-		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && controlNode != null){
+		if(element.getDataType() == QuestionDef.QTN_TYPE_REPEAT && controlNode != null){
 			controlNode = (Element)controlNode.getParentNode();
 			parentNode = (Element)parentNode.getParentNode();
 		}
@@ -743,42 +773,42 @@ public class GroupDef implements Serializable{
 		if(controlNode != null)
 			parentNode.removeChild(controlNode);
 
-		if(questionDef.getDataNode() != null)
-			questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
+		if(element.getDataNode() != null)
+			element.getDataNode().getParentNode().removeChild(element.getDataNode());
 
-		if(questionDef.getBindNode() != null)
-			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
+		if(element.getBindNode() != null)
+			element.getBindNode().getParentNode().removeChild(element.getBindNode());
 
-		if(refQuestionDef.getControlNode() != null){
-			Node sibNode = refQuestionDef.getControlNode();
-			if(refQuestionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		if(refElement.getControlNode() != null){
+			Node sibNode = refElement.getControlNode();
+			if(refElement.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				sibNode = sibNode.getParentNode();
 			parentNode.insertBefore(controlNode, sibNode);
 		}
 
-		if(refQuestionDef.getDataNode() != null)
-			refQuestionDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), refQuestionDef.getDataNode());
+		if(refElement.getDataNode() != null)
+			refElement.getDataNode().getParentNode().insertBefore(element.getDataNode(), refElement.getDataNode());
 
-		if(refQuestionDef.getBindNode() != null)
-			refQuestionDef.getBindNode().getParentNode().insertBefore(questionDef.getBindNode(), refQuestionDef.getBindNode());
+		if(refElement.getBindNode() != null)
+			refElement.getBindNode().getParentNode().insertBefore(element.getBindNode(), refElement.getBindNode());
 
 	}
 
-	
+
 	/**
 	 * Updates the xforms instance data nodes referenced by this page's questions.
 	 * 
 	 * @param parentDataNode the parent data node for this page.
 	 */
 	public void updateDataNodes(Element parentDataNode){
-		if(questions == null)
+		if(children == null)
 			return;
 
-		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).updateDataNodes(parentDataNode);
+		for(int i=0; i<children.size(); i++)
+			((QuestionDef)children.get(i)).updateDataNodes(parentDataNode);
 	}
 
-	
+
 	/**
 	 * Builds the language translation nodes for text in this page and all its children.
 	 * 
@@ -799,22 +829,122 @@ public class GroupDef implements Serializable{
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
 		parentLangNode.appendChild(node);
 
-		if(questions == null)
+		if(children == null)
 			return;
 
-		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
+		for(int i=0; i<children.size(); i++)
+			((QuestionDef)children.get(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
 	}
 
-	
+
 	/**
 	 * Removes all question change event listeners.
 	 */
 	public void clearChangeListeners(){
-		if(questions == null)
+		if(children == null)
 			return;
 
-		for(int i=0; i<questions.size(); i++)
-			((QuestionDef)questions.elementAt(i)).clearChangeListeners();
+		for(int i=0; i<children.size(); i++)
+			((QuestionDef)children.get(i)).clearChangeListeners();
+	}
+
+	public int getId(){
+		return id;
+	}
+
+	public void setId(int id){
+		this.id = id;
+	}
+
+	public String getText(){
+		return name;
+	}
+
+	public void setText(String text){
+
+	}
+
+	public int getDataType(){
+		return QuestionDef.QTN_TYPE_REPEAT;
+	}
+
+	public void setDataType(int dataType){
+
+	}
+
+	public String getBinding(){
+		return binding;
+	}
+
+	public void setBinding(String binding){
+
+	}
+
+	public List<IFormElement> getChildren(){
+		return children;
+	}
+
+	public void setChildren(List<IFormElement> children){
+
+	}
+
+	public Element getBindNode(){
+		return null;
+	}
+
+	public void setBindNode(Element bindNode){
+
+	}
+
+	public Element getDataNode(){
+		return null;
+	}
+
+	public void setDataNode(Element dataNode){
+
+	}
+
+	public void refresh(IFormElement element){
+
+	}
+	
+	public Element getControlNode(){
+		return groupNode;
+	}
+	
+	public void setControlNode(Element controlNode){
+		
+	}
+	
+	public IFormElement copy(IFormElement parent){
+		return new GroupDef(this, parent);
+	}
+	
+	public String getDisplayText(){
+		return name;
+	}
+	
+	public String getItextId() {
+		return itextId;
+	}
+
+	public void setItextId(String itextId) {
+		this.itextId = itextId;
+	}
+	
+	public String getHelpText(){
+		return helpText;
+	}
+	
+	public void setHelpText(String helpText){
+		this.helpText = helpText;
+	}
+	
+	public Element getHintNode(){
+		return hintNode;
+	}
+	
+	public void setHintNode(Element hintNode){
+		this.hintNode = hintNode;
 	}
 }

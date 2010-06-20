@@ -1,10 +1,12 @@
 package org.openrosa.client.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
 
@@ -93,12 +95,12 @@ public class FormDesignerUtil {
 	 * @param sameTypesOnly set to true if you want to load only questions of the same type
 	 * 						as the referenced question.
 	 */
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
+	public static void loadQuestions(List<IFormElement> questions, IFormElement refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
 		if(questions == null)
 			return;
 
 		for(int i=0; i<questions.size(); i++){
-			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+			IFormElement questionDef = questions.get(i);
 			
 			if(!dynamicOptions && refQuestion != null && refQuestion.getDataType() != questionDef.getDataType() && sameTypesOnly)
 				continue;
@@ -117,8 +119,11 @@ public class FormDesignerUtil {
 			
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),refQuestion,oracle,dynamicOptions,sameTypesOnly); //TODO These have different id sets and hence we are leaving them out for now
+			if(questionDef instanceof GroupDef)
+				loadQuestions(((GroupDef)questionDef).getChildren(),refQuestion,oracle,dynamicOptions,sameTypesOnly);
+				
+			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			//	loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),refQuestion,oracle,dynamicOptions,sameTypesOnly); //TODO These have different id sets and hence we are leaving them out for now
 		}
 	}
 
@@ -130,7 +135,7 @@ public class FormDesignerUtil {
 	 * @param oracle the MultiWordSuggestOracle.
 	 * @param dynamicOptions set to true if we are loading for dynamic options.
 	 */
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
+	public static void loadQuestions(List<IFormElement> questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
 		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true);
 	}
 

@@ -52,7 +52,7 @@ public class ItemsetBuilder {
 
 		Element modelNode = formDef.getModelNode();
 		Element instanceNode =  doc.createElement(XformConstants.NODE_NAME_INSTANCE);
-		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getVariableName());
+		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, questionDef.getBinding());
 		NodeList nodes = modelNode.getElementsByTagName(XformConstants.NODE_NAME_INSTANCE);
 		if(nodes.getLength() == 0)
 			nodes = modelNode.getElementsByTagName(XformConstants.NODE_NAME_INSTANCE_MINUS_PREFIX); //TODO What happens when we pass a name with a prefix?
@@ -67,7 +67,7 @@ public class ItemsetBuilder {
 		if(questionDef.getFirstOptionNode() == null)
 			questionDef.setFirstOptionNode(createDynamicOptionDefNode(doc,questionDef.getControlNode()));
 		Element itemSetNode = questionDef.getFirstOptionNode();
-		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getVariableName()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getVariableName()+"]");
+		itemSetNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
 
 		
 		HashMap<Integer,List<OptionDef>> parentToChildOptions = dynamicOptionDef.getParentToChildOptions();
@@ -131,12 +131,12 @@ public class ItemsetBuilder {
 		optionDef.setLabelNode(node);
 
 		node =  doc.createElement("value");
-		node.appendChild(doc.createTextNode(optionDef.getVariableName()));
+		node.appendChild(doc.createTextNode(optionDef.getBinding()));
 		itemNode.appendChild(node);
 		optionDef.setValueNode(node);
 
-		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getVariableName());
-		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
+		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getBinding());
+		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_PARENT, parentOptionDef.getBinding());
 
 		dataNode.appendChild(itemNode);
 	}
@@ -228,9 +228,9 @@ public class ItemsetBuilder {
 					addNewDynamicOption(formDef.getDoc(), list.get(index), parentOptionDef, dynamicOptionDef.getDataNode());
 				else{
 					XmlUtil.setTextNodeValue(optionDef.getLabelNode(),optionDef.getText());
-					XmlUtil.setTextNodeValue(optionDef.getValueNode(),optionDef.getVariableName());
-					optionDef.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getVariableName());
-					optionDef.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_PARENT, parentOptionDef.getVariableName());
+					XmlUtil.setTextNodeValue(optionDef.getValueNode(),optionDef.getBinding());
+					optionDef.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getBinding());
+					optionDef.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_PARENT, parentOptionDef.getBinding());
 				}
 			}
 		}

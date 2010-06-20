@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.openrosa.client.OpenRosaConstants;
 import org.purc.purcforms.client.model.ModelConstants;
+import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
@@ -30,9 +31,6 @@ import com.google.gwt.xml.client.XMLParser;
  *
  */
 public class FormDef implements IFormElement, Serializable{
-
-	/** A collection of page definitions (PageDef objects). */
-	private Vector pages;
 
 	//TODO May not need to serialize this property for smaller pay load. Then we may just rely on the id.
 	//afterall it is not even guaranteed to be unique.
@@ -56,7 +54,7 @@ public class FormDef implements IFormElement, Serializable{
 	/** The collection of calculations (Calculation objects) for this form. */
 	private Vector calculations;
 
-	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
+	/** A string consisting for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
 
 	/** A mapping of dynamic lists keyed by the id of the question whose values
@@ -79,6 +77,9 @@ public class FormDef implements IFormElement, Serializable{
 
 	/** The model node of the xform that this form represents. */
 	private Element modelNode;
+	
+	/** The body node. */
+	private Element bodyNode;
 
 	/** The layout xml for this form. */
 	private String layoutXml;
@@ -98,12 +99,12 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 */
 	private boolean readOnly = false;
-	
+
 	private String itextId;
-	
+
 
 	List<IFormElement> children;
-	
+
 
 	/** Constructs a form definition object. */
 	public FormDef() {
@@ -135,7 +136,7 @@ public class FormDef implements IFormElement, Serializable{
 		setVariableName(formDef.getVariableName());
 
 		setDescriptionTemplate(formDef.getDescriptionTemplate());
-		copyPages(formDef.getPages());
+		copyChildren(formDef.getChildren());
 		copySkipRules(formDef.getSkipRules());
 		copyCalculations(formDef.getCalculations());
 
@@ -156,7 +157,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String formKey, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
+	public FormDef(int id, String name, String formKey, String variableName,List<IFormElement> children, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
 		setId(id);
 		setName(name);
 		setFormKey(formKey);
@@ -164,71 +165,12 @@ public class FormDef implements IFormElement, Serializable{
 		//I just don't think we need this in addition to the id
 		setVariableName(variableName);
 
-		setPages(pages);
+		setChildren(children);
 		setSkipRules(skipRules);
 		setValidationRules(validationRules);
 		setDynamicOptions(dynamicOptions);
 		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
 		setCalculations(calculations);
-	}
-
-	/**
-	 * Adds a new page to the form.
-	 * 
-	 * @param pageDef the page to add.
-	 */
-	public void addPage(PageDef pageDef){
-		if(pages == null)
-			pages = new Vector();
-
-		pages.add(pageDef);
-		pageDef.setParent(this);
-	}
-
-	/**
-	 * Adds a default page to the form.
-	 */
-	public void addPage(){
-		if(pages == null)
-			pages = new Vector();
-
-		int pageno = pages.size() + 1;
-		pages.add(new PageDef("Page"+pageno,pageno,this));
-	}
-
-	/**
-	 * Sets the name of the last page in the form.
-	 * 
-	 * @param name the name to set.
-	 * @return the last page in the form whose name has been set.
-	 */
-	public PageDef setPageName(String name){
-		PageDef pageDef = ((PageDef)pages.elementAt(pages.size()-1));
-		pageDef.setName(name);
-		return pageDef;
-	}
-
-	public void setPageLabelNode(Element labelNode){
-		((PageDef)pages.elementAt(pages.size()-1)).setLabelNode(labelNode);
-	}
-
-	public void setPageGroupNode(Element groupNode){
-		((PageDef)pages.elementAt(pages.size()-1)).setGroupNode(groupNode);
-	}
-
-	/**
-	 * Gets the list of pages that the form has.
-	 * 
-	 * @return the page list
-	 */
-	public Vector getPages() {
-		return pages;
-	}
-
-	public PageDef getPageAt(int index) {
-		if(pages == null)
-			return null;
-		return (PageDef)pages.elementAt(index);
 	}
 
 	public SkipRule getSkipRuleAt(int index) {
@@ -247,10 +189,6 @@ public class FormDef implements IFormElement, Serializable{
 		if(calculations == null)
 			return null;
 		return (Calculation)calculations.elementAt(index);
-	}
-
-	public void setPages(Vector pages) {
-		this.pages = pages;
 	}
 
 	public String getName() {
@@ -466,11 +404,17 @@ public class FormDef implements IFormElement, Serializable{
 			else
 				dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
 		}
-
-		if(pages != null){
-			for(int i=0; i<pages.size(); i++){
-				PageDef pageDef = (PageDef)pages.elementAt(i);
-				pageDef.updateDoc(doc,xformsNode,this,dataNode,modelNode,withData,orgVarName);
+		
+		if(children != null){
+			if(bodyNode == null && children.size() > 0)
+				bodyNode = (Element)children.get(0).getControlNode().getParentNode();
+			
+			for(int i=0; i<children.size(); i++){
+				IFormElement element = children.get(i);
+				if(element instanceof GroupDef)
+					((GroupDef)element).updateDoc(doc,bodyNode,this,dataNode,modelNode,withData,orgVarName);
+				else
+					((QuestionDef)element).updateDoc(doc,xformsNode,this,dataNode,modelNode,bodyNode,true,withData, orgVarName);;
 			}
 		}
 
@@ -493,7 +437,7 @@ public class FormDef implements IFormElement, Serializable{
 			while(iterator.hasNext()){
 				Entry<Integer,DynamicOptionDef> entry = iterator.next();
 				DynamicOptionDef dynamicOptionDef = entry.getValue();
-				QuestionDef questionDef = getQuestion(entry.getKey());
+				QuestionDef questionDef = (QuestionDef)getElement(entry.getKey());
 				if(questionDef == null)
 					continue;
 
@@ -504,7 +448,7 @@ public class FormDef implements IFormElement, Serializable{
 		if(calculations != null){
 			for(int i=0; i<calculations.size(); i++){
 				Calculation calculation = (Calculation)calculations.elementAt(i);
-				if(getQuestion(calculation.getQuestionId()) == null) //possibly question deleted
+				if(getElement(calculation.getQuestionId()) == null) //possibly question deleted
 					calculations.remove(i);
 				else
 					calculation.updateDoc(this);
@@ -513,11 +457,11 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	private void updateDataNodes(){
-		if(pages == null)
+		if(children == null)
 			return;
 
-		for(int i=0; i<pages.size(); i++)
-			((PageDef)pages.elementAt(i)).updateDataNodes(dataNode);
+		for(int i=0; i<children.size(); i++)
+			((IFormElement)children.get(i)).updateDataNodes(dataNode);
 	}
 
 	public String toString() {
@@ -530,17 +474,31 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param varName - the string identifier of the question. 
 	 * @return the question reference.
 	 */
-	public QuestionDef getQuestion(String varName){
-		if(varName == null || pages == null)
+	public IFormElement getElement(String varName){
+		if(varName == null || children == null)
 			return null;
 
-		for(int i=0; i<getPages().size(); i++){
-			QuestionDef def = ((PageDef)getPages().elementAt(i)).getQuestion(varName);
-			if(def != null)
+		for(int i=0; i<children.size(); i++){
+			IFormElement def = children.get(i);
+			if(def.getBinding().equals(varName))
 				return def;
+			
+			if(def instanceof GroupDef){
+				def = ((GroupDef)def).getElement(varName);
+				if(def != null)
+					return def;
+			}
 		}
 
 		return null;
+	}
+	
+	public QuestionDef getQuestion(String varName){
+		return (QuestionDef)getElement(varName);
+	}
+	
+	public QuestionDef getQuestion(int id){
+		return (QuestionDef)getElement(id);
 	}
 
 	/**
@@ -549,14 +507,17 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param id - the numeric identifier of the question. 
 	 * @return the question reference.
 	 */
-	public QuestionDef getQuestion(int id){		
-		if(pages == null)
+	public IFormElement getElement(int id){
+		if(children == null)
 			return null;
 
-		for(int i=0; i<getPages().size(); i++){
-			QuestionDef def = ((PageDef)getPages().elementAt(i)).getQuestion(id);
-			if(def != null)
-				return def;
+		for(int i=0; i<children.size(); i++){
+			IFormElement def = children.get(i);
+			if(def instanceof GroupDef){
+				def = ((GroupDef)def).getElement(id);
+				if(def != null)
+					return def;
+			}
 		}
 
 		return null;
@@ -569,7 +530,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @return the numeric question identifier.
 	 */
 	public int getQuestionId(String varName){
-		QuestionDef qtn = getQuestion(varName);
+		IFormElement qtn = getElement(varName);
 		if(qtn != null)
 			return qtn.getId();
 
@@ -581,16 +542,12 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param qtn the new question to add.
 	 */
-	public void addQuestion(QuestionDef qtn){
-		if(pages == null){
-			pages = new Vector();
-			PageDef page = new PageDef(/*this.getVariableName()*/"Page1",Integer.parseInt("1"),null,this);
-			pages.addElement(page);
-		}
+	public void addElement(IFormElement qtn){
+		if(children == null)
+			children = new ArrayList<IFormElement>();
 
-		((PageDef)pages.elementAt(pages.size()-1)).addQuestion(qtn);
-
-		qtn.setParent(pages.elementAt(pages.size()-1));
+		children.add(qtn);
+		qtn.setParent(this);
 	}
 
 	/**
@@ -598,11 +555,11 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param pages the pages to copy.
 	 */
-	private void copyPages(Vector pages){
-		if(pages != null){
-			this.pages =  new Vector();
-			for(int i=0; i<pages.size(); i++) //Should have atleast one page is why we are not checking for nulls.
-				this.pages.addElement(new PageDef((PageDef)pages.elementAt(i),this));
+	private void copyChildren(List<IFormElement> children){
+		if(children != null){
+			this.children =  new ArrayList<IFormElement>();
+			for(int i=0; i<children.size(); i++) //Should have atleast one page is why we are not checking for nulls.
+				this.children.add(children.get(i).copy(this));
 		}
 	}
 
@@ -643,7 +600,7 @@ public class FormDef implements IFormElement, Serializable{
 			while(iterator.hasNext()){
 				Entry<Integer,DynamicOptionDef> entry = iterator.next();
 				DynamicOptionDef dynamicOptionDef = entry.getValue();
-				QuestionDef questionDef = getQuestion(dynamicOptionDef.getQuestionId());
+				QuestionDef questionDef = (QuestionDef)getElement(dynamicOptionDef.getQuestionId());
 				if(questionDef == null)
 					return;
 				dynamicOptions.put(new Integer(entry.getKey()), new DynamicOptionDef(dynamicOptionDef,questionDef));
@@ -669,17 +626,17 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param pageFef the page to remove.
 	 */
-	public void removePage(PageDef pageDef){
-		/*for(int i=0; i<pages.size(); i++){
-			((PageDef)pages.elementAt(i)).removeAllQuestions();
-		}*/
+	public void removeChild(IFormElement element){
+		if(element instanceof GroupDef){
+			((GroupDef)element).removeAllElements(this);
 
-		pageDef.removeAllQuestions(this);
+			if(((GroupDef)element).getGroupNode() != null)
+				((GroupDef)element).getGroupNode().getParentNode().removeChild(((GroupDef)element).getGroupNode());
+		}
+		else
+			GroupDef.removeElement2((QuestionDef)element, this);
 
-		if(pageDef.getGroupNode() != null)
-			pageDef.getGroupNode().getParentNode().removeChild(pageDef.getGroupNode());
-
-		pages.removeElement(pageDef);
+		children.remove(element);
 	}
 
 	/**
@@ -740,37 +697,44 @@ public class FormDef implements IFormElement, Serializable{
 		this.modelNode = modelNode;
 	}
 
+	public Element getBodyNode() {
+		return bodyNode;
+	}
+
+	public void setBodyNode(Element bodyNode) {
+		this.bodyNode = bodyNode;
+	}
 
 	/**
 	 * Moves a page one position up in the form.
 	 * 
 	 * @param pageDef the page to move.
 	 */
-	public void movePageUp(PageDef pageDef){
-		int index = pages.indexOf(pageDef);
+	public void movePageUp(IFormElement element){
+		int index = children.indexOf(element);
 
-		pages.remove(pageDef);
+		children.remove(element);
 
-		if(pageDef.getGroupNode() != null)
-			xformsNode.removeChild(pageDef.getGroupNode());
+		if(element.getControlNode() != null)
+			xformsNode.removeChild(element.getControlNode());
 
-		PageDef currentPageDef;
-		List<PageDef> list = new ArrayList<PageDef>();
+		IFormElement currentElement;
+		List<IFormElement> list = new ArrayList<IFormElement>();
 
-		while(pages.size() >= index){
-			currentPageDef = (PageDef)pages.elementAt(index-1);
-			list.add(currentPageDef);
-			pages.remove(currentPageDef);
+		while(children.size() >= index){
+			currentElement = children.get(index-1);
+			list.add(currentElement);
+			children.remove(currentElement);
 		}
 
-		pages.add(pageDef);
+		children.add(element);
 		for(int i=0; i<list.size(); i++){
 			if(i == 0){
-				PageDef pgDef = (PageDef)list.get(i);
-				if(pgDef.getGroupNode() != null)
-					xformsNode.insertBefore(pageDef.getGroupNode(), pgDef.getGroupNode());
+				IFormElement elem = list.get(i);
+				if(elem.getControlNode() != null)
+					xformsNode.insertBefore(element.getControlNode(), elem.getControlNode());
 			}
-			pages.add(list.get(i));
+			children.add(list.get(i));
 		}
 	}
 
@@ -779,39 +743,39 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param pageDef the page to move.
 	 */
-	public void movePageDown(PageDef pageDef){
-		int index = pages.indexOf(pageDef);	
+	public void movePageDown(IFormElement element){
+		int index = children.indexOf(element);	
 
-		pages.remove(pageDef);
+		children.remove(element);
 
-		if(pageDef.getGroupNode() != null)
-			xformsNode.removeChild(pageDef.getGroupNode());
+		if(element.getControlNode() != null)
+			xformsNode.removeChild(element.getControlNode());
 
-		PageDef currentItem; // = parent.getChild(index - 1);
-		List<PageDef> list = new ArrayList<PageDef>();
+		IFormElement currentItem; // = parent.getChild(index - 1);
+		List<IFormElement> list = new ArrayList<IFormElement>();
 
-		while(pages.size() > 0 && pages.size() > index){
-			currentItem = (PageDef)pages.elementAt(index);
+		while(children.size() > 0 && children.size() > index){
+			currentItem = children.get(index);
 			list.add(currentItem);
-			pages.remove(currentItem);
+			children.remove(currentItem);
 		}
 
 		for(int i=0; i<list.size(); i++){
 			if(i == 1){
-				pages.add(pageDef); //Add after the first item.
+				children.add(element); //Add after the first item.
 
 				PageDef pgDef = (PageDef)list.get(i);
 				if(pgDef.getGroupNode() != null)
-					xformsNode.insertBefore(pageDef.getGroupNode(), pgDef.getGroupNode());
+					xformsNode.insertBefore(element.getControlNode(), pgDef.getGroupNode());
 			}
-			pages.add(list.get(i));
+			children.add(list.get(i));
 		}
 
 		if(list.size() == 1){
-			pages.add(pageDef);
+			children.add(element);
 
-			if(pageDef.getGroupNode() != null)
-				xformsNode.appendChild(pageDef.getGroupNode());
+			if(element.getControlNode() != null)
+				xformsNode.appendChild(element.getControlNode());
 		}
 	}
 
@@ -822,8 +786,17 @@ public class FormDef implements IFormElement, Serializable{
 	 * @return true if the question has been found and removed, else false.
 	 */
 	public boolean removeQuestion(QuestionDef qtnDef){
-		for(int i=0; i<pages.size(); i++){
-			if(((PageDef)pages.elementAt(i)).removeQuestion(qtnDef,this))
+		for(int i=0; i<children.size(); i++){
+			IFormElement element = children.get(i);
+			if(element == qtnDef){
+				children.remove(qtnDef);
+				return true;
+			}
+			else if(element instanceof GroupDef){
+				if(((GroupDef)element).removeElement(element, this))
+					return true;
+			}
+			//if(((PageDef)children.get(i)).removeQuestion(qtnDef,this))
 				return true;
 		}
 		return false;
@@ -834,7 +807,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param questionDef the question to remove.
 	 */
-	private void removeQtnFromValidationRules(QuestionDef questionDef){
+	private void removeQtnFromValidationRules(IFormElement questionDef){
 		for(int index = 0; index < this.getValidationRuleCount(); index++){
 			ValidationRule validationRule = getValidationRuleAt(index);
 			validationRule.removeQuestion(questionDef);
@@ -850,7 +823,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param questionDef the question to remove.
 	 */
-	private void removeQtnFromSkipRules(QuestionDef questionDef){
+	private void removeQtnFromSkipRules(IFormElement questionDef){
 		for(int index = 0; index < getSkipRuleCount(); index++){
 			SkipRule skipRule = getSkipRuleAt(index);
 			skipRule.removeQuestion(questionDef);
@@ -866,7 +839,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param qtnDef the question to remove.
 	 */
-	public void removeQtnFromRules(QuestionDef qtnDef){
+	public void removeQtnFromRules(IFormElement qtnDef){
 		removeQtnFromValidationRules(qtnDef);
 		removeQtnFromSkipRules(qtnDef);
 	}
@@ -877,7 +850,10 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param questionDef the question to check.
 	 */
-	public void removeQtnFromDynamicLists(QuestionDef questionDef){
+	public void removeQtnFromDynamicLists(IFormElement questionDef){
+		if(!(questionDef instanceof QuestionDef))
+			return; //only QuestionDefs can be referenced by DynamicOptionDef s
+		
 		if(dynamicOptions != null){
 
 			Object[] keys = dynamicOptions.keySet().toArray();
@@ -901,7 +877,7 @@ public class FormDef implements IFormElement, Serializable{
 					continue;
 				}
 
-				dynamicOptionDef.updateDoc(this,questionDef);
+				dynamicOptionDef.updateDoc(this,(QuestionDef)questionDef);
 			}
 		}
 	}
@@ -955,17 +931,6 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	/**
-	 * Gets the number of pages in the form.
-	 * 
-	 * @return the number of pages.
-	 */
-	public int getPageCount(){
-		if(pages == null)
-			return 0;
-		return pages.size();
-	}
-
-	/**
 	 * Gets the number of skip rules in the form.
 	 * 
 	 * @return the number of skip rules.
@@ -994,40 +959,19 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	/**
-	 * Removes a question from its page to some other page.
-	 * 
-	 * @param qtn the question to move.
-	 * @param pageNo the new page number where to take the question.
-	 */
-	public boolean moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
-		if(pages.size() < pageNo)
-			pages.add(new PageDef(formDef));
-
-		for(int i=0; i<pages.size(); i++){
-			PageDef page = (PageDef)pages.elementAt(i);
-			if(page.contains(qtn)){
-				if(i == pageNo-1)
-					return true;
-				page.getQuestions().removeElement(qtn);
-				((PageDef)pages.elementAt(pageNo-1)).addQuestion(qtn);
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
-	/**
 	 * Gets questions with given display text.
 	 * 
 	 * @param text the display text to look for.
 	 * @return the question of found, else null.
 	 */
-	public QuestionDef getQuestionWithText(String text){
-		for(int i=0; i<pages.size(); i++){
-			QuestionDef questionDef = ((PageDef)pages.elementAt(i)).getQuestionWithText(text);
-			if(questionDef != null)
-				return questionDef;
+	public IFormElement getQuestionWithText(String text){
+		for(int i=0; i<children.size(); i++){
+			IFormElement questionDef = children.get(i);
+			if(questionDef instanceof GroupDef){
+				questionDef = ((GroupDef)questionDef).getQuestionWithText(text);
+				if(questionDef != null)
+					return questionDef;
+			}
 		}
 		return null;
 	}
@@ -1100,7 +1044,7 @@ public class FormDef implements IFormElement, Serializable{
 		boolean ret = skipRules.remove(skipRule);
 		if(dataNode != null){
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
-				QuestionDef questionDef = getQuestion(skipRule.getActionTargetAt(index));
+				QuestionDef questionDef = (QuestionDef)getElement(skipRule.getActionTargetAt(index));
 				if(questionDef != null){
 					Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
 					if(node != null){
@@ -1125,7 +1069,7 @@ public class FormDef implements IFormElement, Serializable{
 
 		boolean ret = validationRules.remove(validationRule);
 		if(dataNode != null){
-			QuestionDef questionDef = getQuestion(validationRule.getQuestionId());
+			QuestionDef questionDef = (QuestionDef)getElement(validationRule.getQuestionId());
 			if(questionDef != null){
 				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
 				if(node != null){
@@ -1140,7 +1084,7 @@ public class FormDef implements IFormElement, Serializable{
 	public void setDynamicOptionDef(Integer questionId, DynamicOptionDef dynamicOptionDef){
 
 		//The parent or child question may have been deleted.
-		if(getQuestion(questionId) == null || getQuestion(dynamicOptionDef.getQuestionId()) == null)
+		if(getElement(questionId) == null || getElement(dynamicOptionDef.getQuestionId()) == null)
 			return;
 
 		if(dynamicOptions == null)
@@ -1178,7 +1122,7 @@ public class FormDef implements IFormElement, Serializable{
 			Entry<Integer,DynamicOptionDef> entry = iterator.next();
 			DynamicOptionDef dynamicOptionDef = entry.getValue();
 			if(dynamicOptionDef.getQuestionId() == questionId)
-				return getQuestion(entry.getKey());
+				return (QuestionDef)getElement(entry.getKey());
 		}
 		return null;
 	}
@@ -1225,8 +1169,13 @@ public class FormDef implements IFormElement, Serializable{
 		if(variableName.equals(formDef.getVariableName()))
 			name = formDef.getName();
 
-		for(int index = 0; index < formDef.getPageCount(); index++)
-			refresh((PageDef)formDef.getPageAt(index));
+		for(int index = 0; index < formDef.getChildren().size(); index++){
+			IFormElement element = formDef.getChildren().get(index);
+			if(element instanceof GroupDef)
+				;//((GroupDef)element).refresh(groupDef);
+
+			//refresh((PageDef)formDef.getPageAt(index));
+		}
 
 		//Clear existing skip rules if any. Already existing skip rules will always
 		//overwrite those from the refresh source.
@@ -1251,20 +1200,20 @@ public class FormDef implements IFormElement, Serializable{
 			while(iterator.hasNext()){
 				Entry<Integer,DynamicOptionDef> entry = iterator.next();
 
-				QuestionDef oldParentQtnDef = formDef.getQuestion(entry.getKey());
+				QuestionDef oldParentQtnDef = (QuestionDef)formDef.getElement(entry.getKey());
 				if(oldParentQtnDef == null)
 					continue; //How can this be missing in the original formdef???
 
-				QuestionDef newParentQtnDef = getQuestion(oldParentQtnDef.getVariableName());
+				QuestionDef newParentQtnDef = (QuestionDef)getElement(oldParentQtnDef.getBinding());
 				if(newParentQtnDef == null)
 					continue; //My be deleted by refresh source.
 
 				DynamicOptionDef oldDynOptionDef = entry.getValue();
-				QuestionDef oldChildQtnDef = formDef.getQuestion(oldDynOptionDef.getQuestionId());
+				QuestionDef oldChildQtnDef = (QuestionDef)formDef.getElement(oldDynOptionDef.getQuestionId());
 				if(oldChildQtnDef == null)
 					return; //can this be lost in the old formdef????
 
-				QuestionDef newChildQtnDef = getQuestion(oldChildQtnDef.getVariableName());
+				QuestionDef newChildQtnDef = (QuestionDef)getElement(oldChildQtnDef.getBinding());
 				if(newChildQtnDef == null)
 					continue; //possibly deleted by refresh sourced (eg server).
 
@@ -1279,15 +1228,27 @@ public class FormDef implements IFormElement, Serializable{
 		calculations = new Vector();
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
-			QuestionDef questionDef = getQuestion(formDef.getQuestion(calculation.getQuestionId()).getVariableName());
+			QuestionDef questionDef = (QuestionDef)getElement(formDef.getElement(calculation.getQuestionId()).getBinding());
 			if(questionDef != null)
 				addCalculation(new Calculation(questionDef.getId(),calculation.getCalculateExpression()));
 		}
 	}
 
-	private void refresh(PageDef pageDef){
-		for(int index = 0; index < pages.size(); index++)
-			((PageDef)pages.get(index)).refresh(pageDef);
+	public void refresh(IFormElement element){
+		//for(int index = 0; index < children.size(); index++){
+		//	((PageDef)children.get(index)).refresh(pageDef);
+		//}
+	}
+
+	public int getChildCount(){
+		if(children == null)
+			return 0;
+
+		return children.size();
+	}
+
+	public IFormElement getChildAt(int index){
+		return children.get(index);
 	}
 
 	/**
@@ -1296,27 +1257,34 @@ public class FormDef implements IFormElement, Serializable{
 	 * @return the number of questions.
 	 */
 	public int getQuestionCount(){
-		if(pages == null)
+		if(children == null)
 			return 0;
 
 		int count = 0;
-		for(int index = 0; index < pages.size(); index++)
-			count += getPageAt(index).getQuestionCount();
+		for(int index = 0; index < children.size(); index++){
+			IFormElement element = children.get(index);
+			if(element instanceof GroupDef)
+				count += ((GroupDef)element).getChildCount();
+			else{
+				assert(element instanceof QuestionDef);
+				count += 1;
+			}
+		}
 
 		return count;
 	}
-	
+
 	/**
-	 * Gets the question at a given position in the first page.
+	 * Gets the element at a given position on the first level.
 	 * 
-	 * @param index the question position.
-	 * @return the question definition object.
+	 * @param index the element position.
+	 * @return the element object.
 	 */
-	public QuestionDef getQuestionAt(int index){
-		if(pages == null)
+	public IFormElement getElementAt(int index){
+		if(children == null)
 			return null;
-		
-		return  getPageAt(0).getQuestionAt(index);
+
+		return  children.get(index);
 	}
 
 	public void updateRuleConditionValue(String origValue, String newValue){
@@ -1342,9 +1310,16 @@ public class FormDef implements IFormElement, Serializable{
 			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "FormDef"+id);
 			rootNode.appendChild(node);
 
-			if(pages != null){
-				for(int index = 0; index < pages.size(); index++)
-					((PageDef)pages.elementAt(index)).buildLanguageNodes(doc, rootNode);
+			if(children != null){
+				for(int index = 0; index < children.size(); index++){
+					IFormElement element = children.get(index);
+					if(element instanceof GroupDef)
+						((GroupDef)element).buildLanguageNodes(doc, rootNode);
+					else{
+						assert(element instanceof QuestionDef);
+						((QuestionDef)element).buildLanguageNodes(FormUtil.getNodePath(xformsNode), doc, xformsNode, rootNode);
+					}
+				}
 			}
 
 			if(validationRules != null){
@@ -1368,56 +1343,121 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param formItem the item.
 	 * @return the form.
 	 */
-	public static FormDef getFormDef(Object formItem){
+	public static FormDef getFormDef(IFormElement formItem){
 		if(formItem instanceof FormDef)
 			return (FormDef)formItem;
-		else if(formItem instanceof PageDef)
-			return ((PageDef)formItem).getParent();
-		else if(formItem instanceof QuestionDef){
-			Object item = ((QuestionDef)formItem).getParent();
-			return getFormDef(item);
-		}
-		else if(formItem instanceof OptionDef){
-			Object item = ((OptionDef)formItem).getParent();
-			return getFormDef(item);
-		}
-
-		return null;
+		else
+			return getFormDef(formItem.getParent());
 	}
 
 	/**
 	 * Removes all question change event listeners.
 	 */
 	public void clearChangeListeners(){
-		if(pages == null)
+		if(children == null)
 			return;
 
-		for(int i=0; i<pages.size(); i++)
-			((PageDef)pages.elementAt(i)).clearChangeListeners();
+		for(int i=0; i<children.size(); i++)
+			children.get(i).clearChangeListeners();
 	}
-	
-	
+
+
 	public String getText(){
 		return name;
 	}
-	
+
 	public void setText(String text){
 		setName(text);
 	}
-	
+
 	public String getBinding(){
 		return variableName;
 	}
-	
+
 	public void setBinding(String binding){
 		setVariableName(binding);
 	}
-	
+
 	public List<IFormElement> getChildren(){
 		return children;
 	}
-	
+
 	public void setChildren(List<IFormElement> children){
 		this.children = children;
+	}
+	
+	public void addChild(IFormElement element){
+		if(children == null)
+			children = new ArrayList<IFormElement>();
+		children.add(element);
+		element.setParent(this);
+	}
+
+	public IFormElement getParent(){
+		return null;
+	}
+
+	public void setParent(IFormElement parent){
+
+	}
+
+	public Element getControlNode(){
+		return null;
+	}
+
+	public void setControlNode(Element controlNode){
+
+	}
+
+	public Element getBindNode(){
+		return null;
+	}
+
+	public void setBindNode(Element bindNode){
+
+	}
+
+	public int getDataType(){
+		return QuestionDef.QTN_TYPE_NULL;
+	}
+
+	public void setDataType(int dataType){
+
+	}
+
+	public void updateDataNodes(Element parentDataNode){
+
+	}
+
+	public IFormElement copy(IFormElement parent){
+		return null;
+	}
+	
+	public String getDisplayText(){
+		return name;
+	}
+	
+	public String getHelpText(){
+		return null;
+	}
+	
+	public void setHelpText(String helpText){
+		
+	}
+	
+	public Element getLabelNode(){
+		return null;
+	}
+	
+	public void setLabelNode(Element labelNode){
+		
+	}
+	
+	public Element getHintNode(){
+		return null;
+	}
+	
+	public void setHintNode(Element hintNode){
+		
 	}
 }

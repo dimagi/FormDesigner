@@ -42,20 +42,20 @@ public class UiElementBuilder {
 	 * @param groupNode the xforms group node to which the question belongs.
 	 */
 	public static void fromQuestionDef2Xform(QuestionDef qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
-		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getVariableName(),formDef,formNode);
+		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0)
 			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(XformConstants.NODE_NAME_BIND);
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtn.getVariableName(),false);
+		String id = XformBuilderUtil.getBindIdFromVariableName(qtn.getBinding(),false);
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 
-		String nodeset = qtn.getVariableName();
+		String nodeset = qtn.getBinding();
 		if(!nodeset.startsWith("/"))
 			nodeset = "/" + nodeset;
 		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/"))
-			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getVariableName();
+			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
@@ -128,7 +128,7 @@ public class UiElementBuilder {
 	 * @param doc the xforms document.
 	 */
 	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
-		String name = qtnDef.getVariableName();
+		String name = qtnDef.getBinding();
 
 		//TODO Should do this for all invalid characters in node names.
 		name = name.replace("/", "");
@@ -190,26 +190,44 @@ public class UiElementBuilder {
 
 		String name = XformConstants.NODE_NAME_INPUT;
 
-		if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+		int type = qtnDef.getDataType();
+		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 			name = XformConstants.NODE_NAME_SELECT1;
-		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			name = XformConstants.NODE_NAME_SELECT;
-		else if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		else if(type == QuestionDef.QTN_TYPE_REPEAT)
 			name = XformConstants.NODE_NAME_GROUP;
+		else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO)
+			name = XformConstants.NODE_NAME_UPLOAD;
 
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getVariableName(), isRepeatKid);
+		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = doc.createElement(name);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
 		else
-			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getVariableName());
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getBinding());
 
+		setMediaType(node, type);
+		
 		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 		//	node.setAttribute("selection", "closed");
 
 		return node;
 	}
 
+	public static void setMediaType(Element node, int type){
+		String mediatype = null;
+		if(type == QuestionDef.QTN_TYPE_IMAGE)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_IMAGE;
+		else if(type == QuestionDef.QTN_TYPE_AUDIO)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_AUDIO;
+		else if(type == QuestionDef.QTN_TYPE_VIDEO)
+			mediatype = XformConstants.ATTRIBUTE_VALUE_VIDEO;
+		
+		if(mediatype != null)
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE, mediatype + "/*");
+	}
+	
 
 	/**
 	 * Converts an option definition object to xforms.
@@ -221,7 +239,7 @@ public class UiElementBuilder {
 	 */
 	public static Element fromOptionDef2Xform(OptionDef optionDef, Document doc, Element uiNode){
 		Element itemNode =  doc.createElement(XformConstants.NODE_NAME_ITEM);
-		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getVariableName());
+		itemNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getBinding());
 
 		Element node =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 		node.appendChild(doc.createTextNode(optionDef.getText()));
@@ -229,7 +247,7 @@ public class UiElementBuilder {
 		optionDef.setLabelNode(node);
 
 		node =  doc.createElement(XformConstants.NODE_NAME_VALUE);
-		node.appendChild(doc.createTextNode(optionDef.getVariableName()));
+		node.appendChild(doc.createTextNode(optionDef.getBinding()));
 		itemNode.appendChild(node);
 		optionDef.setValueNode(node);
 

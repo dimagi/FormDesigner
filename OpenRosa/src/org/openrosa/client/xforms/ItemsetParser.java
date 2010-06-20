@@ -146,7 +146,7 @@ public class ItemsetParser {
 		if (!label.equals("") && !value.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (optionDef != null){
 				optionDef.setText(label);
-				optionDef.setVariableName(value);
+				optionDef.setBinding(value);
 				optionDef.setLabelNode(labelNode);
 				optionDef.setValueNode(valueNode);
 			}
@@ -174,7 +174,7 @@ public class ItemsetParser {
 			return; //This can only be a bug
 
 		//Return if parent question has not yet been parsed.
-		QuestionDef parentQuestionDef = formDef.getQuestion(binding);
+		QuestionDef parentQuestionDef = (QuestionDef)formDef.getElement(binding);
 		if(parentQuestionDef == null)
 			return;
 

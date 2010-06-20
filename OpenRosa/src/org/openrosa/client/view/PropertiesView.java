@@ -3,8 +3,8 @@ package org.openrosa.client.view;
 import org.openrosa.client.Context;
 import org.openrosa.client.model.Calculation;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.OptionDef;
-import org.openrosa.client.model.PageDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.RepeatQtnsDef;
 import org.openrosa.client.util.FormDesignerUtil;
@@ -14,6 +14,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -102,8 +103,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** List box index for gps data type. */
 	private static final byte DT_INDEX_GPS = 14;
+	
+	/** List box index for group data type. */
+	private static final byte DT_INDEX_GROUP = 15;
 
-	/** Table used for organising widgets in a table format. */
+	/** Table used for organizing widgets in a table format. */
 	private FlexTable table = new FlexTable();
 
 	/** Widget for displaying the list of data types. */
@@ -598,7 +602,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 					qtnID.setText(name);
 				}
 			}
-			else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*startsWith("question")*/){
+			else if(propertiesObj instanceof QuestionDef && ((QuestionDef)propertiesObj).getBinding().equals(orgTextDefBinding) /*startsWith("question")*/){
 				((QuestionDef)propertiesObj).setVariableName(name);
 				txtBinding.setText(name);
 
@@ -607,8 +611,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 					qtnID.setText(name);
 				}
 			}
-			else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getVariableName().equals(orgTextDefBinding) /*.startsWith("option")*/){
-				((OptionDef)propertiesObj).setVariableName(name);
+			else if(propertiesObj instanceof OptionDef && ((OptionDef)propertiesObj).getBinding().equals(orgTextDefBinding) /*.startsWith("option")*/){
+				((OptionDef)propertiesObj).setBinding(name);
 				txtBinding.setText(name);
 
 				if(((OptionDef)propertiesObj).getItextId().equals(orgTextDefBinding)){
@@ -687,8 +691,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			((QuestionDef)propertiesObj).setText(txtText.getText());
 		else if(propertiesObj instanceof OptionDef)
 			((OptionDef)propertiesObj).setText(txtText.getText());
-		else if(propertiesObj instanceof PageDef)
-			((PageDef)propertiesObj).setName(txtText.getText());
+		else if(propertiesObj instanceof GroupDef)
+			((GroupDef)propertiesObj).setName(txtText.getText());
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setName(txtText.getText());
 
@@ -743,7 +747,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj instanceof QuestionDef)
 			((QuestionDef)propertiesObj).setVariableName(txtBinding.getText());
 		else if(propertiesObj instanceof OptionDef)
-			((OptionDef)propertiesObj).setVariableName(txtBinding.getText());
+			((OptionDef)propertiesObj).setBinding(txtBinding.getText());
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setVariableName(txtBinding.getText());
 		else if(propertiesObj instanceof PageDef){
@@ -784,8 +788,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			((OptionDef)propertiesObj).setItextId(qtnID.getText());
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setItextId(qtnID.getText());
-		else if(propertiesObj instanceof PageDef)
-			((PageDef)propertiesObj).setItextId(qtnID.getText());
+		else if(propertiesObj instanceof GroupDef)
+			((GroupDef)propertiesObj).setItextId(qtnID.getText());
 	}
 
 	/**
@@ -812,7 +816,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				!(index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT)){
-			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
+			if(questionDef.getOptionCount() > 0 && !Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
 				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_INDEX_SINGLE_SELECT : DT_INDEX_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
 				return;
@@ -829,11 +833,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			deleteKids = true;
 		}
 
+		int prevDataType = questionDef.getDataType();
+		
 		//cbDataType.setSelectedIndex(index);
 		setQuestionDataType((QuestionDef)propertiesObj);
 		formChangeListener.onFormItemChanged(propertiesObj);
 		if(deleteKids)
 			formChangeListener.onDeleteChildren(propertiesObj);
+		
+		Context.getEventBus().fireDataTypeChangeEvent(questionDef, prevDataType);
 	}
 
 	/**
@@ -887,6 +895,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case DT_INDEX_GPS:
 			dataType = QuestionDef.QTN_TYPE_GPS;
+			break;
+		case DT_INDEX_GROUP:
+			dataType = QuestionDef.QTN_TYPE_GROUP;
 			break;
 		}
 
@@ -942,7 +953,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * 
 	 * @param pageDef the page definition object.
 	 */
-	private void setPageProperties(PageDef pageDef){
+	private void setPageProperties(GroupDef pageDef){
 		enableQuestionOnlyProperties(false);
 
 		txtText.setVisible(true);
@@ -956,7 +967,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtCalculation.getParent().setVisible(false);
 
 		txtText.setText(pageDef.getName());
-		txtBinding.setText(String.valueOf(pageDef.getPageNo()));
+		txtBinding.setText(String.valueOf(pageDef.getText()));
 		qtnID.setText(pageDef.getItextId());
 		//skipRulesView.updateSkipRule();
 	}
@@ -975,7 +986,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		qtnID.setVisible(true);
 		qtnID.setText(questionDef.getItextId());
 		txtText.setText(questionDef.getText());
-		txtBinding.setText(questionDef.getVariableName());
+		txtBinding.setText(questionDef.getBinding());
 		txtHelpText.setText(questionDef.getHelpText());
 		txtDefaultValue.setText(questionDef.getDefaultValue());
 
@@ -1018,7 +1029,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		lblCalculate.setVisible(false);
 
 		txtText.setText(optionDef.getText());
-		txtBinding.setText(optionDef.getVariableName());
+		txtBinding.setText(optionDef.getBinding());
 		qtnID.setText(optionDef.getItextId());
 		//skipRulesView.updateSkipRule();
 	}
@@ -1119,6 +1130,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case QuestionDef.QTN_TYPE_GPS:
 			index = DT_INDEX_GPS;
 			break;
+		case QuestionDef.QTN_TYPE_GROUP:
+				index = DT_INDEX_GROUP;
+				break;
 		}
 
 		cbDataType.setSelectedIndex(index);
@@ -1173,7 +1187,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(formItem instanceof FormDef)
 			setFormProperties((FormDef)formItem);
 		else if(formItem instanceof PageDef)
-			setPageProperties((PageDef)formItem);
+			setPageProperties((GroupDef)formItem);
 		else if(formItem instanceof QuestionDef)
 			setQuestionProperties((QuestionDef)formItem);
 		else if(formItem instanceof OptionDef){

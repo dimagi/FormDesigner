@@ -162,7 +162,7 @@ public class ValidationRule implements Serializable{
 		conditions.remove(condition);
 	}
 	
-	public void removeQuestion(QuestionDef questionDef){
+	public void removeQuestion(IFormElement questionDef){
 		for(int index = 0; index < getConditionCount(); index++){
 			Condition condition = getConditionAt(index);
 			if(condition.getQuestionId() == questionDef.getId() || 
@@ -265,7 +265,7 @@ public class ValidationRule implements Serializable{
 		
 		//using variable name instead of id because id could have changed as more questions are
 		//added or some deleted.
-		QuestionDef questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+		QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
 		if(questionDef == null)
 			return; //possibly question for the validation rule has been deleted.
 		
@@ -279,7 +279,7 @@ public class ValidationRule implements Serializable{
 			if(qtn == null)
 				continue;
 			
-			questionDef = dstFormDef.getQuestion(qtn.getVariableName());
+			questionDef = dstFormDef.getQuestion(qtn.getBinding());
 			if(questionDef == null)
 				continue;
 			

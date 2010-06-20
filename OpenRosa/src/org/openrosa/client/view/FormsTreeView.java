@@ -751,6 +751,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
+				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
@@ -768,6 +770,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
+				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
@@ -783,6 +787,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
+				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
@@ -805,6 +811,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
+				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				
 				treePanel.getSelectionModel().select(item, false);
 			}
@@ -819,6 +827,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			
 			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				addNewOptionDef(questionDef, item);
+			else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+				addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 			
 			treePanel.getSelectionModel().select(item, false);
 		}

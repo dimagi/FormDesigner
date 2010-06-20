@@ -93,9 +93,7 @@ public class XformParser {
 	 * @param xml the document xml.
 	 * @return the form definition object.
 	 */
-	public static FormDef fromXform2FormDef(String xml, HashMap<Integer,HashMap<String,String>> languageText){
-		Document doc = XmlUtil.getDocument(xml);
-
+	public static FormDef fromXform2FormDef(Document doc, String xml, HashMap<Integer,HashMap<String,String>> languageText){
 		String layoutXml = null, javaScriptSrc = null; NodeList nodes = null;
 		Element root = doc.getDocumentElement();
 		if(root.getNodeName().equals("PurcForm")){
@@ -753,6 +751,14 @@ public class XformParser {
 				if(pageNo == 0) pageNo = 1; //Xform may not have groups for pages.
 				setQuestionDataNode(qtn,formDef,parentQtn);
 				parentQtn = qtn;
+			}
+			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)){
+				if("image/*".equalsIgnoreCase(child.getAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE)))
+					qtn.setDataType(QuestionDef.QTN_TYPE_IMAGE);
+				else if("audio/*".equalsIgnoreCase(child.getAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE)))
+					qtn.setDataType(QuestionDef.QTN_TYPE_AUDIO);
+				else if("video/*".equalsIgnoreCase(child.getAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE)))
+					qtn.setDataType(QuestionDef.QTN_TYPE_VIDEO);
 			}
 
 			//TODO second addition for repeats

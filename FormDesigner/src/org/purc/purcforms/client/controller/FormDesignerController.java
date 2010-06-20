@@ -15,6 +15,7 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.ItextParser;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
 import org.purc.purcforms.client.view.LocalesDialog;
@@ -256,7 +257,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml,languageText);
+						Document doc = ItextParser.parse(xml); /*XmlUtil.getDocument(xml);*/
+						FormDef formDef = XformParser.fromXform2FormDef(doc, xml,languageText);
 						formDef.setReadOnly(tempReadonly);
 
 						if(tempFormId != ModelConstants.NULL_ID)

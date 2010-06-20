@@ -277,6 +277,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
 		cbDataType.addItem(LocaleText.get("qtnTypeBarcode"));
+		cbDataType.addItem("Group");
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);

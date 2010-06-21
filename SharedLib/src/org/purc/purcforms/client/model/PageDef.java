@@ -814,6 +814,12 @@ public class PageDef implements Serializable{
 	 */
 	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
 		//if(labelNode == null || groupNode == null)
+		if(groupNode == null && questions != null && questions.size() > 0){
+			Element controlNode = ((QuestionDef)questions.elementAt(0)).getControlNode();
+			if(controlNode != null)
+				groupNode = (Element)controlNode.getParentNode();
+		}
+		
 		if(groupNode == null)
 			return;
 

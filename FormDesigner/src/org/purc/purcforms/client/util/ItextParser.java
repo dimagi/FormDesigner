@@ -12,6 +12,7 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -24,6 +25,14 @@ import com.google.gwt.xml.client.NodeList;
 public class ItextParser {
 	
 	/**
+	 * A map of locale doc's xform node keyed by the locale key.
+	 */
+	private static HashMap<String, Element> localeXformNodeMap = new HashMap<String, Element>();
+	
+	private static HashMap<String, HashMap<String, String>> defaultTextMap = new HashMap<String, HashMap<String, String>>();
+	
+	
+	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
 	 * as represented by their itext ids. The translation element with the "default" attribute (default="") OR the first locale in the itext block
 	 * (if no default attribute is found) is the one taken as the default.
@@ -33,6 +42,9 @@ public class ItextParser {
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
 	public static Document parse(String xml){
+		localeXformNodeMap.clear();
+		defaultTextMap.clear();
+		
 		Document doc = XmlUtil.getDocument(xml);
 
 		//Check if we have an itext block in this xform.
@@ -62,15 +74,42 @@ public class ItextParser {
 				Context.setDefaultLocale(Context.getLocale());
 			}
 			
+			defaultTextMap.put(lang, defText);
+			
 			//create a new locale object for the current translation.
 			locales.add(new Locale(lang,lang));
 		}
 
+		Context.setLocales(locales);
+		
+		//create a hash table of locale xform nodes keyed by locale.
+		for(Locale locale : locales){
+			Document localeDoc = XMLParser.createDocument();
+			Element node = localeDoc.createElement(LanguageUtil.NODE_NAME_LANGUAGE_TEXT);
+			node.setAttribute("lang", locale.getName());
+			localeDoc.appendChild(node);
+
+			Element localeXformNode = localeDoc.createElement(LanguageUtil.NODE_NAME_XFORM);
+			node.appendChild(localeXformNode);
+
+			localeXformNodeMap.put(locale.getName(), localeXformNode);
+		}
+		
 		tranlateNodes("label", doc, defaultText); //getKey()??????
 		tranlateNodes("hint", doc, defaultText); //getKey()??????
 		tranlateNodes("title", doc, defaultText); //getKey()??????
+		
+		Context.getLanguageText().clear();
+		
 
-		Context.setLocales(locales);
+		HashMap<String,String> map = new HashMap<String,String>();
+		for(Locale locale : locales){
+		    Element localeXformNode = localeXformNodeMap.get(locale.getName());
+			map.put(locale.getName(), localeXformNode.getOwnerDocument().toString());
+		}
+		
+		//TODO Will the form id always be 1?
+		Context.getLanguageText().put(1, map);
 		
 		return doc;
 	}
@@ -180,7 +219,15 @@ public class ItextParser {
 			else
 				ref = parentNode.getAttribute("bind");
 			
-			System.out.println(FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + id + "']" + "/" + name);
+			String xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref + "']" + "/" + name;
+			
+			for(Locale locale : Context.getLocales()){
+				Element localeXformNode = localeXformNodeMap.get(locale.getName());
+				Element textNode = localeXformNode.getOwnerDocument().createElement("text");
+				textNode.setAttribute("xpath", xpath);
+				textNode.setAttribute("value", (String)defaultTextMap.get(locale.getName()).get(id));
+				localeXformNode.appendChild(textNode);
+			}
 		    //..........................................................................
 		}
 	}

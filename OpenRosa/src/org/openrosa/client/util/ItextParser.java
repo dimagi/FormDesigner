@@ -48,6 +48,8 @@ public class ItextParser {
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
 	public static Document parse(String xml, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
+		localeXformNodeMap.clear();
+		
 		Document doc = XmlUtil.getDocument(xml);
 
 		//Check if we have an itext block in this xform.

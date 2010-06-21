@@ -68,10 +68,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	private IFormSaveListener formSaveListener;
 
-	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
-	 * key and text, where locale key is the value map key and text is the value map value.
-	 */
-	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
 	//These are constants to remember the current action during the login call back
 	//such that we know which action to execute.
@@ -258,7 +254,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
 						Document doc = ItextParser.parse(xml); /*XmlUtil.getDocument(xml);*/
-						FormDef formDef = XformParser.fromXform2FormDef(doc, xml,languageText);
+						FormDef formDef = XformParser.fromXform2FormDef(doc, xml,Context.getLanguageText());
 						formDef.setReadOnly(tempReadonly);
 
 						if(tempFormId != ModelConstants.NULL_ID)
@@ -279,7 +275,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
 
 						//TODO May also need to refresh UI if form was not stored in default lang.
-						HashMap<String,String> locales = languageText.get(formDef.getId());
+						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
 						if(locales != null){
 							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
 							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
@@ -401,7 +397,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					centerPanel.saveJavaScriptSource();
 					
 					if(!isOfflineMode() && formSaveListener == null)
-						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
+						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())),centerPanel.getJavaScriptSource());
 
 					boolean saveLocaleText = false;
 					if(formSaveListener != null)
@@ -724,7 +720,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							else
 								xformXml = xml;
 
-							LanguageUtil.loadLanguageText(formId, localeXml, languageText);
+							LanguageUtil.loadLanguageText(formId, localeXml, Context.getLanguageText());
 
 							centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 							centerPanel.setLayoutXml(layoutXml,false);
@@ -1145,7 +1141,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				FormUtil.dlg.hide();
 			}
 			else
-				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())));
+				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())));
 		}
 		catch(Exception ex){
 			FormUtil.displayException(ex);
@@ -1178,7 +1174,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				//Store the new locale.
 				Context.setLocale(locale);
 
-				HashMap<String,String> map = languageText.get(formDef.getId());
+				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
 
 				String xml = null;
 				//Get text for this locale, if we have it. 
@@ -1206,10 +1202,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param text the form locale text.
 	 */
 	private void setLocaleText(Integer formId, String locale, String text){
-		HashMap<String,String> map = languageText.get(formId);
+		HashMap<String,String> map = Context.getLanguageText().get(formId);
 		if(map == null){
 			map = new HashMap<String,String>();
-			languageText.put(formId, map);
+			Context.getLanguageText().put(formId, map);
 		}
 
 		map.put(locale, text);
@@ -1223,7 +1219,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @return the form locale text.
 	 */
 	private String getFormLocaleText(int formId, String locale){
-		HashMap<String,String> map = languageText.get(formId);
+		HashMap<String,String> map = Context.getLanguageText().get(formId);
 		if(map != null)
 			return map.get(locale);
 		return null;
@@ -1301,7 +1297,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					public void execute() {
 						try{
 							FormDef formDef = leftPanel.getSelectedForm();
-							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
+							String xml = PurcFormBuilder.build(formDef, Context.getLanguageText().get(formDef.getId()));
 							
 							//This below messes up JS
 							//xml = FormDesignerUtil.formatXml(xml);

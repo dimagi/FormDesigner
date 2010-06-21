@@ -200,6 +200,7 @@ public class XformParser {
 		Element rootNode = doc.getDocumentElement();
 		FormDef formDef = new FormDef();
 		formDef.setDoc(doc);
+		formDef.setId(1);
 		HashMap id2VarNameMap = new HashMap();
 		HashMap relevants = new HashMap();
 		HashMap constraints = new HashMap();

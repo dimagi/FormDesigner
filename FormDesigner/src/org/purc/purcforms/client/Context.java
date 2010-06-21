@@ -1,6 +1,7 @@
 package org.purc.purcforms.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -71,6 +72,11 @@ public class Context {
 	/** List of those interested in being notified whenever the locale list changes. */
 	private static List<ILocaleListChangeListener> localeListeners = new ArrayList<ILocaleListChangeListener>();
 	
+	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
+	 * key and text, where locale key is the value map key and text is the value map value.
+	 */
+	private static HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
+
 	
 	/**
 	 * Sets the default locale.
@@ -240,5 +246,9 @@ public class Context {
 				offlineMode = false;
 		}
 		catch(Exception ex){}
+	}
+	
+	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
+		return languageText;
 	}
 }

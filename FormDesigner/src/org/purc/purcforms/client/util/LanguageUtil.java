@@ -25,8 +25,8 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class LanguageUtil {
 
-	private static final String NODE_NAME_XFORM = "xform";
-	private static final String NODE_NAME_FORM = "Form";
+	public static final String NODE_NAME_XFORM = "xform";
+	public static final String NODE_NAME_FORM = "Form";
 	
 	public static final String NODE_NAME_LANGUAGE_TEXT = "LanguageText";
 	

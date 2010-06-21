@@ -93,8 +93,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	/** List of form item selection listeners. */
 	private List<IFormSelectionListener> formSelectionListeners = new ArrayList<IFormSelectionListener>();
 
-	/** The next available form id. */
-	private int nextFormId = 0;
+	/** The next available form id. We always have one form for OpenRosa form designer. */
+	private int nextFormId = 1;
 
 	/** The next available question id. */
 	private int nextQuestionId = 0;
@@ -345,7 +345,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		treePanel.getStore().removeAll();
 		
 		if(formDef.getId() == ModelConstants.NULL_ID)
-			formDef.setId(++nextFormId);
+			formDef.setId(nextFormId);
 
 		if(!langRefresh){
 			int count = formDef.getQuestionCount();
@@ -597,7 +597,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			formDef = null;
 			fireFormItemSelected(null);
 
-			nextFormId = 0;
+			nextFormId = 1;
 			nextQuestionId = 0;
 			nextOptionId = 0;
 		}
@@ -857,7 +857,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	public void addNewForm(){
-		int id = ++nextFormId;
+		int id = nextFormId;
 		addNewForm(LocaleText.get("newForm")+id,"new_form"+id,id);
 
 		//Automatically add a new question
@@ -1285,10 +1285,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @return the selected form.
 	 */
 	public FormDef getSelectedForm(){
-		TreeModelItem  item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		return formDef; //we always have one form in openrosa form designer.
+		
+		/*TreeModelItem  item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 		if(item != null)
 			return getSelectedForm(item);
-		return null;
+		return null;*/
 	}
 
 	/**

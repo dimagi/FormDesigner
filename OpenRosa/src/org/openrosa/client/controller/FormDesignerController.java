@@ -70,11 +70,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	private IFormSaveListener formSaveListener;
 
-	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
-	 * key and text, where locale key is the value map key and text is the value map value.
-	 */
-	private HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
-
 	//These are constants to remember the current action during the login call back
 	//such that we know which action to execute.
 	/** No current action. */
@@ -260,7 +255,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				try{
 					String xml = centerPanel.getXformsSource().trim();
 					if(xml.length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml,languageText);
+						FormDef formDef = XformParser.fromXform2FormDef(xml,Context.getLanguageText());
 						formDef.setReadOnly(tempReadonly);
 
 						if(tempFormId != ModelConstants.NULL_ID)
@@ -281,7 +276,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
 
 						//TODO May also need to refresh UI if form was not stored in default lang.
-						HashMap<String,String> locales = languageText.get(formDef.getId());
+						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
 						if(locales != null){
 							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
 							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
@@ -722,7 +717,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							else
 								xformXml = xml;
 
-							LanguageUtil.loadLanguageText(formId, localeXml, languageText);
+							LanguageUtil.loadLanguageText(formId, localeXml, Context.getLanguageText());
 
 							centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
 							centerPanel.setLayoutXml(layoutXml,false);
@@ -1127,7 +1122,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				FormUtil.dlg.hide();
 			}
 			else
-				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())));
+				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())));
 		}
 		catch(Exception ex){
 			FormUtil.dlg.hide();
@@ -1161,16 +1156,16 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				//Store the new locale.
 				Context.setLocale(locale);
 
-				HashMap<String,String> map = languageText.get(formDef.getId());
+				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
 
 				String xml = null;
 				//Get text for this locale, if we have it. 
 				if(map != null)
-					xml = map.get(locale);
+					xml = map.get(locale.getName());
 
 				//If we don't, then get text for the default locale.
 				if(xml == null && map != null)
-					xml = map.get(Context.getDefaultLocale());
+					xml = map.get(Context.getDefaultLocale().getName());
 
 				//Now reload the forms in this selected locale.
 				centerPanel.setLanguageXml(xml, false);
@@ -1189,10 +1184,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param text the form locale text.
 	 */
 	private void setLocaleText(Integer formId, String locale, String text){
-		HashMap<String,String> map = languageText.get(formId);
+		HashMap<String,String> map = Context.getLanguageText().get(formId);
 		if(map == null){
 			map = new HashMap<String,String>();
-			languageText.put(formId, map);
+			Context.getLanguageText().put(formId, map);
 		}
 
 		map.put(locale, text);
@@ -1206,7 +1201,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @return the form locale text.
 	 */
 	private String getFormLocaleText(int formId, String locale){
-		HashMap<String,String> map = languageText.get(formId);
+		HashMap<String,String> map = Context.getLanguageText().get(formId);
 		if(map != null)
 			return map.get(locale);
 		return null;

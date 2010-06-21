@@ -103,6 +103,12 @@ public class XmlUtil {
 					return true;
 			}
 		}
+		
+		if(numOfEntries == 0){
+			node.appendChild(node.getOwnerDocument().createTextNode(value));
+			return true;
+		}
+		
 		return false;
 	}
 	

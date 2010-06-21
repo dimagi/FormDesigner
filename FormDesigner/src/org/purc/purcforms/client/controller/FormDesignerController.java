@@ -1183,11 +1183,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				String xml = null;
 				//Get text for this locale, if we have it. 
 				if(map != null)
-					xml = map.get(locale);
+					xml = map.get(locale.getKey());
 
 				//If we don't, then get text for the default locale.
 				if(xml == null && map != null)
-					xml = map.get(Context.getDefaultLocale());
+					xml = map.get(Context.getDefaultLocale().getKey());
 
 				//Now reload the forms in this selected locale.
 				centerPanel.setLanguageXml(xml, false);

@@ -161,7 +161,9 @@ public class XformParser {
 	 */
 	public static FormDef fromXform2FormDef(String xml){
 		Document doc = XmlUtil.getDocument(xml);
-		return getFormDef(doc);
+		FormDef formDef = getFormDef(doc);
+		formDef.setId(1);
+		return formDef;
 	}
 
 	/**

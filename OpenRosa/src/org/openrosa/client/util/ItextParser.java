@@ -243,7 +243,7 @@ public class ItextParser {
 			//Get the itext id which starts at the 11th character.*/
 
 			String id = getItextId(node);
-			if(id == null)
+			if(id == null || id.trim().length() == 0)
 				continue;
 
 			String text = itext.get(id);
@@ -281,7 +281,11 @@ public class ItextParser {
 				list.add(itextModel);
 			}
 
-			itextModel.set("xpath", FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref /*id*/ + "']" + "/" + name);
+			String xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref /*id*/ + "']" + "/" + name;
+			if(ref == null)
+				xpath = FormUtil.getNodePath(parentNode) + "/" + name;
+				
+			itextModel.set("xpath", xpath);
 			//itextModel.set("id", id);
 			itextModel.set(localeKey, text);
 			//list.add(itextModel);
@@ -289,7 +293,7 @@ public class ItextParser {
 			for(Locale locale : Context.getLocales()){
 				Element localeXformNode = localeXformNodeMap.get(locale.getName());
 				Element textNode = localeXformNode.getOwnerDocument().createElement("text");
-				textNode.setAttribute("xpath", (String)itextModel.get("xpath"));
+				textNode.setAttribute("xpath", xpath);
 				textNode.setAttribute("value", (String)itextModel.get(locale.getName()));
 				localeXformNode.appendChild(textNode);
 			}

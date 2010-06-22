@@ -109,6 +109,10 @@ public class ItextBuilder {
 
 			String value = ((Element)node).getAttribute("value");
 			String id = ((Element)node).getAttribute("id"); //FormDesignerUtil.getXmlTagName(value);
+			
+			if(id == null || id.trim().length() == 0)
+				continue;
+			
 			/*textNode.setAttribute("id", id);
 
 			Element valueNode = doc.createElement("value");
@@ -301,6 +305,10 @@ public class ItextBuilder {
 		for(ItextModel itext : list){
 			
 			String id = itext.get("id");
+			
+			if(id == null || id.trim().length() == 0)
+				continue;
+			
 			String value = itext.get(locale.getName()); //getKey()??????
 			
 			//Do not create a duplicate itext element if we have already processed this itext id.

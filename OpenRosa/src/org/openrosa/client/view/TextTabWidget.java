@@ -7,10 +7,12 @@ import org.openrosa.client.Context;
 import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.model.Locale;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -55,7 +57,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	private int currentRowIndex = 0;
 
 	private ITextListener listener;
-	
+
 
 	/** The images for the tool bar icons. */
 	public final Images images;
@@ -88,6 +90,13 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		window.setMinHeight(400);
 		window.setMinWidth(400);
 
+		FormUtil.maximizeWidget(grid);
+		FormUtil.maximizeWidget(contentPanel);
+
+		window.addListener(Events.Resize, new Listener<ComponentEvent>() {
+			public void handleEvent(final ComponentEvent event) {
+				contentPanel.setWidth(window.getWidth());
+			}});
 
 		setupContextMenu();
 
@@ -96,6 +105,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		//				menuBut.showMenu();
 		//			}
 		//		});
+
+		FormUtil.maximizeWidget(this);
 	}
 
 	private void setupContextMenu() {
@@ -141,8 +152,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				}
 			}
 		});
-		
-		
+
+
 		grid.addListener(Events.CellClick, new Listener<GridEvent<ModelData>>(){
 			public void handleEvent(final GridEvent<ModelData> ge)
 			{
@@ -177,35 +188,35 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		tb.add(btnRemoveRow);
 
 		contentPanel.setTopComponent(tb);
-		
+
 		btnSave.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
 				save();
 			}
 		});
-		
+
 		addLang.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
 				addNewLanguage();
 			}
 		});
-		
+
 		removeLang.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
 				removeActiveColumnLang();
 			}
 		});
-		
+
 		btnAddRow.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
 				addNewRow();
 			}
 		});
-		
+
 		btnRemoveRow.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
@@ -255,12 +266,12 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				//NEED TO PUT HOOK to removeLanguage() here
 
 				//removeLanguage();
-				
+
 				removeActiveColumnLang();
 			}  
 		});  
 		contextMenu.add(removeLang);  
-		
+
 		MenuItem addRow = new MenuItem();  
 		addRow.setText("Add Row");   
 		addRow.addSelectionListener(new SelectionListener<MenuEvent>() {  
@@ -269,7 +280,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			}  
 		});  
 		contextMenu.add(addRow); 
-		
+
 		MenuItem btnRemoveRow = new MenuItem();  
 		btnRemoveRow.setText("Remove Row");   
 		btnRemoveRow.addSelectionListener(new SelectionListener<MenuEvent>() {  
@@ -278,11 +289,11 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			}  
 		});  
 		contextMenu.add(btnRemoveRow); 
-		
+
 
 		grid.setContextMenu(contextMenu);  
 	}
-	
+
 	private void removeActiveColumnLang(){		
 		if(cm.getColumnCount() > 3)
 			removeLanguage();
@@ -367,13 +378,13 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			ColumnConfig columnConfig = new ColumnConfig(lang, lang, 200);
 			grid.getColumnModel().getColumns().add(columnConfig);
 			columnConfig.setEditor(new CellEditor(new TextField<String>()));
-			
+
 			String id = cm.getColumnId(2);
 			for(ItextModel model : store.getModels())
 				model.set(lang, model.get(id));
 
 			grid.reconfigure(store, cm);
-			
+
 			Context.getLocales().add(new Locale(lang,lang));
 			Context.setLocales(Context.getLocales()); //for locale change notification
 		}
@@ -386,10 +397,10 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 		for(ItextModel model : store.getModels())
 			model.remove(language);
-		
+
 		cm.getColumns().remove(currentColumnIndex);
 		grid.reconfigure(store, cm);
-		
+
 		List<Locale> locales = Context.getLocales();
 		for(Locale locale : locales){
 			if(locale.getName().equals(language)){
@@ -397,7 +408,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				break;
 			}
 		}
-		
+
 		Context.setLocales(locales);
 	}
 
@@ -412,10 +423,10 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				model.set(newLanguage, model.get(oldLanguage));
 				//model.remove(oldLanguage);
 			}
-			
+
 			cm.getColumns().get(currentColumnIndex).setHeader(newLanguage);
 			grid.reconfigure(store, cm);
-			
+
 			List<Locale> locales = Context.getLocales();
 			for(Locale locale : locales){
 				if(locale.getName().equals(oldLanguage)){
@@ -424,29 +435,29 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 					break;
 				}
 			}
-			
+
 			Context.setLocales(Context.getLocales()); //for locale change notification
 		}
 	}
-	
+
 	public void addNewRow(){
 		grid.getStore().add(new ItextModel());
 		grid.reconfigure(store, cm);
 	}
-	
+
 	public void removeRow(){
 		if(currentRowIndex < 0)
 			return;
-		
+
 		String id = store.getModels().get(currentRowIndex).get("id");
 		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + id + " row?"))
 			return;
-		
+
 		ItextModel model = store.getModels().get(currentRowIndex);
 		grid.getStore().remove(model);
 		grid.reconfigure(store, cm);
 	}
-	
+
 	public void save(){
 		listener.onSaveItext(getItext());
 	}

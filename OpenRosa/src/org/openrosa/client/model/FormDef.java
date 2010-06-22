@@ -513,6 +513,9 @@ public class FormDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement def = children.get(i);
+			if(id == def.getId())
+				return def;
+			
 			if(def instanceof GroupDef){
 				def = ((GroupDef)def).getElement(id);
 				if(def != null)
@@ -681,6 +684,12 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public void setXformsNode(Element xformsNode) {
 		this.xformsNode = xformsNode;
+		
+		if(xformsNode != null){
+			String prefix = xformsNode.getPrefix();
+			if(prefix != null && prefix.trim().length() > 0)
+				XformConstants.updatePrefixConstants(prefix);
+		}
 	}
 
 	/**

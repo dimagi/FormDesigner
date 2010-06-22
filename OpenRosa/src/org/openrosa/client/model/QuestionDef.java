@@ -991,7 +991,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(!variableName.contains("/")){
 			xml = xml.replace(name, variableName);
 			Element node = XformUtil.getNode(xml);
-			node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
+			node = (Element)controlNode.getOwnerDocument().importNode(node, true);
 			Element parent = (Element)dataNode.getParentNode();
 			if(formDef.getVariableName().equals(parent.getNodeName()))
 				parent.replaceChild(node, dataNode);
@@ -1006,7 +1006,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
 				Element node = XformUtil.getNode(xml);
-				node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
+				node = (Element)controlNode.getOwnerDocument().importNode(node, true);
 				Element parent = (Element)dataNode.getParentNode();
 				parent.replaceChild(node, dataNode);
 				dataNode = node;
@@ -1070,10 +1070,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		Element parent = (Element)controlNode.getParentNode();
 		String xml = controlNode.toString();
 		boolean modified = false;
-
-		//TODO We need to use the prefix, if any, on node names.
-		if(name.contains(":"))
-			XformConstants.PREFIX_XFORMS_AND_COLON = name.substring(0,name.indexOf(':')+1);
 		
 		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&

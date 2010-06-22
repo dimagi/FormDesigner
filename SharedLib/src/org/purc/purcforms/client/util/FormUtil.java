@@ -69,7 +69,7 @@ public class FormUtil {
 	private static String fileOpenUrlSuffix;
 	private static String fileSaveUrlSuffix;
 	private static String gpsTypeName;
-
+	
 
 	/** 
 	 * The url to navigate to when one closes the form designer by selecting
@@ -414,6 +414,10 @@ public class FormUtil {
 		gpsTypeName = getDivValue("gpsTypeName");
 		if(gpsTypeName == null || gpsTypeName.trim().length() == 0)
 			gpsTypeName = XformConstants.DATA_TYPE_TEXT;
+		
+		s = getDivValue("constraintMessageAttributeName");
+		if(s != null && s.trim().length() > 0)
+			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = s;
 	}
 
 	public static String getDivValue(String id){

@@ -38,23 +38,24 @@ public class XformConstants {
 	/** Namespace for XML schema instance. */
 	public static final String NAMESPACE_XML_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
 
-	public static final String NODE_NAME_XFORMS = PREFIX_XFORMS_AND_COLON+"xforms";
-	public static final String NODE_NAME_INSTANCE = PREFIX_XFORMS_AND_COLON+"instance";
-	public static final String NODE_NAME_MODEL = PREFIX_XFORMS_AND_COLON+"model";
-	public static final String NODE_NAME_BIND = PREFIX_XFORMS_AND_COLON+"bind";
-	public static final String NODE_NAME_LABEL = PREFIX_XFORMS_AND_COLON+"label";
-	public static final String NODE_NAME_HINT = PREFIX_XFORMS_AND_COLON+"hint";
-	public static final String NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
-	public static final String NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
-	public static final String NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
-	public static final String NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"upload";
-	public static final String NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
-	public static final String NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
-	public static final String NODE_NAME_REPEAT = PREFIX_XFORMS_AND_COLON+"repeat";
-	public static final String NODE_NAME_TRIGGER = PREFIX_XFORMS_AND_COLON+"trigger";
-	public static final String NODE_NAME_SUBMIT = PREFIX_XFORMS_AND_COLON+"submit";
-	public static final String NODE_NAME_VALUE = PREFIX_XFORMS_AND_COLON+"value";
-	public static final String NODE_NAME_GROUP = PREFIX_XFORMS_AND_COLON+"group";
+	//Not made constant because we need to change them at runtime when parsing xforms with their custom prefix.
+	public static String NODE_NAME_XFORMS = PREFIX_XFORMS_AND_COLON+"xforms";
+	public static String NODE_NAME_INSTANCE = PREFIX_XFORMS_AND_COLON+"instance";
+	public static String NODE_NAME_MODEL = PREFIX_XFORMS_AND_COLON+"model";
+	public static String NODE_NAME_BIND = PREFIX_XFORMS_AND_COLON+"bind";
+	public static String NODE_NAME_LABEL = PREFIX_XFORMS_AND_COLON+"label";
+	public static String NODE_NAME_HINT = PREFIX_XFORMS_AND_COLON+"hint";
+	public static String NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
+	public static String NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
+	public static String NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
+	public static String NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"upload";
+	public static String NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
+	public static String NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
+	public static String NODE_NAME_REPEAT = PREFIX_XFORMS_AND_COLON+"repeat";
+	public static String NODE_NAME_TRIGGER = PREFIX_XFORMS_AND_COLON+"trigger";
+	public static String NODE_NAME_SUBMIT = PREFIX_XFORMS_AND_COLON+"submit";
+	public static String NODE_NAME_VALUE = PREFIX_XFORMS_AND_COLON+"value";
+	public static String NODE_NAME_GROUP = PREFIX_XFORMS_AND_COLON+"group";
 
 	public static final String NODE_NAME_XFORMS_MINUS_PREFIX = "xforms";
 	public static final String NODE_NAME_INSTANCE_MINUS_PREFIX = "instance";
@@ -127,4 +128,27 @@ public class XformConstants {
 
 	public static final String CONDITIONS_OPERATOR_TEXT_AND = " and ";
 	public static final String CONDITIONS_OPERATOR_TEXT_OR = " or ";
+	
+	
+	public static void updatePrefixConstants(String prefix){
+		PREFIX_XFORMS_AND_COLON = prefix + ":";
+		
+		NODE_NAME_XFORMS = PREFIX_XFORMS_AND_COLON+"xforms";
+		NODE_NAME_INSTANCE = PREFIX_XFORMS_AND_COLON+"instance";
+		NODE_NAME_MODEL = PREFIX_XFORMS_AND_COLON+"model";
+		NODE_NAME_BIND = PREFIX_XFORMS_AND_COLON+"bind";
+		NODE_NAME_LABEL = PREFIX_XFORMS_AND_COLON+"label";
+		NODE_NAME_HINT = PREFIX_XFORMS_AND_COLON+"hint";
+		NODE_NAME_ITEM = PREFIX_XFORMS_AND_COLON+"item";
+		NODE_NAME_ITEMSET = PREFIX_XFORMS_AND_COLON+"itemset";
+		NODE_NAME_INPUT = PREFIX_XFORMS_AND_COLON+"input";
+		NODE_NAME_UPLOAD = PREFIX_XFORMS_AND_COLON+"upload";
+		NODE_NAME_SELECT = PREFIX_XFORMS_AND_COLON+"select";
+		NODE_NAME_SELECT1 = PREFIX_XFORMS_AND_COLON+"select1";
+		NODE_NAME_REPEAT = PREFIX_XFORMS_AND_COLON+"repeat";
+		NODE_NAME_TRIGGER = PREFIX_XFORMS_AND_COLON+"trigger";
+		NODE_NAME_SUBMIT = PREFIX_XFORMS_AND_COLON+"submit";
+		NODE_NAME_VALUE = PREFIX_XFORMS_AND_COLON+"value";
+		NODE_NAME_GROUP = PREFIX_XFORMS_AND_COLON+"group";
+	}
 }

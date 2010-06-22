@@ -713,6 +713,12 @@ public class FormDef implements Serializable{
 	 */
 	public void setXformsNode(Element xformsNode) {
 		this.xformsNode = xformsNode;
+		
+		if(xformsNode != null){
+			String prefix = xformsNode.getPrefix();
+			if(prefix != null && prefix.trim().length() > 0)
+				XformConstants.updatePrefixConstants(prefix);
+		}
 	}
 
 	/**

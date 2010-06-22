@@ -6,7 +6,6 @@ import java.util.List;
 import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
-import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 

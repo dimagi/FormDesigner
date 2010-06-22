@@ -193,7 +193,7 @@ public class ItextParser {
 			Element node = (Element)nodes.item(index);
 			
 			String id = getItextId(node);
-			if(id == null)
+			if(id == null || id.trim().length() == 0)
 				continue;
 			
 			String text = itext.get(id);
@@ -220,6 +220,8 @@ public class ItextParser {
 				ref = parentNode.getAttribute("bind");
 			
 			String xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref + "']" + "/" + name;
+			if(ref == null)
+				xpath = FormUtil.getNodePath(parentNode) + "/" + name;
 			
 			for(Locale locale : Context.getLocales()){
 				Element localeXformNode = localeXformNodeMap.get(locale.getName());

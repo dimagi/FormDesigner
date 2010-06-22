@@ -962,7 +962,7 @@ public class QuestionDef implements Serializable{
 		if(!variableName.contains("/")){
 			xml = xml.replace(name, variableName);
 			Element node = XformUtil.getNode(xml);
-			node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
+			node = (Element)controlNode.getOwnerDocument().importNode(node, true);
 			Element parent = (Element)dataNode.getParentNode();
 			if(formDef.getBinding().equals(parent.getNodeName()))
 				parent.replaceChild(node, dataNode);
@@ -977,7 +977,7 @@ public class QuestionDef implements Serializable{
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
 				Element node = XformUtil.getNode(xml);
-				node = (Element)controlNode.getOwnerDocument().importNode(dataNode, true);
+				node = (Element)controlNode.getOwnerDocument().importNode(node, true);
 				Element parent = (Element)dataNode.getParentNode();
 				parent.replaceChild(node, dataNode);
 				dataNode = node;
@@ -1042,31 +1042,27 @@ public class QuestionDef implements Serializable{
 		String xml = controlNode.toString();
 		boolean modified = false;
 		
-		String prefix = "";
-		if(name.contains(":"))
-			prefix = name.substring(0,name.indexOf(':')+1);
-
 		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT1);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
 		else if(name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) &&
 				!name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX)) && 
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_SELECT1);
+			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
@@ -1075,18 +1071,18 @@ public class QuestionDef implements Serializable{
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC ||
 						isMultiMedia(dataType))){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_INPUT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
 		else if(!(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
 						dataType == QuestionDef.QTN_TYPE_VIDEO)){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_UPLOAD);
+			xml = xml.replace(name, XformConstants.NODE_NAME_UPLOAD);
 			modified = true;
 		}
 		else if(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) &&
 				!isMultiMedia(dataType)){
-			xml = xml.replace(name, prefix + XformConstants.NODE_NAME_INPUT);
+			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
 

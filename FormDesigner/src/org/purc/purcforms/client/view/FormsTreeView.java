@@ -495,6 +495,13 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 			Context.setFormDef(null);
 			formDef = null;
 			fireFormItemSelected(null);
+			
+			if(tree.getItemCount() == 0){
+				nextFormId = 0;
+				nextOptionId = 0;
+				nextPageId = 0;
+				nextQuestionId = 0;
+			}
 		}
 	}
 

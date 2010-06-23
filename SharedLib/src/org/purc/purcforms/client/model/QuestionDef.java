@@ -984,6 +984,9 @@ public class QuestionDef implements Serializable{
 			}
 
 			String parentName = variableName.substring(0,variableName.indexOf("/"));
+			if(parentName.trim().length() == 0)
+				return;
+			
 			String parentNodeName = dataNode.getParentNode().getNodeName();
 			if(!parentName.equals(parentNodeName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 				if(variableName.equals(parentName+"/"+parentNodeName+"/"+name))

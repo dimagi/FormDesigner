@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
@@ -996,15 +997,21 @@ public class FormDef implements Serializable{
 	 */
 	public boolean moveQuestion2Page(QuestionDef qtn, int pageNo, FormDef formDef){
 		if(pages.size() < pageNo)
-			pages.add(new PageDef(formDef));
-
+			pages.add(new PageDef(LocaleText.get("page") + pageNo, pageNo, formDef));
+		
 		for(int i=0; i<pages.size(); i++){
 			PageDef page = (PageDef)pages.elementAt(i);
 			if(page.contains(qtn)){
 				if(i == pageNo-1)
 					return true; //Makes no sense to move question from and back to the same page.
+							
+				PageDef pageDef = (PageDef)pages.elementAt(pageNo-1);
+				Element node = qtn.getControlNode();
+				if(node != null && pageDef.getGroupNode() != null && !node.getParentNode().equals(pageDef.getGroupNode()))
+					return true;
+				
 				page.getQuestions().removeElement(qtn);
-				((PageDef)pages.elementAt(pageNo-1)).addQuestion(qtn);
+				pageDef.addQuestion(qtn);
 				return true;
 			}
 		}
@@ -1307,12 +1314,12 @@ public class FormDef implements Serializable{
 	 * @param index the question position.
 	 * @return the question definition object.
 	 */
-	public QuestionDef getQuestionAt(int index){
+	/*public QuestionDef getQuestionAt(int index){
 		if(pages == null)
 			return null;
 		
 		return  getPageAt(0).getQuestionAt(index);
-	}
+	}*/
 
 	public void updateRuleConditionValue(String origValue, String newValue){
 		for(int index = 0; index < getSkipRuleCount(); index++)

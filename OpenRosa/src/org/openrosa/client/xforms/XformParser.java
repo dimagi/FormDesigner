@@ -224,6 +224,7 @@ public class XformParser {
 		
 		//Remove all that we had created as questions when parsing bindings but will not require
 		//user input (eg JR's DeviceId, EndTime), since questions are only for cases where we want user input.
+		//TODO Needs to be fixed when having multiple groups
 		for(int index = 0; index < formDef.getQuestionCount(); index++){
 			QuestionDef questionDef = (QuestionDef)formDef.getElementAt(index);
 			if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){

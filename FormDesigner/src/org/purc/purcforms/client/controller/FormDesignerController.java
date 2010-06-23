@@ -175,7 +175,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
-		if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
+		if(Context.getCurrentMode() != Context.MODE_DESIGN/*Context.MODE_QUESTION_PROPERTIES*/)
 			leftPanel.deleteSelectedItem();	
 		else
 			centerPanel.deleteSelectedItem();

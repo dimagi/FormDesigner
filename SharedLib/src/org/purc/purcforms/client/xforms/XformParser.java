@@ -213,14 +213,19 @@ public class XformParser {
 		ConstraintParser.addValidationRules(formDef,constraints);
 
 		ItemsetParser.parseOrphanDynOptionQns(formDef,orphanDynOptionQns);
-		
+
 		//Remove all that we had created as questions when parsing bindings but will not require
 		//user input (eg JR's DeviceId, EndTime), since questions are only for cases where we want user input.
-		for(int index = 0; index < formDef.getQuestionCount(); index++){
-			QuestionDef questionDef = formDef.getQuestionAt(index);
-			if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){
-				formDef.removeQuestion(questionDef);
-				index--;
+		for(int pageNo = 0; pageNo < formDef.getPageCount(); pageNo++){
+			PageDef pageDef = formDef.getPageAt(pageNo);
+			for(int qtnNo = 0; qtnNo < pageDef.getQuestionCount(); qtnNo++){
+				QuestionDef questionDef = pageDef.getQuestionAt(qtnNo);
+				if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){
+					if(questionDef.getBinding() == null)
+						continue;
+					pageDef.removeQuestion(questionDef, formDef);
+					qtnNo--;
+				}
 			}
 		}
 
@@ -405,6 +410,9 @@ public class XformParser {
 		else if (!nodeContext.getLabel().equals("") && questionDef != null){
 			if(questionDef.getText() == null || questionDef.getText().trim().length()==0){
 				questionDef.setText(nodeContext.getLabel());
+				questionDef.setControlNode(element);
+				questionDef.setLabelNode(nodeContext.getLabelNode());
+				
 				int pageNo = currentPageNo;
 				if(pageNo == 0) pageNo = 1; //Xform may not have groups for pages.
 				if(questionDef.getParent() instanceof PageDef && !formDef.moveQuestion2Page(questionDef, pageNo, formDef))
@@ -418,9 +426,7 @@ public class XformParser {
 					else if(((PageDef)parentQtn.getParent()).getPageNo() == 1 && pageNo != 1 /*!= pageNo*/)
 						formDef.moveQuestion2Page(parentQtn, pageNo, formDef); //Must be a repeat kid in a wrong page. (page 1)
 				}
-				
-				questionDef.setControlNode(element);
-				questionDef.setLabelNode(nodeContext.getLabelNode());
+
 				setQuestionDataNode(questionDef,formDef,parentQtn);
 			}
 			else{
@@ -461,6 +467,9 @@ public class XformParser {
 				node = parentQtn.getDataNode();
 		}
 
+		if(xpath.startsWith("/" + node.getNodeName() + "/"))
+			xpath = xpath.substring(node.getNodeName().length() + 2);
+		
 		XPathExpression xpls = new XPathExpression(node, xpath);
 		Vector result = xpls.getResult();
 
@@ -608,14 +617,31 @@ public class XformParser {
 	 *                           questions have not yet been parsed.
 	 */
 	private static void parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,QuestionDef questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+		
+		int pageNo = XformParser.currentPageNo;
+		
 		String parentName = ((Element)child.getParentNode()).getNodeName();
 		//if(!(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX))){
 		if(!XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 			if(formDef.getPageCount() < ++currentPageNo)
 				formDef.addPage();
+			else if(questionDef != null){
+				NodeList nodes = child.getElementsByTagName(XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX);
+				if(nodes != null && nodes.getLength() > 0){
+					parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
+					return;
+				}
+					
+				formDef.addPage();
+				XformParser.currentPageNo++;
+				pageNo = XformParser.currentPageNo;
+			}
 			formDef.setPageGroupNode((Element)child);
 		}
 		parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
+		
+		if(questionDef != null)
+			XformParser.currentPageNo = pageNo;
 	}
 
 
@@ -707,6 +733,8 @@ public class XformParser {
 	private static QuestionDef parseUiElement(FormDef formDef, Element child, HashMap id2VarNameMap,QuestionDef questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns, NodeContext nodeContext){
 		String ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
 		String bind = child.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
+		if(ref == null && bind == null)
+			ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
 		String varName = (String)id2VarNameMap.get(((ref != null) ? ref : bind));
 
 		String tagname = child.getNodeName();
@@ -848,8 +876,8 @@ public class XformParser {
 			}
 		}
 	}
-	
-	
+
+
 	private static String getText(Element node){
 		if(node.getChildNodes().getLength() != 0)
 			return node.getChildNodes().item(0).getNodeValue().trim();

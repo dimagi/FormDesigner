@@ -670,7 +670,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
+			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
 
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();

@@ -205,7 +205,7 @@ public class PageDef implements Serializable{
 
 		for(int i=0; i<getQuestions().size(); i++){
 			QuestionDef def = (QuestionDef)getQuestions().elementAt(i);
-			if(def.getBinding().equals(varName))
+			if(varName.equals(def.getBinding()))
 				return def;
 
 			//Without this, then we have not validation and skip rules in repeat questions.

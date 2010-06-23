@@ -132,7 +132,7 @@ public class FieldWidget extends Composite{
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
+			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
 		
 		txtField = new TextBox(); //TODO New and hence could be buggy
 		sgstField = new SuggestBox(oracle,txtField);

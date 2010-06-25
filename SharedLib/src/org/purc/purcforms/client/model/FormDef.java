@@ -421,11 +421,6 @@ public class FormDef implements Serializable{
 	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
-		
-		if(formKey != null && formKey.trim().length() > 0)
-			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
-		else
-			dataNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY);
 
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
@@ -442,6 +437,12 @@ public class FormDef implements Serializable{
 		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
 			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
+		
+		//Put it after id attr such that it can be overwritten by ODK which uses non numeric id as a form key.
+		if(formKey != null && formKey.trim().length() > 0)
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
+		else
+			dataNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY);
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(binding)){
@@ -714,12 +715,6 @@ public class FormDef implements Serializable{
 	 */
 	public void setXformsNode(Element xformsNode) {
 		this.xformsNode = xformsNode;
-		
-		if(xformsNode != null){
-			String prefix = xformsNode.getPrefix();
-			if(prefix != null && prefix.trim().length() > 0)
-				XformConstants.updatePrefixConstants(prefix);
-		}
 	}
 
 	/**
@@ -734,6 +729,12 @@ public class FormDef implements Serializable{
 	 */
 	public void setModelNode(Element modelNode) {
 		this.modelNode = modelNode;
+		
+		if(modelNode != null){
+			String prefix = modelNode.getPrefix();
+			if(prefix != null && prefix.trim().length() > 0)
+				XformConstants.updatePrefixConstants(prefix);
+		}
 	}
 
 

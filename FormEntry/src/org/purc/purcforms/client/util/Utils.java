@@ -27,6 +27,20 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class Utils {
 
+	public static List<KeyValue> getFormDefList(NodeList nodes, List<KeyValue> list){
+		
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+
+			list.add(new KeyValue(((Element)node).getAttribute(FormEntryConstants.ATTRIBUTE_NAME_URL), XmlUtil.getTextValue(node)));
+		}
+		
+		return list;
+	}
+	
+	
 	public static List<KeyValue> getFormDefList(String xml){
 		List<KeyValue> list = new ArrayList<KeyValue>();
 		
@@ -35,8 +49,13 @@ public class Utils {
 		
 		Document doc = XmlUtil.getDocument(xml);
 		NodeList nodes = doc.getElementsByTagName(FormEntryConstants.NODE_NAME_XFORM);
-		if(nodes == null)
-			return list;
+		if(nodes == null || nodes.getLength() == 0){
+			nodes = doc.getElementsByTagName(FormEntryConstants.NODE_NAME_FORM);
+			if(nodes == null)
+				return list;
+			else
+				return getFormDefList(nodes, list);
+		}
 
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node node = nodes.item(index);

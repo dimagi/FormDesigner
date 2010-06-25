@@ -684,12 +684,6 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public void setXformsNode(Element xformsNode) {
 		this.xformsNode = xformsNode;
-		
-		if(xformsNode != null){
-			String prefix = xformsNode.getPrefix();
-			if(prefix != null && prefix.trim().length() > 0)
-				XformConstants.updatePrefixConstants(prefix);
-		}
 	}
 
 	/**
@@ -704,6 +698,12 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public void setModelNode(Element modelNode) {
 		this.modelNode = modelNode;
+		
+		if(modelNode != null){
+			String prefix = modelNode.getPrefix();
+			if(prefix != null && prefix.trim().length() > 0)
+				XformConstants.updatePrefixConstants(prefix);
+		}
 	}
 
 	public Element getBodyNode() {

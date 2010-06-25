@@ -762,6 +762,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		
 		for(Locale locale : locales)
 			cbLocales.addItem(locale.getName(), locale.getKey());	
+		
+		cbLocales.setSelectedIndex(getCurrentLocaleIndex());
 	}
 	
 	

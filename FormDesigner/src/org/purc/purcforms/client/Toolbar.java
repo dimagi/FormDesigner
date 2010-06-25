@@ -220,7 +220,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		cbLanguages.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				int index = getCurrentLocaleIndex();
+				int index = getLocaleIndex(Context.getLocale().getKey());
 				ListBox listBox = (ListBox)event.getSource();
 				if(!controller.changeLocale(new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()))))
 					cbLanguages.setSelectedIndex(index);
@@ -308,12 +308,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener{
 		
 		for(Locale locale : locales)
 			cbLanguages.addItem(locale.getName(), locale.getKey());
+		
+		Locale locale = Context.getLocale();
+		if(locale != null)
+			cbLanguages.setSelectedIndex(getLocaleIndex(locale.getKey()));
 	}
 	
 	
-	private int getCurrentLocaleIndex(){
-		String localeKey = Context.getLocale().getKey();
-		
+	private int getLocaleIndex(String localeKey){		
 		List<Locale> locales = Context.getLocales();
 		assert(locales != null);
 		

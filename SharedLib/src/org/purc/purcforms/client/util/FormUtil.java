@@ -69,6 +69,9 @@ public class FormUtil {
 	private static String fileOpenUrlSuffix;
 	private static String fileSaveUrlSuffix;
 	private static String gpsTypeName;
+	private static String saveFormat;
+	
+	public static String JAVAROSA = "javarosa";
 	
 
 	/** 
@@ -415,9 +418,21 @@ public class FormUtil {
 		if(gpsTypeName == null || gpsTypeName.trim().length() == 0)
 			gpsTypeName = XformConstants.DATA_TYPE_TEXT;
 		
+		s = getDivValue("formKeyAttributeName");
+		if(s != null && s.trim().length() > 0)
+			XformConstants.ATTRIBUTE_NAME_FORM_KEY = s;
+		
 		s = getDivValue("constraintMessageAttributeName");
 		if(s != null && s.trim().length() > 0)
 			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = s;
+		
+		saveFormat = getDivValue("saveFormat");
+		
+		if(JAVAROSA.equalsIgnoreCase(saveFormat)){
+			gpsTypeName = "geopoint";
+			XformConstants.ATTRIBUTE_NAME_FORM_KEY = "id";
+			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "jr:constraintMsg";
+		}
 	}
 
 	public static String getDivValue(String id){
@@ -551,6 +566,14 @@ public class FormUtil {
 	
 	public static String getGpsTypeName(){
 		return gpsTypeName;
+	}
+	
+	public static String getSaveFormat(){
+		return saveFormat;
+	}
+	
+	public static boolean isJavaRosaSaveFormat(){
+		return JAVAROSA.equalsIgnoreCase(saveFormat);
 	}
 
 	public static String getHostPageBaseURL(){

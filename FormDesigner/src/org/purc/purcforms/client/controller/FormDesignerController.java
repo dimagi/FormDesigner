@@ -15,6 +15,7 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.ItextBuilder;
 import org.purc.purcforms.client.util.ItextParser;
 import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.view.FormsTreeView;
@@ -375,10 +376,18 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					//TODO Need to preserve user's model and any others.
 					String xml = null;
 					FormDef formDef = obj;
-					if(formDef.getDoc() == null)
-						xml = XformBuilder.fromFormDef2Xform(formDef);
+					if(formDef.getDoc() == null){
+						if(FormUtil.isJavaRosaSaveFormat())
+							xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);	
+						else	
+							xml = XformBuilder.fromFormDef2Xform(formDef);
+					}
 					else{
 						formDef.updateDoc(false);
+						
+						if(FormUtil.isJavaRosaSaveFormat())
+							ItextBuilder.build(formDef);
+						
 						xml = XmlUtil.fromDoc2String(formDef.getDoc());
 					}
 
@@ -1070,6 +1079,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					String layoutXml = centerPanel.getLayoutXml();
 					if(layoutXml != null && layoutXml.trim().length() > 0)
 						openFormLayout(false);
+					else if(Context.getCurrentMode() == Context.MODE_DESIGN)
+						refreshObject(); //automatically load widgets on design surface after language switch.
 				}
 				catch(Exception ex){
 					FormUtil.displayException(ex);

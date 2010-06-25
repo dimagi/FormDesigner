@@ -1,6 +1,8 @@
 package org.purc.purcforms.client.xforms;
 
 import org.purc.purcforms.client.model.FormDef;
+import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.ItextBuilder;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -39,6 +41,7 @@ public class XhtmlBuilder {
 		//formDef.setXformsNode(htmlNode);
 
 		htmlNode.setAttribute("xmlns:h", "http://www.w3.org/1999/xhtml");
+		htmlNode.setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 
@@ -80,6 +83,9 @@ public class XhtmlBuilder {
 		Document doc = fromFormDef2XhtmlDoc(formDef);
 		formDef.setDoc(doc);
 		formDef.setXformsNode(doc.getDocumentElement());
+		
+		if(FormUtil.isJavaRosaSaveFormat())
+			ItextBuilder.build(formDef);
 		
 		return XmlUtil.fromDoc2String(doc);
 	}

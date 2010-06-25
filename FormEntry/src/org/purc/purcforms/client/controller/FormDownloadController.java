@@ -27,16 +27,16 @@ import com.google.gwt.user.client.Window;
 public class FormDownloadController implements LoginInfoListener{
 
 	private FormDefDownloadListener formDownloadListener;
-	
+
 	public FormDownloadController(){
-		
+
 	}
-	
+
 	public void downloadForms(FormDefDownloadListener formDownloadListener){
 		this.formDownloadListener = formDownloadListener;
 		new LoginInfoDlg(this).center();
 	}
-	
+
 	private void downloadForms(){
 		FormUtil.dlg.setText("Downloading form list");
 		FormUtil.dlg.center();
@@ -49,7 +49,7 @@ public class FormDownloadController implements LoginInfoListener{
 					url += FormEntryContext.getFormDownloadUrl();
 				else
 					url = FormEntryContext.getFormDownloadUrl();
-				
+
 				String userName = FormEntryContext.getUserName();
 				if(userName != null && userName.trim().length() > 0)
 					url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword());
@@ -63,7 +63,7 @@ public class FormDownloadController implements LoginInfoListener{
 								FormUtil.displayReponseError(response);
 								return;
 							}
-							
+
 							String xml = response.getText();
 							if(xml == null || xml.length() == 0){
 								FormUtil.dlg.hide();
@@ -72,7 +72,7 @@ public class FormDownloadController implements LoginInfoListener{
 							}
 
 							formDownloadListener.onFormDefListDownloaded(Utils.getFormDefList(xml));
-							
+
 							FormUtil.dlg.hide();
 						}
 
@@ -87,8 +87,8 @@ public class FormDownloadController implements LoginInfoListener{
 			}
 		});
 	}
-	
-	
+
+
 	public void downloadForm(final String id, String name, final FormDefDownloadListener formDownloadListener){
 		FormUtil.dlg.setText("Downloading form: " + name);
 		FormUtil.dlg.center();
@@ -96,22 +96,24 @@ public class FormDownloadController implements LoginInfoListener{
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 
-				String url = FormUtil.getHostPageBaseURL();
-				url += FormEntryContext.getFormDownloadUrl();
+				String url = id;
+				if(!(url.contains("http://") || url.contains("https://"))){
+					url = FormUtil.getHostPageBaseURL();
+					url += FormEntryContext.getFormDownloadUrl();
+					url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword()) + "?formId="+id;
+				}
 
-				url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword()) + "?formId="+id;
-				
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
 
 				try{
 					builder.sendRequest(null, new RequestCallback(){
 						public void onResponseReceived(Request request, Response response){
-							
+
 							if(response.getStatusCode() != Response.SC_OK){
 								FormUtil.displayReponseError(response);
 								return;
 							}
-							
+
 							String xml = response.getText();
 							if(xml == null || xml.length() == 0){
 								FormUtil.dlg.hide();
@@ -121,8 +123,9 @@ public class FormDownloadController implements LoginInfoListener{
 
 							FormEntryContext.getDatabaseManager().saveFormDef(id,xml);
 							formDownloadListener.onFormDefDownloaded(id);
-							
-							FormUtil.dlg.hide();
+
+							//With this open, progress message is only displayed for the first form but not others.
+							//FormUtil.dlg.hide();
 						}
 
 						public void onError(Request request, Throwable exception){
@@ -136,12 +139,12 @@ public class FormDownloadController implements LoginInfoListener{
 			}
 		});
 	}
-	
-	
+
+
 	public void onLoginInfo(String name, String password){
 		FormEntryContext.setUserName(name);
 		FormEntryContext.setPassword(password);
-		
+
 		downloadForms();
 	}
 }

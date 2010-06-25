@@ -1,11 +1,13 @@
 package org.purc.purcforms.client.cmd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.purc.purcforms.client.FormEntryContext;
 import org.purc.purcforms.client.listener.FormDefDownloadListener;
 import org.purc.purcforms.client.listener.FormListSelectionListener;
 import org.purc.purcforms.client.model.KeyValue;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.util.Utils;
 import org.purc.purcforms.client.view.impl.FormSelectionViewImpl;
 
@@ -22,9 +24,20 @@ public class FormDownloadCmd implements FormDefDownloadListener, FormListSelecti
 	/** List of only the new forms to be downloaded. */
 	private List<KeyValue> formList;
 	private int formIndex = 0;
+	private KeyValue keyValue;
+	
 
 	public void onFormDefDownloaded(String id){
 		formIndex++;
+		
+		List<KeyValue> formDefList = FormEntryContext.getFormDefList();
+		if(formDefList == null)
+			formDefList = new ArrayList<KeyValue>();
+		formDefList.add(keyValue);
+		
+		FormEntryContext.setFormDefList(formDefList);
+		FormEntryContext.getDatabaseManager().saveFormDefList(Utils.getFormDefListXml(formDefList));
+		
 		downloadNextForm();
 	}
 	
@@ -45,10 +58,11 @@ public class FormDownloadCmd implements FormDefDownloadListener, FormListSelecti
 		if(formIndex == formList.size()){
 			FormEntryContext.setUserName(null);
 			FormEntryContext.setPassword(null);
+			FormUtil.dlg.hide(); //This does not belong here but stays for the meantime as we fix the bug of progress message not being displayed for downloading of forms other than the first one.
 			return;
 		}
 		
-		KeyValue keyValue = formList.get(formIndex);
+		keyValue = formList.get(formIndex);
 		FormEntryContext.getFormEntryController().downloadForm(keyValue.getKey(), keyValue.getValue(), this);
 	}
 	
@@ -56,9 +70,10 @@ public class FormDownloadCmd implements FormDefDownloadListener, FormListSelecti
 		this.formList = formList;
 		formIndex = 0;
 		
-		List<KeyValue> list = mergeFormListWithExisting(formList);
+		//Some forms may fail to download and so we then do not want to maintain them in our list.
+		/*List<KeyValue> list = mergeFormListWithExisting(formList);
 		FormEntryContext.setFormDefList(list);
-		FormEntryContext.getDatabaseManager().saveFormDefList(Utils.getFormDefListXml(list));
+		FormEntryContext.getDatabaseManager().saveFormDefList(Utils.getFormDefListXml(list));*/
 		
 		downloadNextForm();
 	}
@@ -72,9 +87,9 @@ public class FormDownloadCmd implements FormDefDownloadListener, FormListSelecti
 		}
 	}
 	
-	private List<KeyValue> mergeFormListWithExisting(List<KeyValue> newFormList){
+	/*private List<KeyValue> mergeFormListWithExisting(List<KeyValue> newFormList){
 		List<KeyValue> formList = FormEntryContext.getFormDefList();
 		formList.addAll(newFormList);
 		return formList;
-	}
+	}*/
 }

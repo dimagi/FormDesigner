@@ -20,9 +20,12 @@
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
-    <!--                                           -->
-    <script type="text/javascript" language="javascript" src="FormEntry.nocache.js"></script>
-    <script type='text/javascript' language="javascript" src='persist-js-0.1.0/persist.js'></script>
+    <!--    
+   	-->
+   	
+   	<script type="text/javascript" language="javascript" src="persist-js-0.1.0/persist.js"></script>
+    <script type="text/javascript" language="javascript" src="FormEntry/FormEntry.nocache.js"></script>
+    
   </head>
 
   <!--                                           -->
@@ -37,14 +40,38 @@
     
     <div id="purcformsentry"></div>
     
+    <div id="title" style="visibility:hidden;">PurcForms FormDesigner</div>
+    <div id="rubberBand"></div>
+    
     <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">formdownload</div>
     <div id="formDataUploadUrlSuffix" style="visibility:hidden;">dataupload</div>
     
-    <div id="localeList" style="visibility:hidden;">en:English,fr:French,gr:German,swa:Swahili,lug:Luganda</div>
+    <div id="dateTimeSubmitFormat" style="visibility:hidden;">yyyy-MM-dd hh:mm a</div>
+    <div id="dateTimeDisplayFormat" style="visibility:hidden;">dd/MM/yyyy hh:mm a</div>
+    <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm a</div>
+    <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm a</div>
+    <div id="dateSubmitFormat" style="visibility:hidden;">yyyy-MM-dd</div>
+    <div id="dateDisplayFormat" style="visibility:hidden;">dd/MM/yyyy</div>
+    <div id="showLanguageTab" style="visibility:hidden;">1</div>
+    <div id="showXformsSourceTab" style="visibility:hidden;">1</div>
+    <div id="showLayoutXmlTab" style="visibility:hidden;">1</div>
+    <div id="showModelXmlTab" style="visibility:hidden;">1</div>
+    <div id="showJavaScriptTab" style="visibility:hidden;">1</div>
+    <div id="allowBindEdit" style="visibility:hidden;">1</div>
     
-  </body>
-  
-  <script language="javascript">
+    <div id="constraintMessageAttributeName" style="visibility:hidden;">message</div>
+    <div id="gpsTypeName" style="visibility:hidden;">xsd:string</div>
+    <div id="formKeyAttributeName" style="visibility:hidden;">formKey</div>
+    <div id="saveFormat" style="visibility:hidden;">purcforms</div>
+    
+    <div id="defaultFontSize" style="visibility:hidden;">16</div>
+    <div id="defaultFontFamily" style="visibility:hidden;">Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif</div>
+    
+    
+    <div id="localeList" style="visibility:hidden;">en:English,fr:French</div>
+    <div id="labelEdit" style="visibility:hidden;width:auto;height:auto;position:absolute;"></div>
+    
+    <script language="javascript">
     	var PurcformsText = {
     	    	file: "File",
     	    	view: "View",
@@ -146,7 +173,7 @@
     			question: "Question",
 
     			addField: "Add Field",
-    			submit: "Submit",
+    			submit: "Save",
     			addWidget: "Add Widget",
     			newTab: "New Tab",
     			deleteTab: "Delete Tab",
@@ -329,7 +356,8 @@
            		filterField: "Filter Field"
  		  };
 
-		  function isUserAuthenticated(){
+    	  function isUserAuthenticated(){
+			  authenticationCallback(true);
 			  return true; //Not expected to be used in the design mode.
 		  }
 
@@ -337,15 +365,15 @@
 			  return true; //Not expected to be used in the design mode.
 		  }
 
-		  function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
-
+		  function searchExternal(key,value,parentElement,textElement,valueElement){
+		
 		  }
 
 		  function initialize(){
-			  
+
 		  }
 		  
     </script>
     
-    
+  </body>
 </html>

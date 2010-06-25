@@ -425,4 +425,42 @@ public class XFormsUtil {
         +"</xf:group>"
       +"</xf:xforms>";
     }
+    
+    
+    public static String getFormList(){
+    	return "<forms> " +
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0chELEgRGb3JtIgdERUZBVUxUDA\">Sample form</form> "+
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0choLEgRGb3JtIhBIb3VzZWhvbGRTdXJ2ZXkxDA\">Household Survey</form> "+
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0cg8LEgRGb3JtIgViYXNpYww\">Basic</form> "+
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0chQLEgRGb3JtIgpnZW9fdGFnZ2VyDA\">Geo Tagger</form> "+
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0cg4LEgRGb3JtIgRpbWNpDA\">IMCI</form>"+
+			"<form url=\"http://open-data-kit.appspot.com/formXml?odkFormKey=ag1vcGVuLWRhdGEta2l0chELEgRGb3JtIgd3aWRnZXRzDA\">Widgets</form> "+
+			"</forms>";
+    }
+    
+    
+    public static String getFormList2(){
+    	String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
+		xml += "\n<xforms>";
+
+		xml += "\n  <xform id='1' name='Form 1' />";
+		xml += "\n  <xform id='2' name='Form 2' />";
+		xml += "\n  <xform id='3' name='Form 3' />";
+		xml += "\n  <xform id='4' name='Form 4' />";
+		xml += "\n  <xform id='5' name='Form 5' />";
+		xml += "\n  <xform id='6' name='Form 6' />";
+		xml += "\n  <xform id='7' name='Form 7' />";
+		xml += "\n  <xform id='8' name='Form 8' />";
+		xml += "\n  <xform id='9' name='Pregnancy Registration Form 9' />";
+		xml += "\n  <xform id='10' name='Form 10' />";
+		xml += "\n  <xform id='11' name='Form 11' />";
+		xml += "\n  <xform id='12' name='Form 12' />";
+		xml += "\n  <xform id='13' name='Form 13' />";
+		xml += "\n  <xform id='14' name='Form 14' />";
+		xml += "\n  <xform id='15' name='Form 15' />";
+
+		xml += "\n</xforms>";
+		
+		return xml;
+    }
 }

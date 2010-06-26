@@ -166,6 +166,8 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		//TODO ???
 		
+		formDef = questionDef.getParentFormDef();
+		
 		/*if(questionDef.getParent() instanceof PageDef)
 			formDef = ((PageDef)questionDef.getParent()).getParent();
 		else

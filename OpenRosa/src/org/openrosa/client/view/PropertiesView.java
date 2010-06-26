@@ -311,9 +311,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		tabs.selectTab(0);
 		verticalPanel.add(tabs);
-		FormUtil.maximizeWidget(tabs);
+		//FormUtil.maximizeWidget(tabs);
 
-		FormUtil.maximizeWidget(verticalPanel);
+		//FormUtil.maximizeWidget(verticalPanel);
+		verticalPanel.setWidth("100%");
 		initWidget(verticalPanel);
 
 		setupEventListeners();

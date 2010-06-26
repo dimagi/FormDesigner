@@ -7,9 +7,9 @@ import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -114,7 +114,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 		layout.expand(LayoutRegion.CENTER);
 		layout.expand(LayoutRegion.WEST);
 		initWidget(panel);
-
+		
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 /*		
  		panel = new VerticalPanel();

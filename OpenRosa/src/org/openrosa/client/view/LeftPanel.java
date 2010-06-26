@@ -55,7 +55,7 @@ public class LeftPanel extends Composite {
 		formsTreeView = new FormsTreeView(images,formSelectionListener);
 		ContentPanel cp = new ContentPanel();
 		cp.setHeading("Form Tree View");
-		cp.setScrollMode(Scroll.AUTOY);
+		//cp.setScrollMode(Scroll.AUTOY);
 		cp.add(formsTreeView);
 		stackPanel.add(cp);
 //		add(images,formsTreeView , images.tasksgroup(), "Form Outline");

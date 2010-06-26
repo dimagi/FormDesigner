@@ -805,8 +805,6 @@ public class FormDef implements IFormElement, Serializable{
 				if(((GroupDef)element).removeElement(element, this))
 					return true;
 			}
-			//if(((PageDef)children.get(i)).removeQuestion(qtnDef,this))
-				return true;
 		}
 		return false;
 	}

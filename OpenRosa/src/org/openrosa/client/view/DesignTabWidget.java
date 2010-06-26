@@ -8,6 +8,7 @@ import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
@@ -156,7 +157,8 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 		if(shortcutHeight > 100){
 			//centerPanel.adjustHeight(shortcutHeight + PurcConstants.UNITS);
 			//centerPanel.onWindowResized(width, height);
-			panel.setHeight(shortcutHeight+60+PurcConstants.UNITS);
+			//panel.setHeight(shortcutHeight+60+PurcConstants.UNITS);
+			panel.setHeight(height);
 		}
 	}
 	

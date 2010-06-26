@@ -199,6 +199,8 @@ public class UiElementBuilder {
 			name = XformConstants.NODE_NAME_GROUP;
 		else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO)
 			name = XformConstants.NODE_NAME_UPLOAD;
+		else if(type == QuestionDef.QTN_TYPE_LABEL)
+			name = XformConstants.NODE_NAME_TRIGGER;
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = doc.createElement(name);

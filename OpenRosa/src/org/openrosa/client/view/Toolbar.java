@@ -105,7 +105,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bcut,bcopy,bpaste;
@@ -127,7 +127,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
-			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question"};
+			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question"};
 
 	ListBox cbLocales = new ListBox(false);
 
@@ -301,6 +301,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	    bcdBut.setScale(ButtonScale.LARGE);
 	    bcdBut.setIconAlign(IconAlign.LEFT);
 	    bcdBut.addStyleName("myMenuButton");
+	    lblBut = new Button(buttonLabels[22]);
+	    lblBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+	    lblBut.setScale(ButtonScale.LARGE);
+	    lblBut.setIconAlign(IconAlign.LEFT);
+	    lblBut.addStyleName("myMenuButton");
 
 	    menu.add(txtBut);  
 	    menu.add(intBut);  
@@ -315,6 +320,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	    menu.add(audBut);
 	    menu.add(gpsBut);
 	    menu.add(bcdBut);
+	    menu.add(lblBut);
 	    menu.add(grpBut);
 	    
 	    splitItem.setMenu(menu);  
@@ -506,7 +512,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			splitItem.hideMenu();
 		}
 	});
-//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut,bcdBut,grpBut
+//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut,bcdBut,grpBut,lblBut
 	timeBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 		public void componentSelected(ButtonEvent ce) {
 			controller.addNewQuestion(QuestionDef.QTN_TYPE_TIME);
@@ -568,6 +574,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			controller.addNewQuestion(QuestionDef.QTN_TYPE_GROUP);
 			splitItem.setText(grpBut.getText());
 			splitItem.setIcon(grpBut.getIcon());
+			splitItem.hideMenu();
+		}
+	});
+	lblBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		public void componentSelected(ButtonEvent ce) {
+			controller.addNewQuestion(QuestionDef.QTN_TYPE_LABEL);
+			splitItem.setText(lblBut.getText());
+			splitItem.setIcon(lblBut.getIcon());
 			splitItem.hideMenu();
 		}
 	});

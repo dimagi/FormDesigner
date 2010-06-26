@@ -155,6 +155,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	/** Question which is a group. */
 	public static final int QTN_TYPE_GROUP = 17;
+	
+	/** Question which is a group. */
+	public static final int QTN_TYPE_LABEL = 18;
 
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;
@@ -1072,13 +1075,15 @@ public class QuestionDef implements IFormElement, Serializable{
 		boolean modified = false;
 		
 		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
-				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) ||
+				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
-				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)) &&
+				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) ||
+				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
@@ -1099,7 +1104,8 @@ public class QuestionDef implements IFormElement, Serializable{
 				!(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
 						dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC ||
-						isMultiMedia(dataType))){
+						isMultiMedia(dataType) ||
+						dataType == QuestionDef.QTN_TYPE_LABEL)){
 			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
@@ -1109,8 +1115,13 @@ public class QuestionDef implements IFormElement, Serializable{
 			xml = xml.replace(name, XformConstants.NODE_NAME_UPLOAD);
 			modified = true;
 		}
-		else if(name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) &&
-				!isMultiMedia(dataType)){
+		else if(!(name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)) &&
+				(dataType == QuestionDef.QTN_TYPE_LABEL)){
+			xml = xml.replace(name, XformConstants.NODE_NAME_TRIGGER);
+			modified = true;
+		}
+		else if( (name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) && !isMultiMedia(dataType)) ||
+				(name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX) && dataType != QuestionDef.QTN_TYPE_LABEL) ){
 			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}

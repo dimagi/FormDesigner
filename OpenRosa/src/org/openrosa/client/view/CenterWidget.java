@@ -80,6 +80,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//tabs.addSelectionHandler(this);
 
 		FormUtil.maximizeWidget(tabs);
+		FormUtil.maximizeWidget(designWidget);
 		FormUtil.maximizeWidget(this);
 
 		designWidget.addFormSelectionListener(this);

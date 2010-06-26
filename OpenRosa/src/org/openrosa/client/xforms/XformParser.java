@@ -316,7 +316,8 @@ public class XformParser {
 			//		|| tagname.equals(NODE_NAME_INPUT_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX) || tagname.equals(NODE_NAME_SELECT_MINUS_PREFIX) || tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) {
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || 
 					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX) ||
-					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)){
+					XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) ||
+				    XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)){
 
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);
 				questionDef = parseUiElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns,nodeContext);
@@ -450,6 +451,9 @@ public class XformParser {
 			if(parentQtn != null)
 				node = parentQtn.getDataNode();
 		}
+		
+		if(xpath.startsWith("/" + node.getNodeName() + "/"))
+			xpath = xpath.substring(node.getNodeName().length() + 2);
 
 		XPathExpression xpls = new XPathExpression(node, xpath);
 		Vector result = xpls.getResult();
@@ -509,8 +513,12 @@ public class XformParser {
 		QuestionDef qtn = new QuestionDef(null);
 		qtn.setId(getNextQuestionId());
 
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE) == null)
-			qtn.setDataType(QuestionDef.QTN_TYPE_TEXT);
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE) == null){
+			if(XmlUtil.nodeNameEquals(child.getNodeName(),XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX))
+				qtn.setDataType(QuestionDef.QTN_TYPE_LABEL);
+			else
+				qtn.setDataType(QuestionDef.QTN_TYPE_TEXT);
+		}
 		else
 			XformParserUtil.setQuestionType(qtn,child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE),child);
 
@@ -710,7 +718,13 @@ public class XformParser {
 
 		//new addition may cause bugs
 		if(varName == null){
-			varName = addNonBindControl(formDef,child,relevants,ref,bind,constraints);
+			
+			if(ref != null && ref.startsWith("/"+formDef.getVariableName()+"/"))
+				varName = ref.replace("/"+formDef.getVariableName()+"/", "");
+			
+			if(formDef.getElement(varName) == null)
+				varName = addNonBindControl(formDef,child,relevants,ref,bind,constraints);
+			
 			if(ref != null)
 				id2VarNameMap.put(ref, ref);
 		}
@@ -774,7 +788,10 @@ public class XformParser {
 				//Remove repeat question constraint if any
 				XformParserUtil.replaceConstraintQtn(constraints,(QuestionDef)qtn);
 			}
-
+			
+			if(XmlUtil.nodeNameEquals(child.getNodeName(),XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX))
+				qtn.setDataType(QuestionDef.QTN_TYPE_LABEL);
+	
 			questionDef = qtn;
 			parseElement(formDef, child, id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 		}
@@ -797,7 +814,7 @@ public class XformParser {
 		//		||parentName.equalsIgnoreCase(NODE_NAME_INPUT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_SELECT1_MINUS_PREFIX) || parentName.equalsIgnoreCase(NODE_NAME_ITEM_MINUS_PREFIX)){
 		if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX) ||
 				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_ITEM_MINUS_PREFIX) ||
-				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX)){
+				XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) || XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)){
 			if(true /*child.getChildNodes().getLength() != 0*/){
 				nodeContext.setLabel(getText(child)); //questionDef.setText(child.getChildNodes().item(0).getNodeValue().trim());
 				nodeContext.setLabelNode(child);

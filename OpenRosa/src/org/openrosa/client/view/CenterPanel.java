@@ -139,7 +139,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		//designSurfaceView = new DesignSurfaceView(images);
 		//previewView = new PreviewView((PreviewView.Images)images);
 
-		initProperties();
+		//initProperties();
 		/*initXformsSource();
 		initDesignSurface();
 		initJavaScriptSource();
@@ -152,8 +152,10 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		propertiesView.addStyleName("myPropsStyle");
 		FormUtil.maximizeWidget(tabs);
 
-		tabs.selectTab(0);
-		initWidget(propertiesView);
+		//tabs.selectTab(0);
+		ScrollPanel scrollPanel = new ScrollPanel();
+		scrollPanel.setWidget(propertiesView);
+		initWidget(scrollPanel);
 		tabs.addSelectionHandler(this);
 
 		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);

@@ -947,4 +947,20 @@ public class GroupDef implements IFormElement, Serializable{
 	public void setHintNode(Element hintNode){
 		this.hintNode = hintNode;
 	}
+	
+	public boolean removeChild(IFormElement element){
+		if(children == null)
+			return false;
+		
+		if(children.remove(element))
+			return true;
+		
+		for(IFormElement child : children){
+			if(child.removeChild(element))
+				return true;
+		}
+		
+		return false;
+		//return this.removeElement(qtnDef, formDef);
+	}
 }

@@ -604,9 +604,10 @@ public class QuestionDef implements IFormElement, Serializable{
 			((List)this.options).add(new OptionDef((OptionDef)options.get(i),this));
 	}
 
-	public void removeOption(OptionDef optionDef){
+	public boolean removeOption(OptionDef optionDef){
 		if(options instanceof List){ //Could be a RepeatQtnsDef
-			((List)options).remove(optionDef);
+			if(!((List)options).remove(optionDef))
+				return false;
 
 			if(((List)options).size() == 0)
 				firstOptionNode = null;
@@ -614,6 +615,8 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		if(controlNode != null && optionDef.getControlNode() != null)
 			controlNode.removeChild(optionDef.getControlNode());
+		
+		return true;
 	}
 
 	public void moveOptionUp(OptionDef optionDef){
@@ -1536,6 +1539,10 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	public void addChild(IFormElement element){
 		addOption((OptionDef)element);
+	}
+	
+	public boolean removeChild(IFormElement element){
+		return this.removeOption((OptionDef)element);
 	}
 }
 

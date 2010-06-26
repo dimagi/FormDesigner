@@ -293,4 +293,8 @@ public class OptionDef implements IFormElement, Serializable {
 	public void setHintNode(Element hintNode){
 		
 	}
+	
+	public boolean removeChild(IFormElement element){
+		return false;
+	}
 }

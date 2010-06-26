@@ -629,7 +629,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param pageFef the page to remove.
 	 */
-	public void removeChild(IFormElement element){
+	public boolean removeChild(IFormElement element){
 		if(element instanceof GroupDef){
 			((GroupDef)element).removeAllElements(this);
 
@@ -639,7 +639,7 @@ public class FormDef implements IFormElement, Serializable{
 		else
 			GroupDef.removeElement2((QuestionDef)element, this);
 
-		children.remove(element);
+		return children.remove(element);
 	}
 
 	/**

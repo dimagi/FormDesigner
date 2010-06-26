@@ -108,7 +108,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut;
 	private Button newBut;
 	private SplitButton splitItem;
-	private Button bcut,bcopy,bpaste;
+	private Button bdelete,bcut,bcopy,bpaste;
 	private Button editLocale;
 	
 	private IFileListener fileListener;
@@ -331,7 +331,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	    addSelect.setIconAlign(IconAlign.TOP);
 	    addSelect.setScale(ButtonScale.LARGE);
 	    addSelect.disable();
+
 	    group.addButton(addSelect);
+	    
+	    bdelete = new Button("Delete", AbstractImagePrototype.create(images.delete()));
+	    bdelete.setScale(ButtonScale.LARGE);
+	    bdelete.setIconAlign(IconAlign.TOP);
+	    group.addButton(bdelete);
+	    
 	    group.setHeight(85);
 //	    group.setAutoWidth(false);
 //	    group.setWidth(500);
@@ -343,7 +350,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		//////////////////////THIRD GROUP/////////////////////////////////
 	    group = new ButtonGroup(3);
 	    group.setHeading("Clipboard");
-	    
 	    bcut = new Button("Cut", AbstractImagePrototype.create(images.cut()));
 	    bcut.setScale(ButtonScale.LARGE);
 	    bcut.setIconAlign(IconAlign.TOP);
@@ -426,6 +432,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		addSelect.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
 				controller.addNewChildItem();
+				
+			}
+		});
+		
+		bdelete.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.deleteSelectedItem();
 				
 			}
 		});

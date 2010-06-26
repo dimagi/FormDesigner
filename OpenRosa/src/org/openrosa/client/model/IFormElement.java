@@ -60,4 +60,6 @@ public interface IFormElement {
 	
 	String getItextId();
 	void setItextId(String id);
+	
+	boolean removeChild(IFormElement element);
 }

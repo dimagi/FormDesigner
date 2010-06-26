@@ -644,7 +644,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(parentUserObj instanceof QuestionDef)
 				((QuestionDef)parentUserObj).getRepeatQtnsDef().removeQuestion((QuestionDef)userObj,formDef);
 			else
-				;//((PageDef)parentUserObj).removeQuestion((QuestionDef)userObj,formDef);			
+				((IFormElement)parentUserObj).removeChild((IFormElement)userObj);			
 		}
 		else if(userObj instanceof OptionDef){
 			((QuestionDef)parentUserObj).removeOption((OptionDef)userObj);

@@ -165,7 +165,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				System.out.println(data.getText());
 				System.out.println(treePanel.getStore().indexOf(data));
 				System.out.println(data.getParent().indexOf(data));
-				
+
 				treePanel.getStore().rejectChanges();
 			}*/
 		});  
@@ -340,10 +340,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){
-		
+
 		//We do not support loading of more than one form at the same time.
 		treePanel.getStore().removeAll();
-		
+
 		if(formDef.getId() == ModelConstants.NULL_ID)
 			formDef.setId(nextFormId);
 
@@ -375,7 +375,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			for(int index = 0; index < formDef.getChildren().size(); index++){
 				IFormElement element = formDef.getChildAt(index);
 				TreeModelItem pageRoot = null;
-				
+
 				if(element instanceof GroupDef)
 					loadGroup((GroupDef)element,formRoot);
 				else
@@ -742,24 +742,31 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Object userObj = item.getUserObject();
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
-				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getBinding());
-				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
-				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
+				if(dataType == QuestionDef.QTN_TYPE_GROUP){
+					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
+					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
+					//addFormDefItem(pageDef,item.getParentItem());
+				}
+				else{
+					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
+					questionDef.setDataType(dataType);
+					questionDef.setItextId(questionDef.getBinding());
+					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
+					item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+					addFormDefItem(questionDef,(TreeModelItem)item.getParent());
 
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-					addNewOptionDef(questionDef, item);
-				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
-					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+					if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+						addNewOptionDef(questionDef, item);
+					else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+						addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+				}
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(item, false);
 			}
 			else if(userObj instanceof OptionDef){
 				//addNewOptionDef();
-				
+
 				int id = ++nextQuestionId;
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
@@ -795,44 +802,44 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			}
 			else if(userObj instanceof FormDef){
 				//addNewForm();
-				
+
 				//If not yet got pages, just quit.
 				if(item.getChildCount() == 0)
 					return;
-				
+
 				TreeModelItem parentItem = (TreeModelItem)item.getChild(0);
-				
+
 				int id = ++nextQuestionId;
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)parentItem.getUserObject());
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
 				item = addImageItem(item, questionDef.getText(), questionDef);
 				addFormDefItem(questionDef, (TreeModelItem)item.getParent());
-				
+
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, item);
 				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
 					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
-				
+
 				treePanel.getSelectionModel().select(item, false);
 			}
 		}
 		else{
 			addNewForm();
-			
+
 			item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 			QuestionDef questionDef = (QuestionDef)item.getUserObject();
 			questionDef.setDataType(dataType);
 			questionDef.setItextId(questionDef.getBinding());
-			
+
 			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				addNewOptionDef(questionDef, item);
 			else if(dataType == QuestionDef.QTN_TYPE_GROUP)
 				addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
-			
+
 			treePanel.getSelectionModel().select(item, false);
 		}
-		
+
 	}
 
 
@@ -1286,7 +1293,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 */
 	public FormDef getSelectedForm(){
 		return formDef; //we always have one form in openrosa form designer.
-		
+
 		/*TreeModelItem  item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 		if(item != null)
 			return getSelectedForm(item);
@@ -1506,8 +1513,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private boolean inReadOnlyMode(){
 		return Context.isStructureReadOnly();
 	}
-	
-	
+
+
 	public void dragMoveUp(TreeModelItem item ){
 		if(inReadOnlyMode())
 			return;
@@ -1560,8 +1567,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		treePanel.getSelectionModel().select(item, false);*/
 	}
-	
-	
+
+
 	public void dragMoveDown(TreeModelItem item ){
 		if(inReadOnlyMode())
 			return;

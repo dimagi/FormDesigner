@@ -248,8 +248,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.setCellWidth(btnCalculation, "20%");
 		FormUtil.maximizeWidget(txtCalculation);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(9, 1, panel);
-		panel.setVisible(false);
+		table.setWidget(10, 1, panel);
+		//panel.setVisible(false);
 
 		panel = new HorizontalPanel();
 		panel.add(txtDescTemplate);
@@ -257,10 +257,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.setCellWidth(btnDescTemplate, "20%");
 		FormUtil.maximizeWidget(txtDescTemplate);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(10, 1, panel);
+		table.setWidget(11, 1, panel);
 		//panel.setVisible(false);
 
-		table.setWidget(11, 1, txtFormKey);
+		table.setWidget(12, 1, txtFormKey);
 
 		table.setStyleName("cw-FlexTable");
 
@@ -1083,7 +1083,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//btnDescTemplate.setVisible(enable2);
 		txtCalculation.setVisible(enable2);
 		btnCalculation.setVisible(enable2);
-		btnCalculation.setEnabled(enable2);
 		lblCalculate.setVisible(enable2);
 		txtCalculation.getParent().setVisible(enable2);
 

@@ -1351,6 +1351,9 @@ public class FormDef implements IFormElement, Serializable{
 	 * @return the form.
 	 */
 	public static FormDef getFormDef(IFormElement formItem){
+		if(formItem == null)
+			return null;
+		
 		if(formItem instanceof FormDef)
 			return (FormDef)formItem;
 		else

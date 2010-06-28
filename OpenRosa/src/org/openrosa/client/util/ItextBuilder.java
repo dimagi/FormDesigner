@@ -253,12 +253,23 @@ public class ItextBuilder {
 	 * @param list the gxt grid itext model.
 	 */
 	public static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
+		
+		Element modelNode = XmlUtil.getNode(formDef.getDoc().getDocumentElement(),"model");
+		assert(modelNode != null); //we must have a model in an xform.
+
+		Element itextNode = XmlUtil.getNode(modelNode,"itext");
+		if(itextNode != null)
+			itextNode.getParentNode().removeChild(itextNode);
+		
 		List<Locale> locales = Context.getLocales();
 		if(locales == null)
 			return;
 
+		itextNode = formDef.getDoc().createElement("itext");
+		modelNode.appendChild(itextNode);
+		
 		for(Locale locale : locales)
-			updateItextBlock(doc,formDef,list,locale,formAttrMap,itextMap);
+			updateItextBlock(doc, formDef, list, locale, formAttrMap, itextMap, itextNode);
 	}
 
 	
@@ -270,36 +281,14 @@ public class ItextBuilder {
 	 * @param list the gxt grid itext model.
 	 * @param locale the locale.
 	 */
-	private static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, Locale locale, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
-
-		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
-		assert(modelNode != null); //we must have a model in an xform.
-		Element itextNode = XmlUtil.getNode(modelNode,"itext");
-		if(itextNode == null){
-			itextNode = doc.createElement("itext");
-			modelNode.appendChild(itextNode);
-		}
-		else{
-			NodeList translations = itextNode.getElementsByTagName("translation");
-
-			for(int index = 0; index < translations.getLength(); index++){
-				Node node = translations.item(index);
-				if(node.getNodeType() != Node.ELEMENT_NODE)
-					continue;
-
-				if(((Element)node).getAttribute("lang").equalsIgnoreCase(locale.getName())){
-					itextNode.removeChild(node);
-					break;
-				}
-			}
-		}
+	private static void updateItextBlock(Document doc, FormDef formDef, List<ItextModel> list, Locale locale, HashMap<String,String> formAttrMap, HashMap<String, ItextModel> itextMap, Element itextNode){
+		
+		Element translationNode = formDef.getDoc().createElement("translation");
+		translationNode.setAttribute("lang", locale.getName());
+		itextNode.appendChild(translationNode);
 
 		//Map for detecting duplicates in itext. eg if id yes=Yes , we should not have information more than once.
 		HashMap<String,String> duplicatesMap = new HashMap<String, String>();
-
-		Element translationNode = doc.createElement("translation");
-		translationNode.setAttribute("lang", locale.getName());
-		itextNode.appendChild(translationNode);
 
 		//we shold also have alist of those that were duplicates
 		for(ItextModel itext : list){

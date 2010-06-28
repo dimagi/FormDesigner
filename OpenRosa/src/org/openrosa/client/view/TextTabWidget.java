@@ -460,5 +460,6 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	public void save(){
 		listener.onSaveItext(getItext());
+		com.google.gwt.user.client.Window.alert("Saved Successfully");
 	}
 }

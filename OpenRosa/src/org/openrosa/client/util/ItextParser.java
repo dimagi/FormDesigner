@@ -37,7 +37,7 @@ public class ItextParser {
 	 * A map of locale doc's xform node keyed by the locale key.
 	 */
 	private static HashMap<String, Element> localeXformNodeMap = new HashMap<String, Element>();
-	
+
 	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
 	 * as represented by their itext ids. The translation element with the "default" attribute (default="") OR the first locale in the itext block
@@ -49,7 +49,7 @@ public class ItextParser {
 	 */
 	public static Document parse(String xml, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
 		localeXformNodeMap.clear();
-		
+
 		Document doc = XmlUtil.getDocument(xml);
 
 		//Check if we have an itext block in this xform.
@@ -109,17 +109,17 @@ public class ItextParser {
 		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
 
 		Context.getLanguageText().clear();
-		
+
 
 		HashMap<String,String> map = new HashMap<String,String>();
 		for(Locale locale : locales){
-		    Element localeXformNode = localeXformNodeMap.get(locale.getName());
+			Element localeXformNode = localeXformNodeMap.get(locale.getName());
 			map.put(locale.getName(), localeXformNode.getOwnerDocument().toString());
 		}
-		
+
 		//TODO Will the form id always be 1?
 		Context.getLanguageText().put(1, map);
-		
+
 		return doc;
 	}
 
@@ -281,11 +281,15 @@ public class ItextParser {
 				list.add(itextModel);
 			}
 
-			String xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref /*id*/ + "']" + "/" + name;
-			if(ref == null)
-				xpath = FormUtil.getNodePath(parentNode) + "/" + name;
-				
-			itextModel.set("xpath", xpath);
+			String xpath = itextModel.get("xpath");
+			if(xpath == null){//TODO Check to confirm that this null check does not cause bugs. Meaning do we have to rebuild the xpath everytime?
+				xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref /*id*/ + "']" + "/" + name;
+				if(ref == null)
+					xpath = FormUtil.getNodePath(parentNode) + "/" + name;
+
+				itextModel.set("xpath", xpath);
+			}
+
 			//itextModel.set("id", id);
 			itextModel.set(localeKey, text);
 			//list.add(itextModel);

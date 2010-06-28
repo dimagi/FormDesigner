@@ -50,6 +50,8 @@ public class GroupDef implements IFormElement, Serializable{
 
 	private String itextId;
 	
+	private int dataType = QuestionDef.QTN_TYPE_GROUP;
+	
 	
 	public GroupDef(){
 		
@@ -865,11 +867,11 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public int getDataType(){
-		return QuestionDef.QTN_TYPE_REPEAT;
+		return dataType;
 	}
 
 	public void setDataType(int dataType){
-
+		this.dataType = dataType;
 	}
 
 	public String getBinding(){

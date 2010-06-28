@@ -4,6 +4,7 @@ import org.openrosa.client.Context;
 import org.openrosa.client.model.Calculation;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.RepeatQtnsDef;
@@ -222,14 +223,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(4, 0, lblBinding);
 		table.setWidget(5, 0, lblVisible);
 		table.setWidget(6, 0, lblEnabled);
-		table.setWidget(7, 0, lblLocked);
-		table.setWidget(8, 0, lblRequired);
-		table.setWidget(9, 0, lblDefault);
-		table.setWidget(10, 0, lblCalculate);
+		//table.setWidget(7, 0, lblLocked);
+		table.setWidget(7, 0, lblRequired);
+		table.setWidget(8, 0, lblDefault);
+		table.setWidget(9, 0, lblCalculate);
 
 		lblDescTemplate = new Label(LocaleText.get("descriptionTemplate"));
-		table.setWidget(11, 0, lblDescTemplate);
-		table.setWidget(12, 0, lblFormKey);
+		table.setWidget(10, 0, lblDescTemplate);
+		table.setWidget(11, 0, lblFormKey);
 
 		table.setWidget(0, 1, qtnID);
 		table.setWidget(1, 1, txtText);
@@ -238,9 +239,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(4, 1, txtBinding);
 		table.setWidget(5, 1, chkVisible);
 		table.setWidget(6, 1, chkEnabled);
-		table.setWidget(7, 1, chkLocked);
-		table.setWidget(8, 1, chkRequired);
-		table.setWidget(9, 1, txtDefaultValue);
+		//table.setWidget(7, 1, chkLocked);
+		table.setWidget(7, 1, chkRequired);
+		table.setWidget(8, 1, txtDefaultValue);
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(txtCalculation);
@@ -248,7 +249,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.setCellWidth(btnCalculation, "20%");
 		FormUtil.maximizeWidget(txtCalculation);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(10, 1, panel);
+		table.setWidget(9, 1, panel);
 		//panel.setVisible(false);
 
 		panel = new HorizontalPanel();
@@ -257,10 +258,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		panel.setCellWidth(btnDescTemplate, "20%");
 		FormUtil.maximizeWidget(txtDescTemplate);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(11, 1, panel);
+		table.setWidget(10, 1, panel);
 		//panel.setVisible(false);
 
-		table.setWidget(12, 1, txtFormKey);
+		table.setWidget(11, 1, txtFormKey);
 
 		table.setStyleName("cw-FlexTable");
 
@@ -284,7 +285,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem("Group");
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
-		cellFormatter.setHorizontalAlignment(15, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		cellFormatter.setHorizontalAlignment(14, 1, HasHorizontalAlignment.ALIGN_CENTER);
 
 		//		table.setWidth("100%");
 		//		cellFormatter.setWidth(0, 0, "20%");
@@ -822,11 +823,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		boolean deleteKids = false;
 		int index = cbDataType.getSelectedIndex();
-		QuestionDef questionDef = (QuestionDef)propertiesObj;
+		IFormElement questionDef = (IFormElement)propertiesObj;
 		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				!(index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT)){
-			if(questionDef.getOptionCount() > 0 && !Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
+			if(questionDef.getChildCount() > 0 && !Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
 				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_INDEX_SINGLE_SELECT : DT_INDEX_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
 				return;
@@ -970,22 +971,55 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @param pageDef the page definition object.
 	 */
 	private void setPageProperties(GroupDef pageDef){
-		enableQuestionOnlyProperties(false);
+		boolean enabled = true;
+		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
+		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
 
-		txtText.setVisible(true);
-		lblText.setVisible(true);
-		//txtDescTemplate.setVisible(false);
-		//btnDescTemplate.setVisible(false);
-		enableDescriptionTemplate(false);
-		txtCalculation.setVisible(false);
-		btnCalculation.setVisible(false);
-		lblCalculate.setVisible(false);
-		txtCalculation.getParent().setVisible(false);
+		cbDataType.setVisible(enable2);
+		chkVisible.setVisible(enable2);
+		chkEnabled.setVisible(enable2);
+		chkLocked.setVisible(enable2);
+		chkRequired.setVisible(enable2);
+		txtDefaultValue.setVisible(enable2);
+		txtHelpText.setVisible(enabled); //We allow localisation of help text.
 
-		txtText.setText(pageDef.getName());
-		txtBinding.setText(String.valueOf(pageDef.getText()));
+		//We do not just wanna show this but rather want to enable them.
+		skipRulesView.setEnabled(enable2);
+		validationRulesView.setEnabled(enable2);
+		dynamicListsView.setEnabled(enable2);
+
+		lblType.setVisible(enable2);
+		lblVisible.setVisible(enable2);
+		lblEnabled.setVisible(enable2);
+		lblLocked.setVisible(enable2);
+		lblRequired.setVisible(enable2);
+		lblDefault.setVisible(enable2);
+		lblHelpText.setVisible(enabled);
+
+		//btnDescTemplate.setVisible(enable2);
+		txtCalculation.setVisible(enable2);
+		btnCalculation.setVisible(enable2);
+		lblCalculate.setVisible(enable2);
+		txtCalculation.getParent().setVisible(enable2);
+
+		tabs.setVisible(enable2);
+
+		//clearProperties();
+		
+		
+		qtnID.setVisible(true);
 		qtnID.setText(pageDef.getItextId());
-		//skipRulesView.updateSkipRule();
+		txtText.setText(pageDef.getText());
+		txtBinding.setText(pageDef.getBinding());
+		txtHelpText.setText(pageDef.getHelpText());
+		//txtDefaultValue.setText(pageDef.getDefaultValue());
+
+		/*chkVisible.setValue(pageDef.isVisible());
+		chkEnabled.setValue(pageDef.isEnabled());
+		chkLocked.setValue(pageDef.isLocked());
+		chkRequired.setValue(pageDef.isRequired());*/
+
+		setDataType(pageDef.getDataType());
 	}
 
 	/**
@@ -1207,7 +1241,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		if(formItem instanceof FormDef)
 			setFormProperties((FormDef)formItem);
-		else if(formItem instanceof PageDef)
+		else if(formItem instanceof GroupDef)
 			setPageProperties((GroupDef)formItem);
 		else if(formItem instanceof QuestionDef)
 			setQuestionProperties((QuestionDef)formItem);
@@ -1336,12 +1370,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//lblDescTemplate.setVisible(enable);
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
-		cellFormatter.setVisible(10, 0, enable);
-		cellFormatter.setVisible(10, 1, enable);
+		cellFormatter.setVisible(9, 0, enable);
+		cellFormatter.setVisible(9, 1, enable);
 
 		//form key
-		cellFormatter.setVisible(11, 0, enable);
-		cellFormatter.setVisible(11, 1, enable);
+		cellFormatter.setVisible(10, 0, enable);
+		cellFormatter.setVisible(10, 1, enable);
 
 		//txtDescTemplate.getParent().setVisible(enable);
 	}

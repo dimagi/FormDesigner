@@ -755,10 +755,10 @@ public class QuestionDef implements IFormElement, Serializable{
 			else
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_READONLY);
 
-			if(locked)
+			/*if(locked)
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED,XformConstants.XPATH_VALUE_TRUE);
 			else
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);*/
 
 			if(!visible)
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE,XformConstants.XPATH_VALUE_FALSE);
@@ -1543,6 +1543,10 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	public boolean removeChild(IFormElement element){
 		return this.removeOption((OptionDef)element);
+	}
+	
+	public int getChildCount(){
+		return getOptionCount();
 	}
 }
 

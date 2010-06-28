@@ -62,4 +62,6 @@ public interface IFormElement {
 	void setItextId(String id);
 	
 	boolean removeChild(IFormElement element);
+	
+	int getChildCount();
 }

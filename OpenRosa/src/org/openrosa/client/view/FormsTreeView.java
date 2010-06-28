@@ -745,7 +745,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
 					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
-					//addFormDefItem(pageDef,item.getParentItem());
+					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
 				}
 				else{
 					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
@@ -860,7 +860,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
 		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
-			((IFormElement)parentUserObj).addChild((QuestionDef)obj);
+			((IFormElement)parentUserObj).addChild((IFormElement)obj);
 	}
 
 	public void addNewForm(){

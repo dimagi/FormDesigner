@@ -297,4 +297,8 @@ public class OptionDef implements IFormElement, Serializable {
 	public boolean removeChild(IFormElement element){
 		return false;
 	}
+	
+	public int getChildCount(){
+		return 0;
+	}
 }

@@ -105,8 +105,8 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		actionPanel.add(rdDisable);
 		actionPanel.add(rdShow);
 		actionPanel.add(rdHide);
-		actionPanel.add(chkMakeRequired);
-		actionPanel.setSpacing(5);
+		//actionPanel.add(chkMakeRequired);
+		actionPanel.setSpacing(10);
 
 		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),"");
 		hyperlink.addClickHandler(new ClickHandler(){

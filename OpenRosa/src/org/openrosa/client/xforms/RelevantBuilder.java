@@ -73,13 +73,13 @@ public class RelevantBuilder {
 					value = XformConstants.ATTRIBUTE_VALUE_SHOW;
 				else if((rule.getAction() & ModelConstants.ACTION_HIDE) != 0)
 					value = XformConstants.ATTRIBUTE_VALUE_HIDE;
-				node.setAttribute(XformConstants.ATTRIBUTE_NAME_ACTION, value);
+				//node.setAttribute(XformConstants.ATTRIBUTE_NAME_ACTION, value);
 
 				if((rule.getAction() & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
 					value = XformConstants.XPATH_VALUE_TRUE;
 				else if((rule.getAction() & ModelConstants.ACTION_MAKE_OPTIONAL) != 0)
 					value = XformConstants.XPATH_VALUE_FALSE;
-				node.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, value);
+				//node.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, value);
 			}
 		}
 	}

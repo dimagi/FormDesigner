@@ -318,7 +318,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param questionDef the question.
 	 * @return the skip rule.
 	 */
-	public SkipRule getSkipRule(QuestionDef questionDef){
+	public SkipRule getSkipRule(IFormElement questionDef){
 		if(skipRules == null)
 			return null;
 
@@ -1469,5 +1469,9 @@ public class FormDef implements IFormElement, Serializable{
 	
 	public void setHintNode(Element hintNode){
 		
+	}
+	
+	public FormDef getFormDef(){
+		return this;
 	}
 }

@@ -3,6 +3,7 @@ package org.openrosa.client.widget.skiprule;
 import org.openrosa.client.controller.IConditionController;
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.model.ModelConstants;
@@ -40,7 +41,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private ActionHyperlink actionHyperlink;
 
 	/** The question that this widget condition references. */
-	private QuestionDef questionDef;
+	private IFormElement questionDef;
 	
 	/** The selected operator for the condition. */
 	private int operator;
@@ -76,7 +77,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	 * @param allowFieldSelection a flag to determine if we should allow selection for the condition.
 	 * @param questionDef the question that this condition references.
 	 */
-	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, QuestionDef questionDef){
+	public ConditionWidget(FormDef formDef, IConditionController view, boolean allowFieldSelection, IFormElement questionDef){
 		this.formDef = formDef;
 		this.view = view;
 		this.allowFieldSelection = allowFieldSelection;
@@ -126,7 +127,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 			questionDef = (QuestionDef)item;
 			//operatorHyperlink.setDataType(questionDef.getDataType());
 			setOperatorDataType(questionDef);
-			valueWidget.setQuestionDef(questionDef);
+			if(questionDef instanceof QuestionDef)
+				valueWidget.setQuestionDef((QuestionDef)questionDef);
 		}
 		else if(sender == operatorHyperlink){
 			operator = ((Integer)item).intValue();
@@ -221,14 +223,15 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	 * 
 	 * @param questionDef the question id definition object.
 	 */
-	public void setQuestionDef(QuestionDef questionDef){
+	public void setQuestionDef(IFormElement questionDef){
 		this.questionDef = questionDef;
 		
 		/*//operatorHyperlink.setDataType(questionDef.getDataType());
 		setOperatorDataType(questionDef);*/
 		
 		//if(allowFieldSelection)
-			valueWidget.setQuestionDef(questionDef);
+		if(questionDef instanceof QuestionDef)
+			valueWidget.setQuestionDef((QuestionDef)questionDef);
 		
 		/*//operatorHyperlink.setDataType(questionDef.getDataType());
 		setOperatorDataType(questionDef);*/
@@ -252,7 +255,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	}
 	
 	
-	private void setOperatorDataType(QuestionDef questionDef){
+	private void setOperatorDataType(IFormElement questionDef){
 		operatorHyperlink.setDataType(function == ModelConstants.FUNCTION_LENGTH ? QuestionDef.QTN_TYPE_NUMERIC : questionDef.getDataType());
 	}
 }

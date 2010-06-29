@@ -56,7 +56,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 *  As for now, the form designer supports only one skip rule target. But the
 	 *  skip rule object supports an un limited number.
 	 */
-	private QuestionDef questionDef;
+	private IFormElement questionDef;
 
 	/** The skip rule definition object. */
 	private SkipRule skipRule;
@@ -299,10 +299,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * 
 	 * @param questionDef the question definition object.
 	 */
-	public void setQuestionDef(QuestionDef questionDef){
+	public void setQuestionDef(IFormElement questionDef){
 		clearConditions();
 
-		formDef = questionDef.getParentFormDef();
+		formDef = questionDef.getFormDef();
 
 		if(questionDef != null)
 			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());

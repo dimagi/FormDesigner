@@ -746,6 +746,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
 					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
+					
+					if(dataType == QuestionDef.QTN_TYPE_GROUP)
+						addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}
 				else{
 					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
@@ -757,8 +760,6 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 					if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 						addNewOptionDef(questionDef, item);
-					else if(dataType == QuestionDef.QTN_TYPE_GROUP)
-						addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}
 
 				//tree.setSelectedItem(item);
@@ -846,6 +847,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private void addNewOptionDef(QuestionDef questionDef, TreeModelItem parentItem){
 		int id = ++nextOptionId;
 		OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,questionDef);
+		optionDef.setItextId(optionDef.getBinding());
 		//addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
 		addImageItem(parentItem, optionDef.getText(),optionDef);
 		addFormDefItem(optionDef,parentItem);
@@ -857,7 +859,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(obj instanceof OptionDef)
 				((QuestionDef)parentUserObj).addOption((OptionDef)obj);
 			else
-				((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
+				((IFormElement)parentUserObj).getParent().addChild((IFormElement)obj);
+				//((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
 		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
 			((IFormElement)parentUserObj).addChild((IFormElement)obj);
@@ -1201,9 +1204,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		if(clipboardItem instanceof QuestionDef){
 			//Questions can be pasted only as kids of pages or repeat questions.
-			if(! ( (userObj instanceof GroupDef) || 
-					(userObj instanceof QuestionDef && 
-							((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) )){
+			if(! ( (userObj instanceof GroupDef) || userObj instanceof FormDef ||
+					(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) )){
+				Window.setStatus("The clipboard item cannot be pasted as a child of the selected item");
+				Window.alert("The clipboard item cannot be pasted as a child of the selected item");
 				return;
 			}
 
@@ -1216,10 +1220,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			questionDef.setId(item.getChildCount()+1);
 
-			if(userObj instanceof GroupDef)
+			/*if(userObj instanceof GroupDef)
 				((GroupDef)userObj).addChild(questionDef);
 			else
-				((QuestionDef)userObj).getRepeatQtnsDef().addQuestion(questionDef);
+				((QuestionDef)userObj).getRepeatQtnsDef().addQuestion(questionDef);*/
+			
+			((IFormElement)userObj).addChild(questionDef);
 
 			item = loadQuestion(questionDef, item);
 

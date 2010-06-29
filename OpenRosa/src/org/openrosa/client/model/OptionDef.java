@@ -62,6 +62,7 @@ public class OptionDef implements IFormElement, Serializable {
 		 setId(optionDef.getId());
 		 setText(optionDef.getText());
 		 setBinding(optionDef.getBinding());
+		 setItextId(optionDef.getItextId());
 		 //setParent(parent /*optionDef.getParent()*/);
 	}
 	
@@ -300,5 +301,14 @@ public class OptionDef implements IFormElement, Serializable {
 	
 	public int getChildCount(){
 		return 0;
+	}
+	
+
+	public FormDef getFormDef(){
+		IFormElement element = getParent();
+		if(parent instanceof FormDef)
+			return (FormDef)element;
+		
+		return element.getFormDef();
 	}
 }

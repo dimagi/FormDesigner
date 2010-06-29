@@ -76,6 +76,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this(parent);
 		setName(pageDef.getName());
 		setChildren(pageDef.getChildren());
+		setItextId(pageDef.getItextId());
 	}
 
 	/**
@@ -964,5 +965,13 @@ public class GroupDef implements IFormElement, Serializable{
 		
 		return false;
 		//return this.removeElement(qtnDef, formDef);
+	}
+	
+	public FormDef getFormDef(){
+		IFormElement element = getParent();
+		if(parent instanceof FormDef)
+			return (FormDef)element;
+		
+		return element.getFormDef();
 	}
 }

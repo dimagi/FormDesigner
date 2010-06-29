@@ -111,7 +111,7 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * @param questionDef the question definition object to which the skip rule is being set.
 	 * @param skipRule the current skip rule.
 	 */
-	public void setData(FormDef formDef, QuestionDef questionDef, SkipRule skipRule){
+	public void setData(FormDef formDef, IFormElement questionDef, SkipRule skipRule){
 		lbAllQtns.clear();
 		lbSelQtns.clear();
 		
@@ -132,7 +132,7 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * @param questionDef the question definition object to which the skip rule is being set.
 	 * @param selQuestions the selected questions list.
 	 */
-	private void loadSelQuestions(FormDef formDef, QuestionDef questionDef, List<Integer> selQuestions){
+	private void loadSelQuestions(FormDef formDef, IFormElement questionDef, List<Integer> selQuestions){
 		for(int index = 0; index < selQuestions.size(); index++){
 			Integer qtnId = selQuestions.get(index);
 			
@@ -155,7 +155,7 @@ public class SkipQtnsDialog  extends DialogBox {
 	 * @param questionDef the question definition object.
 	 * @param skipRule the current skip rule.
 	 */
-	private void loadPageQnts(List<IFormElement> elements, QuestionDef questionDef, SkipRule skipRule){
+	private void loadPageQnts(List<IFormElement> elements, IFormElement questionDef, SkipRule skipRule){
 		for(int index = 0; index < elements.size(); index++){
 			IFormElement qtnDef = elements.get(index);
 			if(qtnDef == questionDef)

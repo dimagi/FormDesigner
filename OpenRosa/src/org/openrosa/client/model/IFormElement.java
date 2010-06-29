@@ -64,4 +64,6 @@ public interface IFormElement {
 	boolean removeChild(IFormElement element);
 	
 	int getChildCount();
+	
+	public FormDef getFormDef();
 }

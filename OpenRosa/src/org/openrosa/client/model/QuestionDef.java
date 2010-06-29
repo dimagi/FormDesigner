@@ -209,6 +209,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		setLocked(questionDef.isLocked());
 		setRequired(questionDef.isRequired());
 		setVariableName(questionDef.getBinding());
+		setItextId(questionDef.getItextId());
 
 		if(getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			copyQuestionOptions(questionDef.getOptions());
@@ -1547,6 +1548,15 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	public int getChildCount(){
 		return getOptionCount();
+	}
+	
+
+	public FormDef getFormDef(){
+		IFormElement element = getParent();
+		if(parent instanceof FormDef)
+			return (FormDef)element;
+		
+		return element.getFormDef();
 	}
 }
 

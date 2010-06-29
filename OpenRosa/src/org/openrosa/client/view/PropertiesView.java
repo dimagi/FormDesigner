@@ -779,7 +779,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj == null)
 			return;
 
-		((QuestionDef)propertiesObj).setHelpText(txtHelpText.getText());
+		((IFormElement)propertiesObj).setHelpText(txtHelpText.getText());
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
@@ -847,7 +847,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		int prevDataType = questionDef.getDataType();
 		
 		//cbDataType.setSelectedIndex(index);
-		setQuestionDataType((QuestionDef)propertiesObj);
+		setQuestionDataType((IFormElement)propertiesObj);
 		formChangeListener.onFormItemChanged(propertiesObj);
 		if(deleteKids)
 			formChangeListener.onDeleteChildren(propertiesObj);
@@ -861,7 +861,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * 
 	 * @param questionDef the question definition object.
 	 */
-	private void setQuestionDataType(QuestionDef questionDef){
+	private void setQuestionDataType(IFormElement questionDef){
 		int dataType = QuestionDef.QTN_TYPE_TEXT;
 
 		switch(cbDataType.getSelectedIndex()){
@@ -919,15 +919,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
-				questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
-			questionDef.setRepeatQtnsDef(new RepeatQtnsDef(questionDef));
+				questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT &&
+				questionDef instanceof QuestionDef)
+			((QuestionDef)questionDef).setRepeatQtnsDef(new RepeatQtnsDef((QuestionDef)questionDef));
 
 		questionDef.setDataType(dataType);
 
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 			dynamicListsView.setVisible(false);
-		else if(!dynamicListsView.isEnabled())
-			dynamicListsView.setQuestionDef(questionDef);
+		else if(!dynamicListsView.isEnabled() && questionDef instanceof QuestionDef)
+			dynamicListsView.setQuestionDef((QuestionDef)questionDef);
 	}
 
 	/**
@@ -973,7 +974,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private void setPageProperties(GroupDef pageDef){
 		boolean enabled = true;
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
-		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
+		boolean enable2 = (enabled /*&& !Context.inLocalizationMode()*/) ? true : false;
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);
@@ -1057,9 +1058,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//UI with the rest of simple quick properties as we process skip logic
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
-				skipRulesView.setQuestionDef((QuestionDef)propertiesObj);
-				validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
-				dynamicListsView.setQuestionDef((QuestionDef)propertiesObj);
+				skipRulesView.setQuestionDef((IFormElement)propertiesObj);
+				
+				if(propertiesObj instanceof QuestionDef){
+					validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
+					dynamicListsView.setQuestionDef((QuestionDef)propertiesObj);
+				}
+				else{
+					validationRulesView.setQuestionDef(null);
+					dynamicListsView.setQuestionDef(null);
+				}
 			}
 		});
 	}
@@ -1091,7 +1099,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void enableQuestionOnlyProperties(boolean enabled){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
-		boolean enable2 = (enabled && !Context.inLocalizationMode()) ? true : false;
+		boolean enable2 = (enabled /*&& !Context.inLocalizationMode()*/) ? true : false;
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);

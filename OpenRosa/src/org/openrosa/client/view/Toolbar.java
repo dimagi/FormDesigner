@@ -5,6 +5,7 @@ import java.util.List;
 import org.openrosa.client.Context;
 import org.openrosa.client.controller.IDataTypeChangeListener;
 import org.openrosa.client.controller.IFileListener;
+import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
@@ -359,7 +360,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	    bpaste = new Button("Paste", AbstractImagePrototype.create(images.paste()));
 	    bpaste.setScale(ButtonScale.LARGE);
 	    bpaste.setIconAlign(IconAlign.TOP);
-	    bpaste.disable(); //feature not ready yet
+	    //bpaste.disable(); //feature not ready yet
 	    group.addButton(bcut);
 	    group.addButton(bcopy);
 	    group.addButton(bpaste);
@@ -814,6 +815,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	}
 	
 	public void checkEnableAddSelect(Object formItem){
+		String text = "Add Select Option";
+		
 		if(formItem instanceof QuestionDef &&
 				((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
 				 (((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
@@ -822,9 +825,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			addSelect.enable();
 		}else if(formItem instanceof OptionDef){
 			addSelect.enable();
+		}else if(formItem instanceof GroupDef){
+			addSelect.enable();
+			text = "Add Group Child";
 		}else{
 			addSelect.disable();
 		}
+		
+		addSelect.setText(text);
 	}
 
 	@Override

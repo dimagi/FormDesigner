@@ -1197,17 +1197,21 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			return;
 
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
-		if(item == null)
+		if(item == null){
+			if(clipboardItem instanceof FormDef)
+				this.loadForm((FormDef)clipboardItem, true, false);
 			return;
+		}
 
 		Object userObj = item.getUserObject();
 
+		String message = "The clipboard item cannot be pasted as a child of the selected item";
+		
 		if(clipboardItem instanceof QuestionDef){
 			//Questions can be pasted only as kids of pages or repeat questions.
 			if(! ( (userObj instanceof GroupDef) || userObj instanceof FormDef ||
 					(userObj instanceof QuestionDef && ((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT) )){
-				Window.setStatus("The clipboard item cannot be pasted as a child of the selected item");
-				Window.alert("The clipboard item cannot be pasted as a child of the selected item");
+				Window.alert(message);
 				return;
 			}
 
@@ -1237,8 +1241,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		}
 		else if(clipboardItem instanceof GroupDef){		
 			//Pages can be pasted only as kids of forms.
-			if(!(userObj instanceof FormDef))
+			if(!(userObj instanceof FormDef)){
+				Window.alert(message);
 				return;
+			}
 
 			//create a copy of the clipboard page.
 			GroupDef pageDef = new GroupDef((GroupDef)clipboardItem,(FormDef)userObj);
@@ -1257,8 +1263,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//Question options can be pasted only as kids of single and multi select questions.
 			if(!(userObj instanceof QuestionDef 
 					&& (((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE)||
-					((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE))
+					((QuestionDef)userObj).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)){
+				Window.alert(message);
 				return;
+			}
 
 			//			create a copy of the clipboard page.
 			OptionDef optionDef = new OptionDef((OptionDef)clipboardItem,(QuestionDef)userObj);
@@ -1273,6 +1281,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//item.getParentItem().setState(true);
 			//item.setState(true);
 		}
+		else
+			Window.alert(message);
 	}
 
 	/**

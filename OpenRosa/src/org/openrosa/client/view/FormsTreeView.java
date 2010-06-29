@@ -743,12 +743,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
-					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
+					GroupDef pageDef = new GroupDef("Group "+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
 					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
 					
-					if(dataType == QuestionDef.QTN_TYPE_GROUP)
-						addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+					//if(dataType == QuestionDef.QTN_TYPE_GROUP)
+					//	addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}
 				else{
 					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
@@ -769,11 +769,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				//addNewOptionDef();
 
 				int id = ++nextQuestionId;
-				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
+				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent().getParent()).getUserObject());
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+				item = addImageItem((TreeModelItem)item.getParent().getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)

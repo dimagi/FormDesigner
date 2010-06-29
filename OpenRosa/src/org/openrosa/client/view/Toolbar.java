@@ -619,6 +619,24 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_MULTIPLE);
 				}else if(t.equals(buttonLabels[6])){
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+				}else if(t.equals(buttonLabels[14])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_TIME);
+				}else if(t.equals(buttonLabels[15])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_DATE_TIME);
+				}else if(t.equals(buttonLabels[16])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_IMAGE);
+				}else if(t.equals(buttonLabels[17])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_VIDEO);
+				}else if(t.equals(buttonLabels[18])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_AUDIO);
+				}else if(t.equals(buttonLabels[19])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_GPS);
+				}else if(t.equals(buttonLabels[20])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_GROUP);
+				}else if(t.equals(buttonLabels[21])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_BARCODE);
+				}else if(t.equals(buttonLabels[22])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_LABEL);
 				}else{
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}	

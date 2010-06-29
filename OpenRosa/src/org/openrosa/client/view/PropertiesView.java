@@ -324,6 +324,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		enableQuestionOnlyProperties(false);
 		qtnID.setVisible(false);
+		lblQtnID.setVisible(false);
 		txtText.setVisible(false);
 		lblText.setVisible(false);
 		//txtDescTemplate.setVisible(false);
@@ -950,6 +951,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		txtText.setVisible(true);
 		lblText.setVisible(true);
+		lblQtnID.setVisible(true);
+		qtnID.setVisible(true);
 		//txtDescTemplate.setVisible(Context.isStructureReadOnly() ? false : true);
 		//btnDescTemplate.setVisible(Context.isStructureReadOnly() ? false : true);
 		enableDescriptionTemplate(Context.isStructureReadOnly() ? false : true);
@@ -1233,6 +1236,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			enableQuestionOnlyProperties(false);
 			txtText.setVisible(false);
 			lblText.setVisible(false);
+			qtnID.setVisible(false);
+			lblQtnID.setVisible(false);
 			//txtDescTemplate.setVisible(false);
 			//btnDescTemplate.setVisible(false);
 			enableDescriptionTemplate(false);

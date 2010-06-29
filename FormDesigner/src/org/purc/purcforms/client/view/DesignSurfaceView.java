@@ -335,6 +335,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		widget.setBinding(name);
 		widget.setFontFamily(FormUtil.getDefaultFontFamily());
 		widget.setFontSize(FormUtil.getDefaultFontSize());
+		widget.setFontWeight("normal");
 		pageWidgets.put(tabs.getTabBar().getTabCount()-1, widget);
 
 		//widgetSelectionListener.onWidgetSelected(widget);

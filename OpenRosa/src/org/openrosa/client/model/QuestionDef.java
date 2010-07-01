@@ -409,9 +409,6 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setItextId(String itextId) {
 		this.itextId = itextId;
-		
-		if(itextId == null)
-			setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	public void setDataType(int dataType) {

@@ -283,11 +283,11 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 
 		if(!langRefresh){
 			int count = formDef.getQuestionCount();
-			if(nextQuestionId <= count)
+			if(nextQuestionId < count)
 				nextQuestionId = count;
 
 			count = formDef.getPageCount();
-			if(nextPageId <= count)
+			if(nextPageId < count)
 				nextPageId = count;
 			
 			this.formDef = formDef;
@@ -905,13 +905,13 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
 	 */
-	public void onFormItemChanged(Object formItem) {
+	public Object onFormItemChanged(Object formItem) {
 		TreeItem item = tree.getSelectedItem();
 		if(item == null)
-			return; //How can this happen?
+			return formItem; //How can this happen?
 
 		if(item.getUserObject() != formItem)
-			return;
+			return formItem;
 
 		if(formItem instanceof QuestionDef){
 			QuestionDef questionDef = (QuestionDef)formItem;
@@ -930,6 +930,8 @@ public class FormsTreeView extends Composite implements SelectionHandler<TreeIte
 			FormDef formDef = (FormDef)formItem;
 			item.setWidget(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 		}
+		
+		return formItem;
 	}
 
 	/**

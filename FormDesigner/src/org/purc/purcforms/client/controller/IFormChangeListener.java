@@ -15,8 +15,9 @@ public interface IFormChangeListener {
 	 * is changed. Such properties could be, Text, Help Text, Binding, Data Type, Visibility, and more.
 	 * 
 	 * @param formItem the item which has been changed.
+	 * @return the new item in case the called has changed it.
 	 */
-	public void onFormItemChanged(Object formItem);
+	public Object onFormItemChanged(Object formItem);
 	
 	/**
 	 * Called when it is time to deleted the kids of a form item (QuestionDef,PageDef).

@@ -225,15 +225,24 @@ public class XformParser {
 		//Remove all that we had created as questions when parsing bindings but will not require
 		//user input (eg JR's DeviceId, EndTime), since questions are only for cases where we want user input.
 		//TODO Needs to be fixed when having multiple groups
-		for(int index = 0; index < formDef.getQuestionCount(); index++){
-			QuestionDef questionDef = (QuestionDef)formDef.getElementAt(index);
-			if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){
-				formDef.removeQuestion(questionDef);
-				index--;
-			}
-		}
+		removeElementsWithoutText(formDef.getChildren());
 
 		return formDef;
+	}
+	
+	private static void removeElementsWithoutText(List<IFormElement> elements){
+		if(elements == null)
+			return;
+		
+		for(int index = 0; index < elements.size(); index++){
+			IFormElement element = elements.get(index);
+			if(element.getText() == null || element.getText().trim().length() == 0){
+				element.getParent().removeChild(element);
+				index--;
+			}
+			else if(element instanceof GroupDef)
+				removeElementsWithoutText(element.getChildren());
+		}
 	}
 
 
@@ -257,7 +266,7 @@ public class XformParser {
 	 *                           questions have not yet been parsed.
 	 * @return the question we are currently parsing.
 	 */
-	private static IFormElement parseElement(FormDef formDef, Element element, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+	private static IFormElement parseElement(FormDef formDef, Element element, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
 		String label = "";
 		String hint = "";
 		String value = "";
@@ -299,7 +308,7 @@ public class XformParser {
 			}
 			//else if (tagname.equals(NODE_NAME_GROUP) || tagname.equals(NODE_NAME_GROUP_MINUS_PREFIX)){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
-				parseGroupElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
+				/*questionDef = */parseGroupElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 			}
 			//else if(tagname.equals(NODE_NAME_INSTANCE)||tagname.equals(NODE_NAME_INSTANCE_MINUS_PREFIX)) {
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_INSTANCE_MINUS_PREFIX)){
@@ -341,6 +350,9 @@ public class XformParser {
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);;
 				parseLabelElement(formDef, child, questionDef, nodeContext);
 
+				if(questionDef instanceof GroupDef)
+					setLabelValueNode(formDef, element, questionDef, parentQtn, nodeContext);
+				
 				label = nodeContext.getLabel();
 				hint = nodeContext.getHint();
 				value = nodeContext.getValue();
@@ -399,7 +411,7 @@ public class XformParser {
 	 * @param parentQtn the parent of the question we are currently processing.
 	 * @param nodeContext the node context.
 	 */
-	private static void setLabelValueNode(FormDef formDef, Element element, IFormElement questionDef, QuestionDef parentQtn, NodeContext nodeContext){
+	private static void setLabelValueNode(FormDef formDef, Element element, IFormElement questionDef, IFormElement parentQtn, NodeContext nodeContext){
 		if (!nodeContext.getLabel().equals("") && !nodeContext.getValue().equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (questionDef instanceof QuestionDef && questionDef != null && questionDef.getChildren() != null){
 				if(((QuestionDef)questionDef).getOptions().size() == 0)
@@ -418,9 +430,16 @@ public class XformParser {
 		} 
 		else if (!nodeContext.getLabel().equals("") && questionDef != null){
 			if(questionDef.getText() == null || questionDef.getText().trim().length()==0){
+				
+				if(questionDef != parentQtn && parentQtn instanceof GroupDef && questionDef.getParent() != parentQtn){
+					questionDef.getParent().removeChild(questionDef);
+					parentQtn.addChild(questionDef);
+				}
+				
 				questionDef.setText(nodeContext.getLabel());				
 				questionDef.setControlNode(element);
 				questionDef.setLabelNode(nodeContext.getLabelNode());
+				
 				if(questionDef instanceof QuestionDef)
 					setQuestionDataNode((QuestionDef)questionDef,formDef,parentQtn);
 			}
@@ -436,7 +455,7 @@ public class XformParser {
 	 * @param parentQtn the parent question to which qtn belongs as a child.
 	 * 					This is only non null for kids of repeat question types.
 	 */
-	private static void setQuestionDataNode(QuestionDef qtn, FormDef formDef,QuestionDef parentQtn){
+	private static void setQuestionDataNode(QuestionDef qtn, FormDef formDef, IFormElement parentQtn){
 		String xpath = qtn.getBinding();
 
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
@@ -605,19 +624,31 @@ public class XformParser {
 	 * @param orphanDynOptionQns a list of dynamic option definition questions who parent
 	 *                           questions have not yet been parsed.
 	 */
-	private static void parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+	private static IFormElement parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+		IFormElement formElement = null;
+		
 		String parentName = ((Element)child.getParentNode()).getNodeName();
 		//if(!(parentName.equalsIgnoreCase(NODE_NAME_GROUP)||parentName.equalsIgnoreCase(NODE_NAME_GROUP_MINUS_PREFIX))){
-		if(!XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
+		//if(!XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 			/*if(formDef.getPageCount() < ++currentPageNo)
 				formDef.addPage();
 			formDef.setPageGroupNode((Element)child);*/
 			
 			GroupDef groupDef = new GroupDef();
 			groupDef.setControlNode((Element)child);
-			formDef.addElement(groupDef);
-		}
+			
+			if(parentQtn == null)
+				formDef.addElement(groupDef);
+			else
+				parentQtn.addChild(groupDef);
+			
+			questionDef = groupDef;
+			parentQtn = questionDef;
+			formElement = questionDef;
+		//}
 		parseElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
+	
+		return formElement;
 	}
 
 
@@ -641,7 +672,7 @@ public class XformParser {
 	 *                           questions have not yet been parsed.
 	 * @return the question we are currently parsing.
 	 */
-	private static QuestionDef parseBindElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+	private static QuestionDef parseBindElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
 		QuestionDef qtn = new QuestionDef(null);
 		qtn.setBindNode(child);
 		qtn.setId(getNextQuestionId());
@@ -706,7 +737,7 @@ public class XformParser {
 	 * @param nodeContext the current node context.
 	 * @return the question we are currently parsing.
 	 */
-	private static IFormElement parseUiElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns, NodeContext nodeContext){
+	private static IFormElement parseUiElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns, NodeContext nodeContext){
 		String ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
 		String bind = child.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
 		String varName = (String)id2VarNameMap.get(((ref != null) ? ref : bind));

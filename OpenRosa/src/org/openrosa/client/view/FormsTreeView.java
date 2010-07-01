@@ -20,6 +20,7 @@ import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
@@ -481,8 +482,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private void loadQuestions(List<IFormElement> questions,TreeModelItem root){
 		if(questions != null){
-			for(int currentQtnNo=0; currentQtnNo<questions.size(); currentQtnNo++)
-				loadQuestion((QuestionDef)questions.get(currentQtnNo),root);
+			for(int currentQtnNo=0; currentQtnNo<questions.size(); currentQtnNo++){
+				IFormElement element = questions.get(currentQtnNo);
+
+				if(element instanceof GroupDef)
+					loadGroup((GroupDef)element,root);
+				else
+					loadQuestion((QuestionDef)element,root);
+			}
 		}
 	}
 
@@ -746,7 +753,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					GroupDef pageDef = new GroupDef("Group "+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
 					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
-					
+
 					//if(dataType == QuestionDef.QTN_TYPE_GROUP)
 					//	addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}
@@ -828,15 +835,16 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		else{
 			addNewForm();
 
+			//Get the newly added question and set its appropriate type.
 			item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
-			QuestionDef questionDef = (QuestionDef)item.getUserObject();
+			IFormElement questionDef = (IFormElement)item.getUserObject();
 			questionDef.setDataType(dataType);
 			questionDef.setItextId(questionDef.getBinding());
 
 			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
-				addNewOptionDef(questionDef, item);
+				addNewOptionDef((QuestionDef)questionDef, item);
 			else if(dataType == QuestionDef.QTN_TYPE_GROUP)
-				addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+				;//addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 
 			treePanel.getSelectionModel().select(item, false);
 		}
@@ -860,7 +868,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				((QuestionDef)parentUserObj).addOption((OptionDef)obj);
 			else
 				((IFormElement)parentUserObj).getParent().addChild((IFormElement)obj);
-				//((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
+			//((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
 		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
 			((IFormElement)parentUserObj).addChild((IFormElement)obj);
@@ -1103,20 +1111,27 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
 	 */
-	public void onFormItemChanged(Object formItem) {
+	public Object onFormItemChanged(Object formItem) {
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 		if(item == null)
-			return; //How can this happen?
+			return formItem; //How can this happen?
 
 		if(item.getUserObject() != formItem)
-			return;
+			return formItem;
 
 		if(formItem instanceof QuestionDef){
-			QuestionDef questionDef = (QuestionDef)formItem;
+			IFormElement element = (IFormElement)formItem;
 			//item.setWidget(new TreeItemWidget(images.lookup(), questionDef.getDisplayText(),popup,this));
 			//item.setTitle(questionDef.getHelpText());
 
-			item.setText(questionDef.getDisplayText());
+			if(element.getDataType() == QuestionDef.QTN_TYPE_GROUP){
+				IFormElement newElement = new GroupDef(element.getText(), element.getChildren(), element.getParent());
+				copyElementValues(newElement, element);
+				item.setUserObject(newElement);
+				formItem = newElement;
+			}
+
+			item.setText(element.getDisplayText());
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof OptionDef){
@@ -1127,10 +1142,17 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof GroupDef){
-			GroupDef pageDef = (GroupDef)formItem;
+			IFormElement element = (IFormElement)formItem;
 			//item.setWidget(new TreeItemWidget(images.drafts(), pageDef.getName(),popup,this));
 
-			item.setText(pageDef.getName());
+			if(element.getDataType() != QuestionDef.QTN_TYPE_GROUP){
+				IFormElement newElement = new QuestionDef(element.getParent());
+				copyElementValues(newElement, element);
+				item.setUserObject(newElement);
+				formItem = newElement;
+			}
+
+			item.setText(element.getText());
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof FormDef){
@@ -1140,7 +1162,47 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			item.setText(formDef.getName());
 			treePanel.getStore().update(item);
 		}
+
+		return formItem;
 	}
+
+
+	private void copyElementValues(IFormElement newElement, IFormElement element){
+		newElement.setId(element.getId());
+		newElement.setItextId(element.getItextId());
+		newElement.setBinding(element.getBinding());
+		newElement.setBindNode(element.getBindNode());
+		newElement.setDataNode(element.getDataNode());
+		newElement.setDataType(element.getDataType());
+		newElement.setHelpText(element.getHelpText());
+		newElement.setHintNode(element.getHintNode());
+		newElement.setLabelNode(element.getLabelNode());
+		newElement.setText(element.getText());
+		newElement.setControlNode(element.getControlNode());
+		newElement.setParent(element.getParent());
+		newElement.setChildren(element.getChildren());
+
+		IFormElement parent = element.getParent();
+		int index = parent.getChildren().indexOf(element);
+		parent.getChildren().remove(element);
+		parent.getChildren().add(index, newElement);
+
+		if(newElement.getControlNode() != null){
+			if(newElement instanceof GroupDef){
+				newElement.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_ID, newElement.getControlNode().getAttribute(XformConstants.ATTRIBUTE_NAME_BIND));
+				newElement.getControlNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
+				newElement.getControlNode().removeAttribute("mediatype");
+			}
+			else{
+				assert(newElement instanceof QuestionDef);
+
+				newElement.getControlNode().setAttribute(XformConstants.ATTRIBUTE_NAME_BIND, newElement.getControlNode().getAttribute(XformConstants.ATTRIBUTE_NAME_ID));
+				newElement.getControlNode().removeAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+				newElement.getControlNode().removeAttribute("mediatype");
+			}
+		}
+	}
+
 
 	/**
 	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onDeleteChildren(Object)
@@ -1206,7 +1268,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		Object userObj = item.getUserObject();
 
 		String message = "The clipboard item cannot be pasted as a child of the selected item";
-		
+
 		if(clipboardItem instanceof QuestionDef){
 			//Questions can be pasted only as kids of pages or repeat questions.
 			if(! ( (userObj instanceof GroupDef) || userObj instanceof FormDef ||
@@ -1228,7 +1290,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				((GroupDef)userObj).addChild(questionDef);
 			else
 				((QuestionDef)userObj).getRepeatQtnsDef().addQuestion(questionDef);*/
-			
+
 			((IFormElement)userObj).addChild(questionDef);
 
 			item = loadQuestion(questionDef, item);

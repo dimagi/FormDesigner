@@ -480,7 +480,7 @@ public class FormDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement def = children.get(i);
-			if(def.getBinding().equals(varName))
+			if(varName.equals(def.getBinding()))
 				return def;
 			
 			if(def instanceof GroupDef){
@@ -794,7 +794,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param qtnDef the question to remove.
 	 * @return true if the question has been found and removed, else false.
 	 */
-	public boolean removeQuestion(QuestionDef qtnDef){
+	public boolean removeQuestion(IFormElement qtnDef){
 		for(int i=0; i<children.size(); i++){
 			IFormElement element = children.get(i);
 			if(element == qtnDef){
@@ -1076,7 +1076,7 @@ public class FormDef implements IFormElement, Serializable{
 
 		boolean ret = validationRules.remove(validationRule);
 		if(dataNode != null){
-			QuestionDef questionDef = (QuestionDef)getElement(validationRule.getQuestionId());
+			IFormElement questionDef = getElement(validationRule.getQuestionId());
 			if(questionDef != null){
 				Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
 				if(node != null){
@@ -1321,7 +1321,7 @@ public class FormDef implements IFormElement, Serializable{
 				for(int index = 0; index < children.size(); index++){
 					IFormElement element = children.get(index);
 					if(element instanceof GroupDef)
-						((GroupDef)element).buildLanguageNodes(doc, rootNode);
+						((GroupDef)element).buildLanguageNodes(null, doc, rootNode);
 					else{
 						assert(element instanceof QuestionDef);
 						((QuestionDef)element).buildLanguageNodes(FormUtil.getNodePath(xformsNode), doc, xformsNode, rootNode);

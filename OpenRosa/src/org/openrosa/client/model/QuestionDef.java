@@ -409,6 +409,9 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setItextId(String itextId) {
 		this.itextId = itextId;
+		
+		if(itextId == null)
+			setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	public void setDataType(int dataType) {
@@ -1080,14 +1083,16 @@ public class QuestionDef implements IFormElement, Serializable{
 		
 		if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) ||
-				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)) &&
+				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX) ||
+				name.contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)) &&
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT);
 			modified = true;
 		}
 		else if((name.contains(XformConstants.NODE_NAME_INPUT_MINUS_PREFIX) || 
 				name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) ||
-				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)) &&
+				name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX) ||
+				name.contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)) &&
 				(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)){
 			xml = xml.replace(name, XformConstants.NODE_NAME_SELECT1);
 			modified = true;
@@ -1125,7 +1130,8 @@ public class QuestionDef implements IFormElement, Serializable{
 			modified = true;
 		}
 		else if( (name.contains(XformConstants.NODE_NAME_UPLOAD_MINUS_PREFIX) && !isMultiMedia(dataType)) ||
-				(name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX) && dataType != QuestionDef.QTN_TYPE_LABEL) ){
+				(name.contains(XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX) && dataType != QuestionDef.QTN_TYPE_LABEL) ||
+				name.contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX) ){
 			xml = xml.replace(name, XformConstants.NODE_NAME_INPUT);
 			modified = true;
 		}
@@ -1461,7 +1467,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, text);
 			parentLangNode.appendChild(node);
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
-			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDef"+id);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDef-"+id);
 		}
 
 		if(hintNode != null){
@@ -1472,9 +1478,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			
 			String id = ItextParser.getItextId(hintNode);
 			if(id == null)
-				id =  itextId + "hint";
+				id =  itextId + "-hint";
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
-			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDefHint"+id);
+			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDefHint-"+id);
 		}
 
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
@@ -1498,11 +1504,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		return (FormDef)getParentFormDef(this);
 	}
 
-	private IFormElement getParentFormDef(QuestionDef questionDef){
+	private IFormElement getParentFormDef(IFormElement questionDef){
 		IFormElement parent = questionDef.getParent();
 		if(parent instanceof FormDef)
 			return parent;
-		return parent.getParent();
+		return getParentFormDef(parent);
 	}
 
 	public String getDisplayText(){

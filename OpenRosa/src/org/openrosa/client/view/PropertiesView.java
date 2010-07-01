@@ -358,28 +358,28 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setVisible(chkVisible.getValue() == true);
-				formChangeListener.onFormItemChanged(propertiesObj);
+				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkEnabled.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setEnabled(chkEnabled.getValue() == true);
-				formChangeListener.onFormItemChanged(propertiesObj);
+				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkLocked.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setLocked(chkLocked.getValue() == true);
-				formChangeListener.onFormItemChanged(propertiesObj);
+				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
 		chkRequired.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setRequired(chkRequired.getValue() == true);
-				formChangeListener.onFormItemChanged(propertiesObj);
+				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
 
@@ -708,7 +708,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setName(txtText.getText());
 
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
 
@@ -719,7 +719,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setFormKey(txtFormKey.getText());
 
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
 
@@ -732,7 +732,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		else if(propertiesObj instanceof FormDef){
 			((FormDef)propertiesObj).setDescriptionTemplate(txtDescTemplate.getText());
-			formChangeListener.onFormItemChanged(propertiesObj);
+			propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 		}
 	}
 
@@ -770,7 +770,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		}
 
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
 	/**
@@ -781,7 +781,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return;
 
 		((IFormElement)propertiesObj).setHelpText(txtHelpText.getText());
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
 	/**
@@ -812,7 +812,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return;
 
 		((QuestionDef)propertiesObj).setDefaultValue(txtDefaultValue.getText());
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}
 
 	/**
@@ -849,7 +849,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		
 		//cbDataType.setSelectedIndex(index);
 		setQuestionDataType((IFormElement)propertiesObj);
-		formChangeListener.onFormItemChanged(propertiesObj);
+		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 		if(deleteKids)
 			formChangeListener.onDeleteChildren(propertiesObj);
 		

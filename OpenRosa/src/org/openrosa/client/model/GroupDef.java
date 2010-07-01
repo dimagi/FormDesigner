@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.util.ItextParser;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.user.client.Window;
@@ -28,18 +30,22 @@ public class GroupDef implements IFormElement, Serializable{
 
 	/** The name of the group. */
 	private String name = ModelConstants.EMPTY_STRING;
-	
+
 	/** The help text of the group. */
 	private String helpText = ModelConstants.EMPTY_STRING;
 
 	/** The xforms label node for this group. */
 	private Element labelNode;
-	
+
 	/** The xforms hint node for this group. */
 	private Element hintNode;
 
 	/** The xforms group node for this page. */
 	private Element groupNode;
+	
+	private Element bindNode;
+	
+	private Element dataNode;
 
 	/** The parent definition to which this group belongs. */
 	private IFormElement parent;
@@ -49,12 +55,12 @@ public class GroupDef implements IFormElement, Serializable{
 	private int id;
 
 	private String itextId;
-	
+
 	private int dataType = QuestionDef.QTN_TYPE_GROUP;
-	
-	
+
+
 	public GroupDef(){
-		
+
 	}
 
 	/**
@@ -134,6 +140,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
+		
+		if(itextId == null)
+			setItextId(ItextParser.getItextId(labelNode));
 	}
 
 	/**
@@ -158,7 +167,7 @@ public class GroupDef implements IFormElement, Serializable{
 	public int getChildCount(){
 		if(children == null)
 			return 0;
-		
+
 		int count = 0;
 		for(int index = 0; index < children.size(); index++){
 			IFormElement element = children.get(index);
@@ -169,7 +178,7 @@ public class GroupDef implements IFormElement, Serializable{
 				count += 1;
 			}
 		}
-		
+
 		return count;
 	}
 
@@ -212,7 +221,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement def = children.get(i);
-			if(def.getBinding().equals(varName))
+			if(varName.equals(def.getBinding()))
 				return def;
 
 			//Without this, then we have not validation and skip rules in repeat questions.
@@ -230,11 +239,11 @@ public class GroupDef implements IFormElement, Serializable{
 
 		return null;
 	}
-	
+
 	public QuestionDef getQuestion(String varName){
 		return (QuestionDef)getElement(varName);
 	}
-	
+
 	public QuestionDef getQuestion(int id){
 		return (QuestionDef)getElement(id);
 	}
@@ -246,7 +255,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement def = children.get(i);
-			if(def.getBinding().equals(varName))
+			if(varName.equals(def.getBinding()))
 				return i;
 		}
 
@@ -275,7 +284,7 @@ public class GroupDef implements IFormElement, Serializable{
 				if(elem != null)
 					return elem;
 			}
-			
+
 			/*if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
 				def = def.getRepeatQtnsDef().getElement(id);
 				if(def != null)
@@ -324,7 +333,7 @@ public class GroupDef implements IFormElement, Serializable{
 		//TODO Need to do recursive checks for group defs before remove.
 		return children.remove(qtnDef);
 	}
-	
+
 	public static void removeElement2(IFormElement qtnDef, FormDef formDef){
 		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
@@ -621,6 +630,16 @@ public class GroupDef implements IFormElement, Serializable{
 		boolean allQuestionsNew = areAllQuestionsNew();
 		if(labelNode == null && groupNode == null && allQuestionsNew) //Must be new page{
 			;//XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
+		
+		if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
+			String nodeName = groupNode.getNodeName();
+			String xml = groupNode.toString();
+			xml = xml.replace(nodeName, XformConstants.NODE_NAME_GROUP);
+			Element child = XformUtil.getNode(xml);
+			child = (Element)groupNode.getOwnerDocument().importNode(child, true);
+			groupNode.getParentNode().replaceChild(child, groupNode);
+			groupNode =  child;
+		}
 
 		if(labelNode != null)
 			XmlUtil.setTextNodeValue(labelNode,name);
@@ -632,11 +651,13 @@ public class GroupDef implements IFormElement, Serializable{
 		if(children != null){
 			for(int i=0; i<children.size(); i++){
 				IFormElement questionDef = children.get(i);
-				if(!allQuestionsNew && questionDef.getDataNode() == null)
+				if(!allQuestionsNew && questionDef instanceof QuestionDef && questionDef.getDataNode() == null)
 					newElements.add(questionDef);
 
 				if(questionDef instanceof QuestionDef)
 					((QuestionDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode,true,withData, orgFormVarName);
+				else
+					((GroupDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,withData,orgFormVarName);
 			}
 		}
 
@@ -692,7 +713,7 @@ public class GroupDef implements IFormElement, Serializable{
 			return false;
 
 		for(int i=0; i<children.size(); i++){
-			QuestionDef questionDef = (QuestionDef)children.get(i);
+			IFormElement questionDef = children.get(i);
 			if(questionDef.getControlNode() != null)
 				return false;
 		}
@@ -714,13 +735,13 @@ public class GroupDef implements IFormElement, Serializable{
 			IFormElement questionDef = children.get(i);
 			if(text.equals(questionDef.getText()))
 				return questionDef;
-			
+
 			if(questionDef instanceof GroupDef){
 				IFormElement elem = ((GroupDef)questionDef).getQuestionWithText(text);
 				if(elem != null)
 					return elem;
 			}
-			
+
 			/*else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){ //TODO Need to make sure this new addition does not introduce bugs
 				questionDef = questionDef.getRepeatQtnsDef().getQuestionWithText(text);
 				if(questionDef != null)
@@ -729,7 +750,7 @@ public class GroupDef implements IFormElement, Serializable{
 		}
 		return null;
 	}
-	
+
 
 	/**
 	 * Updates this pageDef (as the main or new from a refresh xml) with the parameter one (existing or the one being refreshed)
@@ -818,11 +839,15 @@ public class GroupDef implements IFormElement, Serializable{
 	 * @param doc the language translation document.
 	 * @param parentLangNode the language parent node for the page language nodes.
 	 */
-	public void buildLanguageNodes(com.google.gwt.xml.client.Document doc, Element parentLangNode){
+	public void buildLanguageNodes(String xpath, com.google.gwt.xml.client.Document doc, Element parentLangNode){
 		if(labelNode == null || groupNode == null)
 			return;
 
-		String xpath = FormUtil.getNodePath(groupNode);
+		if(xpath == null)
+			xpath = FormUtil.getNodePath(groupNode);
+		else
+			xpath += "/" + FormUtil.getNodeName(groupNode);
+		
 		String id = groupNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(id != null && id.trim().length() > 0)
 			xpath += "[@" + XformConstants.ATTRIBUTE_NAME_ID + "='" + id + "']";
@@ -830,13 +855,19 @@ public class GroupDef implements IFormElement, Serializable{
 		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
 		parentLangNode.appendChild(node);
 
 		if(children == null)
 			return;
 
-		for(int i=0; i<children.size(); i++)
-			((QuestionDef)children.get(i)).buildLanguageNodes(xpath+"/",doc,groupNode,parentLangNode);
+		for(int i=0; i<children.size(); i++){
+			IFormElement element = children.get(i);
+			if(element instanceof QuestionDef)
+				((QuestionDef)element).buildLanguageNodes(xpath,doc,groupNode,parentLangNode);
+			else
+				((GroupDef)element).buildLanguageNodes(xpath, doc, parentLangNode);
+		}
 	}
 
 
@@ -864,7 +895,7 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public void setText(String text){
-
+		this.name = text;
 	}
 
 	public int getDataType(){
@@ -880,7 +911,7 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public void setBinding(String binding){
-
+		this.binding = binding;
 	}
 
 	public List<IFormElement> getChildren(){
@@ -888,45 +919,45 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public void setChildren(List<IFormElement> children){
-
+		this.children = children;
 	}
 
 	public Element getBindNode(){
-		return null;
+		return bindNode;
 	}
 
 	public void setBindNode(Element bindNode){
-
+		this.bindNode = bindNode;
 	}
 
 	public Element getDataNode(){
-		return null;
+		return dataNode;
 	}
 
 	public void setDataNode(Element dataNode){
-
+		this.dataNode = dataNode;
 	}
 
 	public void refresh(IFormElement element){
 
 	}
-	
+
 	public Element getControlNode(){
 		return groupNode;
 	}
-	
+
 	public void setControlNode(Element controlNode){
-		
+		groupNode = controlNode;
 	}
-	
+
 	public IFormElement copy(IFormElement parent){
 		return new GroupDef(this, parent);
 	}
-	
+
 	public String getDisplayText(){
 		return name;
 	}
-	
+
 	public String getItextId() {
 		return itextId;
 	}
@@ -934,44 +965,44 @@ public class GroupDef implements IFormElement, Serializable{
 	public void setItextId(String itextId) {
 		this.itextId = itextId;
 	}
-	
+
 	public String getHelpText(){
 		return helpText;
 	}
-	
+
 	public void setHelpText(String helpText){
 		this.helpText = helpText;
 	}
-	
+
 	public Element getHintNode(){
 		return hintNode;
 	}
-	
+
 	public void setHintNode(Element hintNode){
 		this.hintNode = hintNode;
 	}
-	
+
 	public boolean removeChild(IFormElement element){
 		if(children == null)
 			return false;
-		
+
 		if(children.remove(element))
 			return true;
-		
+
 		for(IFormElement child : children){
 			if(child.removeChild(element))
 				return true;
 		}
-		
+
 		return false;
 		//return this.removeElement(qtnDef, formDef);
 	}
-	
+
 	public FormDef getFormDef(){
 		IFormElement element = getParent();
 		if(parent instanceof FormDef)
 			return (FormDef)element;
-		
+
 		return element.getFormDef();
 	}
 }

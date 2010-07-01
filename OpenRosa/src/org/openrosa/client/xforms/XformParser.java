@@ -432,7 +432,7 @@ public class XformParser {
 			if(questionDef.getText() == null || questionDef.getText().trim().length()==0){
 				
 				if(questionDef != parentQtn && parentQtn instanceof GroupDef && questionDef.getParent() != parentQtn){
-					questionDef.getParent().removeChild(questionDef);
+					questionDef.getParent().getChildren().remove(questionDef);
 					parentQtn.addChild(questionDef);
 				}
 				

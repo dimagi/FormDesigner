@@ -205,6 +205,19 @@ public class Utils {
 	}
 	
 	public static String urlAppendNamePassword(String url, String name, String password){
-		return url += "?username=" + name + "&password=" + password;
+		url = addParameter(url, "username", name);
+		return addParameter(url, "password", password);
+	}
+	
+	public static String addParameter(String url, String name, String value){
+		if(value != null && value.trim().length() > 0){
+			if(url.indexOf('?') < 0)
+				url += "?";
+			else
+				url += "&";
+			
+			url += name + "=" + value;
+		}
+		return url;
 	}
 }

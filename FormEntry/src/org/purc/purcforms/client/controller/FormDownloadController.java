@@ -100,7 +100,8 @@ public class FormDownloadController implements LoginInfoListener{
 				if(!(url.contains("http://") || url.contains("https://"))){
 					url = FormUtil.getHostPageBaseURL();
 					url += FormEntryContext.getFormDownloadUrl();
-					url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword()) + "?formId="+id;
+					url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword());
+					url = Utils.addParameter(url, "formId", id);
 				}
 
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));

@@ -74,6 +74,12 @@ public class MainViewImpl extends Composite implements FormDefLoadListener, Form
 			loadFormDesigner(xformXml, layoutXml, javaScriptSrc);
 		}
 		else{
+			if(layoutXml == null){
+				FormUtil.dlg.hide();
+				Window.alert("Please first design the form widget layout by clicking the 'Design' button, go to the 'Design Surface' tab, and then save");
+				return;
+			}
+			
 			if(verticalPanel.getWidgetCount() > 1){
 				if(verticalPanel.getWidget(1) != formRunner)
 					verticalPanel.remove(1);

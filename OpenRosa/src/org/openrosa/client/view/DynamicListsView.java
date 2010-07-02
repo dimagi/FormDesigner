@@ -11,6 +11,7 @@ import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.widget.skiprule.FieldWidget;
+import org.purc.purcforms.client.Context;
 import org.purc.purcforms.client.FormDesignerWidget;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -102,7 +103,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		setupWidgets();
 	}
 
-	
+
 	/**
 	 * Sets up widgets.
 	 */
@@ -165,9 +166,9 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		dynamicOptionDef = null;
 
 		//TODO ???
-		
+
 		formDef = questionDef.getParentFormDef();
-		
+
 		/*if(questionDef.getParent() instanceof PageDef)
 			formDef = ((PageDef)questionDef.getParent()).getParent();
 		else
@@ -186,7 +187,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		if(parentQuestionDef != null)
 			fieldWidget.selectQuestion(parentQuestionDef);
 	}
-	
+
 
 	/**
 	 * Sets the form definition object that this dynamic selection list belongs to.
@@ -203,7 +204,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		clear();
 	}
 
-	
+
 	/**
 	 * Removes all dynamic selection list values for any previous widget, if any.
 	 */
@@ -246,7 +247,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		if(!enabled)
 			clear();
 	}
-	
+
 
 	/**
 	 * Checks whether this widget is enabled or not.
@@ -289,7 +290,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		//Populate the list of parent options from a single select question.
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			if(!(parentQuestionDef.getOptionCount() > 0)){
-				
+
 				//we are creating new DynamicOptionDef() because we want to allow
 				//one specify type to be single select dynamic without specifying any
 				//options for cases where they will be got from the server using the
@@ -308,7 +309,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		//Populate the list of parent options from a dynamic selection list question.
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
-			
+
 			if(dynamicOptionDef == null){
 				//we are creating new DynamicOptionDef() because we want to allow
 				//one specify type to be single select dynamic without specifying any
@@ -317,7 +318,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				dynamicOptionDef = new DynamicOptionDef();
 				dynamicOptionDef.setQuestionId(questionDef.getId());
 			}
-			
+
 			DynamicOptionDef options = formDef.getChildDynamicOptions(parentQuestionDef.getId());
 			if(options != null && options.getParentToChildOptions() != null){
 				Iterator<Entry<Integer,List<OptionDef>>> iterator = options.getParentToChildOptions().entrySet().iterator();
@@ -354,7 +355,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		//one specify type to be single select dynamic without specifying any
 		//options for cases where they will be got from the server using the
 		//external source widget filter property.
-		
+
 		if(dynamicOptionDef == null /*|| dynamicOptionDef.size() == 0*/){
 			if(parentQuestionDef != null)
 				formDef.removeDynamicOptions(parentQuestionDef.getId());
@@ -448,7 +449,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		}
 	}
 
-	
+
 	/**
 	 * Adds a new dynamic list option to the table.
 	 */
@@ -480,6 +481,8 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		table.setWidget(row, 0,txtText);
 		table.setWidget(row, 1,txtBinding);
+
+		txtBinding.setEnabled(!Context.isStructureReadOnly());
 
 		PushButton button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.delete()));
 		button.setTitle(LocaleText.get("deleteItem"));
@@ -519,7 +522,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					moveToPrevWidget((Widget)event.getSource(),0);
 			}
 		});
-		
+
 		txtText.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
 				int keyCode = event.getNativeKeyCode();
@@ -564,16 +567,18 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					optionDef = addNewOptionDef();
 
 				String orgTextDefBinding = FormDesignerUtil.getXmlTagName(optionDef.getText());
-				
+
 				optionDef.setText(txtText.getText());
 
-				//automatically set the binding, if empty.
-				TextBox txtBinding = (TextBox)table.getWidget(row, 1);
-				String binding = txtBinding.getText();
-				//if(binding == null || binding.trim().length() == 0){
-				if(binding == null || binding.trim().length() == 0 || binding.equals(orgTextDefBinding)){
-					txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
-					optionDef.setBinding(txtBinding.getText());
+				if(!Context.isStructureReadOnly()){
+					//automatically set the binding, if empty.
+					TextBox txtBinding = (TextBox)table.getWidget(row, 1);
+					String binding = txtBinding.getText();
+					//if(binding == null || binding.trim().length() == 0){
+					if(binding == null || binding.trim().length() == 0 || binding.equals(orgTextDefBinding)){
+						txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
+						optionDef.setBinding(txtBinding.getText());
+					}
 				}
 
 				break;
@@ -673,7 +678,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 						}
 						else
 							row++;
-						
+
 						col = 0; //1;
 					}
 

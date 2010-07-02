@@ -219,6 +219,12 @@ public class ItextParser {
 			else
 				ref = parentNode.getAttribute("bind");
 			
+			if(ref == null){
+				ref = parentNode.getAttribute("id");
+				if(ref != null)
+					idname = "id";
+			}
+			
 			String xpath = FormUtil.getNodePath(parentNode) + "[@" + idname + "='" + ref + "']" + "/" + name;
 			if(ref == null)
 				xpath = FormUtil.getNodePath(parentNode) + "/" + name;

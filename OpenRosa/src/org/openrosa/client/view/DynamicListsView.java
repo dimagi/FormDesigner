@@ -578,6 +578,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					if(binding == null || binding.trim().length() == 0 || binding.equals(orgTextDefBinding)){
 						txtBinding.setText(FormDesignerUtil.getXmlTagName(optionDef.getText()));
 						optionDef.setBinding(txtBinding.getText());
+						optionDef.setItextId(optionDef.getBinding());
 					}
 				}
 
@@ -616,6 +617,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 					optionDef = addNewOptionDef();
 
 				optionDef.setBinding(txtBinding.getText());
+				optionDef.setItextId(optionDef.getBinding());
 				break;
 			}
 		}

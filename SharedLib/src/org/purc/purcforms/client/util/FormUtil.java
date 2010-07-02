@@ -707,7 +707,24 @@ public class FormUtil {
 		if(node.getNodeType() == Node.ELEMENT_NODE){
 			com.google.gwt.xml.client.Node parent = node.getParentNode();
 			while(parent != null && !(parent instanceof Document)){
-				path = removePrefix(parent.getNodeName()) + "/" + path;
+				
+				String value = ((Element)parent).getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
+				if(value != null)
+					value = "[@id='" + value + "']";
+				
+				if(value == null){
+					value = ((Element)parent).getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
+					if(value != null)
+						value = "[@bind='" + value + "']";
+				}
+				
+				if(value == null){
+					value = ((Element)parent).getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
+					if(value != null)
+						value = "[@ref='" + value + "']";
+				}
+				
+				path = removePrefix(parent.getNodeName()) + (value == null ? "" : value) + "/" + path;
 				parent = parent.getParentNode();
 			}
 		}

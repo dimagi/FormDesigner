@@ -265,6 +265,12 @@ public class ItextParser {
 				idname = "ref";
 			else
 				ref = parentNode.getAttribute("bind");
+			
+			if(ref == null){
+				ref = parentNode.getAttribute("id");
+				if(ref != null)
+					idname = "id";
+			}
 
 			//Create and add an itext model object as required by the gxt grid.
 

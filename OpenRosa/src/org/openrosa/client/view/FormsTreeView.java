@@ -1014,31 +1014,31 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	private void moveFormItemUp(TreeModelItem item,TreeModelItem parent){
-		Object userObj = item.getUserObject();
-		Object parentObj = parent.getUserObject();
+		IFormElement userObj = (IFormElement)item.getUserObject();
+		IFormElement parentObj = (IFormElement)parent.getUserObject();
 
 		//Normal question
-		if(userObj instanceof QuestionDef && parentObj instanceof GroupDef)
-			((GroupDef)parentObj).moveElementUp((QuestionDef)userObj);
+		if(parentObj instanceof GroupDef)
+			((GroupDef)parentObj).moveElementUp(userObj);
 		/*else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
 			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionUp((QuestionDef)userObj);*/
-		else if(userObj instanceof GroupDef)
-			((FormDef)parentObj).movePageUp((GroupDef)userObj);
+		else if(parentObj instanceof FormDef)
+			((FormDef)parentObj).movePageUp(userObj);
 		else if(userObj instanceof OptionDef)
 			((QuestionDef)parentObj).moveOptionUp((OptionDef)userObj);
 	}
 
 	private void moveFormItemDown(TreeModelItem item,TreeModelItem parent){
-		Object userObj = item.getUserObject();
-		Object parentObj = parent.getUserObject();
+		IFormElement userObj = (IFormElement)item.getUserObject();
+		IFormElement parentObj = (IFormElement)parent.getUserObject();
 
 		//Normal question
-		if(userObj instanceof QuestionDef && parentObj instanceof GroupDef)
-			((GroupDef)parentObj).moveElementDown((QuestionDef)userObj);
+		if(parentObj instanceof GroupDef)
+			((GroupDef)parentObj).moveElementDown(userObj);
 		/*else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
 			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionDown((QuestionDef)userObj);*/
-		else if(userObj instanceof GroupDef)
-			((FormDef)parentObj).movePageDown((GroupDef)userObj);
+		else if(parentObj instanceof FormDef)
+			((FormDef)parentObj).movePageDown(userObj);
 		else if(userObj instanceof OptionDef)
 			((QuestionDef)parentObj).moveOptionDown((OptionDef)userObj);
 	}

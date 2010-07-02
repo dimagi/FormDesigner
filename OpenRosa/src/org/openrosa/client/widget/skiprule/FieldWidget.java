@@ -176,6 +176,13 @@ public class FieldWidget extends Composite{
 			if(questionDef instanceof GroupDef)
 				selectFirstQuestion(((GroupDef)questionDef).getChildren());
 			else{
+				if(questionDef == dynamicQuestionDef)
+					continue;
+				
+				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+						questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+					continue;
+				
 				selectQuestion(questionDef);
 				return true;
 			}

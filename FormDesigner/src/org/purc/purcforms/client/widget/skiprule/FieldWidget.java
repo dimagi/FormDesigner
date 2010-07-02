@@ -166,9 +166,17 @@ public class FieldWidget extends Composite{
 	private boolean selectFirstQuestion(Vector questions){
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
+			
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				selectFirstQuestion(questionDef.getRepeatQtnsDef().getQuestions());
 			else{
+				if(questionDef == dynamicQuestionDef)
+					continue;
+				
+				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+						questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+					continue;
+				
 				selectQuestion(questionDef);
 				return true;
 			}

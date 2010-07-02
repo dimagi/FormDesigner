@@ -839,8 +839,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		if(formItem instanceof QuestionDef &&
 				((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
-						(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
-						(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)))
+						(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ))
 		{	
 			addSelect.enable();
 		}else if(formItem instanceof OptionDef){

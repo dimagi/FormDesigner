@@ -657,7 +657,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			((QuestionDef)parentUserObj).removeOption((OptionDef)userObj);
 		}
 		else if(userObj instanceof GroupDef)
-			;//((FormDef)parentUserObj).removePage((PageDef)userObj);	
+			((IFormElement)parentUserObj).removeChild((IFormElement)userObj); //((FormDef)parentUserObj).removePage((PageDef)userObj);	
 	}
 
 	/**
@@ -1310,9 +1310,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			//create a copy of the clipboard page.
 			GroupDef pageDef = new GroupDef((GroupDef)clipboardItem,(FormDef)userObj);
-
-			pageDef.setText("Group" + item.getChildCount()+1);
-			((FormDef)userObj).addElement(pageDef);
+			pageDef.setId(item.getChildCount()+1);
+			
+			((IFormElement)userObj).addChild(pageDef);
+			
 			item = loadGroup(pageDef, item);
 
 			//tree.setSelectedItem(item);

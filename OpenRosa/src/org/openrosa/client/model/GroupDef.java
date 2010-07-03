@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openrosa.client.util.ItextParser;
+import org.openrosa.client.xforms.XformBuilder;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormUtil;
@@ -628,8 +629,8 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
-		if(labelNode == null && groupNode == null && allQuestionsNew) //Must be new page{
-			;//XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
+		if(labelNode == null && groupNode == null /*&& allQuestionsNew*/) //Must be new page{
+			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 		
 		if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 			String nodeName = groupNode.getNodeName();

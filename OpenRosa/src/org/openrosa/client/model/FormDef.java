@@ -17,6 +17,7 @@ import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
 /**
@@ -719,13 +720,14 @@ public class FormDef implements IFormElement, Serializable{
 	 * 
 	 * @param pageDef the page to move.
 	 */
-	public void movePageUp(IFormElement element){
+	/*public void movePageUp(IFormElement element){
 		int index = children.indexOf(element);
 
 		children.remove(element);
 
+		Node parentNode = element.getControlNode().getParentNode();
 		if(element.getControlNode() != null)
-			xformsNode.removeChild(element.getControlNode());
+			parentNode.removeChild(element.getControlNode()); //xformsNode.removeChild(element.getControlNode());
 
 		IFormElement currentElement;
 		List<IFormElement> list = new ArrayList<IFormElement>();
@@ -741,24 +743,25 @@ public class FormDef implements IFormElement, Serializable{
 			if(i == 0){
 				IFormElement elem = list.get(i);
 				if(elem.getControlNode() != null)
-					xformsNode.insertBefore(element.getControlNode(), elem.getControlNode());
+					parentNode.insertBefore(element.getControlNode(), elem.getControlNode()); //xformsNode.insertBefore(element.getControlNode(), elem.getControlNode());
 			}
 			children.add(list.get(i));
 		}
-	}
+	}*/
 
 	/**
 	 * Moves a page one position down in the form.
 	 * 
 	 * @param pageDef the page to move.
 	 */
-	public void movePageDown(IFormElement element){
+	/*public void movePageDown(IFormElement element){
 		int index = children.indexOf(element);	
 
 		children.remove(element);
 
+		Node parentNode = element.getControlNode().getParentNode();
 		if(element.getControlNode() != null)
-			xformsNode.removeChild(element.getControlNode());
+			parentNode.removeChild(element.getControlNode()); //xformsNode.removeChild(element.getControlNode());
 
 		IFormElement currentItem; // = parent.getChild(index - 1);
 		List<IFormElement> list = new ArrayList<IFormElement>();
@@ -773,9 +776,9 @@ public class FormDef implements IFormElement, Serializable{
 			if(i == 1){
 				children.add(element); //Add after the first item.
 
-				PageDef pgDef = (PageDef)list.get(i);
-				if(pgDef.getGroupNode() != null)
-					xformsNode.insertBefore(element.getControlNode(), pgDef.getGroupNode());
+				IFormElement pgDef = list.get(i);
+				if(pgDef.getControlNode() != null)
+					parentNode.insertBefore(element.getControlNode(), pgDef.getControlNode()); //xformsNode.insertBefore(element.getControlNode(), pgDef.getGroupNode());
 			}
 			children.add(list.get(i));
 		}
@@ -784,9 +787,9 @@ public class FormDef implements IFormElement, Serializable{
 			children.add(element);
 
 			if(element.getControlNode() != null)
-				xformsNode.appendChild(element.getControlNode());
+				parentNode.appendChild(element.getControlNode()); //xformsNode.appendChild(element.getControlNode());
 		}
-	}
+	}*/
 
 	/**
 	 * Removes a question from the form.

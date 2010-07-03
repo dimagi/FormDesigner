@@ -36,6 +36,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 
@@ -118,6 +119,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 	/** Widget to display the list of languages or locales. */
 	private ComboBox<BaseModel> cb;
+	
+	private CheckBox chkDefault;
 
 	/** The images for the tool bar icons. */
 	public final Images images;
@@ -371,7 +374,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 
 		//////////////////////FOURTH GROUP/////////////////////////////////
-		group = new ButtonGroup(2);
+		group = new ButtonGroup(3);
 		group.setHeading("Localization");
 		group.setHeight(97);
 		group.setBodyStyle("myGroupStyle");
@@ -386,9 +389,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		group.setButtonAlign(HorizontalAlignment.CENTER);
 		Text lang = new Text();
-		lang.setText("Language :");
+		lang.setText("Language : ");
 		group.add(lang);
-
+	    
 		cb = new ComboBox<BaseModel>();
 		cb.setDisplayField("name");
 
@@ -407,8 +410,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			public void onChange(ChangeEvent event){
 				int index = getCurrentLocaleIndex();
 				ListBox listBox = (ListBox)event.getSource();
-				if(!controller.changeLocale(new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()))))
+				Locale locale = new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()));
+				if(!controller.changeLocale(locale))
 					cbLocales.setSelectedIndex(index);
+				else
+					chkDefault.setValue(locale.getKey().equals(Context.getDefaultLocale().getKey()));
 			}
 		});
 
@@ -416,6 +422,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		group.add(/*cb*/ cbLocales);
 		group.addStyleName("localizationGroup");
 
+		chkDefault = new CheckBox("Default");
+	    //group.add(chkDefault);
+	    
 		toolBar.add(group);    
 
 		Context.addLocaleListChangeListener(this);

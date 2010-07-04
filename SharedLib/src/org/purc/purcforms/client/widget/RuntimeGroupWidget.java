@@ -732,6 +732,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	private void addNewRow(Widget sender){
 		HashMap<String,RuntimeWidgetWrapper> widgetMap = new HashMap<String,RuntimeWidgetWrapper>();
 
+		RuntimeWidgetWrapper firstWidget = null;
 		Element newRepeatDataNode = null;
 		int row = table.getRowCount();
 		for(int index = 0; index < widgets.size(); index++){
@@ -752,6 +753,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
 				//workonDefaults(newRepeatDataNode);
 				dataNodes.add(newRepeatDataNode);
+				
+				firstWidget = copyWidget;
 			}
 
 			table.setWidget(row, index, copyWidget);
@@ -785,6 +788,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			if(validationRule.getMaxValue(formDef) == row)
 				((Button)sender).setEnabled(false);
 		}
+		
+		if(firstWidget != null)
+			firstWidget.setFocus();
+		
 		//byte maxRows = repeatQtnsDef.getMaxRows();
 		//if(maxRows > 0 && row == maxRows)
 		//	((Button)sender).setEnabled(false);

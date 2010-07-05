@@ -66,4 +66,10 @@ public interface IFormElement {
 	int getChildCount();
 	
 	public FormDef getFormDef();
+	
+	boolean isLocked();
+	boolean isRequired();
+	boolean isEnabled();
+	boolean isVisible();
+	String getDefaultValue();
 }

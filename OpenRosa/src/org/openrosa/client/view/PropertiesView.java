@@ -7,7 +7,6 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.openrosa.client.model.RepeatQtnsDef;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.widget.DescTemplateWidget;
 import org.purc.purcforms.client.controller.IFormActionListener;
@@ -592,6 +591,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			return ((QuestionDef)propertiesObj).getText();
 		else if(propertiesObj instanceof OptionDef )
 			return ((OptionDef)propertiesObj).getText();
+		else if(propertiesObj instanceof GroupDef )
+			return ((GroupDef)propertiesObj).getText();
 		return null;
 	}
 
@@ -611,6 +612,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 				if(((FormDef)propertiesObj).getItextId().equals(orgTextDefBinding)){
 					((FormDef)propertiesObj).setItextId(name);
+					qtnID.setText(name);
+				}
+			}
+			else if(propertiesObj instanceof GroupDef && ((GroupDef)propertiesObj).getBinding().equals(orgTextDefBinding) /*startsWith("newform")*/){
+				((GroupDef)propertiesObj).setBinding(name);
+				txtBinding.setText(name);
+
+				if(((GroupDef)propertiesObj).getItextId().equals(orgTextDefBinding)){
+					((GroupDef)propertiesObj).setItextId(name);
 					qtnID.setText(name);
 				}
 			}
@@ -919,10 +929,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		}
 
-		if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
+		/*if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
 				questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT &&
 				questionDef instanceof QuestionDef)
-			((QuestionDef)questionDef).setRepeatQtnsDef(new RepeatQtnsDef((QuestionDef)questionDef));
+			((QuestionDef)questionDef).setRepeatQtnsDef(new RepeatQtnsDef((QuestionDef)questionDef));*/
 
 		questionDef.setDataType(dataType);
 

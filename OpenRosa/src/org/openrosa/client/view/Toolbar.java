@@ -107,7 +107,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bdelete,bcut,bcopy,bpaste;
@@ -131,7 +131,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Save","Save As...","Open File...","Localization","Export XML",
-			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question"};
+			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
 
 	ListBox cbLocales = new ListBox(false);
 
@@ -310,6 +310,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		lblBut.setScale(ButtonScale.LARGE);
 		lblBut.setIconAlign(IconAlign.LEFT);
 		lblBut.addStyleName("myMenuButton");
+		rptBut = new Button(buttonLabels[23]);
+		rptBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+		rptBut.setScale(ButtonScale.LARGE);
+		rptBut.setIconAlign(IconAlign.LEFT);
+		rptBut.addStyleName("myMenuButton");
 
 		menu.add(txtBut);  
 		menu.add(intBut);  
@@ -325,6 +330,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		menu.add(gpsBut);
 		menu.add(bcdBut);
 		menu.add(lblBut);
+		menu.add(rptBut);
 		menu.add(grpBut);
 
 		splitItem.setMenu(menu);  
@@ -457,7 +463,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			@Override
 			public void onFormItemSelected(Object formItem) {
 				// TODO Auto-generated method stub
-				checkEnableAddSelect(formItem);
+				checkEnableAddSelect((IFormElement)formItem);
 
 			}
 		});
@@ -537,7 +543,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				splitItem.hideMenu();
 			}
 		});
-		//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut,bcdBut,grpBut,lblBut
+		//    timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut,bcdBut,grpBut,lblBut,rptBut
 		timeBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
 				controller.addNewQuestion(QuestionDef.QTN_TYPE_TIME);
@@ -607,6 +613,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				controller.addNewQuestion(QuestionDef.QTN_TYPE_LABEL);
 				splitItem.setText(lblBut.getText());
 				splitItem.setIcon(lblBut.getIcon());
+				splitItem.hideMenu();
+			}
+		});
+		rptBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_REPEAT);
+				splitItem.setText(rptBut.getText());
+				splitItem.setIcon(rptBut.getIcon());
 				splitItem.hideMenu();
 			}
 		});
@@ -843,15 +857,24 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		populateLocales();
 	}
 
-	public void checkEnableAddSelect(Object formItem){
+	public void checkEnableAddSelect(IFormElement formItem){
 		String text = "Add Select Option";
 
 		if(formItem instanceof QuestionDef &&
-				((((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
-						(((QuestionDef)formItem).getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ))
+				((formItem.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ||
+						(formItem.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ||
+						(formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT)))
 		{	
+			if(formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+				text = "Add Repeat Child";
+			
 			addSelect.enable();
+			
 		}else if(formItem instanceof OptionDef){
+			addSelect.enable();
+		}else if((formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT) ||
+				(formItem.getParent() != null && formItem.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)){
+			text = "Add Repeat Child";
 			addSelect.enable();
 		}else if(formItem instanceof GroupDef){
 			addSelect.enable();

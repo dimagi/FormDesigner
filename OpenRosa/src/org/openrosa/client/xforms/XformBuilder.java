@@ -128,7 +128,7 @@ public class XformBuilder {
 			for(int i=0; i<rules.size(); i++)
 				ConstraintBuilder.fromValidationRule2Xform((ValidationRule)rules.elementAt(i),formDef);
 		}
-		
+
 		//Build calculates for calculations
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
@@ -175,30 +175,33 @@ public class XformBuilder {
 	 */
 	public static void fromPageDef2Xform(GroupDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
 
-		//Create a group node
-		Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
-		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
-		labelNode.appendChild(doc.createTextNode(pageDef.getName()));
-		groupNode.appendChild(labelNode);
-		xformsNode.appendChild(groupNode);
-		pageDef.setLabelNode(labelNode);
-		pageDef.setGroupNode(groupNode);
+		if(pageDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			UiElementBuilder.fromQuestionDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode,xformsNode);
+		else{
+			//Create a group node
+			Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
+			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
+			labelNode.appendChild(doc.createTextNode(pageDef.getName()));
+			groupNode.appendChild(labelNode);
+			xformsNode.appendChild(groupNode);
+			pageDef.setLabelNode(labelNode);
+			pageDef.setGroupNode(groupNode);
 
-		//Set the identifier of the group node to be used for localisation.
-		groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getText()+"");
-		
-		//Check if we have any questions in this page.
-		List<IFormElement> questions = pageDef.getChildren();
-		if(questions == null)
-			return;
+			//Set the identifier of the group node to be used for localisation.
+			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getText()+"");
 
-		//Create ui nodes for each question.
-		for(int i=0; i<questions.size(); i++){
-			IFormElement qtn = questions.get(i);
-			if(qtn instanceof QuestionDef)
-				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
-			else
-				fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
+			//Check if we have any questions in this page.
+			List<IFormElement> questions = pageDef.getChildren();
+			if(questions == null)
+				return;
+			//Create ui nodes for each question.
+			for(int i=0; i<questions.size(); i++){
+				IFormElement qtn = questions.get(i);
+				if(qtn instanceof QuestionDef)
+					UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+				else
+					fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
+			}
 		}
 	}
 }

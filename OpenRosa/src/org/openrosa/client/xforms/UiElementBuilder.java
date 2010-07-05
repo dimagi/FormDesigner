@@ -3,9 +3,9 @@ package org.openrosa.client.xforms;
 import java.util.List;
 
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.openrosa.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Document;
@@ -41,7 +41,10 @@ public class UiElementBuilder {
 	 * @param modelNode the xforms model node.
 	 * @param groupNode the xforms group node to which the question belongs.
 	 */
-	public static void fromQuestionDef2Xform(QuestionDef qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
+	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
+		if(qtn.getParent() != null && qtn.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+			formNode = qtn.getParent().getDataNode();
+		
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0)
 			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
@@ -93,15 +96,15 @@ public class UiElementBuilder {
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
 			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-				qtn.setFirstOptionNode(ItemsetBuilder.createDynamicOptionDefNode(doc,uiNode));
+				((QuestionDef)qtn).setFirstOptionNode(ItemsetBuilder.createDynamicOptionDefNode(doc,uiNode));
 			else{
-				List options = qtn.getOptions();
+				List options = qtn.getChildren();
 				if(options != null && options.size() > 0){
 					for(int j=0; j<options.size(); j++){
 						OptionDef optionDef = (OptionDef)options.get(j);
 						Element itemNode = fromOptionDef2Xform(optionDef,doc,uiNode);	
 						if(j == 0)
-							qtn.setFirstOptionNode(itemNode);
+							((QuestionDef)qtn).setFirstOptionNode(itemNode);
 					}
 				}
 			}
@@ -112,9 +115,9 @@ public class UiElementBuilder {
 			uiNode.appendChild(repeatNode);
 			qtn.setControlNode(repeatNode);
 
-			RepeatQtnsDef rptQtns = qtn.getRepeatQtnsDef();
+			List<IFormElement> rptQtns = qtn.getChildren();
 			for(int j=0; j<rptQtns.size(); j++)
-				createQuestion(rptQtns.getQuestionAt(j),repeatNode,dataNode,doc);
+				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
 		}
 	}
 
@@ -127,7 +130,7 @@ public class UiElementBuilder {
 	 * @param parentDataNode the data node of the parent repeat question.
 	 * @param doc the xforms document.
 	 */
-	private static void createQuestion(QuestionDef qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
+	private static void createQuestion(IFormElement qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
 		String name = qtnDef.getBinding();
 
 		//TODO Should do this for all invalid characters in node names.
@@ -164,13 +167,13 @@ public class UiElementBuilder {
 		addHelpTextNode(qtnDef,doc,inputNode,null);
 
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			List options = qtnDef.getOptions();
+			List options = qtnDef.getChildren();
 			if(options != null && options.size() > 0){
 				for(int index=0; index<options.size(); index++){
 					OptionDef optionDef = (OptionDef)options.get(index);
 					Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
 					if(index == 0)
-						qtnDef.setFirstOptionNode(itemNode);
+						((QuestionDef)qtnDef).setFirstOptionNode(itemNode);
 				}
 			}
 		}
@@ -186,7 +189,7 @@ public class UiElementBuilder {
 	 * @param isRepeatKid set to true if this question is a child of another repeat question type.
 	 * @return the xforms ui node.
 	 */
-	private static Element getXformUIElement(Document doc, QuestionDef qtnDef, String bindAttributeName, boolean isRepeatKid){
+	private static Element getXformUIElement(Document doc, IFormElement qtnDef, String bindAttributeName, boolean isRepeatKid){
 
 		String name = XformConstants.NODE_NAME_INPUT;
 
@@ -267,7 +270,7 @@ public class UiElementBuilder {
 	 * @param inputNode the xforms ui node.
 	 * @param firstOptionNode the first option node if a single or multiple select question type.
 	 */
-	public static void addHelpTextNode(QuestionDef qtn, Document doc, Element inputNode, Element firstOptionNode){
+	public static void addHelpTextNode(IFormElement qtn, Document doc, Element inputNode, Element firstOptionNode){
 		String helpText = qtn.getHelpText();
 		if(helpText != null && helpText.length() > 0){
 			Element hintNode =  doc.createElement(XformConstants.NODE_NAME_HINT);

@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.GroupDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -48,14 +50,14 @@ public class DefaultValueUtil {
 			id = (String)keys.next();
 			String variableName = (String)id2VarNameMap.get(id);
 
-			QuestionDef def = (QuestionDef)formDef.getElement(variableName);
-			if(def == null)
+			IFormElement def = formDef.getElement(variableName);
+			if(def == null || def instanceof GroupDef)
 				continue;
 
 			valueSet = false; val = null;
 
 			if(variableName.contains("@"))
-				setAttributeDefaultValue(def,variableName,dataNode);
+				setAttributeDefaultValue((QuestionDef)def,variableName,dataNode);
 			else{
 				Element node = dataNode;
 				if(!id.equals(variableName)){
@@ -72,7 +74,7 @@ public class DefaultValueUtil {
 					if(val == null || val.trim().length() == 0) //we are not allowing empty strings for now.
 						continue;
 
-					def.setDefaultValue(val);
+					((QuestionDef)def).setDefaultValue(val);
 				}
 			}
 		}

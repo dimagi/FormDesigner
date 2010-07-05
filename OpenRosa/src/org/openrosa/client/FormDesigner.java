@@ -91,6 +91,9 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 			//replace constraint message with JR custom name.
 			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "jr:constraintMsg";
 			
+			//This is required by ODK
+			XformConstants.ATTRIBUTE_NAME_FORM_KEY = "id";
+			
 			designer = new FormDesignerWidget(true,true);
 			
 			// Finally, add the designer widget to the RootPanel, so that it will be displayed.

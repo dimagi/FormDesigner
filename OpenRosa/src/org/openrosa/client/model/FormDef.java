@@ -1477,4 +1477,24 @@ public class FormDef implements IFormElement, Serializable{
 	public FormDef getFormDef(){
 		return this;
 	}
+	
+	public boolean isLocked(){
+		return false;
+	}
+	
+	public boolean isRequired(){
+		return false;
+	}
+	
+	public boolean isEnabled(){
+		return true;
+	}
+	
+	public boolean isVisible(){
+		return true;
+	}
+	
+	public String getDefaultValue(){
+		return null;
+	}
 }

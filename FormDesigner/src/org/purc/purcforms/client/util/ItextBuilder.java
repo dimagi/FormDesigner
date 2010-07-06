@@ -10,6 +10,7 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -108,6 +109,11 @@ public class ItextBuilder {
 					removeAllChildNodes(targetNode);
 				}
 
+				if(result.size() > 1){
+					Window.alert(id + " is not uniquely indentified by xpath: " + xpath + " result count: " + result.size());
+					return;
+				}
+				
 				assert(result.size() == 1); //each xpath expression should point to not more than one node.
 
 				/*ItextModel itextModel = new ItextModel();

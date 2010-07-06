@@ -432,6 +432,7 @@ public class FormUtil {
 			gpsTypeName = "geopoint";
 			XformConstants.ATTRIBUTE_NAME_FORM_KEY = "id";
 			XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE = "jr:constraintMsg";
+			XformConstants.DATA_TYPE_BINARY = "binary";
 		}
 	}
 

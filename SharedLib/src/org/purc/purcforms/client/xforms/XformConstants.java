@@ -120,7 +120,10 @@ public class XformConstants {
 	public static final String DATA_TYPE_INT = "xsd:int";
 	public static final String DATA_TYPE_TEXT = "xsd:string";
 	public static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
-	public static final String DATA_TYPE_BINARY = "xsd:base64Binary";
+	
+	//Not made final such that we can change its value.
+	public static String DATA_TYPE_BINARY = "xsd:base64Binary";
+	
 	public static final String DATA_TYPE_DATE_TIME = "xsd:dateTime";
 	public static final String DATA_TYPE_TIME = "xsd:time";
 	public static final String DATA_TYPE_DECIMAL = "xsd:decimal";

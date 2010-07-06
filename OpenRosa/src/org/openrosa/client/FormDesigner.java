@@ -94,6 +94,9 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 			//This is required by ODK
 			XformConstants.ATTRIBUTE_NAME_FORM_KEY = "id";
 			
+			//JR does not use base64 binary.
+			XformConstants.DATA_TYPE_BINARY = "binary";
+			
 			designer = new FormDesignerWidget(true,true);
 			
 			// Finally, add the designer widget to the RootPanel, so that it will be displayed.

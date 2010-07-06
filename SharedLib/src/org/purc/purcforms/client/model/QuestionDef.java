@@ -787,7 +787,7 @@ public class QuestionDef implements Serializable{
 			if(controlNode != null)
 				((Element)controlNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 
-			if(!withData){
+			if(!withData && dataNode != null){
 				//Remove all repeating data kids
 				Element parent = (Element)dataNode.getParentNode();
 				NodeList nodes = parent.getElementsByTagName(dataNode.getNodeName());

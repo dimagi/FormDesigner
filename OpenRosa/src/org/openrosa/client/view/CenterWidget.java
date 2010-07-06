@@ -115,6 +115,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		xformsWidget.showWindow();
 	}
 	public void onOpen(){
+		xformsWidget.hideWindow();
 		FormUtil.dlg.setText("Opening...");
 		FormUtil.dlg.show();
 
@@ -122,6 +123,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			public void execute() {
 				try{
 					openFile();
+					xformsWidget.showWindow();
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){
@@ -164,6 +166,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 	public void onSave(boolean showWindow){
+		xformsWidget.hideWindow();
 		FormUtil.dlg.setText("Saving...");
 		FormUtil.dlg.show();
 		showXMLWindowFlag = showWindow;
@@ -171,6 +174,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			public void execute() {
 				try{
 					saveFile(showXMLWindowFlag);
+					xformsWidget.showWindow();
 					FormUtil.dlg.hide();
 				}
 				catch(Exception ex){

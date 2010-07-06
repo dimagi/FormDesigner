@@ -17,6 +17,8 @@ import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.util.FormUtil;
 
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -262,7 +264,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		table.setWidget(11, 1, txtFormKey);
 
-		table.setStyleName("cw-FlexTable");
+		//table.setStyleName("cw-FlexTable");
+		//table.setStylePrimaryName("cw-FlexTable");
+		table.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
+		table.getElement().getStyle().setBorderColor("black");
+		table.getElement().getStyle().setBorderWidth(0, Unit.PX);
+		table.getElement().getStyle().setPadding(0, Unit.PX);
 
 		cbDataType.addItem(LocaleText.get("qtnTypeText"));
 		cbDataType.addItem(LocaleText.get("qtnTypeNumber"));
@@ -1399,6 +1406,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//form key
 		cellFormatter.setVisible(10, 0, enable);
 		cellFormatter.setVisible(10, 1, enable);
+		
+		//table.removeStyleName("cw-FlexTable");
 
 		//txtDescTemplate.getParent().setVisible(enable);
 	}

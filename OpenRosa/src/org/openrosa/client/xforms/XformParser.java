@@ -471,6 +471,9 @@ public class XformParser {
 				node = parentQtn.getDataNode();
 		}
 
+		if(node == null)
+			return; //data node may not be present in the xforms document.
+		
 		if(xpath.startsWith("/" + node.getNodeName() + "/"))
 			xpath = xpath.substring(node.getNodeName().length() + 2);
 

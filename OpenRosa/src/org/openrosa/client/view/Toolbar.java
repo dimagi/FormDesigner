@@ -872,8 +872,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			
 		}else if(formItem instanceof OptionDef){
 			addSelect.enable();
-		}else if((formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT) ||
-				(formItem.getParent() != null && formItem.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)){
+		}else if((formItem != null && formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT) ||
+				(formItem != null && formItem.getParent() != null && formItem.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)){
 			text = "Add Repeat Child";
 			addSelect.enable();
 		}else if(formItem instanceof GroupDef){

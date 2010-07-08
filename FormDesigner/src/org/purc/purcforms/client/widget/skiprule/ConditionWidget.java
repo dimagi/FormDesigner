@@ -61,8 +61,8 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 	/** Flag determining whether we should allow field selection for the condition.
 	 *  Skip rule conditions have filed selection while validation rules normally
-	 *  just have values. eg skip rule may be Current Pregnancy question is skipped 
-	 *  when Sex field = Male, while validation for the current say Weight question
+	 *  just have values. eg skip rule (have allowFieldSelection = true) may be Current Pregnancy question is skipped 
+	 *  when Sex field = Male, while validation (have allowFieldSelection = false) for the current say Weight question
 	 *  is valid when Value > 0
 	 */
 	private boolean allowFieldSelection = false;
@@ -90,8 +90,10 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private void setupWidgets(){
 		actionHyperlink = new ActionHyperlink("<>","",this,allowFieldSelection);
 
-		if(allowFieldSelection)
+		if(allowFieldSelection){
 			fieldWidget = new FieldWidget(this);
+			fieldWidget.setQuestion(questionDef);
+		}
 
 		operatorHyperlink = new OperatorHyperlink(OperatorHyperlink.OP_TEXT_EQUAL,"",this);
 		funcHyperlink = new FunctionHyperlink(FunctionHyperlink.FUNCTION_TEXT_VALUE,"",this);
@@ -110,8 +112,12 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		initWidget(horizontalPanel);
 
+		//This should be before the next line as fieldWidget.setFormDef() will set questionDef to a new value of the condition instead of parent.
+		valueWidget.setParentQuestionDef(questionDef);
+		
 		if(allowFieldSelection)
 			fieldWidget.setFormDef(formDef);
+		
 		valueWidget.setFormDef(formDef);
 
 		operator = ModelConstants.OPERATOR_EQUAL;

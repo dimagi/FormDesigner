@@ -91,8 +91,10 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	private void setupWidgets(){
 		actionHyperlink = new ActionHyperlink("<>","",this,allowFieldSelection);
 
-		if(allowFieldSelection)
+		if(allowFieldSelection){
 			fieldWidget = new FieldWidget(this);
+			fieldWidget.setQuestion(questionDef);
+		}
 
 		operatorHyperlink = new OperatorHyperlink(OperatorHyperlink.OP_TEXT_EQUAL,"",this);
 		funcHyperlink = new FunctionHyperlink(FunctionHyperlink.FUNCTION_TEXT_VALUE,"",this);
@@ -111,8 +113,13 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 
 		initWidget(horizontalPanel);
 
+		//This should be before the next line as fieldWidget.setFormDef() will set questionDef to a new value of the condition instead of parent.
+		if(questionDef instanceof QuestionDef)
+			valueWidget.setParentQuestionDef((QuestionDef)questionDef);
+		
 		if(allowFieldSelection)
 			fieldWidget.setFormDef(formDef);
+		
 		valueWidget.setFormDef(formDef);
 
 		operator = ModelConstants.OPERATOR_EQUAL;

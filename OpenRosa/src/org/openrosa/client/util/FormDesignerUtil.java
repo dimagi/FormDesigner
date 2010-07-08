@@ -95,7 +95,7 @@ public class FormDesignerUtil {
 	 * @param sameTypesOnly set to true if you want to load only questions of the same type
 	 * 						as the referenced question.
 	 */
-	public static void loadQuestions(List<IFormElement> questions, IFormElement refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
+	public static void loadQuestions(List<IFormElement> questions, IFormElement refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly, QuestionDef parentQuestionDef){
 		if(questions == null)
 			return;
 
@@ -115,12 +115,15 @@ public class FormDesignerUtil {
 			if(!dynamicOptions && refQuestion == questionDef)
 				continue;
 			
+			if(questionDef == parentQuestionDef)
+				continue;
+			
 			oracle.add(questionDef.getDisplayText());	
 			
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.
 			if(questionDef instanceof GroupDef)
-				loadQuestions(((GroupDef)questionDef).getChildren(),refQuestion,oracle,dynamicOptions,sameTypesOnly);
+				loadQuestions(((GroupDef)questionDef).getChildren(),refQuestion,oracle,dynamicOptions,sameTypesOnly,parentQuestionDef);
 				
 			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			//	loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),refQuestion,oracle,dynamicOptions,sameTypesOnly); //TODO These have different id sets and hence we are leaving them out for now
@@ -136,7 +139,7 @@ public class FormDesignerUtil {
 	 * @param dynamicOptions set to true if we are loading for dynamic options.
 	 */
 	public static void loadQuestions(List<IFormElement> questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
-		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true);
+		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true, null);
 	}
 
 	/**

@@ -32,39 +32,43 @@ public class FieldWidget extends Composite{
 
 	/** The text to display when no value is specified for a condition. */
 	private static final String EMPTY_VALUE = "_____";
-	
+
 	/** The form to which the question, represented by this widget, belongs. */
 	private FormDef formDef;
-	
+
 	/** The main widget. */
 	private HorizontalPanel horizontalPanel;
-	
+
 	/** The widget to do auto suggest for form questions as the user types. */
 	private SuggestBox sgstField = new SuggestBox();
-	
+
 	/** The text field where to type the question name. */
 	private TextBox txtField = new TextBox();
-	
+
 	/** The widget to display the selected question text when not in selection mode. */
 	private Hyperlink fieldHyperlink;
-	
+
 	/** The listener for item selection events. */
 	private ItemSelectionListener itemSelectionListener;
-	
+
 	/** A flag determining if the current field selection is for a single select dynamic.
 	 * type of question.
 	 */
 	private boolean forDynamicOptions = false;
-	
+
 	/** The single select dynamic question. */
 	private QuestionDef dynamicQuestionDef;
-
 	
+	//TODO I think we need only one of questionDef or dynamicQuestionDef to serve the same purpose
+	/** The question that this field widget is handling. eg the skip logic question. */
+	private QuestionDef questionDef;
+
+
 	public FieldWidget(ItemSelectionListener itemSelectionListener){
 		this.itemSelectionListener = itemSelectionListener;
 		setupWidgets();
 	}
-	
+
 	/**
 	 * Sets the form to which the referenced question belongs.
 	 * 
@@ -74,10 +78,10 @@ public class FieldWidget extends Composite{
 		this.formDef = formDef;
 		setupPopup();
 	}
-	
+
 	private void setupWidgets(){
 		fieldHyperlink = new Hyperlink("",""); //Field 1
-		
+
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);
 
@@ -91,32 +95,32 @@ public class FieldWidget extends Composite{
 				txtField.selectAll();
 			}
 		});
-		
+
 		/*txtField.addFocusListener(new FocusListenerAdapter(){
 			public void onLostFocus(Widget sender){
 				stopSelection();
 			}
 		});
-		
+
 		/*sgstField.addFocusListener(new FocusListenerAdapter(){
 			public void onLostFocus(Widget sender){
 				stopSelection();
 			}
 		});*/
-		
+
 		sgstField.addSelectionHandler(new SelectionHandler(){
 			public void onSelection(SelectionEvent event){
 				stopSelection();
 			}
 		});
-		
+
 		initWidget(horizontalPanel);
 	}
-	
+
 	public void stopSelection(){
 		if(horizontalPanel.getWidgetIndex(fieldHyperlink) != -1)
 			return;
-		
+
 		String val = sgstField.getText();
 		if(val.trim().length() == 0)
 			val = EMPTY_VALUE;
@@ -127,54 +131,60 @@ public class FieldWidget extends Composite{
 		if(qtn != null)
 			itemSelectionListener.onItemSelected(this,qtn);
 	}
-	
+
 	private void setupPopup(){
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(),dynamicQuestionDef,oracle,forDynamicOptions);
-		
+			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(), (forDynamicOptions ? dynamicQuestionDef : questionDef),oracle,forDynamicOptions);
+
 		txtField = new TextBox(); //TODO New and hence could be buggy
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();
-		
+
 		sgstField.addSelectionHandler(new SelectionHandler(){
 			public void onSelection(SelectionEvent event){
-					stopSelection();
+				stopSelection();
 			}
 		});
-		
+
 		/*sgstField.addFocusListener(new FocusListenerAdapter(){
 			public void onLostFocus(Widget sender){
 				stopSelection();
 			}
 		});*/
 	}
-	
+
 	public void selectQuestion(QuestionDef questionDef){
 		fieldHyperlink.setText(questionDef.getText());
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}
-	
+
 	private void selectFirstQuestion(){
 		for(int i=0; i<formDef.getPageCount(); i++){
 			if(selectFirstQuestion(formDef.getPageAt(i).getQuestions()))
 				return;
 		}
 	}
-	
+
 	private boolean selectFirstQuestion(Vector questions){
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			
+
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				selectFirstQuestion(questionDef.getRepeatQtnsDef().getQuestions());
 			else{
-				if(questionDef == dynamicQuestionDef)
-					continue;
-				
-				if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-						questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+				if(forDynamicOptions){
+					if(questionDef == dynamicQuestionDef)
+						continue;
+
+					if(!(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+							questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC))
+						continue;
+				}
+
+				//TODO Test this properly to ensure that it does not introduce a bug.
+				if(this.questionDef == questionDef)
 					continue;
 				
 				selectQuestion(questionDef);
@@ -183,20 +193,22 @@ public class FieldWidget extends Composite{
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Sets the question for this widget.
 	 * 
 	 * @param questionDef the question definition object.
 	 */
 	public void setQuestion(QuestionDef questionDef){
+		this.questionDef = questionDef;
+		
 		if(questionDef != null)
 			fieldHyperlink.setText(questionDef.getText());
 		else{
 			horizontalPanel.remove(fieldHyperlink);
 			horizontalPanel.remove(sgstField);
-			
+
 			//Removing and adding of fieldHyperlink is to prevent a wiered bug from
 			//happening where focus is taken off, brought back and the hyperlink
 			//displays no more text.
@@ -204,11 +216,11 @@ public class FieldWidget extends Composite{
 			fieldHyperlink.setText("");
 		}
 	}
-	
+
 	public void setForDynamicOptions(boolean forDynamicOptions){
 		this.forDynamicOptions = forDynamicOptions;
 	}
-	
+
 	public void setDynamicQuestionDef(QuestionDef dynamicQuestionDef){
 		this.dynamicQuestionDef = dynamicQuestionDef;
 	}

@@ -77,7 +77,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;
 
-
+	private QuestionDef parentQuestionDef;
+	
+	
 	public ValueWidget(){
 		setupWidgets();
 	}
@@ -670,7 +672,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
+			FormDesignerUtil.loadQuestions(false, formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT, parentQuestionDef);
 
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();
@@ -694,5 +696,9 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 	public void setValueQtnDef(QuestionDef valueQtnDef){
 		this.valueQtnDef = valueQtnDef;
+	}
+	
+	public void setParentQuestionDef(QuestionDef questionDef){
+		this.parentQuestionDef = questionDef;
 	}
 }

@@ -432,7 +432,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveFormAs()
 	 */
 	public void saveFormAs() {
-		if(isOfflineMode()){
+		//TODO I do not think we need this offline save as any more.
+		/*if(isOfflineMode()){
 			final Object obj = leftPanel.getSelectedForm();
 			if(obj == null){
 				Window.alert(LocaleText.get("selectSaveItem"));
@@ -457,7 +458,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 				}
 			});
 		}
-		else
+		else*/
 			saveAs();
 	}
 

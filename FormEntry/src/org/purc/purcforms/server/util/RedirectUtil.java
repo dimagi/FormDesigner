@@ -1,4 +1,4 @@
-package org.purc.purcforms.util;
+package org.purc.purcforms.server.util;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -18,7 +18,6 @@ import org.apache.commons.io.IOUtils;
 public class RedirectUtil {
 
 	public static void doGet(String formId, String username, String password, String url, HttpServletResponse response) throws IOException {
-
 		URL u = new URL(url);
 		HttpURLConnection connection = (HttpURLConnection)u.openConnection();
 		connection.setConnectTimeout(30000);
@@ -42,8 +41,8 @@ public class RedirectUtil {
 		else
 			response.setStatus(status);
 	}
-	
 
+	
 	public static void doPost(String username, String password, String url, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		URL u = new URL(url);

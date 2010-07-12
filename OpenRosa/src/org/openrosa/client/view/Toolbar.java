@@ -18,17 +18,20 @@ import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.IconAlign;
+import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.data.BaseModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonGroup;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -39,6 +42,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This widget is the tool bar for the form designer.
@@ -119,7 +123,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 	/** Widget to display the list of languages or locales. */
 	private ComboBox<BaseModel> cb;
-	
+
 	private CheckBox chkDefault;
 
 	/** The images for the tool bar icons. */
@@ -134,6 +138,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
 
 	ListBox cbLocales = new ListBox(false);
+
+	ButtonGroup localeGroup;
 
 
 	/**
@@ -397,7 +403,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		Text lang = new Text();
 		lang.setText("Language : ");
 		group.add(lang);
-	    
+
 		cb = new ComboBox<BaseModel>();
 		cb.setDisplayField("name");
 
@@ -424,13 +430,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			}
 		});
 
-
 		group.add(/*cb*/ cbLocales);
-		group.addStyleName("localizationGroup");
+		localeGroup = group;
+		//group.addStyleName("localizationGroup");
 
 		chkDefault = new CheckBox("Default");
-	    //group.add(chkDefault);
-	    
+		//group.add(chkDefault);
+
 		toolBar.add(group);    
 
 		Context.addLocaleListChangeListener(this);
@@ -832,7 +838,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			return;
 
 		for(Locale locale : locales)
-			cbLocales.addItem(locale.getName(), locale.getKey());	
+			cbLocales.addItem(locale.getName(), locale.getKey());
 
 		cbLocales.setSelectedIndex(getCurrentLocaleIndex());
 	}
@@ -867,9 +873,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		{	
 			if(formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				text = "Add Repeat Child";
-			
+
 			addSelect.enable();
-			
+
 		}else if(formItem instanceof OptionDef){
 			addSelect.enable();
 		}else if((formItem != null && formItem.getDataType() == QuestionDef.QTN_TYPE_REPEAT) ||

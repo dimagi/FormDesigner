@@ -68,6 +68,7 @@ public class FormRunnerCmd implements SubmitListener, DataLoadListener{
 		String descTemplate = dataDoc.getDocumentElement().getAttribute("description-template");
 		String description = Utils.getDescriptionTemplate(dataDoc.getDocumentElement(), descTemplate);
 		
+		formDataHeader.setId(id);
 		formDataHeader.setDescription(description == null ? "" : description);
 		formDataHeader.setDateCreated(new Date());
 		formDataHeader.setDateLastChanged(new Date());

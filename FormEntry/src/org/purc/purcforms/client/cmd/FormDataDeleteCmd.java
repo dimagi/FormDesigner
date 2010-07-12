@@ -25,13 +25,15 @@ public class FormDataDeleteCmd implements DataLoadListener {
 	private String userName;
 	private String password;
 	
+	
 	public FormDataDeleteCmd(String dataId, String defId, FormDataDeleteListener listener){
 		this.dataId = dataId;
 		this.defId = defId;
 		this.listener = listener;
 		
-		FormEntryContext.getDatabaseManager().loadFormDataList(FormEntryContext.getFormDefId(), this);
+		FormEntryContext.getDatabaseManager().loadFormDataList(defId, this);
 	}
+	
 	
 	public void onDataReceived(final String data){
 		
@@ -49,7 +51,7 @@ public class FormDataDeleteCmd implements DataLoadListener {
 		}
 		
 		FormEntryContext.getDatabaseManager().deleteFormData(dataId);
-		FormEntryContext.getDatabaseManager().saveFormDataList(FormEntryContext.getFormDefId(), doc.toString());
+		FormEntryContext.getDatabaseManager().saveFormDataList(defId, doc.toString());
 		
 		//Check if this is the last form data for its def and then delete the data list.
 		if(nodes.getLength() == 0)

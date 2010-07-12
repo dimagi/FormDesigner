@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.cmd;
 
+import org.purc.purcforms.client.FormEntryConstants;
 import org.purc.purcforms.client.FormEntryContext;
 import org.purc.purcforms.client.listener.DataLoadListener;
 import org.purc.purcforms.client.listener.DataUploadListener;
@@ -48,8 +49,10 @@ public class DataUploadCmd implements DataLoadListener{
 				String url = FormUtil.getHostPageBaseURL();
 				if(!FormEntryContext.getDataUploadUrl().contains("http"))
 					url += FormEntryContext.getDataUploadUrl();
-				else
-					url = FormEntryContext.getDataUploadUrl();
+				else{
+					url += FormEntryConstants.DATA_UPLOAD_URL_SUFFIX;
+					url = Utils.addParameter(url, FormEntryConstants.PARAM_NAME_REDIRECT_URL, FormEntryContext.getDataUploadUrl());
+				}
 				
 				url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword());
 

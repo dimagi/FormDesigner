@@ -48,8 +48,10 @@ public class FormDownloadCmd implements FormDefDownloadListener, FormListSelecti
 				removeFormDef(keyValue.getKey(), formList);
 		}
 		
-		if(formList.size() == 0)
+		if(formList.size() == 0){
+			FormUtil.dlg.hide();
 			Window.alert("No new forms to download.");
+		}
 		else
 			new FormSelectionViewImpl(formList,this).center();
 	}

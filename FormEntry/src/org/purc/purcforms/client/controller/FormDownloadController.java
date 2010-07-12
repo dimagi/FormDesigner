@@ -1,5 +1,6 @@
 package org.purc.purcforms.client.controller;
 
+import org.purc.purcforms.client.FormEntryConstants;
 import org.purc.purcforms.client.FormEntryContext;
 import org.purc.purcforms.client.listener.FormDefDownloadListener;
 import org.purc.purcforms.client.listener.LoginInfoListener;
@@ -45,10 +46,12 @@ public class FormDownloadController implements LoginInfoListener{
 			public void execute() {
 
 				String url = FormUtil.getHostPageBaseURL();
-				if(!FormEntryContext.getFormDownloadUrl().contains("http"))
+				if(!Utils.urlContainsHttp(FormEntryContext.getFormDownloadUrl()))
 					url += FormEntryContext.getFormDownloadUrl();
-				else
-					url = FormEntryContext.getFormDownloadUrl();
+				else{
+					url += FormEntryConstants.FORM_DOWNLOAD_URL_SUFFIX;
+					url = Utils.addParameter(url, FormEntryConstants.PARAM_NAME_REDIRECT_URL, FormEntryContext.getFormDownloadUrl());
+				}
 
 				String userName = FormEntryContext.getUserName();
 				if(userName != null && userName.trim().length() > 0)
@@ -96,12 +99,15 @@ public class FormDownloadController implements LoginInfoListener{
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
 
-				String url = id;
-				if(!(url.contains("http://") || url.contains("https://"))){
-					url = FormUtil.getHostPageBaseURL();
+				String url = FormUtil.getHostPageBaseURL();
+				if(!Utils.urlContainsHttp(id)){
 					url += FormEntryContext.getFormDownloadUrl();
 					url = Utils.urlAppendNamePassword(url, FormEntryContext.getUserName(), FormEntryContext.getPassword());
 					url = Utils.addParameter(url, "formId", id);
+				}
+				else{
+					url += FormEntryConstants.FORM_DOWNLOAD_URL_SUFFIX;
+					url = Utils.addParameter(url, FormEntryConstants.PARAM_NAME_REDIRECT_URL, id);
 				}
 
 				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));

@@ -220,4 +220,8 @@ public class Utils {
 		}
 		return url;
 	}
+	
+	public static boolean urlContainsHttp(String url){
+		return url.contains("http://") || url.contains("https://");
+	}
 }

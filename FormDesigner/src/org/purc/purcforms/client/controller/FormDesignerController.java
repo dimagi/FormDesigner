@@ -60,15 +60,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	private LeftPanel leftPanel;
 
 	/**
-	 * The identifier of the loaded or opened form.
-	 */
-	private Integer formId;	
-
-	/**
 	 * The listener to form save events.
 	 */
 	private IFormSaveListener formSaveListener;
 
+	/**
+	 * The identifier of the loaded or opened form.
+	 */
+	private Integer formId;	
 
 	//These are constants to remember the current action during the login call back
 	//such that we know which action to execute.
@@ -102,6 +101,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	/** The object that is being refreshed. */
 	private Object refreshObject;
+	
+	private boolean saveAsMode = false;
 
 
 	/**
@@ -348,6 +349,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	private void saveTheForm() {
+		final boolean localSaveAsMode = saveAsMode;
+		saveAsMode = false;
+		
 		final FormDef obj = leftPanel.getSelectedForm();
 		if(obj.isReadOnly())
 			;//return; //TODO I think we should allow saving of form text and layout
@@ -419,6 +423,9 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					if(saveLocaleText)
 						saveTheLanguageText(false,false);
 					//saveLanguageText(false); Commented out because we may be called during change locale where caller needs to have us complete everything before he can do his stuff, and hence no more differed or delayed executions.
+				
+					if(localSaveAsMode)
+						saveAs();
 				}
 				catch(Exception ex){
 					FormUtil.displayException(ex);
@@ -459,7 +466,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			});
 		}
 		else*/
-			saveAs();
+			//saveAs();
+		
+		saveAsMode = true;
+		saveForm();
 	}
 
 	/**
@@ -1089,8 +1099,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							});
 						}
 					}
-					/*else if(Context.getCurrentMode() == Context.MODE_DESIGN)
-						refreshObject(); //automatically load widgets on design surface after language switch.*/
+					else if(Context.getCurrentMode() == Context.MODE_DESIGN){
+						//refreshObject(); //automatically load widgets on design surface after language switch.
+						DeferredCommand.addCommand(new Command(){
+							public void execute() {
+								refreshObject();
+							}
+						});
+					}
 				}
 				catch(Exception ex){
 					FormUtil.displayException(ex);

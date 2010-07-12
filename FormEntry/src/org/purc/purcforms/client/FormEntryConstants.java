@@ -16,4 +16,9 @@ public class FormEntryConstants {
 	public static final String ATTRIBUTE_NAME_DATE_LAST_CHANGED = "date_last_changed";
 	
 	public static final String ATTRIBUTE_NAME_URL = "url";
+	
+	public static final String PARAM_NAME_REDIRECT_URL = "redirectUrl";
+	
+	public static final String FORM_DOWNLOAD_URL_SUFFIX = "formdownload";
+	public static final String DATA_UPLOAD_URL_SUFFIX = "dataupload";
 }

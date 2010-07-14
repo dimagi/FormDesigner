@@ -64,8 +64,11 @@ public class DateTimeWidget extends Composite{
 	private void addEventHandlers(){
 		((TextBox)dateWidget).addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				if(getParent().getParent() instanceof RuntimeWidgetWrapper)
+				if(getParent().getParent() instanceof RuntimeWidgetWrapper){
+					if("".equals(timeWidget.getText()))
+						timeWidget.setText("00:00 AM");
 					timeWidget.setFocus(true); //((RuntimeWidgetWrapper)getParent().getParent()).moveToNextWidget();
+				}
 			}
 		});
 	}

@@ -58,10 +58,12 @@ public class FieldWidget extends Composite{
 
 	/** The single select dynamic question. */
 	private QuestionDef dynamicQuestionDef;
-	
+
 	//TODO I think we need only one of questionDef or dynamicQuestionDef to serve the same purpose
 	/** The question that this field widget is handling. eg the skip logic question. */
 	private QuestionDef questionDef;
+
+	boolean enabled = true;
 
 
 	public FieldWidget(ItemSelectionListener itemSelectionListener){
@@ -87,12 +89,14 @@ public class FieldWidget extends Composite{
 
 		fieldHyperlink.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
-				itemSelectionListener.onStartItemSelection(this);
-				horizontalPanel.remove(fieldHyperlink);
-				horizontalPanel.add(sgstField);
-				sgstField.setText(fieldHyperlink.getText());
-				sgstField.setFocus(true);
-				txtField.selectAll();
+				if(enabled){
+					itemSelectionListener.onStartItemSelection(this);
+					horizontalPanel.remove(fieldHyperlink);
+					horizontalPanel.add(sgstField);
+					sgstField.setText(fieldHyperlink.getText());
+					sgstField.setFocus(true);
+					txtField.selectAll();
+				}
 			}
 		});
 
@@ -186,7 +190,7 @@ public class FieldWidget extends Composite{
 				//TODO Test this properly to ensure that it does not introduce a bug.
 				if(this.questionDef == questionDef)
 					continue;
-				
+
 				selectQuestion(questionDef);
 				return true;
 			}
@@ -202,7 +206,7 @@ public class FieldWidget extends Composite{
 	 */
 	public void setQuestion(QuestionDef questionDef){
 		this.questionDef = questionDef;
-		
+
 		if(questionDef != null)
 			fieldHyperlink.setText(questionDef.getText());
 		else{
@@ -223,5 +227,9 @@ public class FieldWidget extends Composite{
 
 	public void setDynamicQuestionDef(QuestionDef dynamicQuestionDef){
 		this.dynamicQuestionDef = dynamicQuestionDef;
+	}
+
+	public void setEnabled(boolean enabled){
+		this.enabled = enabled;
 	}
 }

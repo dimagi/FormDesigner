@@ -183,6 +183,11 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		QuestionDef parentQuestionDef = formDef.getDynamicOptionsParent(questionDef.getId());
 		if(parentQuestionDef != null)
 			fieldWidget.selectQuestion(parentQuestionDef);
+		
+		if(Context.isStructureReadOnly()){
+			lbOption.setEnabled(false);
+			fieldWidget.setEnabled(false);
+		}
 	}
 
 
@@ -240,6 +245,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		this.enabled = enabled;
 
 		lbOption.setEnabled(enabled);
+		fieldWidget.setEnabled(enabled);
 
 		if(!enabled)
 			clear();

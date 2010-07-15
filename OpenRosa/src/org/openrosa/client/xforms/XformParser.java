@@ -237,7 +237,8 @@ public class XformParser {
 		for(int index = 0; index < elements.size(); index++){
 			IFormElement element = elements.get(index);
 			if(element.getText() == null || element.getText().trim().length() == 0){
-				element.getParent().removeChild(element);
+				//element.getParent().removeChild(element); //We do not want to lose the bindings if any.
+				element.getParent().getChildren().remove(element);
 				index--;
 			}
 			else if(element instanceof GroupDef)

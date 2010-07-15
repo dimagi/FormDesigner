@@ -223,7 +223,9 @@ public class XformParser {
 				if(questionDef.getText() == null || questionDef.getText().trim().length() == 0){
 					if(questionDef.getBinding() == null)
 						continue;
-					pageDef.removeQuestion(questionDef, formDef);
+					
+					//pageDef.removeQuestion(questionDef, formDef); //We do not want to remove the bindings, if any.
+					pageDef.getQuestions().remove(questionDef);
 					qtnNo--;
 				}
 			}

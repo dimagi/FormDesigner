@@ -10,14 +10,12 @@ import java.util.Map.Entry;
 
 import org.openrosa.client.OpenRosaConstants;
 import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
 /**

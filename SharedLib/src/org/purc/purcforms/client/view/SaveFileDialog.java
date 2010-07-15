@@ -2,9 +2,12 @@ package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -78,6 +81,10 @@ public class SaveFileDialog extends DialogBox{
 					form.setAction(action);
 					((VerticalPanel)txtName.getParent()).add(txtArea);
 					form.submit();
+					//hide();
+					
+					FormUtil.dlg.setText(LocaleText.get("processingMsg"));
+					FormUtil.dlg.center();
 				}
 			}
 		});
@@ -88,6 +95,7 @@ public class SaveFileDialog extends DialogBox{
 		button = new Button(LocaleText.get("cancel"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				hide();
+				FormUtil.dlg.hide();
 			}
 		});
 		
@@ -101,10 +109,29 @@ public class SaveFileDialog extends DialogBox{
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler(){
 			public void onSubmitComplete(FormPanel.SubmitCompleteEvent event){
 				hide();
+				FormUtil.dlg.hide();
 				Window.Location.replace(form.getAction());
 			}
 		});
 
 		setText(LocaleText.get("saveFileAs"));
+	}
+	
+	
+	/**
+	 * Displays the dialog box at the center of the browser window.
+	 */
+	public void center(){
+				
+		//Let the base GWT implementation of centering take control.
+		super.center();
+		
+		//Some how focus will not get to the name unless when called within
+		//a deffered command.
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				txtName.setFocus(true);
+			}
+		});
 	}
 }

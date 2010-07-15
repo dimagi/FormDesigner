@@ -2,8 +2,8 @@ package org.purc.purcforms.client.view;
 
 import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.util.FormUtil;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
@@ -85,6 +84,10 @@ public class OpenFileDialog extends DialogBox{
 				
 				form.setAction(action);
 				form.submit();
+				//hide();
+				
+				FormUtil.dlg.setText(LocaleText.get("processingMsg"));
+				FormUtil.dlg.center();
 			}
 		});
 		
@@ -94,6 +97,7 @@ public class OpenFileDialog extends DialogBox{
 		button = new Button(LocaleText.get("cancel"), new ClickHandler(){
 			public void onClick(ClickEvent event){
 				hide();
+				FormUtil.dlg.hide();
 			}
 		});
 		
@@ -108,6 +112,7 @@ public class OpenFileDialog extends DialogBox{
 			public void onSubmitComplete(FormPanel.SubmitCompleteEvent event){
 				eventListener.onSetFileContents(event.getResults());
 				hide();
+				FormUtil.dlg.hide();
 			}
 		});
 		

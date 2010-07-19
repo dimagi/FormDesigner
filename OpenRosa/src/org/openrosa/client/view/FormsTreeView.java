@@ -20,9 +20,11 @@ import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.dnd.TreePanelDragSource;
 import com.extjs.gxt.ui.client.dnd.DND.Feedback;
 import com.extjs.gxt.ui.client.event.DNDEvent;
@@ -53,7 +55,7 @@ import com.google.gwt.user.client.ui.TreeItem;
  * @author daniel
  *
  */
-public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite implements SelectionHandler<TreeItem>,IFormChangeListener,IFormActionListener{
+public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite implements SelectionHandler<TreeItem>,IFormChangeListener,IFormActionListener, ModelIconProvider<TreeModelItem> {
 
 	/**
 	 * Specifies the images that will be bundled for this Composite and specify
@@ -127,6 +129,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		treePanel.setDisplayProperty("text");  
 		treePanel.setAutoLoad(true);
 		//treePanel.setAutoHeight(true);
+		treePanel.setIconProvider(this);
 		initComponent(treePanel);
 
 		treePanel.getSelectionModel().addListener(Events.SelectionChange, new Listener<SelectionChangedEvent<TreeModelItem>>(){
@@ -1723,5 +1726,17 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		//tree.setSelectedItem(item);
 		treePanel.getSelectionModel().select(item, false);*/
+	}
+	
+	public AbstractImagePrototype getIcon(TreeModelItem model){
+		ImageResource imageResource = images.newform();
+		int type = ((IFormElement)model.getUserObject()).getDataType();
+		
+		if(type == QuestionDef.QTN_TYPE_GROUP)
+			imageResource = images.note();
+		else if(type == QuestionDef.QTN_TYPE_REPEAT)
+			imageResource = images.drafts();
+		
+		return AbstractImagePrototype.create(imageResource);
 	}
 }

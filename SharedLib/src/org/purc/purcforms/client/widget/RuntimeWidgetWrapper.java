@@ -726,8 +726,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		}
 		else if(widget instanceof TextBox){
 			String answer = getTextBoxAnswer();
-			if(externalSource != null && externalSource.trim().length() > 0 &&
-					questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC){
+			if(externalSource != null && externalSource.trim().length() > 0 /*&&
+					questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC*/){ //the internal save (non display) value needs to also work for non numerics.
 				//answer = null; //TODO This seems to cause some bugs where numeric questions seem un answered. 
 
 				if(panel.getWidgetCount() == 2){

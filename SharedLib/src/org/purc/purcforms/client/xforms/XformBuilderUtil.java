@@ -1,11 +1,13 @@
 package org.purc.purcforms.client.xforms;
 
+import java.util.Enumeration;
 import java.util.Vector;
 
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -106,6 +108,16 @@ public class XformBuilderUtil {
 	 * @return the instance data child node for the question.
 	 */
 	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element formNode){
+		//Some bindings may already be pointing to existing nodes. So just return that.
+		XPathExpression xpls = new XPathExpression(formDef.getDataNode(), variableName);
+		Vector result = xpls.getResult();
+		for (Enumeration e = result.elements(); e.hasMoreElements();) {
+			Object obj = e.nextElement();
+			if (obj instanceof Element)
+				return (Element) obj;
+		}
+		
+		
 		String name = variableName;
 		//TODO May need to be smarter than this. Avoid invalid node
 		//names. eg those having slashes (form1/question1)
@@ -168,10 +180,12 @@ public class XformBuilderUtil {
 		String id = variableName;
 
 		if(!isRepeatKid && variableName.contains("/")){
-			if(variableName.indexOf('/') == variableName.lastIndexOf('/'))
+			/*if(variableName.indexOf('/') == variableName.lastIndexOf('/'))
 				id = variableName.substring(variableName.lastIndexOf('/')+1); //as one / eg encounter/encounter.encounter_datetime
 			else
-				id = variableName.substring(variableName.indexOf('/')+1,variableName.lastIndexOf('/')); //has two / eg obs/method_of_delivery/value
+				id = variableName.substring(variableName.indexOf('/')+1,variableName.lastIndexOf('/')); //has two / eg obs/method_of_delivery/value*/
+			
+			id = FormUtil.getXmlTagName(id);
 		}
 
 		return id;

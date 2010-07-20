@@ -20,7 +20,6 @@ import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
 import com.extjs.gxt.ui.client.data.ModelData;

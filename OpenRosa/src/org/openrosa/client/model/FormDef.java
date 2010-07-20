@@ -636,7 +636,7 @@ public class FormDef implements IFormElement, Serializable{
 				((GroupDef)element).getGroupNode().getParentNode().removeChild(((GroupDef)element).getGroupNode());
 		}
 		else
-			GroupDef.removeElement2((QuestionDef)element, this);
+			GroupDef.removeElement2((QuestionDef)element, this, true);
 
 		return children.remove(element);
 	}
@@ -795,7 +795,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param qtnDef the question to remove.
 	 * @return true if the question has been found and removed, else false.
 	 */
-	public boolean removeQuestion(IFormElement qtnDef){
+	public boolean removeQuestion(IFormElement qtnDef, boolean delete){
 		for(int i=0; i<children.size(); i++){
 			IFormElement element = children.get(i);
 			if(element == qtnDef){
@@ -803,7 +803,7 @@ public class FormDef implements IFormElement, Serializable{
 				return true;
 			}
 			else if(element instanceof GroupDef){
-				if(((GroupDef)element).removeElement(element, this))
+				if(((GroupDef)element).removeElement(element, this, delete))
 					return true;
 			}
 		}

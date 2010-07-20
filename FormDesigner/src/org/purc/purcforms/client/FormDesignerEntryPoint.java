@@ -61,7 +61,7 @@ public class FormDesignerEntryPoint implements EntryPoint ,ResizeHandler{
 			FormDesignerUtil.setDesignerTitle();
 
 			String s = FormUtil.getDivValue("allowBindEdit");
-			if(s != null && s.equals("0"))
+			if(s != null && (s.equals("0") || s.equals("false")))
 				Context.setAllowBindEdit(false);
 
 			FormUtil.retrieveUserDivParameters();

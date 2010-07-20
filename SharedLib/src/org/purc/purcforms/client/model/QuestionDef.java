@@ -1295,12 +1295,26 @@ public class QuestionDef implements Serializable{
 			}*/
 		}
 
-		//now add the new questions which have just been added by refresh.
+		int oldCount = questionDef.getOptionCount();
+		
+		//now add the new options which have just been added by refresh.
 		int count = getOptionCount();
 		for(int index = 0; index < count; index++){
 			OptionDef optionDef = getOptionAt(index);
-			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null)
+			if(questionDef.getOptionWithValue(optionDef.getVariableName()) == null){
+				
+				//TODO Make sure this is not buggy.
+				//If before refresh number of options is the same as the new number,
+				//then we preserve the old option text and binding by replacing new
+				//ones with the old values.
+				if(oldCount == count){
+					OptionDef optnDef = questionDef.getOptionAt(index);
+					optionDef.setVariableName(optnDef.getVariableName());
+					optionDef.setText(optnDef.getText());
+				}
+				
 				orderedOptns.add(optionDef);
+			}
 		}
 
 		options = orderedOptns;

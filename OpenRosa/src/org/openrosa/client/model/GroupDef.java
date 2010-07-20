@@ -329,13 +329,13 @@ public class GroupDef implements IFormElement, Serializable{
 	 * @param formDef the form to which this page belongs.
 	 * @return true if the question was found and removed successfully, else false.
 	 */
-	public boolean removeElement(IFormElement qtnDef, FormDef formDef){
-		removeElement2(qtnDef,formDef);
+	public boolean removeElement(IFormElement qtnDef, FormDef formDef, boolean delete){
+		removeElement2(qtnDef,formDef, delete);
 		//TODO Need to do recursive checks for group defs before remove.
 		return children.remove(qtnDef);
 	}
 
-	public static void removeElement2(IFormElement qtnDef, FormDef formDef){
+	public static void removeElement2(IFormElement qtnDef, FormDef formDef, boolean delete){
 		if(qtnDef.getControlNode() != null && qtnDef.getControlNode().getParentNode() != null){
 			if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				qtnDef.getControlNode().getParentNode().getParentNode().removeChild(qtnDef.getControlNode().getParentNode());
@@ -368,7 +368,7 @@ public class GroupDef implements IFormElement, Serializable{
 			return;
 
 		while(children.size() > 0)
-			removeElement((QuestionDef)children.get(0),formDef);
+			removeElement((QuestionDef)children.get(0),formDef, true);
 	}
 
 

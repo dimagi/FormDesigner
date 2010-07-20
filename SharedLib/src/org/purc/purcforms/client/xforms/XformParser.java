@@ -465,7 +465,7 @@ public class XformParser {
 
 		Element node = formDef.getDataNode();
 		if(qtn.getControlNode().getParentNode().getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
-			if(parentQtn != null)
+			if(parentQtn != null && xpath.indexOf('/') < 0) //some kids my have full binding and in such cases we need to start from parent form node.
 				node = parentQtn.getDataNode();
 		}
 

@@ -74,17 +74,17 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	protected HashMap<Label,String> labelReplaceText = new HashMap<Label,String>();
 
 	protected HashMap<QuestionDef,List<CheckBox>> checkBoxGroupMap = new HashMap<QuestionDef,List<CheckBox>>();
-	
+
 	protected HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap = new HashMap<QuestionDef,List<RuntimeWidgetWrapper>>();
-	
+
 	/**
 	 * A map of filtered single select dynamic questions and their corresponding 
 	 * non label widgets. Only questions of single select dynamic which have the
 	 * widget filter property set are put in this list
 	 */
 	protected HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap = new HashMap<QuestionDef,RuntimeWidgetWrapper>();
-	
-	
+
+
 	public RuntimeGroupWidget(Images images,FormDef formDef,RepeatQtnsDef repeatQtnsDef,EditListener editListener, boolean isRepeated){
 		this.images = images;
 		this.formDef = formDef;
@@ -139,7 +139,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public void loadWidgets(FormDef formDef,NodeList nodes, List<RuntimeWidgetWrapper> externalSourceWidgets,
 			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings, HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap,
 			HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap){
-		
+
 		HashMap<Integer,RuntimeWidgetWrapper> widgetMap = new HashMap<Integer,RuntimeWidgetWrapper>();
 		int maxTabIndex = 0;
 
@@ -165,7 +165,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		}
 
 		if(isRepeated){
-			
+
 			DeferredCommand.addCommand(new Command() {
 				public void execute() {
 					RuntimeWidgetWrapper widget = widgets.get(0);
@@ -257,7 +257,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	private int loadWidget(FormDef formDef, Element node,HashMap<Integer,RuntimeWidgetWrapper> widgets, List<RuntimeWidgetWrapper> externalSourceWidgets,
 			HashMap<QuestionDef,List<QuestionDef>> calcQtnMappings,HashMap<QuestionDef,List<RuntimeWidgetWrapper>> calcWidgetMap,
 			HashMap<QuestionDef,RuntimeWidgetWrapper> filtDynOptWidgetMap){
-		
+
 		RuntimeWidgetWrapper parentWrapper = null;
 
 		String s = node.getAttribute(WidgetEx.WIDGET_PROPERTY_WIDGETTYPE);
@@ -467,15 +467,15 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_DISPLAYFIELD);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setDisplayField(value);
-		
+
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_FILTERFIELD);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setFilterField(value);
-		
+
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_ID);
 		if(value != null && value.trim().length() > 0)
 			wrapper.setId(value);
-		
+
 		if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_VIDEO_AUDIO) || s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_IMAGE)){
 			if(binding != null && binding.trim().length() > 0){
 				questionDef = formDef.getQuestion(binding);
@@ -491,21 +491,21 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				if(wrapper.getFilterField() != null && wrapper.getFilterField().trim().length() > 0)
 					filtDynOptWidgetMap.put(questionDef, wrapper);
 			}
-			
+
 			wrapper.setQuestionDef(questionDef,false);
 			ValidationRule validationRule = formDef.getValidationRule(questionDef);
 			wrapper.setValidationRule(validationRule);
 		}
-		
+
 		if(parentBinding != null)
 			wrapper.setParentBinding(parentBinding);
-		
+
 		if(binding != null)
 			wrapper.setBinding(binding);
 
 		if(parentWrapper != null)
 			parentWrapper.addChildWidget(wrapper);
-		
+
 
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_VALUEFIELD);
 		if(value != null && value.trim().length() > 0){
@@ -562,7 +562,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				});
 			}
 		}
-		
+
 		if(wrapper.isEditable() && questionDef != null)
 			FormRunnerView.updateCalcWidgetMapping(wrapper, calcQtnMappings, calcWidgetMap);
 
@@ -753,14 +753,14 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 				repeatDataNode.getParentNode().appendChild(newRepeatDataNode);
 				//workonDefaults(newRepeatDataNode);
 				dataNodes.add(newRepeatDataNode);
-				
+
 				firstWidget = copyWidget;
 			}
 
 			table.setWidget(row, index, copyWidget);
 
 			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
-			
+
 			//Loading widget from here instead of in getPreparedWidget because setDataNode may clear default values
 			copyWidget.loadQuestion();
 
@@ -788,10 +788,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 			if(validationRule.getMaxValue(formDef) == row)
 				((Button)sender).setEnabled(false);
 		}
-		
+
 		if(firstWidget != null)
 			firstWidget.setFocus();
-		
+
 		//byte maxRows = repeatQtnsDef.getMaxRows();
 		//if(maxRows > 0 && row == maxRows)
 		//	((Button)sender).setEnabled(false);
@@ -816,8 +816,12 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	private Element getParentNode(Node node, String binding){	
 		String name = binding;
 		int pos = binding.indexOf('/');
-		if(pos > 0)
+		if(pos > 0){
 			name = binding.substring(0, pos);
+			int pos2 = binding.lastIndexOf('/');
+			if(pos != pos2)
+				return (Element)node.getParentNode(); //name = binding.substring(pos+1, pos2);
+		}
 
 		return getParentNodeWithName(node,name);
 	}
@@ -837,8 +841,15 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		String name = (widget.getWrappedWidget() instanceof CheckBox) ? widget.getParentBinding() : binding;
 		int pos = name.indexOf('/');
-		if(pos > 0)
-			name = name.substring(0, pos);
+		if(pos > 0){
+			int pos2 = name.lastIndexOf('/');
+			if(pos != pos2){
+				name = name.substring(pos2+1);
+				pos = -1;
+			}
+			else
+				name = name.substring(0, pos);
+		}
 
 		NodeList nodes = parentNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
@@ -1065,7 +1076,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 	public boolean onMoveToNextWidget(Widget widget) {
 		int index = selectedPanel.getWidgetIndex(widget);
-		
+
 		if(index == -1){
 			//Handle tabbing for repeats within the flex table
 			if(isRepeated){
@@ -1077,16 +1088,16 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 							if(curWidget instanceof RuntimeWidgetWrapper && ((RuntimeWidgetWrapper)curWidget).setFocus())
 								return true;
 						}
-						
+
 						if(table.getWidget(row, col) == widget)
 							found = true;
 					}
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		return moveToNextWidget(index);
 	}
 
@@ -1112,11 +1123,11 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public HashMap<QuestionDef,List<Label>> getLabelMap(){
 		return labelMap;
 	}
-	
+
 	public HashMap<QuestionDef,List<RuntimeWidgetWrapper>> getCalcWidgetMap(){
 		return calcWidgetMap;
 	}
-	
+
 	public HashMap<QuestionDef,RuntimeWidgetWrapper> getFiltDynOptWidgetMap(){
 		return filtDynOptWidgetMap;
 	}
@@ -1180,17 +1191,17 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 	public int getHeightInt(){
 		return getElement().getOffsetHeight();
 	}
-	
+
 	/*private void workonDefaults(Node repeatDataNode){
 		NodeList nodes = repeatDataNode.getChildNodes();
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node child = nodes.item(index);
 			if(child.getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			
+
 			if(XformConstants.XPATH_VALUE_FALSE.equals(((Element)child).getAttribute("default")))
 				XmlUtil.setTextValue((Element)child, "");
-			
+
 			workonDefaults(child);
 		}
 	}*/

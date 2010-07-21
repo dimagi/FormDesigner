@@ -1278,12 +1278,16 @@ public class QuestionDef implements Serializable{
 			return;
 
 		Vector<OptionDef> orderedOptns = new Vector<OptionDef>();
-
+		Vector<OptionDef> missingOptns = new Vector<OptionDef>();
+		
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
 			OptionDef optionDef = this.getOptionWithValue(optn.getVariableName());
-			if(optionDef == null)
+			if(optionDef == null){
+				missingOptns.add(optn);
 				continue;
+			}
+			
 			optionDef.setText(optn.getText());
 
 			orderedOptns.add(optionDef); //add the option in the order it was before the refresh.
@@ -1315,6 +1319,13 @@ public class QuestionDef implements Serializable{
 				
 				orderedOptns.add(optionDef);
 			}
+		}
+		
+		//Now add the missing options. Possibly they were added by user and not existing in the
+		//original server side form.
+		for(int index = 0; index < missingOptns.size(); index++){
+			OptionDef optnDef = missingOptns.get(index);
+			orderedOptns.add(new OptionDef((orderedOptns.size() + index + 1), optnDef.getText(), optnDef.getVariableName(), this));
 		}
 
 		options = orderedOptns;

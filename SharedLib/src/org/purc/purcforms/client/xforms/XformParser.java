@@ -465,7 +465,7 @@ public class XformParser {
 
 		Element node = formDef.getDataNode();
 		if(qtn.getControlNode().getParentNode().getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
-			if(parentQtn != null && xpath.indexOf('/') < 0) //some kids my have full binding and in such cases we need to start from parent form node.
+			if(parentQtn != null) //some kids my have full binding and in such cases we need to start from parent form node.
 				node = parentQtn.getDataNode();
 		}
 
@@ -486,7 +486,28 @@ public class XformParser {
 				else
 					qtn.setDataNode(((Element) obj));//((Element) obj).addChild(Node.TEXT_NODE, value);
 
-				break;
+				return; //break
+			}
+		}
+		
+		
+		//Try again with the form data node as the reference point
+		if(parentQtn != null && qtn.getControlNode().getParentNode().getNodeName().equals(XformConstants.NODE_NAME_REPEAT)) {
+			node = formDef.getDataNode();
+			
+			xpls = new XPathExpression(node, xpath);
+			result = xpls.getResult();
+
+			for (Enumeration e = result.elements(); e.hasMoreElements();) {
+				Object obj = e.nextElement();
+				if (obj instanceof Element){
+					if(pos > 0) //Check if we are to set attribute value.
+						qtn.setDataNode(((Element) obj)); //((Element) obj).setAttribute(attributeName, value);
+					else
+						qtn.setDataNode(((Element) obj));//((Element) obj).addChild(Node.TEXT_NODE, value);
+
+					break;
+				}
 			}
 		}
 	}
@@ -800,6 +821,7 @@ public class XformParser {
 			//if(parent.getNodeName().equals(NODE_NAME_REPEAT)||parent.getNodeName().equals(NODE_NAME_REPEAT_MINUS_PREFIX)){
 			if(XmlUtil.nodeNameEquals(parent.getNodeName(),XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
 				varName = (String)id2VarNameMap.get(parent.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) : parent.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET));
+				
 				QuestionDef rptQtnDef = formDef.getQuestion(varName);
 				qtn.setId(getNextQuestionId());
 				rptQtnDef.addRepeatQtnsDef(qtn);

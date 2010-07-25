@@ -178,7 +178,6 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 						Element parent = (Element)repeatDataNode.getParentNode();
 						NodeList nodeList = parent.getElementsByTagName(repeatDataNode.getNodeName());
 
-
 						RuntimeWidgetWrapper wrapper = (RuntimeWidgetWrapper)getParent().getParent();
 						int y = getHeightInt();
 
@@ -357,6 +356,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 		}
 		else if(s.equalsIgnoreCase(WidgetEx.WIDGET_TYPE_LABEL)){
 			String text = node.getAttribute(WidgetEx.WIDGET_PROPERTY_TEXT);
+			if(text == null) 
+				text = "No Label Text";
 			widget = new Label(text);
 
 			int pos1 = text.indexOf("${");
@@ -523,6 +524,8 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 		if(loadWidget)
 			wrapper.loadQuestion();
+		
+		wrapper.setExternalSourceDisplayValue();
 
 		value = node.getAttribute(WidgetEx.WIDGET_PROPERTY_HEIGHT);
 		if(value != null && value.trim().length() > 0)
@@ -761,7 +764,10 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 
 			setDataNode(copyWidget,newRepeatDataNode,copyWidget.getBinding(),false);
 
-			//Loading widget from here instead of in getPreparedWidget because setDataNode may clear default values
+			//For now we do not allow default values for repeat kids to simplify implementation.
+			copyWidget.getQuestionDef().setDefaultValue(null);
+
+			//Loading widget from here instead of in getPreparedWidget because setDataNode may clear default values			
 			copyWidget.loadQuestion();
 
 			if(copyWidget.getWrappedWidget() instanceof RadioButton)
@@ -873,6 +879,7 @@ public class RuntimeGroupWidget extends Composite implements OpenFileDialogEvent
 						if(XformConstants.XPATH_VALUE_FALSE.equals(((Element)child).getAttribute("default")))
 							widget.getQuestionDef().setDefaultValue(null);
 					}
+					widget.setExternalSourceDisplayValue();
 				}
 				return;
 			}

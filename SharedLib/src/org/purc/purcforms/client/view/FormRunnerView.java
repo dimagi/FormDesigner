@@ -704,6 +704,8 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 
 		if(loadWidget)
 			wrapper.loadQuestion();
+		
+		wrapper.setExternalSourceDisplayValue();
 
 		WidgetEx.loadLabelProperties(node,wrapper);
 

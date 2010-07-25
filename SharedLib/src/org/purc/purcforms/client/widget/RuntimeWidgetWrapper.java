@@ -470,6 +470,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						defaultValue = fromSubmit2DisplayDate(defaultValue);
 
 					((TextBoxBase)widget).setText(defaultValue);
+
+					setExternalSourceDisplayValue();
 				}
 			}
 		}
@@ -486,6 +488,37 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 			setVisible(false);
 		if(questionDef.isLocked())
 			setLocked(true);
+	}
+
+
+	public void setExternalSourceDisplayValue(){
+		if(externalSource == null || externalSource.trim().length() == 0)
+			return;
+
+		if(questionDef == null || questionDef.getDataNode() == null)
+			return;
+
+		if(!(widget instanceof TextBox))
+			return;
+
+		String defaultValue = questionDef.getDefaultValue();
+		if(defaultValue == null || defaultValue.trim().length() == 0)
+			return;
+
+		String displayValue = questionDef.getDataNode().getAttribute("displayValue");
+		if(displayValue != null){
+			while(panel.getWidgetCount() > 1)
+				panel.remove(1);
+
+			Label label = new Label(defaultValue);
+			label.setVisible(false);
+			panel.add(label);
+
+			((TextBox)widget).setText(displayValue);
+			
+			//Used only once on form loading.
+			questionDef.getDataNode().removeAttribute("displayValue");
+		}
 	}
 
 

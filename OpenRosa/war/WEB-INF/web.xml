@@ -1,10 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">
-
-<web-app>
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   
+    <servlet>
+        <servlet-name>filesaveservlet</servlet-name>
+        <servlet-class>org.openrosa.server.FileSaveServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>filesaveservlet</servlet-name>
+        <url-pattern>/fileSave</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>fileopenservlet</servlet-name>
+        <servlet-class>org.openrosa.server.FileOpenServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileopenservlet</servlet-name>
+        <url-pattern>/fileOpen</url-pattern>
+    </servlet-mapping>
+    
+    
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>FormDesigner.html</welcome-file>

@@ -14,12 +14,21 @@ import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.PurcConstants;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
+import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.OpenFileDialog;
+import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.xml.client.Document;
@@ -31,7 +40,7 @@ import com.google.gwt.xml.client.Document;
  * @author daniel
  *
  */
-public class CenterWidget extends Composite implements IFileListener,IFormSelectionListener,ITextListener {
+public class CenterWidget extends Composite implements IFileListener,IFormSelectionListener,ITextListener, OpenFileDialogEventListener {
 
 	private static final int TAB_INDEX_DESIGN = 0;
 	//private static final int TAB_INDEX_XFORMS = 1;
@@ -322,5 +331,72 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		String xml = saveItext();
 		formDef.setXformXml(xml);
 		xformsWidget.setXform(xml);
+	}
+
+
+	public void onSaveFile(){
+
+		FormUtil.dlg.setText("Saving...");
+		FormUtil.dlg.show();
+
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+
+				try{
+					if(formDef != null){
+						saveFile(false);
+						FormUtil.dlg.hide();
+						
+						String fileName = "filename";
+						fileName = formDef.getName();
+						SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(), formDef.getXformXml(), fileName);
+						dlg.center();	
+					}
+					else{
+						FormUtil.dlg.hide();
+						Window.alert("No form to save");
+					}
+				}
+				catch(Exception ex){
+					FormUtil.displayException(ex);
+				}
+			}
+		});
+	}
+
+
+	public void onOpenFile(){
+		OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
+		dlg.center();
+	}
+
+
+	public void onSetFileContents(String contents){
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,FormUtil.getFileOpenUrl());
+
+		try{
+			builder.sendRequest(null, new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+
+					String contents = response.getText();
+					if(contents != null && contents.trim().length() > 0){
+						xformsWidget.setXform(contents);
+						onOpen();
+					}
+				}
+
+				public void onError(Request request, Throwable exception){
+					FormUtil.displayException(exception);
+				}
+			});
+		}
+		catch(RequestException ex){
+			FormUtil.displayException(ex);
+		}
 	}
 }

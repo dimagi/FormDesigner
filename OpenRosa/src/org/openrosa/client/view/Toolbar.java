@@ -97,9 +97,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Menu menu;
 	private SplitButton menuBut;
 	private Button saveBut;
-	private Button saveasBut;
+	private Button saveFileBut;
 	private Button openBut;
-	private Button xmlBut;
+	private Button openFileBut;
 	private Button locBut;
 	private Button addSelect;
 	private Button txtBut;
@@ -130,7 +130,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
-			"MultiSelect Question","SingleSelect Question","Menu","View Form Text","Save As...","Load from Text...","Localization","Export XML",
+			"MultiSelect Question","SingleSelect Question","Menu","View Form Text","Save To File...","Load from Text...","Localization","Open From File...",
 			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
 
 	ListBox cbLocales = new ListBox(false);
@@ -187,12 +187,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		saveBut.setIconAlign(IconAlign.LEFT);
 		saveBut.addStyleName("myMenuButton");
 
-		saveasBut = new Button(buttonLabels[9]);
-		saveasBut.setIcon(AbstractImagePrototype.create(images.emptyIcon()));
-		saveasBut.setScale(ButtonScale.LARGE);
-		saveasBut.setIconAlign(IconAlign.LEFT);
-		saveasBut.addStyleName("myMenuButton");
-		saveasBut.disable(); //feature not ready yet.
+		saveFileBut = new Button(buttonLabels[9]);
+		saveFileBut.setIcon(AbstractImagePrototype.create(images.validate()));
+		saveFileBut.setScale(ButtonScale.LARGE);
+		saveFileBut.setIconAlign(IconAlign.LEFT);
+		saveFileBut.addStyleName("myMenuButton");
 
 		openBut = new Button(buttonLabels[10]);
 		openBut.setIcon(AbstractImagePrototype.create(images.load()));
@@ -200,11 +199,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		openBut.setIconAlign(IconAlign.LEFT);
 		openBut.addStyleName("myMenuButton");
 
-		xmlBut = new Button(buttonLabels[12]);
-		xmlBut.setIcon(AbstractImagePrototype.create(images.showxml()));
-		xmlBut.setScale(ButtonScale.LARGE);
-		xmlBut.setIconAlign(IconAlign.LEFT);
-		xmlBut.addStyleName("myMenuButton");
+		openFileBut = new Button(buttonLabels[12]);
+		openFileBut.setIcon(AbstractImagePrototype.create(images.showxml()));
+		openFileBut.setScale(ButtonScale.LARGE);
+		openFileBut.setIconAlign(IconAlign.LEFT);
+		openFileBut.addStyleName("myMenuButton");
 
 		locBut = new Button(buttonLabels[11]);
 		locBut.setIcon(AbstractImagePrototype.create(images.localization()));
@@ -216,8 +215,10 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		//menu.add(newBut);
 		menu.add(openBut);
 		menu.add(saveBut);
-		//menu.add(saveasBut);
-		//menu.add(xmlBut);
+
+		menu.add(openFileBut);
+		menu.add(saveFileBut);
+
 		//menu.add(locBut);
 
 		menuBut.setMenu(menu);
@@ -674,20 +675,30 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				// TODO Auto-generated method stub
-				fileListener.onSave(true);
 				menuBut.hideMenu();
-
+				fileListener.onSave(true);
 			}
 		});
 
-		xmlBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		openFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				// TODO Auto-generated method stub
-				fileListener.onSave(true);
+				//fileListener.onSave(true);
 				menuBut.hideMenu();
+				fileListener.onOpenFile();
+			}
+		});
 
+		saveFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				// TODO Auto-generated method stub
+				//fileListener.onSave(true);
+				menuBut.hideMenu();
+				fileListener.onSaveFile();
 			}
 		});
 
@@ -705,6 +716,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		openBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
+				menuBut.hideMenu();
 				fileListener.onOpen();
 			}
 		});

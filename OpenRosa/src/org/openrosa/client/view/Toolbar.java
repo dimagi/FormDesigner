@@ -100,6 +100,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button saveFileBut;
 	private Button openBut;
 	private Button openFileBut;
+	private Button submitBut;
 	private Button locBut;
 	private Button addSelect;
 	private Button txtBut;
@@ -204,6 +205,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		openFileBut.setScale(ButtonScale.LARGE);
 		openFileBut.setIconAlign(IconAlign.LEFT);
 		openFileBut.addStyleName("myMenuButton");
+		
+		submitBut = new Button("Submit to server");
+		submitBut.setIcon(AbstractImagePrototype.create(images.localization()));
+		submitBut.setScale(ButtonScale.LARGE);
+		submitBut.setIconAlign(IconAlign.LEFT);
+		submitBut.addStyleName("myMenuButton");
 
 		locBut = new Button(buttonLabels[11]);
 		locBut.setIcon(AbstractImagePrototype.create(images.localization()));
@@ -218,6 +225,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		menu.add(openFileBut);
 		menu.add(saveFileBut);
+		menu.add(submitBut);
 
 		//menu.add(locBut);
 
@@ -701,6 +709,19 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				fileListener.onSaveFile();
 			}
 		});
+		
+		
+		submitBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				// TODO Auto-generated method stub
+				//fileListener.onSave(true);
+				menuBut.hideMenu();
+				fileListener.onSubmit();
+			}
+		});
+		
 
 		menuBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {

@@ -161,8 +161,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	
 	// Set up the JS-callable signature as a global JS function.
 	private native void publishJS() /*-{
-   		$wnd.authenticationCallback = @org.purc.purcforms.client.controller.FormDesignerController::authenticationCallback(Z);
-   		$wnd.submitForm = @org.purc.purcforms.client.view.FormRunnerView::submitForm();
+   		$wnd.authenticationCallback = @org.openrosa.client.view.CenterWidget::authenticationCallback(Z);
 	}-*/;
 	
 	

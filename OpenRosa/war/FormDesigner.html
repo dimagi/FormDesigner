@@ -42,7 +42,7 @@
     <!-- <div id="formIdName" style="visibility:hidden;">formId</div> -->
     
     <!-- <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xform&contentType=xml&</div> -->
-    <!-- <div id="formDefUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformUpload.form?target=xform&contentType=xml&</div> -->
+    <div id="formDefUploadUrlSuffix" style="visibility:hidden;">formDefUploadUrlSuffix</div>
     <!-- <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div> -->
     
     <!-- <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&</div> -->
@@ -345,10 +345,12 @@
  		  };
 
 		  function isUserAuthenticated(){
-			  return true; //Not expected to be used in the design mode.
+			  authenticationCallback(false);
+			  return false; //Not expected to be used in the design mode.
 		  }
 
 		  function authenticateUser(username, password){
+			  authenticationCallback(true);
 			  return true; //Not expected to be used in the design mode.
 		  }
 

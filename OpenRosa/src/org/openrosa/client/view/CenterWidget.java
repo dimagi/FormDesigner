@@ -13,9 +13,12 @@ import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.PurcConstants;
+import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
+import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.LoginDialog;
 import org.purc.purcforms.client.view.OpenFileDialog;
 import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XmlUtil;
@@ -26,6 +29,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -72,7 +76,20 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	 */
 	private boolean showXMLWindowFlag = true; 
 
-	public CenterWidget() {		
+	/**
+	 * The dialog box used to log on the server when the user's session expires on the server.
+	 */
+	private static LoginDialog loginDlg = new LoginDialog();
+	
+	/** Static self reference such that the static login call back can have
+	 *  a reference to proceed with the current action.
+	 */
+	private static CenterWidget centerWidget;
+
+
+	public CenterWidget() {	
+		centerWidget = this;
+		
 		initDesignTab();
 		initXformsTab();
 		initItextTab();
@@ -346,7 +363,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 					if(formDef != null){
 						saveFile(false);
 						FormUtil.dlg.hide();
-						
+
 						String fileName = "filename";
 						fileName = formDef.getName();
 						SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(), formDef.getXformXml(), fileName);
@@ -388,6 +405,64 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 						xformsWidget.setXform(contents);
 						onOpen();
 					}
+				}
+
+				public void onError(Request request, Throwable exception){
+					FormUtil.displayException(exception);
+				}
+			});
+		}
+		catch(RequestException ex){
+			FormUtil.displayException(ex);
+		}
+	}
+
+
+	public void onSubmit(){
+		if(formDef == null)
+			Window.alert("No form to submit");
+		else
+			FormUtil.isAuthenticated();
+	}
+
+
+	/**
+	 * This is called from the server after an attempt to authenticate the current
+	 * user before they can submit form data.
+	 * 
+	 * @param authenticated has a value of true if the server has successfully authenticated the user, else false.
+	 */
+	private static void authenticationCallback(boolean authenticated) {	
+
+		//If user has passed authentication, just go on with whatever they wanted to do
+		//else just redisplay the login dialog and let them enter correct
+		//user name and password.
+		if(authenticated){
+			loginDlg.hide();
+			centerWidget.submitData();
+		}
+		else
+			loginDlg.center();
+	}
+	
+	private void submitData(){
+		String url = FormUtil.getHostPageBaseURL();
+		url += FormUtil.getFormDefUploadUrlSuffix();
+		//url += FormUtil.getFormIdName()+"="+this.formId;
+
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
+
+		try{
+			builder.sendRequest(xformsWidget.getXform(), new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+
+					if(response.getStatusCode() != Response.SC_OK){
+						FormUtil.displayReponseError(response);
+						return;
+					}
+
+					FormUtil.dlg.hide();
+					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
 				public void onError(Request request, Throwable exception){

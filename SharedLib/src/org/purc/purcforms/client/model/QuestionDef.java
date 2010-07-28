@@ -991,6 +991,9 @@ public class QuestionDef implements Serializable{
 			if(!parentName.equals(parentNodeName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 				if(variableName.equals(parentName+"/"+parentNodeName+"/"+name))
 					return;
+				
+				if(variableName.endsWith("/"+parentNodeName+"/"+name))
+					return; //Some bindings have nested paths which expose some bug here.
 
 				Element parentNode = doc.createElement(parentName);
 				//parentNode = EpihandyXform.getNode(parentNode.toString());

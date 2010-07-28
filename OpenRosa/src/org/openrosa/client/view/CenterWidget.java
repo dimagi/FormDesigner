@@ -48,13 +48,13 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 	/** The current form definition object. */
 	private FormDef formDef;
-	
+
 	/** Mapping of itext id's to their form attribute values. eg id=name, form=short */
 	private static HashMap<String,String> formAttrMap = new HashMap<String,String>();
-	
+
 	/** Mapping of ItextModel objects to their ids as they are in the id column of the grid. */
 	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
-	
+
 	/** Lost of ItextModel objects as they are shown in the grid. */
 	ListStore<ItextModel> itextList = new ListStore<ItextModel>();
 
@@ -71,12 +71,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(TAB_INDEX_DESIGN);
-		
+
 		//////////////////////////////!!!!!!!!!!!!!!!!!
 		initWidget(designWidget);   /// <<<<<<---------------------- This is a gruesome shortcut
 		///////////////////////////////////////////////   The whole 'CenterWidget' should be removed
 		// and designWidget should be directly called from FormDesignWidget.java
-		
+
 		//tabs.addSelectionHandler(this);
 
 		FormUtil.maximizeWidget(tabs);
@@ -95,7 +95,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 	private void initItextTab(){
-//		tabs.add(itextWidget, "Internationalization");
+		//		tabs.add(itextWidget, "Internationalization");
 	}
 
 	public void onWindowResized(int width, int height){
@@ -140,16 +140,16 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			return;
 		}
 
-//		tabs.selectTab(TAB_INDEX_DESIGN);
-		
+		//		tabs.selectTab(TAB_INDEX_DESIGN);
+
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
-		
+
 		formAttrMap.clear();
-	    itextMap.clear();
-	    ItextParser.itextFormAttrList.clear();
-	    itextList = new ListStore<ItextModel>();
-	    ItextBuilder.itextIds.clear();
-	    
+		itextMap.clear();
+		ItextParser.itextFormAttrList.clear();
+		itextList = new ListStore<ItextModel>();
+		ItextBuilder.itextIds.clear();
+
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
 
 		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
@@ -183,44 +183,60 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			}
 		});
 	}
-	
-	public void showItext(){
-		
-		this.saveFile(false);
-		
-		//String xml = null;
-		
-		if(Context.getFormDef() == null)
-			formDef = null;
-		
-		if(formDef == null || formDef.getDoc() == null)
-			return;
 
-		//this line is necessary for gxt to load the form with text on the design tab.
-		tabs.selectTab(TAB_INDEX_DESIGN);
-		
-		//This line is called in the this.saveFile(false) above.
-		/*textBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
-		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
-		
-		//update form outline with the itext changes
-		itextList = new ListStore<ItextModel>();
-		formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
-//		designWidget.refreshForm(formDef);*/
-		itextWidget.loadItext(itextList);
-		
-		itextWidget.showWindow();
-		
+	public void showItext(){
+
+		FormUtil.dlg.setText("Opening...");
+		FormUtil.dlg.show();
+
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+
+				try{
+					saveFile(false);
+
+					//String xml = null;
+
+					if(Context.getFormDef() == null)
+						formDef = null;
+
+					if(formDef == null || formDef.getDoc() == null)
+						return;
+
+					//this line is necessary for gxt to load the form with text on the design tab.
+					tabs.selectTab(TAB_INDEX_DESIGN);
+
+					//This line is called in the this.saveFile(false) above.
+					/*textBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
+					xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
+
+					//update form outline with the itext changes
+					itextList = new ListStore<ItextModel>();
+					formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
+			//		designWidget.refreshForm(formDef);*/
+
+					itextWidget.loadItext(itextList);
+
+					itextWidget.showWindow();
+
+					FormUtil.dlg.hide();
+				}
+				catch(Exception ex){
+					FormUtil.displayException(ex);
+				}
+			}
+		});
 	}
+
 
 	private void saveFile(boolean showWindow){
 		//FormDef formDef = Context.getFormDef();
-		
+
 		if(Context.getFormDef() == null)
 			formDef = null;
 
 		String xml = null;
-		
+
 		if(tabs.getTabBar().getSelectedTab() == TAB_INDEX_ITEXT)
 			xml = saveItext();
 		else if(formDef != null){
@@ -261,8 +277,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		if(showWindow){
 			xformsWidget.showWindow();
 		}
-//		tabs.selectTab(TAB_INDEX_XFORMS);
-		
+		//		tabs.selectTab(TAB_INDEX_XFORMS);
+
 	}
 
 	public String saveItext() {
@@ -272,7 +288,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		//this line is necessary for gxt to load the form with text on the design tab.
 		tabs.selectTab(TAB_INDEX_DESIGN);
-		
+
 		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
 		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 
@@ -301,7 +317,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		this.formDef = formDef;
 	}
-	
+
 	public void onSaveItext(List<ItextModel> itext){
 		String xml = saveItext();
 		formDef.setXformXml(xml);

@@ -10,10 +10,11 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -49,7 +50,8 @@ public class TreeItemWidget extends Composite{
 
 		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		hPanel.add(FormUtil.createImage(imageProto));
-		HTML headerText = new HTML(caption);
+		//HTML headerText = new HTML(caption); //Replaced with Label due to bug which surfaces when we have text including things like "<sdsff>"
+		Widget headerText = new Label(caption);
 		hPanel.add(headerText);
 		hPanel.setStyleName("gwt-noWrap");
 		initWidget(hPanel);

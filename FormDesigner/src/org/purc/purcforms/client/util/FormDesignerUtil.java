@@ -1,9 +1,6 @@
 package org.purc.purcforms.client.util;
 
-import java.util.HashMap;
-import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.purc.purcforms.client.model.QuestionDef;
 
@@ -12,9 +9,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -47,7 +44,8 @@ public class FormDesignerUtil {
 
 		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		hPanel.add(FormUtil.createImage(imageProto));
-		HTML headerText = new HTML(caption);
+		//HTML headerText = new HTML(caption);
+		Widget headerText = new Label(caption);
 		hPanel.add(headerText);
 
 		return hPanel.getElement().getString();

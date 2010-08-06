@@ -10,7 +10,7 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.util.FormDesignerUtil;
+import org.purc.purcforms.client.util.QueryBuilderUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
@@ -564,7 +564,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
 		for(int i=0; i<formDef.getPageCount(); i++)
-			FormDesignerUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
+			QueryBuilderUtil.loadQuestions(formDef.getPageAt(i).getQuestions(),questionDef,oracle,false,questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT);
 
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();

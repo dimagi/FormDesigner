@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author daniel
  *
  */
-public class FormDesignerUtil {
+public class QueryBuilderUtil {
 
 	/** The form designer title. */
 	private static String title = "PurcForms FormDesigner";

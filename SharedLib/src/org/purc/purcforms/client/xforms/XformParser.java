@@ -695,7 +695,10 @@ public class XformParser {
 	 *                           questions have not yet been parsed.
 	 * @return the question we are currently parsing.
 	 */
-	private static QuestionDef parseBindElement(FormDef formDef, Element child, HashMap id2VarNameMap,QuestionDef questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+	private static QuestionDef parseBindElement(FormDef formDef, Element child, HashMap<String, String> id2VarNameMap,QuestionDef questionDef,
+			HashMap<QuestionDef, String> relevants, Vector<QuestionDef> repeatQtns, HashMap<String, QuestionDef> rptKidMap, int currentPageNo, QuestionDef parentQtn, 
+			HashMap<QuestionDef, String> constraints, List<QuestionDef> orphanDynOptionQns){
+		
 		QuestionDef qtn = new QuestionDef(null);
 		qtn.setBindNode(child);
 		qtn.setId(getNextQuestionId());

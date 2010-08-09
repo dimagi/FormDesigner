@@ -186,7 +186,7 @@ public class XPathLocationStep implements Serializable{
 			if (nodeTest.equals("/")) {
 				Object startNode = null;
 				// find first element in the contextNodeSet
-				for (Enumeration nodes = contextNodeSet.elements(); nodes
+				for (Enumeration<Object> nodes = contextNodeSet.elements(); nodes
 				.hasMoreElements();) {
 					startNode = nodes.nextElement();
 					if (startNode instanceof Element)

@@ -1079,7 +1079,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * Checks all skip logic and does the appropriate action for the affected widgets.
 	 */
 	protected void fireSkipRules(){		
-		Vector rules = formDef.getSkipRules();
+		Vector<SkipRule> rules = formDef.getSkipRules();
 		if(rules != null){
 			for(int i=0; i<rules.size(); i++){
 				SkipRule rule = (SkipRule)rules.elementAt(i);
@@ -1089,11 +1089,10 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	}
 
 	protected void doCalculations(){		
-		Vector calculations = formDef.getCalculations();
+		Vector<Calculation> calculations = formDef.getCalculations();
 		if(calculations != null){
 			for(int i=0; i<calculations.size(); i++){
-				Calculation calculation = (Calculation)calculations.elementAt(i);
-				//rule.fire(formDef);
+				
 			}
 		}
 	}

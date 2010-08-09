@@ -49,7 +49,7 @@ public class ConstraintBuilder {
 		if(node == null)
 			node = questionDef.getControlNode();
 
-		Vector conditions  = rule.getConditions();
+		Vector<Condition> conditions  = rule.getConditions();
 		if(conditions == null || conditions.size() == 0){
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);

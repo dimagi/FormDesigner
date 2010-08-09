@@ -28,12 +28,6 @@ public class ActionHyperlink extends Hyperlink {
 	/** The condition to apply this action to. */
 	private ConditionWidget condWidget;
 	
-	/** Flag determining whether to allow conditions grouping or nested conditions
-	 *  using add bracket.
-	 */
-	private boolean allowBrackets;
-
-	
 	/**
 	 * Creates a new instance of the condition actions widget.
 	 * 
@@ -45,7 +39,6 @@ public class ActionHyperlink extends Hyperlink {
 	public ActionHyperlink(String text, String targetHistoryToken,ConditionWidget condWidget, boolean allowBrackets){
 		super(text,targetHistoryToken);
 		this.condWidget = condWidget;
-		this.allowBrackets = allowBrackets;
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}
 

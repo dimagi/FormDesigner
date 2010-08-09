@@ -138,7 +138,7 @@ public class FieldWidget extends Composite{
 		}
 	}
 	
-	private boolean selectFirstQuestion(Vector questions){
+	private boolean selectFirstQuestion(Vector<QuestionDef> questions){
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)

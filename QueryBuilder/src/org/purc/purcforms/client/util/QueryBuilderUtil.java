@@ -88,7 +88,7 @@ public class QueryBuilderUtil {
 	 * @param sameTypesOnly set to true if you want to load only questions of the same type
 	 * 						as the referenced question.
 	 */
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
+	public static void loadQuestions(Vector<QuestionDef> questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly){
 		if(questions == null)
 			return;
 
@@ -125,7 +125,7 @@ public class QueryBuilderUtil {
 	 * @param oracle the MultiWordSuggestOracle.
 	 * @param dynamicOptions set to true if we are loading for dynamic options.
 	 */
-	public static void loadQuestions(Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
+	public static void loadQuestions(Vector<QuestionDef> questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
 		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true);
 	}
 

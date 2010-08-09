@@ -37,7 +37,7 @@ public class FormDef implements Serializable {
 	
 
 	/** A collection of page definitions (PageDef objects). */
-	private Vector pages;
+	private Vector<PageDef> pages;
 
 	//TODO May not need to serialize this property for smaller pay load. Then we may just rely on the id.
 	//afterall it is not even guaranteed to be unique.
@@ -53,13 +53,13 @@ public class FormDef implements Serializable {
 	private int id = ModelConstants.NULL_ID;
 
 	/** The collection of rules (SkipRule objects) for this form. */
-	private Vector skipRules;
+	private Vector<SkipRule> skipRules;
 
 	/** The collection of rules (ValidationRule objects) for this form. */
-	private Vector validationRules;
+	private Vector<ValidationRule> validationRules;
 
 	/** The collection of calculations (Calculation objects) for this form. */
-	private Vector calculations;
+	private Vector<Calculation> calculations;
 
 	/** A string constistig for form fields that describe its data. eg description-template="${/data/question1}$ Market" */
 	private String descriptionTemplate =  ModelConstants.EMPTY_STRING;
@@ -67,7 +67,7 @@ public class FormDef implements Serializable {
 	/** A mapping of dynamic lists keyed by the id of the question whose values
 	 *  determine possible values of another question as specified in the DynamicOptionDef object.
 	 */
-	private HashMap<Integer,DynamicOptionDef>  dynamicOptions;
+	private HashMap<Integer, DynamicOptionDef>  dynamicOptions;
 
 
 	/** The xforms document.(for easy syncing between the object model and actual xforms document. */
@@ -156,7 +156,9 @@ public class FormDef implements Serializable {
 	 * @param pages - collection of page definitions.
 	 * @param rules - collection of branching rules.
 	 */
-	public FormDef(int id, String name, String formKey, String variableName,Vector pages, Vector skipRules, Vector validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector calculations) {
+	public FormDef(int id, String name, String formKey, String variableName, Vector<PageDef> pages, Vector<SkipRule> skipRules, 
+			Vector<ValidationRule> validationRules, HashMap<Integer,DynamicOptionDef> dynamicOptions, String descTemplate, Vector<Calculation> calculations) {
+		
 		setId(id);
 		setName(name);
 		setFormKey(formKey);
@@ -179,7 +181,7 @@ public class FormDef implements Serializable {
 	 */
 	public void addPage(PageDef pageDef){
 		if(pages == null)
-			pages = new Vector();
+			pages = new Vector<PageDef>();
 
 		pages.add(pageDef);
 		pageDef.setParent(this);
@@ -190,7 +192,7 @@ public class FormDef implements Serializable {
 	 */
 	public void addPage(){
 		if(pages == null)
-			pages = new Vector();
+			pages = new Vector<PageDef>();
 
 		int pageno = pages.size() + 1;
 		pages.add(new PageDef("Page"+pageno,pageno,this));
@@ -221,7 +223,7 @@ public class FormDef implements Serializable {
 	 * 
 	 * @return the page list
 	 */
-	public Vector getPages() {
+	public Vector<PageDef> getPages() {
 		return pages;
 	}
 
@@ -249,7 +251,7 @@ public class FormDef implements Serializable {
 		return (Calculation)calculations.elementAt(index);
 	}
 
-	public void setPages(Vector pages) {
+	public void setPages(Vector<PageDef> pages) {
 		this.pages = pages;
 	}
 
@@ -286,27 +288,27 @@ public class FormDef implements Serializable {
 		this.id = id;
 	}
 
-	public Vector getSkipRules() {
+	public Vector<SkipRule> getSkipRules() {
 		return skipRules;
 	}
 
-	public void setSkipRules(Vector skipRules) {
+	public void setSkipRules(Vector<SkipRule> skipRules) {
 		this.skipRules = skipRules;
 	}
 
-	public Vector getValidationRules() {
+	public Vector<ValidationRule> getValidationRules() {
 		return validationRules;
 	}
 
-	public void setValidationRules(Vector validationRules) {
+	public void setValidationRules(Vector<ValidationRule> validationRules) {
 		this.validationRules = validationRules;
 	}
 
-	public Vector getCalculations() {
+	public Vector<Calculation> getCalculations() {
 		return calculations;
 	}
 
-	public void setCalculations(Vector calculations) {
+	public void setCalculations(Vector<Calculation> calculations) {
 		this.calculations = calculations;
 	}
 
@@ -378,7 +380,7 @@ public class FormDef implements Serializable {
 
 		for(int i=0; i<skipRules.size(); i++){
 			SkipRule rule = (SkipRule)skipRules.elementAt(i);
-			Vector targets = rule.getActionTargets();
+			Vector<Integer> targets = rule.getActionTargets();
 			for(int j=0; j<targets.size(); j++){
 				if(((Integer)targets.elementAt(j)).intValue() == questionDef.getId())
 					return rule;
@@ -580,7 +582,7 @@ public class FormDef implements Serializable {
 	 */
 	public void addQuestion(QuestionDef qtn){
 		if(pages == null){
-			pages = new Vector();
+			pages = new Vector<PageDef>();
 			PageDef page = new PageDef(/*this.getVariableName()*/"Page1",Integer.parseInt("1"),null,this);
 			pages.addElement(page);
 		}
@@ -595,9 +597,9 @@ public class FormDef implements Serializable {
 	 * 
 	 * @param pages the pages to copy.
 	 */
-	private void copyPages(Vector pages){
+	private void copyPages(Vector<PageDef> pages){
 		if(pages != null){
-			this.pages =  new Vector();
+			this.pages =  new Vector<PageDef>();
 			for(int i=0; i<pages.size(); i++) //Should have atleast one page is why we are not checking for nulls.
 				this.pages.addElement(new PageDef((PageDef)pages.elementAt(i),this));
 		}
@@ -608,10 +610,10 @@ public class FormDef implements Serializable {
 	 * 
 	 * @param rules the skip rules.
 	 */
-	private void copySkipRules(Vector rules){
+	private void copySkipRules(Vector<SkipRule> rules){
 		if(rules != null)
 		{
-			this.skipRules =  new Vector();
+			this.skipRules =  new Vector<SkipRule>();
 			for(int i=0; i<rules.size(); i++)
 				this.skipRules.addElement(new SkipRule((SkipRule)rules.elementAt(i)));
 		}
@@ -622,10 +624,10 @@ public class FormDef implements Serializable {
 	 * 
 	 * @param rules the validation rules.
 	 */
-	private void copyValidationRules(Vector rules){
+	private void copyValidationRules(Vector<ValidationRule> rules){
 		if(rules != null)
 		{
-			this.validationRules =  new Vector();
+			this.validationRules =  new Vector<ValidationRule>();
 			for(int i=0; i<rules.size(); i++)
 				this.validationRules.addElement(new ValidationRule((ValidationRule)rules.elementAt(i)));
 		}
@@ -648,10 +650,10 @@ public class FormDef implements Serializable {
 		}
 	}
 
-	private void copyCalculations(Vector calculations){
+	private void copyCalculations(Vector<Calculation> calculations){
 		if(calculations != null)
 		{
-			this.calculations =  new Vector();
+			this.calculations =  new Vector<Calculation>();
 			for(int i=0; i<calculations.size(); i++)
 				this.calculations.addElement(new Calculation((Calculation)calculations.elementAt(i)));
 		}
@@ -1074,7 +1076,7 @@ public class FormDef implements Serializable {
 	 */
 	public void addSkipRule(SkipRule skipRule){
 		if(skipRules == null)
-			skipRules = new Vector();
+			skipRules = new Vector<SkipRule>();
 		skipRules.addElement(skipRule);
 	}
 
@@ -1085,13 +1087,13 @@ public class FormDef implements Serializable {
 	 */
 	public void addValidationRule(ValidationRule validationRule){
 		if(validationRules == null)
-			validationRules = new Vector();
+			validationRules = new Vector<ValidationRule>();
 		validationRules.addElement(validationRule);
 	}
 
 	public void addCalculation(Calculation calculation){
 		if(calculations == null)
-			calculations = new Vector();
+			calculations = new Vector<Calculation>();
 		calculations.addElement(calculation);
 	}
 
@@ -1239,13 +1241,13 @@ public class FormDef implements Serializable {
 
 		//Clear existing skip rules if any. Already existing skip rules will always
 		//overwrite those from the refresh source.
-		skipRules = new Vector();
+		skipRules = new Vector<SkipRule>();
 		for(int index = 0; index < formDef.getSkipRuleCount(); index++)
 			formDef.getSkipRuleAt(index).refresh(this, formDef);
 
 		//Clear existing validation rules if any. Already existing validation rules 
 		//will always overwrite those from the refresh source.
-		validationRules = new Vector();
+		validationRules = new Vector<ValidationRule>();
 		for(int index = 0; index < formDef.getValidationRuleCount(); index++)
 			formDef.getValidationRuleAt(index).refresh(this, formDef);
 
@@ -1285,7 +1287,7 @@ public class FormDef implements Serializable {
 		}
 
 		//add calculations for questions that still exist.
-		calculations = new Vector();
+		calculations = new Vector<Calculation>();
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
 			QuestionDef questionDef = getQuestion(formDef.getQuestion(calculation.getQuestionId()).getBinding());

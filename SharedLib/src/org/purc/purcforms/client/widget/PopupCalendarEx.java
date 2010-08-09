@@ -5,6 +5,8 @@ import java.util.Date;
 import org.purc.purcforms.client.util.FormUtil;
 import org.zenika.widget.client.util.DateUtil;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -157,30 +159,38 @@ public class PopupCalendarEx extends PopupPanel {
 
 		Label previousYear = new Label("«");
 		FormUtil.setElementFontSizeAndFamily(previousYear.getElement());
-		previousYear.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		
+		previousYear.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
 				leave = false;
 				PopupCalendarEx.this.changeMonth(-12);
+				
 			}
 		});
 		monthLine.setWidget(0, 0, previousYear);
 		Label previousMonth = new Label("‹");
 		FormUtil.setElementFontSizeAndFamily(previousMonth.getElement());
-		previousMonth.addClickListener(new ClickListener() {
-			public void onClick(com.google.gwt.user.client.ui.Widget sender) {
+		previousMonth.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
 				leave = false;
 				PopupCalendarEx.this.changeMonth(-1);
-			};
-		});
+				
+			};});
+		
 		monthLine.setWidget(0, 1, previousMonth);
 		monthCellFormatter.setWidth(0, 2, "60%");
 		currentMonth = new Label();
 		FormUtil.setElementFontSizeAndFamily(currentMonth.getElement());
-		currentMonth.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		currentMonth.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
 				leave = false;
-			}
-		});
+				
+			}});
 		monthLine.setWidget(0, 2, currentMonth);
 		Label nextMonth = new Label("›");
 		FormUtil.setElementFontSizeAndFamily(nextMonth.getElement());

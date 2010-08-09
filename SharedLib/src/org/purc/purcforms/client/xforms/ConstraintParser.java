@@ -92,7 +92,7 @@ public class ConstraintParser {
 	 */
 	private static Vector<Condition> getValidationRuleConditions(FormDef formDef, String constraint, int questionId){
 		Vector<Condition> conditions = new Vector<Condition>();
-		Vector list = XpathParser.getConditionsOperatorTokens(constraint);
+		Vector<?> list = XpathParser.getConditionsOperatorTokens(constraint);
 
 		Condition condition  = new Condition();
 		for(int i=0; i<list.size(); i++){

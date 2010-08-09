@@ -105,8 +105,8 @@ public class RelevantParser {
 	 * @param action the skip rule target action.
 	 * @return the conditions list.
 	 */
-	private static Vector getSkipRuleConditions(FormDef formDef, String relevant, int action){
-		Vector conditions = new Vector();
+	private static Vector<Condition> getSkipRuleConditions(FormDef formDef, String relevant, int action){
+		Vector<Condition> conditions = new Vector<Condition>();
 
 		Vector list = XpathParser.getConditionsOperatorTokens(relevant);
 

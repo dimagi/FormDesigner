@@ -16,6 +16,11 @@ import com.google.gwt.xml.client.Element;
  */
 public class RepeatQtnsDef implements Serializable {
 	
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -7562277749723371726L;
+
 	/** A list of questions (QuestionDef objects) on a repeat questions row. */
 	private Vector questions;
 	

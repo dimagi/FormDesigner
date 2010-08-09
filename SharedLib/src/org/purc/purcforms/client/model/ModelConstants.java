@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class ModelConstants implements Serializable{
 	
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -830180521446083067L;
+
 	/** Empty strig representation */
 	public static final String EMPTY_STRING = "";
 	

@@ -17,6 +17,11 @@ import org.purc.purcforms.client.xforms.XformConstants;
  */
 public class SkipRule implements Serializable{
 	
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = 2066689828085983853L;
+
 	/** The numeric identifier of a rule. This is assigned in code and hence
 	 * is not known by the user.
 	 */
@@ -25,7 +30,7 @@ public class SkipRule implements Serializable{
 	/** A list of conditions (Condition object) to be tested for a rule. 
 	 * E.g. If sex is Male. If age is greatern than 4. etc
 	 */
-	private Vector conditions;
+	private Vector<Condition> conditions;
 	
 	/** The action taken when conditions are true.
 	 * Example of actions are Disable, Hide, Show, etc
@@ -33,7 +38,7 @@ public class SkipRule implements Serializable{
 	private int action = ModelConstants.ACTION_NONE;
 	
 	/** A list of question identifiers (int) acted upon when conditions for the rule are true. */
-	private Vector actionTargets;
+	private Vector<Integer> actionTargets;
 		
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
 	private int conditionsOperator = ModelConstants.CONDITIONS_OPERATOR_NULL;
@@ -60,7 +65,7 @@ public class SkipRule implements Serializable{
 	 * @param action
 	 * @param actionTargets
 	 */
-	public SkipRule(int ruleId, Vector conditions, int action, Vector actionTargets /*, String name*/) {
+	public SkipRule(int ruleId, Vector<Condition> conditions, int action, Vector<Integer> actionTargets /*, String name*/) {
 		setId(ruleId);
 		setConditions(conditions);
 		setAction(action);
@@ -75,19 +80,19 @@ public class SkipRule implements Serializable{
 		this.action = action;
 	}
 
-	public Vector getActionTargets() {
+	public Vector<Integer> getActionTargets() {
 		return actionTargets;
 	}
 
-	public void setActionTargets(Vector actionTargets) {
+	public void setActionTargets(Vector<Integer> actionTargets) {
 		this.actionTargets = actionTargets;
 	}
 
-	public Vector getConditions() {
+	public Vector<Condition> getConditions() {
 		return conditions;
 	}
 
-	public void setConditions(Vector conditions) {
+	public void setConditions(Vector<Condition> conditions) {
 		this.conditions = conditions;
 	}
 
@@ -133,7 +138,7 @@ public class SkipRule implements Serializable{
 	
 	public void addActionTarget(int id){
 		if(actionTargets == null)
-			actionTargets = new Vector();
+			actionTargets = new Vector<Integer>();
 		actionTargets.add(new Integer(id));
 	}
 	

@@ -22,13 +22,18 @@ import com.google.gwt.xml.client.Element;
  */
 public class ValidationRule implements Serializable{
 	
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = -6676725675026200474L;
+
 	/** The unique identifier of the question referenced by this validation rule. */
 	private int questionId = ModelConstants.NULL_ID;
 	
 	/** A list of conditions (Condition object) to be tested for a rule. 
 	 * E.g. age is greater than 4. etc
 	 */
-	private Vector conditions;
+	private Vector<Condition> conditions;
 	
 	
 	/** The validation rule name. */
@@ -66,17 +71,17 @@ public class ValidationRule implements Serializable{
 	 * @param action
 	 * @param actionTargets
 	 */
-	public ValidationRule(int questionId, Vector conditions , String errorMessage) {
+	public ValidationRule(int questionId, Vector<Condition> conditions , String errorMessage) {
 		setQuestionId(questionId);
 		setConditions(conditions);
 		setErrorMessage(errorMessage);
 	}
 
-	public Vector getConditions() {
+	public Vector<Condition> getConditions() {
 		return conditions;
 	}
 
-	public void setConditions(Vector conditions) {
+	public void setConditions(Vector<Condition> conditions) {
 		this.conditions = conditions;
 	}
 
@@ -126,7 +131,7 @@ public class ValidationRule implements Serializable{
 
 	public void addCondition(Condition condition){
 		if(conditions == null)
-			conditions = new Vector();
+			conditions = new Vector<Condition>();
 		conditions.add(condition);
 	}
 	
@@ -196,8 +201,8 @@ public class ValidationRule implements Serializable{
 		return false;
 	}
 	
-	private void copyConditions(Vector conditions){
-		this.conditions = new Vector();
+	private void copyConditions(Vector<Condition> conditions){
+		this.conditions = new Vector<Condition>();
 		for(int i=0; i<conditions.size(); i++)
 			this.conditions.addElement(new Condition((Condition)conditions.elementAt(i)));
 	}

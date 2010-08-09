@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public class SortField implements Serializable {
 
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = 8275519805118414698L;
+	
 	public static final int SORT_NULL = 0;
 	public static final int SORT_ASCENDING = 1;
 	public static final int SORT_DESCENDING = 2;

@@ -14,6 +14,11 @@ import com.google.gwt.xml.client.Element;
  */
 public class Predicate  implements Serializable 
 {
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -3214921069193850338L;
+	
 	Vector resultSet;
 
 	Predicate(Vector inNodeSet, String predicateExpr)

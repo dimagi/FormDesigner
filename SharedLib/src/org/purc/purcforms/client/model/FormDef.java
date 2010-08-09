@@ -28,7 +28,13 @@ import com.google.gwt.xml.client.XMLParser;
  * @author Daniel Kayiwa
  *
  */
-public class FormDef implements Serializable{
+public class FormDef implements Serializable {
+
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -8541151681376336376L;
+	
 
 	/** A collection of page definitions (PageDef objects). */
 	private Vector pages;

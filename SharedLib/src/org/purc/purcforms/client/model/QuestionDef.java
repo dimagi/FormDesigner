@@ -32,6 +32,11 @@ import com.google.gwt.xml.client.NodeList;
  */
 public class QuestionDef implements Serializable{
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -7618662640178320577L;
+
 	/** The value to save for boolean questions when one selects the yes option. */
 	public static final String TRUE_VALUE = "true";
 

@@ -24,6 +24,11 @@ import com.google.gwt.xml.client.Node;
  */
 public class PageDef implements Serializable{
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 4007522678698953121L;
+
 	/** A list of questions on a page. */
 	private Vector<QuestionDef> questions;
 

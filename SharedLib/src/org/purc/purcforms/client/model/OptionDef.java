@@ -20,6 +20,11 @@ import com.google.gwt.xml.client.Element;
  */
 public class OptionDef implements Serializable {
 	
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 6011207697283921703L;
+
 	/** The numeric unique identifier of an answer option. */
 	private int id = ModelConstants.NULL_ID;
 	

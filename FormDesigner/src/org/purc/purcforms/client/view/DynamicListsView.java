@@ -155,20 +155,24 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 */
 	public void setQuestionDef(QuestionDef questionDef){
 		
-		if(questionDef == null || questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
-			setEnabled(false);
-			lblValuesFor.setText(LocaleText.get("valuesFor"));
-			return;
-		}
+
+		optionList = null;
+		dynamicOptionDef = null;
+		parentQuestionDef = null;
 
 		setEnabled(true);
 		clear();
 
-		parentQuestionDef = null;
-		optionList = null;
-		dynamicOptionDef = null;
+		if(questionDef == null){			
+			lblValuesFor.setText(LocaleText.get("valuesFor"));
+		}
 		
 		if(questionDef != null){
+			if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+				setEnabled(false);
+				return;
+			}
+			
 			if(questionDef.getParent() instanceof PageDef)
 				formDef = ((PageDef)questionDef.getParent()).getParent();
 			else

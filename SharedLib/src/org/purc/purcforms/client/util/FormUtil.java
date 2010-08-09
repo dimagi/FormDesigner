@@ -206,7 +206,7 @@ public class FormUtil {
 		DOM.setStyleAttribute(h, "top", top);
 	}
 
-	public static void loadOptions(List options, MultiWordSuggestOracle oracle){
+	public static void loadOptions(List<OptionDef> options, MultiWordSuggestOracle oracle){
 		if(options == null)
 			return;
 

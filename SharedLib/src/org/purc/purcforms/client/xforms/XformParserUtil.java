@@ -246,8 +246,8 @@ public class XformParserUtil {
 	 * 					  definition objects.
 	 * @param questionDef the question definition object to replace that in the constraint map.
 	 */
-	public static void replaceConstraintQtn(HashMap constraints, QuestionDef questionDef){
-		Iterator keys = constraints.keySet().iterator();
+	public static void replaceConstraintQtn(HashMap<QuestionDef, String> constraints, QuestionDef questionDef){
+		Iterator<QuestionDef> keys = constraints.keySet().iterator();
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
 			if(qtn.getBinding().equals(questionDef.getBinding())){

@@ -94,7 +94,7 @@ public class UiElementBuilder {
 			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
 				qtn.setFirstOptionNode(ItemsetBuilder.createDynamicOptionDefNode(doc,uiNode));
 			else{
-				List options = qtn.getOptions();
+				List<OptionDef> options = qtn.getOptions();
 				if(options != null && options.size() > 0){
 					for(int j=0; j<options.size(); j++){
 						OptionDef optionDef = (OptionDef)options.get(j);
@@ -163,7 +163,7 @@ public class UiElementBuilder {
 		addHelpTextNode(qtnDef,doc,inputNode,null);
 
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			List options = qtnDef.getOptions();
+			List<OptionDef> options = qtnDef.getOptions();
 			if(options != null && options.size() > 0){
 				for(int index=0; index<options.size(); index++){
 					OptionDef optionDef = (OptionDef)options.get(index);

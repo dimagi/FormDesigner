@@ -186,7 +186,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			MenuBar menuBar = new MenuBar(true);
 
 			int size = 0, maxSize = 0; String text;
-			List options = questionDef.getOptions();
+			List<OptionDef> options = questionDef.getOptions();
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 				DynamicOptionDef dynamicOptionDef = formDef.getChildDynamicOptions(questionDef.getId());
@@ -237,7 +237,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 			int size = 0, maxSize = 0; String text;
 			VerticalPanel panel = new VerticalPanel();
-			List options = questionDef.getOptions();
+			List<OptionDef> options = questionDef.getOptions();
 
 			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 				DynamicOptionDef dynamicOptionDef = formDef.getChildDynamicOptions(questionDef.getId());

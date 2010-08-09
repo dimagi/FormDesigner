@@ -38,10 +38,10 @@ public class ConstraintParser {
 	 * @param constraints the map of constraint attribute values keyed by their 
 	 * 					  question definition objects.
 	 */
-	public static void addValidationRules(FormDef formDef, HashMap constraints){
-		Vector rules = new Vector();
+	public static void addValidationRules(FormDef formDef, HashMap<QuestionDef, ?> constraints){
+		Vector<ValidationRule> rules = new Vector<ValidationRule>();
 
-		Iterator keys = constraints.keySet().iterator();
+		Iterator<QuestionDef> keys = constraints.keySet().iterator();
 		//int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();

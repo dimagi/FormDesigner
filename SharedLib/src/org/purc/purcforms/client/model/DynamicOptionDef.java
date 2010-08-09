@@ -308,7 +308,7 @@ public class DynamicOptionDef  implements Serializable{
 	 * @return the option.
 	 */
 	private OptionDef getOptionWithText(List<OptionDef> options, String text){
-		List list = (List)options;
+		List<OptionDef> list = (List<OptionDef>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getText().equals(text))
@@ -325,7 +325,7 @@ public class DynamicOptionDef  implements Serializable{
 	 * @return the option.
 	 */
 	private OptionDef getOptionWithValue(List<OptionDef> options, String value){
-		List list = (List)options;
+		List<OptionDef> list = (List<OptionDef>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getVariableName().equals(value))
@@ -361,7 +361,7 @@ public class DynamicOptionDef  implements Serializable{
 	 * @return the option.
 	 */
 	private OptionDef getOptionWithId(List<OptionDef> options, int id){
-		List list = (List)options;
+		List<OptionDef> list = (List<OptionDef>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getId() == id)

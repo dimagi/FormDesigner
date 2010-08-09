@@ -756,7 +756,10 @@ public class XformParser {
 	 * @param nodeContext the current node context.
 	 * @return the question we are currently parsing.
 	 */
-	private static QuestionDef parseUiElement(FormDef formDef, Element child, HashMap id2VarNameMap,QuestionDef questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns, NodeContext nodeContext){
+	private static QuestionDef parseUiElement(FormDef formDef, Element child, HashMap<String, String> id2VarNameMap,QuestionDef questionDef,
+			HashMap<QuestionDef, String> relevants, Vector<QuestionDef> repeatQtns, HashMap<String, QuestionDef> rptKidMap, int currentPageNo, QuestionDef parentQtn, 
+			HashMap<QuestionDef, String> constraints, List<QuestionDef> orphanDynOptionQns, NodeContext nodeContext){
+		
 		String ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
 		String bind = child.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
 		if(ref == null && bind == null)
@@ -785,7 +788,7 @@ public class XformParser {
 			if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX)){
 				//qtn.setDataType((tagname.equals(NODE_NAME_SELECT1)||tagname.equals(NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
 				qtn.setDataType((XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
-				qtn.setOptions(new Vector());
+				qtn.setOptions(new Vector<OptionDef>());
 			}//TODO first addition for repeats
 			//else if((tagname.equals(NODE_NAME_REPEAT)||tagname.equals(NODE_NAME_REPEAT_MINUS_PREFIX)) && !label.equals("")){
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX) && !nodeContext.getLabel().equals("")){

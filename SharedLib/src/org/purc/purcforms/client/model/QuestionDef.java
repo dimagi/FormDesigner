@@ -367,10 +367,10 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
-	public List getOptions() {
+	public List<OptionDef> getOptions() {
 		//if(!(type == QTN_TYPE_LIST_EXCLUSIVE || type == QTN_TYPE_LIST_MULTIPLE))
 		//	throw new Exception("Invalid Operation");
-		return (List)options;
+		return (List<OptionDef>)options;
 	}
 
 	public void setOptions(Object options) {
@@ -545,8 +545,8 @@ public class QuestionDef implements Serializable{
 
 	public void addOption(OptionDef optionDef, boolean setAsParent){
 		if(options == null || !(options instanceof ArrayList))
-			options = new ArrayList();
-		((List)options).add(optionDef);
+			options = new ArrayList<Object>();
+		((List<OptionDef>)options).add(optionDef);
 
 		if(setAsParent)
 			optionDef.setParent(this);
@@ -571,20 +571,20 @@ public class QuestionDef implements Serializable{
 		return getText();
 	}
 
-	private void copyQuestionOptions(List options){
+	private void copyQuestionOptions(List<?> options){
 		if(options == null)
 			return;
 
-		this.options = new ArrayList();
+		this.options = new ArrayList<Object>();
 		for(int i=0; i<options.size(); i++)
-			((List)this.options).add(new OptionDef((OptionDef)options.get(i),this));
+			((List<OptionDef>)this.options).add(new OptionDef((OptionDef)options.get(i),this));
 	}
 
 	public void removeOption(OptionDef optionDef){
 		if(options instanceof List){ //Could be a RepeatQtnsDef
-			((List)options).remove(optionDef);
+			((List<?>)options).remove(optionDef);
 
-			if(((List)options).size() == 0)
+			if(((List<?>)options).size() == 0)
 				firstOptionNode = null;
 		}
 
@@ -597,7 +597,7 @@ public class QuestionDef implements Serializable{
 				getDataType()==QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			return;
 
-		List optns = (List)options;
+		List<OptionDef> optns = (List<OptionDef>)options;
 		int index = optns.indexOf(optionDef);
 
 		optns.remove(optionDef);
@@ -607,7 +607,7 @@ public class QuestionDef implements Serializable{
 		if(controlNode != null && optionDef.getControlNode() != null && currentOptionDef.getControlNode() != null)
 			controlNode.removeChild(optionDef.getControlNode());
 
-		List list = new ArrayList();
+		List<OptionDef> list = new ArrayList<OptionDef>();
 		//Remove all from index before selected all the way downwards
 		while(optns.size() >= index){
 			currentOptionDef = (OptionDef)optns.get(index-1);
@@ -631,7 +631,7 @@ public class QuestionDef implements Serializable{
 				getDataType()==QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			return;
 
-		List optns = (List)options;
+		List<OptionDef> optns = (List<OptionDef>)options;
 		int index = optns.indexOf(optionDef);	
 
 		optns.remove(optionDef);
@@ -640,7 +640,7 @@ public class QuestionDef implements Serializable{
 			controlNode.removeChild(optionDef.getControlNode());
 
 		OptionDef currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
+		List<OptionDef> list = new ArrayList<OptionDef>();
 
 		//Remove all otions below selected index
 		while(optns.size() > 0 && optns.size() > index){
@@ -673,7 +673,7 @@ public class QuestionDef implements Serializable{
 		}
 	}
 
-	private OptionDef getNextSavedOption(List options, int index){
+	private OptionDef getNextSavedOption(List<OptionDef> options, int index){
 		for(int i=index; i<options.size(); i++){
 			OptionDef optionDef = (OptionDef)options.get(i);
 			if(optionDef.getControlNode() != null)
@@ -758,8 +758,8 @@ public class QuestionDef implements Serializable{
 				getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) && options != null){
 
 			boolean allOptionsNew = areAllOptionsNew();
-			List newOptns = new ArrayList();
-			List optns = (List)options;
+			List<OptionDef> newOptns = new ArrayList<OptionDef>();
+			List<?> optns = (List<?>)options;
 			for(int i=0; i<optns.size(); i++){
 				OptionDef optionDef = (OptionDef)optns.get(i);
 
@@ -822,7 +822,7 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			return false;
 
-		List optns = (List)options;
+		List<?> optns = (List<?>)options;
 		for(int i=0; i<optns.size(); i++){
 			OptionDef optionDef = (OptionDef)optns.get(i);
 			if(optionDef.getControlNode() != null)
@@ -831,7 +831,7 @@ public class QuestionDef implements Serializable{
 		return true;
 	}
 
-	private OptionDef getRefOption(List options, List newOptions, int index){
+	private OptionDef getRefOption(List<?> options, List<OptionDef> newOptions, int index){
 		OptionDef optionDef;
 		int i = index + 1;
 		while(i < options.size()){
@@ -926,9 +926,9 @@ public class QuestionDef implements Serializable{
 				return;
 			}
 			XPathExpression xpls = new XPathExpression(elem, xpath);
-			List result = xpls.getResult();
+			List<?> result = xpls.getResult();
 
-			for (Iterator e = result.iterator(); e.hasNext();) {
+			for (Iterator<?> e = result.iterator(); e.hasNext();) {
 				Object obj = e.next();
 				if (obj instanceof Element){
 					if(pos > 0) //Check if we are to set attribute value.
@@ -1122,7 +1122,7 @@ public class QuestionDef implements Serializable{
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 				dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			if(options != null){
-				List optns = (List)options;
+				List<?> optns = (List<?>)options;
 				for(int i=0; i<optns.size(); i++){
 					OptionDef optionDef = (OptionDef)optns.get(i);
 					updateOptionNodeChildren(optionDef);
@@ -1176,7 +1176,7 @@ public class QuestionDef implements Serializable{
 		if(options == null || text == null)
 			return null;
 
-		List list = (List)options;
+		List<?> list = (List<?>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getText().equals(text))
@@ -1195,7 +1195,7 @@ public class QuestionDef implements Serializable{
 		if(options == null)
 			return null;
 
-		List list = (List)options;
+		List<?> list = (List<?>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getId() == id)
@@ -1214,7 +1214,7 @@ public class QuestionDef implements Serializable{
 		if(options == null || value == null)
 			return null;
 
-		List list = (List)options;
+		List<?> list = (List<?>)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
 			if(optionDef.getVariableName().equals(value))
@@ -1276,7 +1276,7 @@ public class QuestionDef implements Serializable{
 	}
 
 	private void refreshOptions(QuestionDef questionDef){
-		List options2 = questionDef.getOptions();
+		List<?> options2 = questionDef.getOptions();
 		if(options == null || options2 == null)
 			return;
 
@@ -1342,7 +1342,7 @@ public class QuestionDef implements Serializable{
 	public int getOptionCount(){
 		if(options == null)
 			return 0;
-		return ((List)options).size();
+		return ((List<?>)options).size();
 	}
 
 	/**
@@ -1352,7 +1352,7 @@ public class QuestionDef implements Serializable{
 	 * @return the option definition object.
 	 */
 	public OptionDef getOptionAt(int index){
-		return (OptionDef)((List)options).get(index);
+		return (OptionDef)((List<?>)options).get(index);
 	}
 
 	/**
@@ -1360,7 +1360,7 @@ public class QuestionDef implements Serializable{
 	 */
 	public void clearOptions(){
 		if(options != null)
-			((List)options).clear();
+			((List<?>)options).clear();
 	}
 
 	public void moveOptionNodesUp(OptionDef optionDef, OptionDef refOptionDef){
@@ -1398,7 +1398,7 @@ public class QuestionDef implements Serializable{
 
 		String xpath = /*"/"+formDef.getVariableName()+"/"+*/dataNode.getNodeName();
 		XPathExpression xpls = new XPathExpression(parentDataNode, xpath);
-		Vector result = xpls.getResult();
+		Vector<?> result = xpls.getResult();
 		if(result == null || result.size() == 0)
 			return;
 
@@ -1460,7 +1460,7 @@ public class QuestionDef implements Serializable{
 
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			if(options != null){
-				List optionsList = (List)options;
+				List<?> optionsList = (List<?>)options;
 				for(int index = 0; index < optionsList.size(); index++)
 					((OptionDef)optionsList.get(index)).buildLanguageNodes(xpath, doc, parentLangNode);
 			}

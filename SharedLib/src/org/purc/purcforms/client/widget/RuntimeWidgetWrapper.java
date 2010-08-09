@@ -388,7 +388,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC
 				|| type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof ListBox){
-			List options  = questionDef.getOptions();
+			List<OptionDef> options  = questionDef.getOptions();
 			int defaultValueIndex = 0;
 			ListBox listBox = (ListBox)widget;
 			listBox.clear(); //Could be called more than once.
@@ -530,7 +530,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 		if((type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC
 				|| type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 				&& widget instanceof ListBox){
-			List options  = questionDef.getOptions();
+			List<OptionDef> options  = questionDef.getOptions();
 			int defaultValueIndex = 0;
 			ListBox listBox = (ListBox)widget;
 

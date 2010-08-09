@@ -38,10 +38,10 @@ public class DefaultValueUtil {
 	 * @param formDef the form definition object.
 	 * @param id2VarNameMap a map between questions ids and their binding or variableName.
 	 */
-	public static void setDefaultValues(Element dataNode,FormDef formDef,HashMap id2VarNameMap){
+	public static void setDefaultValues(Element dataNode,FormDef formDef,HashMap<String, ?> id2VarNameMap){
 		boolean valueSet = false;
 		String id, val;
-		Iterator keys = id2VarNameMap.keySet().iterator();
+		Iterator<String> keys = id2VarNameMap.keySet().iterator();
 		while(keys.hasNext()){
 			id = (String)keys.next();
 			String variableName = (String)id2VarNameMap.get(id);

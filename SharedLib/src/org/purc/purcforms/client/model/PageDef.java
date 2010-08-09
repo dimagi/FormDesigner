@@ -25,7 +25,7 @@ import com.google.gwt.xml.client.Node;
 public class PageDef implements Serializable{
 
 	/** A list of questions on a page. */
-	private Vector questions;
+	private Vector<QuestionDef> questions;
 
 	/** The page number. */
 	private int pageNo = ModelConstants.NULL_ID;
@@ -87,7 +87,7 @@ public class PageDef implements Serializable{
 	 * @param questions a list of questions in the page.
 	 * @param parent the form to which the page belongs.
 	 */
-	public PageDef(String name, int pageNo,Vector questions,FormDef parent) {
+	public PageDef(String name, int pageNo,Vector<QuestionDef> questions,FormDef parent) {
 		this(parent);
 		setName(name);
 		setPageNo(pageNo);
@@ -110,7 +110,7 @@ public class PageDef implements Serializable{
 		this.name = name;
 	}
 
-	public Vector getQuestions() {
+	public Vector<QuestionDef> getQuestions() {
 		return questions;
 	}
 
@@ -150,7 +150,7 @@ public class PageDef implements Serializable{
 		this.groupNode = groupNode;
 	}
 
-	public void setQuestions(Vector questions) {
+	public void setQuestions(Vector<QuestionDef> questions) {
 		this.questions = questions;
 	}
 
@@ -187,7 +187,7 @@ public class PageDef implements Serializable{
 	 */
 	public void addQuestion(QuestionDef qtn){
 		if(questions == null)
-			questions = new Vector();
+			questions = new Vector<QuestionDef>();
 		questions.addElement(qtn);
 		qtn.setParent(this);
 	}
@@ -289,9 +289,9 @@ public class PageDef implements Serializable{
 	 * 
 	 * @param questions the list of questions to copy.
 	 */
-	private void copyQuestions(Vector questions){
+	private void copyQuestions(Vector<QuestionDef> questions){
 		if(questions != null){
-			this.questions = new Vector();
+			this.questions = new Vector<QuestionDef>();
 			for(int i=0; i<questions.size(); i++)
 				this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),this));
 		}
@@ -372,7 +372,7 @@ public class PageDef implements Serializable{
 	 * @param questions the list of questions.
 	 * @param questionDef the question to move.
 	 */
-	public static void moveQuestionUp(Vector questions, QuestionDef questionDef){
+	public static void moveQuestionUp(Vector<QuestionDef> questions, QuestionDef questionDef){
 		int index = questions.indexOf(questionDef);
 
 		//Not relying on group node because some forms have no groups
@@ -398,7 +398,7 @@ public class PageDef implements Serializable{
 		if(questionDef.getBindNode() != null && questionDef.getBindNode().getParentNode() != null && currentQuestionDef.getBindNode() != null)
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());
 
-		List list = new ArrayList();
+		List<QuestionDef> list = new ArrayList<QuestionDef>();
 		while(questions.size() >= index){
 			currentQuestionDef = (QuestionDef)questions.elementAt(index-1);
 			list.add(currentQuestionDef);
@@ -447,7 +447,7 @@ public class PageDef implements Serializable{
 	 * @param questions the list of questions.
 	 * @param questionDef the question to move.
 	 */
-	public static void moveQuestionDown(Vector questions, QuestionDef questionDef){
+	public static void moveQuestionDown(Vector<QuestionDef> questions, QuestionDef questionDef){
 		int index = questions.indexOf(questionDef);	
 
 		//Not relying on group node because some forms have no groups
@@ -472,7 +472,7 @@ public class PageDef implements Serializable{
 			questionDef.getBindNode().getParentNode().removeChild(questionDef.getBindNode());*/
 
 		QuestionDef currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
+		List<QuestionDef> list = new ArrayList<QuestionDef>();
 
 		while(questions.size() > 0 && questions.size() > index){
 			currentItem = (QuestionDef)questions.elementAt(index);
@@ -566,7 +566,7 @@ public class PageDef implements Serializable{
 	 * @param index the index to start from in the questions list.
 	 * @return the question.
 	 */
-	private static QuestionDef getNextSavedQuestion(List questions, int index){
+	private static QuestionDef getNextSavedQuestion(List<QuestionDef> questions, int index){
 		int size = questions.size();
 		for(int i=index; i<size; i++){
 			QuestionDef questionDef = (QuestionDef)questions.get(i);
@@ -613,7 +613,7 @@ public class PageDef implements Serializable{
 		if(groupNode != null)
 			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
 
-		Vector newQuestions = new Vector();
+		Vector<QuestionDef> newQuestions = new Vector<QuestionDef>();
 		if(questions != null){
 			for(int i=0; i<questions.size(); i++){
 				QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
@@ -655,7 +655,7 @@ public class PageDef implements Serializable{
 	 * @param index the position to start from.
 	 * @return the question.
 	 */
-	private QuestionDef getRefQuestion(Vector questions, Vector newQuestions, int index){
+	private QuestionDef getRefQuestion(Vector<QuestionDef> questions, Vector<QuestionDef> newQuestions, int index){
 		QuestionDef questionDef;
 		int i = index + 1;
 		while(i < questions.size()){

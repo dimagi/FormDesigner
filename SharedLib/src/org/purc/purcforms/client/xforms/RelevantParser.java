@@ -35,12 +35,12 @@ public class RelevantParser {
 	 * @param relevants the map of relevant attribute values keyed by their 
 	 * 					  question definition objects.
 	 */
-	public static void addSkipRules(FormDef formDef, HashMap relevants){
-		Vector rules = new Vector();
+	public static void addSkipRules(FormDef formDef, HashMap<QuestionDef, String> relevants){
+		Vector<SkipRule> rules = new Vector<SkipRule>();
 
 		HashMap<String,SkipRule> skipRulesMap = new HashMap<String,SkipRule>();
 
-		Iterator keys = relevants.keySet().iterator();
+		Iterator<QuestionDef> keys = relevants.keySet().iterator();
 		int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();

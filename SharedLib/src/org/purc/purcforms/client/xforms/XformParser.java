@@ -193,11 +193,11 @@ public class XformParser {
 		FormDef formDef = new FormDef();
 		formDef.setId(1);
 		formDef.setDoc(doc);
-		HashMap id2VarNameMap = new HashMap();
-		HashMap relevants = new HashMap();
-		HashMap constraints = new HashMap();
-		Vector repeats = new Vector();
-		HashMap rptKidMap = new HashMap();
+		HashMap<String, String> id2VarNameMap = new HashMap<String, String>();
+		HashMap<QuestionDef, String> relevants = new HashMap<QuestionDef, String>();
+		HashMap<QuestionDef, String> constraints = new HashMap<QuestionDef, String>();
+		Vector<QuestionDef> repeats = new Vector<QuestionDef>();
+		HashMap<String, QuestionDef> rptKidMap = new HashMap<String, QuestionDef>();
 		List<QuestionDef> orphanDynOptionQns = new ArrayList<QuestionDef>();
 
 		currentQuestionId = 1;

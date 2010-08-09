@@ -47,7 +47,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class ValueWidget extends Composite implements ItemSelectionListener, CloseHandler{
+public class ValueWidget extends Composite implements ItemSelectionListener, CloseHandler<PopupPanel>{
 
 	private static final String EMPTY_VALUE = "_____";
 	private static final String BETWEEN_WIDGET_SEPARATOR = "   "+ LocaleText.get("and") + "   ";

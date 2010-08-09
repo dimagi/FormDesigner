@@ -48,7 +48,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class ValueWidget extends Composite implements ItemSelectionListener, CloseHandler{
+public class ValueWidget extends Composite implements ItemSelectionListener, CloseHandler<PopupPanel>{
 
 	private static final String EMPTY_VALUE = "_____";
 	private static final String BETWEEN_WIDGET_SEPARATOR = "   "+ LocaleText.get("and") + "   ";
@@ -507,7 +507,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 	}
 
-	public void onClose(CloseEvent event){
+	public void onClose(CloseEvent<PopupPanel> event){
 		String value = "";
 		VerticalPanel panel = (VerticalPanel)popup.getWidget();
 		int count = panel.getWidgetCount();

@@ -225,8 +225,8 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			groupHyperlink.setCondionsOperator(validationRule.getConditionsOperator());
 			txtErrorMessage.setText(validationRule.getErrorMessage());
 			verticalPanel.remove(addConditionLink);
-			Vector conditions = validationRule.getConditions();
-			Vector lostConditions = new Vector();
+			Vector<Condition> conditions = validationRule.getConditions();
+			Vector<Condition> lostConditions = new Vector<Condition>();
 			for(int i=0; i<conditions.size(); i++){
 				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,false,questionDef);
 				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))

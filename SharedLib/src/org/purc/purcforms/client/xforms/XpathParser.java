@@ -52,7 +52,7 @@ public class XpathParser {
 	 * @param list the list of xpath conditions.
 	 * @return the position or index from which the next condition search should begin.
 	 */
-	private static int extractConditionsOperatorTokens(String expression,int startPos, Vector list){
+	private static int extractConditionsOperatorTokens(String expression,int startPos, Vector<String> list){
 		int pos,pos2,opSize = XformConstants.CONDITIONS_OPERATOR_TEXT_AND.length();
 
 		pos = expression.toLowerCase().indexOf(XformConstants.CONDITIONS_OPERATOR_TEXT_AND,startPos);

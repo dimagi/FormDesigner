@@ -316,8 +316,8 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			groupHyperlink.setCondionsOperator(skipRule.getConditionsOperator());
 			setAction(skipRule.getAction());
 			verticalPanel.remove(addConditionLink);
-			Vector conditions = skipRule.getConditions();
-			Vector lostConditions = new Vector();
+			Vector<Condition> conditions = skipRule.getConditions();
+			Vector<Condition> lostConditions = new Vector<Condition>();
 			for(int i=0; i<conditions.size(); i++){
 				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
 				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))

@@ -353,8 +353,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		saveAsMode = false;
 		
 		final FormDef obj = leftPanel.getSelectedForm();
-		if(obj != null && obj.isReadOnly()){
+		if(obj == null){
 			Window.alert(LocaleText.get("selectSaveItem"));
+			return;
+		}
+		
+		if(obj.isReadOnly()){
 			return;
 			//TODO I think we should allow saving of form text and layout
 		}

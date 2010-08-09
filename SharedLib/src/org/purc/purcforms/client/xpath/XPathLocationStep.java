@@ -101,7 +101,7 @@ public class XPathLocationStep implements Serializable{
 	 * is needed here: to the result vector I only add Element-s or String. This
 	 * is not correct. I should only add Node-s
 	 */
-	public Vector getResult(Vector<Object> contextNodeSet, Vector<Node> resultNodeSet) {
+	public Vector getResult(Vector contextNodeSet, Vector resultNodeSet) {
 		Vector outputNodeSet = resultNodeSet;
 		int nodeCount = contextNodeSet.size();
 		int i = 0;
@@ -210,7 +210,7 @@ public class XPathLocationStep implements Serializable{
 				}
 			} else if (nodeTest.equals(".")) {
 				// simply copy the input vector
-				for (Enumeration enumeration = contextNodeSet.elements(); enumeration
+				for (Enumeration<?> enumeration = contextNodeSet.elements(); enumeration
 				.hasMoreElements();)
 					outputNodeSet.addElement(enumeration.nextElement());
 			}

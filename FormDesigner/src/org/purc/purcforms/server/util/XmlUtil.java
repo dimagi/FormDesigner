@@ -173,9 +173,9 @@ public class XmlUtil {
 		}
 		
 		XPathExpression xpls = new XPathExpression(dataNode, xpath);
-		Vector result = xpls.getResult();
+		Vector<?> result = xpls.getResult();
 
-		for (Enumeration e = result.elements(); e.hasMoreElements();) {
+		for (Enumeration<?> e = result.elements(); e.hasMoreElements();) {
 			Object obj = e.nextElement();
 			if (obj instanceof Element){
 				if(pos > 0) //Check if we are to set attribute value.

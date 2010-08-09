@@ -10,6 +10,11 @@ import com.google.gwt.xml.client.Node;
  */
 public class XPathExpression implements Serializable
 {
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = 2204726896219201531L;
+	
 	String[] locationStepStringsArray;
 	XPathLocationStep[] locationStepArray;
 	Vector resultNodeSet;

@@ -12,7 +12,12 @@ import com.google.gwt.xml.client.Node;
  */
 //TODO: descendant axis doesn't work
 
-public class XPathLocationStep implements Serializable{
+public class XPathLocationStep implements Serializable {
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = 2652817312061137794L;
+	
 	String axis = null;
 	String nodeTest = null;
 	String nodePrefix = null;

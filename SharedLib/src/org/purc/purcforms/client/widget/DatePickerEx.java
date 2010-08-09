@@ -4,12 +4,13 @@ import java.util.Date;
 
 import org.zenika.widget.client.util.DateUtil;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ChangeListenerCollection;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -34,7 +35,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author James Heggs (jheggs@axonbirch.com)
  * 
  */
-public class DatePickerEx extends TextBoxWidget implements ClickListener, ChangeListener, KeyboardListener {
+public class DatePickerEx extends TextBoxWidget implements ClickHandler, ChangeListener, KeyboardListener {
 	private PopupCalendarEx popup;
 	private Date selectedDate;
 	// the oldest date that can be selected
@@ -59,7 +60,7 @@ public class DatePickerEx extends TextBoxWidget implements ClickListener, Change
 		super();
 		setText("");	
 		sinkEvents(Event.ONCHANGE | Event.ONKEYPRESS);
-		addClickListener(this);
+		addClickHandler(this);
 		addChangeListener(this);
 		addKeyboardListener(this);
 	}
@@ -303,5 +304,10 @@ public class DatePickerEx extends TextBoxWidget implements ClickListener, Change
 		if (changeListeners != null) {
 			changeListeners.remove(listener);
 		}
+	}
+
+	@Override
+	public void onClick(ClickEvent event) {
+		showPopup();		
 	}
 }

@@ -16,6 +16,11 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  */
 public class Condition implements Serializable{
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** The unique identifier of the question referenced by this condition. */
 	private int questionId = ModelConstants.NULL_ID;
 

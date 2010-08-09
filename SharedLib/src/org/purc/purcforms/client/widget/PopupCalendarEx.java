@@ -194,21 +194,26 @@ public class PopupCalendarEx extends PopupPanel {
 		monthLine.setWidget(0, 2, currentMonth);
 		Label nextMonth = new Label("›");
 		FormUtil.setElementFontSizeAndFamily(nextMonth.getElement());
-		nextMonth.addClickListener(new ClickListener() {
-			public void onClick(com.google.gwt.user.client.ui.Widget sender) {
+		nextMonth.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
 				leave = false;
 				PopupCalendarEx.this.changeMonth(1);
-			};
-		});
+				
+			};});
+		
 		monthLine.setWidget(0, 3, nextMonth);
 		Label nextYear = new Label("»");
 		FormUtil.setElementFontSizeAndFamily(nextYear.getElement());
-		nextYear.addClickListener(new ClickListener() {
-			public void onClick(Widget sender) {
+		nextYear.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
 				leave = false;
 				PopupCalendarEx.this.changeMonth(12);
-			}
-		});
+				
+			}});
 		monthLine.setWidget(0, 4, nextYear);
 		panel.add(monthLine);
 	}

@@ -25,6 +25,11 @@ import com.google.gwt.xml.client.Element;
  */
 public class DynamicOptionDef  implements Serializable{
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 5333695709493711857L;
+
 	/** The question whose values are determined by or dependent on the answer of another 
 	 * (parent) question. In other wards this question must be of type Single Select Dynamic.
 	 *  This is the question we refer to as the child in this relationship.

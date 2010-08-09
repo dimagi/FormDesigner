@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public class DisplayField implements Serializable {
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private String text;
 	private String AggFunc;

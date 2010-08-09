@@ -14,6 +14,11 @@ import com.google.gwt.xml.client.Element;
  */
 public class Calculation implements Serializable{
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** The unique identifier of the question whose value to calculate. */
 	private int questionId = ModelConstants.NULL_ID;
 	

@@ -12,6 +12,11 @@ import java.util.List;
 public class FilterConditionGroup extends FilterConditionRow {
 
 	
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -6438596688053344858L;
+
 	/** Operator for combining more than one condition. (And, Or) only these two for now. */
 	private String conditionsOperator;
 	

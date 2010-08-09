@@ -9,6 +9,11 @@ package org.purc.purcforms.client.model;
  */
 public class FilterCondition extends FilterConditionRow {
 
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = -2688667012773543641L;
+	
 	private String fieldName;
 	private String firstValue;
 	private String secondValue;

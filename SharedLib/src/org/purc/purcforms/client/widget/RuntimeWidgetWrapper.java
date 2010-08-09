@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -232,8 +233,8 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	private void setupTextBoxEventListeners(){
 		if(widget.getParent() instanceof SuggestBox){
 			if(widget.getParent() instanceof SuggestBox){
-				((SuggestBox)widget.getParent()).addSelectionHandler(new SelectionHandler(){
-					public void onSelection(SelectionEvent event){
+				((SuggestBox)widget.getParent()).addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+					public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 						onSuggestBoxChange();
 					}
 				});

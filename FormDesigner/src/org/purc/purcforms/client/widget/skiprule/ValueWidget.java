@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -677,8 +678,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		sgstField = new SuggestBox(oracle,txtValue1);
 		//selectFirstQuestion();
 
-		sgstField.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				stopEdit(true);
 			}
 		});

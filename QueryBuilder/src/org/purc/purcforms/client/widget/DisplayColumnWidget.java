@@ -58,13 +58,7 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 		horizontalPanel.add(actionHyperlink);
 
-		if(true)
-			horizontalPanel.add(fieldWidget);
-		else{
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-				lbLabel.setText(LocaleText.get("count"));
-			horizontalPanel.add(lbLabel);
-		}
+		horizontalPanel.add(fieldWidget);
 
 		horizontalPanel.add(new Label("as")); //LocaleText.get("???");
 		horizontalPanel.add(fieldNameWidget);

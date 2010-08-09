@@ -12,15 +12,20 @@ import org.w3c.dom.Node;
  */
 public class XPathExpression implements Serializable
 {
+	/**
+	 * Generated serialization ID.
+	 */
+	private static final long serialVersionUID = -714551476356688611L;
+	
 	String[] locationStepStringsArray;
 	XPathLocationStep[] locationStepArray;
-	Vector resultNodeSet;
+	Vector<Object> resultNodeSet;
 	String expression = null;
 	Node startNode = null;
 		
 	public XPathExpression (Node startNode, String expression)
 	{
-		Vector tmp = new Vector();
+		Vector<String> tmp = new Vector<String>();
 
 		this.startNode = startNode;
 		this.expression = expression;
@@ -76,16 +81,16 @@ public class XPathExpression implements Serializable
 		//the result node set should contain nodes
 		//with regard to the starting poing of the xpath expression
 		//for now just pass the root of the document
-		resultNodeSet = new Vector();
+		resultNodeSet = new Vector<Object>();
 		resultNodeSet.addElement(startNode);
 		
 		boolean attributeFound = false;
-		Vector prevResults = null;
+		Vector<Object> prevResults = null;
 		
 		//start processing every location
 		for(int j=0; j < locationStepStringsArray.length; j++)
 		{
-			prevResults = new Vector();
+			prevResults = new Vector<Object>();
 			
 			String locationStepString = locationStepStringsArray[j];
 			if(locationStepString.indexOf('@') >= 0){
@@ -98,11 +103,11 @@ public class XPathExpression implements Serializable
 			
 			XPathLocationStep locationStep = new XPathLocationStep(locationStepString);
 
-			resultNodeSet = locationStep.getResult(resultNodeSet,prevResults);
+			resultNodeSet = locationStep.getResult(resultNodeSet, prevResults);
 		}
 	}
 	
-	private void addAttributeSteps(String step,Vector list){
+	private void addAttributeSteps(String step, Vector<String> list){
 		int posBeg = 0;
 		int posEnd = step.indexOf(" and ");
 		if(posEnd > 0){
@@ -127,8 +132,7 @@ public class XPathExpression implements Serializable
 		}
 	}
 	
-	public Vector getResult()
-	{
+	public Vector<Object> getResult(){
 		return resultNodeSet;
 	}
 }

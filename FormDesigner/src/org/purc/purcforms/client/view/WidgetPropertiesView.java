@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -415,14 +416,14 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			}
 		});
 
-		sgstBinding.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstBinding.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				updateBinding();
 			}
 		});
 
-		sgstChildBinding.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstChildBinding.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				updateChildBinding();
 			}
 		});

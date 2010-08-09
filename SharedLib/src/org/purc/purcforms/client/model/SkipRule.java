@@ -160,7 +160,7 @@ public class SkipRule implements Serializable{
 	
 	public void addCondition(Condition condition){
 		if(conditions == null)
-			conditions = new Vector();
+			conditions = new Vector<Condition>();
 		conditions.add(condition);
 	}
 	
@@ -246,7 +246,7 @@ public class SkipRule implements Serializable{
 	
 	/** Executes the action of a rule for its conditition's true or false value. */
 	public void ExecuteAction(FormDef formDef,boolean conditionTrue){
-		Vector qtns = this.getActionTargets();
+		Vector<Integer> qtns = this.getActionTargets();
 		for(int i=0; i<qtns.size(); i++)
 			ExecuteAction(formDef.getQuestion(Integer.parseInt(qtns.elementAt(i).toString())),conditionTrue);
 	}
@@ -270,14 +270,14 @@ public class SkipRule implements Serializable{
 			qtn.setRequired(conditionTrue);
 	}
 	
-	private void copyConditions(Vector conditions){
-		this.conditions = new Vector();
+	private void copyConditions(Vector<?> conditions){
+		this.conditions = new Vector<Condition>();
 		for(int i=0; i<conditions.size(); i++)
 			this.conditions.addElement(new Condition((Condition)conditions.elementAt(i)));
 	}
 	
-	private void copyActionTargets(Vector actionTargets){
-		this.actionTargets = new Vector();
+	private void copyActionTargets(Vector<Integer> actionTargets){
+		this.actionTargets = new Vector<Integer>();
 		for(int i=0; i<actionTargets.size(); i++)
 			this.actionTargets.addElement(new Integer(((Integer)actionTargets.elementAt(i)).intValue()));
 	}

@@ -80,11 +80,11 @@ public class XPathExpression implements Serializable
 		//the result node set should contain nodes
 		//with regard to the starting poing of the xpath expression
 		//for now just pass the root of the document
-		resultNodeSet = new Vector<Object>();
+		resultNodeSet = new Vector<Node>();
 		resultNodeSet.addElement(startNode);
 		
 		boolean attributeFound = false;
-		Vector prevResults = null;
+		Vector<Object> prevResults = null;
 		
 		//start processing every location
 		for(int j=0; j < locationStepStringsArray.length; j++)

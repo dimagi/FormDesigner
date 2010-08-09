@@ -147,8 +147,8 @@ public class FieldWidget extends Composite{
 		sgstField = new SuggestBox(oracle,txtField);
 		selectFirstQuestion();
 
-		sgstField.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				stopSelection();
 			}
 		});

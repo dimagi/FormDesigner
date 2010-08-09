@@ -465,7 +465,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						((TextBox)widget).setText(optionDef.getText());
 				}
 				else{
-					if(defaultValue.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(defaultValue))
+					if(defaultValue.trim().length() > 0 && questionDef.isDate() && QuestionDef.isDateFunction(defaultValue))
 						defaultValue = questionDef.getDefaultValueDisplay();
 					else if(defaultValue.trim().length() > 0 && questionDef.isDate())
 						defaultValue = fromSubmit2DisplayDate(defaultValue);
@@ -573,7 +573,7 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 						((TextBox)widget).setText(optionDef.getText());
 				}
 				else{
-					if(answer.trim().length() > 0 && questionDef.isDate() && questionDef.isDateFunction(answer))
+					if(answer.trim().length() > 0 && questionDef.isDate() && QuestionDef.isDateFunction(answer))
 						answer = questionDef.getDefaultValueDisplay();
 					else if(answer.trim().length() > 0 && questionDef.isDate())
 						answer = fromSubmit2DisplayDate(answer);

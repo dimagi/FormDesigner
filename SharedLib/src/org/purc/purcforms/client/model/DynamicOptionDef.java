@@ -179,7 +179,7 @@ public class DynamicOptionDef  implements Serializable{
 	 * @param nextOptionId the option id value.
 	 */
 	public void setNextOptionId(int nextOptionId) {
-		this.nextOptionId = nextOptionId;
+		DynamicOptionDef.nextOptionId = nextOptionId;
 	}
 
 	/**

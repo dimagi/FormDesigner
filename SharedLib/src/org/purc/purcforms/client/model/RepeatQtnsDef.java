@@ -22,7 +22,7 @@ public class RepeatQtnsDef implements Serializable {
 	private static final long serialVersionUID = -7562277749723371726L;
 
 	/** A list of questions (QuestionDef objects) on a repeat questions row. */
-	private Vector questions;
+	private Vector<QuestionDef> questions;
 	
 	/** Reference to the parent question. */
 	private QuestionDef qtnDef;
@@ -49,7 +49,7 @@ public class RepeatQtnsDef implements Serializable {
 		setQtnDef(qtnDef);
 	}
 	
-	public RepeatQtnsDef(QuestionDef qtnDef,Vector questions) {
+	public RepeatQtnsDef(QuestionDef qtnDef, Vector<QuestionDef> questions) {
 		this(qtnDef);
 		setQuestions(questions);
 	}
@@ -62,7 +62,7 @@ public class RepeatQtnsDef implements Serializable {
 		this.qtnDef = qtnDef;
 	}
 
-	public Vector getQuestions() {
+	public Vector<QuestionDef> getQuestions() {
 		return questions;
 	}
 	
@@ -74,7 +74,7 @@ public class RepeatQtnsDef implements Serializable {
 
 	public void addQuestion(QuestionDef qtn){
 		if(questions == null)
-			questions = new Vector();
+			questions = new Vector<QuestionDef>();
 		
 		//qtn.setId((byte)(questions.size()+1)); id should be set somewhere else
 		questions.addElement(qtn);
@@ -94,7 +94,7 @@ public class RepeatQtnsDef implements Serializable {
 		questions.removeElement(qtnDef);
 	}
 	
-	public void setQuestions(Vector questions) {
+	public void setQuestions(Vector<QuestionDef> questions) {
 		this.questions = questions;
 	}
 	
@@ -186,7 +186,7 @@ public class RepeatQtnsDef implements Serializable {
 	}
 	
 	public void refresh(RepeatQtnsDef pepeatQtnsDef){
-		Vector questions2 = pepeatQtnsDef.getQuestions();
+		Vector<QuestionDef> questions2 = pepeatQtnsDef.getQuestions();
 		if(questions == null || questions2 == null)
 			return;
 		

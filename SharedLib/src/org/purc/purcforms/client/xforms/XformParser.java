@@ -521,7 +521,7 @@ public class XformParser {
 	 * @param repeats the list of repeat questions
 	 * @return true if so, else false.
 	 */
-	private static boolean addRepeatChildQtn(QuestionDef qtn, Vector repeats,Element child,HashMap map,HashMap rptKidmap){
+	private static boolean addRepeatChildQtn(QuestionDef qtn, Vector<QuestionDef> repeats, Element child, HashMap<String, String> map, HashMap<String, QuestionDef> rptKidmap){
 		for(int i=0; i<repeats.size(); i++){
 			QuestionDef rptQtn = (QuestionDef)repeats.get(i);
 			if(qtn.getBinding().contains(rptQtn.getBinding())){
@@ -552,7 +552,7 @@ public class XformParser {
 	 * 					  question definition objects.
 	 * @return the variable name of the new question.
 	 */
-	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind,HashMap constraints){
+	private static String addNonBindControl(FormDef formDef,Element child, HashMap<QuestionDef, String> relevants, String ref, String bind, HashMap<QuestionDef, String> constraints){
 		QuestionDef qtn = new QuestionDef(null);
 		qtn.setId(getNextQuestionId());
 
@@ -644,7 +644,9 @@ public class XformParser {
 	 * @param orphanDynOptionQns a list of dynamic option definition questions who parent
 	 *                           questions have not yet been parsed.
 	 */
-	private static void parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,QuestionDef questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo,QuestionDef parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
+	private static void parseGroupElement(FormDef formDef, Element child, HashMap<String, String> id2VarNameMap,QuestionDef questionDef,
+			HashMap<QuestionDef, String> relevants, Vector<QuestionDef> repeatQtns, HashMap<String, QuestionDef> rptKidMap, int currentPageNo,
+			QuestionDef parentQtn, HashMap<QuestionDef, String> constraints, List<QuestionDef> orphanDynOptionQns){
 		
 		int pageNo = XformParser.currentPageNo;
 		

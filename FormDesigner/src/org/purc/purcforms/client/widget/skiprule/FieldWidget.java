@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -112,8 +113,8 @@ public class FieldWidget extends Composite{
 			}
 		});*/
 
-		sgstField.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstField.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				stopSelection();
 			}
 		});

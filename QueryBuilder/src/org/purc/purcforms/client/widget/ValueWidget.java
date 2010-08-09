@@ -413,7 +413,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 
 	}
 
-	public void onClose(CloseEvent event){
+	public void onClose(CloseEvent<PopupPanel> event){
 		String value = "";
 		VerticalPanel panel = (VerticalPanel)popup.getWidget();
 		int count = panel.getWidgetCount();

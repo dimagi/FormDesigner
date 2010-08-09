@@ -302,10 +302,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	public void setQuestionDef(QuestionDef questionDef){
 		clearConditions();
 
-		formDef = questionDef.getParentFormDef();
-
-		if(questionDef != null)
+		if(questionDef != null){
+			formDef = questionDef.getParentFormDef();
 			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());
+		}
 		else
 			lblAction.setText(LocaleText.get("forQuestion"));
 

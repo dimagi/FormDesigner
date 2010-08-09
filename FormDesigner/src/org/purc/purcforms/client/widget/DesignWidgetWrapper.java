@@ -222,15 +222,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 			if(type != Event.ONMOUSEMOVE) //This lets firefox display tooltips on widget design surface
 				DOM.eventCancelBubble(event, true); //Without this, rubber band will draw
 		}
-
-		//This is to prevent ListBox drop down from expanding on mouse down.
-		if(widget instanceof ListBox && type == Event.ONMOUSEDOWN){
-			final com.google.gwt.user.client.Element senderElem = this.getElement();
-			int y = DOM.eventGetClientY(event)
-			- DOM.getAbsoluteTop(senderElem)
-			+ DOM.getElementPropertyInt(senderElem, "scrollTop")
-			+ Window.getScrollTop();
-		}
 	}
 
 	public void startEditMode(TextBox txtEdit){

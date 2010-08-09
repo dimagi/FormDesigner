@@ -746,7 +746,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		tabs.clear();
 		pageWidgets.clear();
 
-		Vector<?> pages = formDef.getPages();
+		Vector<PageDef> pages = formDef.getPages();
 		if(pages != null){
 			for(int i=0; i<pages.size(); i++){
 				PageDef pageDef = (PageDef)pages.get(i);
@@ -985,7 +985,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		x = 35 + selectedPanel.getAbsoluteLeft();
 		y += 25;
 
-		Vector<?> questions = questionDef.getRepeatQtnsDef().getQuestions();
+		Vector<QuestionDef> questions = questionDef.getRepeatQtnsDef().getQuestions();
 		if(questions == null)
 			return addNewTextBox(select); //TODO Bug here
 		for(int index = 0; index < questions.size(); index++){

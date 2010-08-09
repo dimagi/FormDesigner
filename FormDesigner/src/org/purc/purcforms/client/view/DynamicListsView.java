@@ -303,7 +303,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 				return;
 			}
 
-			List options = parentQuestionDef.getOptions();
+			List<OptionDef> options = parentQuestionDef.getOptions();
 			for(int i=0; i<options.size(); i++){
 				OptionDef optionDef = (OptionDef)options.get(i);
 				lbOption.addItem(optionDef.getText(),String.valueOf(optionDef.getId()));	
@@ -724,7 +724,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * @param optionDef the option to move.
 	 */
 	public void moveOptionUp(OptionDef optionDef){
-		List optns = optionList;
+		List<OptionDef> optns = optionList;
 		int index = optns.indexOf(optionDef);
 
 		optns.remove(optionDef);
@@ -763,7 +763,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * @param optionDef the option to move.
 	 */
 	public void moveOptionDown(OptionDef optionDef){
-		List optns = optionList;
+		List<OptionDef> optns = optionList;
 		int index = optns.indexOf(optionDef);	
 
 		optns.remove(optionDef);
@@ -816,7 +816,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * @param index the index to start from in the option list.
 	 * @return the option.
 	 */
-	private OptionDef getNextSavedOption(List options, int index){
+	private OptionDef getNextSavedOption(List<OptionDef> options, int index){
 		for(int i=index; i<options.size(); i++){
 			OptionDef optionDef = (OptionDef)options.get(i);
 			if(optionDef.getControlNode() != null)

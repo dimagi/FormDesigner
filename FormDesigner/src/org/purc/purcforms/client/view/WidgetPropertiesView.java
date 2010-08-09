@@ -1109,9 +1109,9 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			txtChildBinding.setEnabled(true);
 		}
 		else{
-			List options  = questionDef.getOptions();
+			List<OptionDef> options  = questionDef.getOptions();
 			if(options != null){
-				FormUtil.loadOptions(options,oracle);
+				FormUtil.loadOptions(options, oracle);
 				txtChildBinding.setEnabled(true);
 			}
 		}

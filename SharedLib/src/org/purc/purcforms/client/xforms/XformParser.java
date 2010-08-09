@@ -524,7 +524,6 @@ public class XformParser {
 		for(int i=0; i<repeats.size(); i++){
 			QuestionDef rptQtn = (QuestionDef)repeats.get(i);
 			if(qtn.getBinding().contains(rptQtn.getBinding())){
-				RepeatQtnsDef rptQtnsDef = rptQtn.getRepeatQtnsDef();
 				//rptQtnsDef.addQuestion(qtn); //TODO This is temporarily removed to solve the wiered problem list bug
 				String varname = qtn.getBinding().substring(rptQtn.getBinding().length()+1);
 				//varname = varname.substring(0, varname.indexOf('/'));

@@ -180,8 +180,6 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 
 		dragControllers.add(tabs.getWidgetCount()-1,selectedDragController);
 		panel.setHeight(sHeight);
-		String s = getHeight();
-
 		//This is needed for IE
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {

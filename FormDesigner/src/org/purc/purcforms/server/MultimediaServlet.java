@@ -152,7 +152,7 @@ public class MultimediaServlet extends HttpServlet {
 	
 	private Object getSessionData(HttpServletRequest request,String formId, String key){
 		HttpSession session = request.getSession();
-		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(getFormKey(formId));
+		HashMap<String,Object> dataMap = (HashMap<String, Object>)session.getAttribute(getFormKey(formId));
 		
 		if(dataMap != null)
 			return dataMap.get(key);

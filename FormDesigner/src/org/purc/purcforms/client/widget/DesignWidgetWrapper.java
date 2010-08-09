@@ -226,10 +226,6 @@ public class DesignWidgetWrapper extends WidgetEx implements QuestionChangeListe
 		//This is to prevent ListBox drop down from expanding on mouse down.
 		if(widget instanceof ListBox && type == Event.ONMOUSEDOWN){
 			final com.google.gwt.user.client.Element senderElem = this.getElement();
-			int x = DOM.eventGetClientX(event)
-			- DOM.getAbsoluteLeft(senderElem)
-			+ DOM.getElementPropertyInt(senderElem, "scrollLeft")
-			+ Window.getScrollLeft();
 			int y = DOM.eventGetClientY(event)
 			- DOM.getAbsoluteTop(senderElem)
 			+ DOM.getElementPropertyInt(senderElem, "scrollTop")

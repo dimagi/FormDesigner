@@ -165,17 +165,16 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 		parentQuestionDef = null;
 		optionList = null;
 		dynamicOptionDef = null;
+		
+		if(questionDef != null){
+			if(questionDef.getParent() instanceof PageDef)
+				formDef = ((PageDef)questionDef.getParent()).getParent();
+			else
+				formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
 
-		if(questionDef.getParent() instanceof PageDef)
-			formDef = ((PageDef)questionDef.getParent()).getParent();
-		else
-			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();
-
-		if(questionDef != null)
 			lblValuesFor.setText(LocaleText.get("valuesFor") + questionDef.getDisplayText() + "  "+LocaleText.get("whenAnswerFor"));
-		else
-			lblValuesFor.setText(LocaleText.get("valuesFor"));
-
+		}
+		
 		this.questionDef = questionDef;
 		fieldWidget.setDynamicQuestionDef(questionDef);
 		fieldWidget.setFormDef(formDef);

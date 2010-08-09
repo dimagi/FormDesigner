@@ -752,7 +752,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		tabs.clear();
 		pageWidgets.clear();
 
-		Vector pages = formDef.getPages();
+		Vector<?> pages = formDef.getPages();
 		if(pages != null){
 			for(int i=0; i<pages.size(); i++){
 				PageDef pageDef = (PageDef)pages.get(i);
@@ -946,7 +946,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 	 * @return this is always null.
 	 */
 	protected DesignWidgetWrapper addNewCheckBoxSet(QuestionDef questionDef, boolean vertically, int tabIndex){
-		List options = questionDef.getOptions();
+		List<OptionDef> options = questionDef.getOptions();
 		for(int i=0; i < options.size(); i++){
 			/*if(i != 0){
 				y += 40;
@@ -991,7 +991,7 @@ public class DesignSurfaceView extends DesignGroupView implements SelectionHandl
 		x = 35 + selectedPanel.getAbsoluteLeft();
 		y += 25;
 
-		Vector questions = questionDef.getRepeatQtnsDef().getQuestions();
+		Vector<?> questions = questionDef.getRepeatQtnsDef().getQuestions();
 		if(questions == null)
 			return addNewTextBox(select); //TODO Bug here
 		for(int index = 0; index < questions.size(); index++){

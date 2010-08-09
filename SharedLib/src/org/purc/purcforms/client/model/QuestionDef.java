@@ -636,7 +636,7 @@ public class QuestionDef implements Serializable{
 				getDataType()==QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			return;
 
-		List<OptionDef> optns = (List<OptionDef>)options;
+		List<OptionDef> optns = (List<OptionDef>) options;
 		int index = optns.indexOf(optionDef);	
 
 		optns.remove(optionDef);

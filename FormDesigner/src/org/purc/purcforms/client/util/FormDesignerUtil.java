@@ -101,7 +101,9 @@ public class FormDesignerUtil {
 	 * @param sameTypesOnly set to true if you want to load only questions of the same type
 	 * 						as the referenced question.
 	 */
-	public static void loadQuestions(boolean includeBinding, Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly, QuestionDef parentQuestionDef){
+	public static void loadQuestions(boolean includeBinding, Vector<QuestionDef> questions, QuestionDef refQuestion, 
+			MultiWordSuggestOracle oracle, boolean dynamicOptions, boolean sameTypesOnly, QuestionDef parentQuestionDef){
+		
 		if(questions == null)
 			return;
 
@@ -142,7 +144,9 @@ public class FormDesignerUtil {
 	 * @param oracle the MultiWordSuggestOracle.
 	 * @param dynamicOptions set to true if we are loading for dynamic options.
 	 */
-	public static void loadQuestions(boolean includeBinding, Vector questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
+	public static void loadQuestions(boolean includeBinding, Vector<QuestionDef> questions, QuestionDef refQuestion, 
+			MultiWordSuggestOracle oracle, boolean dynamicOptions){
+		
 		loadQuestions(includeBinding, questions, refQuestion, oracle, dynamicOptions,true, null);
 	}
 

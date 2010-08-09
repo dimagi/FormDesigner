@@ -81,7 +81,7 @@ public class LanguageUtil {
 			if(xpath == null || value == null)
 				continue;
 			
-			Vector result = new XPathExpression(doc, xpath).getResult();
+			Vector<?> result = new XPathExpression(doc, xpath).getResult();
 			if(result != null){
 				
 				//TODO We need to uniquely identify nodes and so each xpath should

@@ -81,7 +81,7 @@ public class ItextBuilder {
 			valueNode.appendChild(doc.createTextNode(value));*/
 
 			String xpath = ((Element)node).getAttribute("xpath");
-			Vector result = new XPathExpression(formDef.getDoc(), xpath).getResult();
+			Vector<?> result = new XPathExpression(formDef.getDoc(), xpath).getResult();
 			if(result != null && result.size() > 0){
 				Element targetNode = (Element)result.get(0);
 

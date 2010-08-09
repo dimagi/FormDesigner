@@ -3,7 +3,6 @@ package org.purc.purcforms.client.widget;
 import org.purc.purcforms.client.controller.AggregateFunctionListener;
 import org.purc.purcforms.client.controller.DisplayColumnActionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
 import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.SortField;
@@ -34,8 +33,6 @@ public class DisplayColumnWidget extends Composite implements ItemSelectionListe
 	private QuestionDef questionDef;
 	private int sortOrder;
 	private DisplayColumnActionListener view;
-	//private Condition condition;
-	private Label lbLabel = new Label(LocaleText.get("value"));
 	private Label lbOf = new Label("of"); //LocaleText.get("???")
 	
 	public DisplayColumnWidget(FormDef formDef,QuestionDef questionDef,DisplayColumnActionListener view){

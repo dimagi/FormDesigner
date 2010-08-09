@@ -44,14 +44,13 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 	private Date youngestDate;
 	private DateTimeFormat dateFormatter;
 
-	private ChangeListenerCollection changeListeners;
 	{
 		DateTimeFormat dateTimeFormat = FormUtil.getDateDisplayFormat();
 		if(dateTimeFormat == null)
 			dateTimeFormat = DateUtil.getDateTimeFormat();
 		dateFormatter = dateTimeFormat;
 		popup = new PopupCalendarEx(this);
-		changeListeners = new ChangeListenerCollection();
+		new ChangeListenerCollection();
 	}
 
 	/**

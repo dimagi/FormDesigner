@@ -154,8 +154,10 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	 * @param questionDef the question.
 	 */
 	public void setQuestionDef(QuestionDef questionDef){
+		
 		if(questionDef == null || questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 			setEnabled(false);
+			lblValuesFor.setText(LocaleText.get("valuesFor"));
 			return;
 		}
 

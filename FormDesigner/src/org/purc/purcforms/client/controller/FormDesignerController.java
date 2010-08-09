@@ -349,6 +349,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	private void saveTheForm() {
+		
 		final boolean localSaveAsMode = saveAsMode;
 		saveAsMode = false;
 		

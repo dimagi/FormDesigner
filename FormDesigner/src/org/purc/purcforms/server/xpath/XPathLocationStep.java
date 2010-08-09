@@ -14,6 +14,11 @@ import org.w3c.dom.Node;
 //TODO: descendant axis doesn't work
 
 public class XPathLocationStep implements Serializable{
+	/**
+	 * Generated serialization ID
+	 */
+	private static final long serialVersionUID = 5781114460771396899L;
+	
 	String axis = null;
 	String nodeTest = null;
 	String nodePrefix = null;
@@ -102,8 +107,8 @@ public class XPathLocationStep implements Serializable{
 	 * is needed here: to the result vector I only add Element-s or String. This
 	 * is not correct. I should only add Node-s
 	 */
-	public Vector getResult(Vector contextNodeSet, Vector resultNodeSet) {
-		Vector outputNodeSet = resultNodeSet;
+	public Vector<Object> getResult(Vector<Object> contextNodeSet, Vector<Object> resultNodeSet) {
+		Vector<Object> outputNodeSet = resultNodeSet;
 		int nodeCount = contextNodeSet.size();
 		int i = 0;
 
@@ -138,7 +143,7 @@ public class XPathLocationStep implements Serializable{
 							outputNodeSet.addElement(childNode.getChildNodes().item(0).getNodeValue());
 
 						if (axis.equals("descendant")) {
-							Vector descendants = null;
+							Vector<Node> descendants = null;
 							descendants = getMatchingDescendants(childNode);
 
 							for (int k = 0; k < descendants.size(); k++)
@@ -210,22 +215,21 @@ public class XPathLocationStep implements Serializable{
 				}
 			} else if (nodeTest.equals(".")) {
 				// simply copy the input vector
-				for (Enumeration enumeration = contextNodeSet.elements(); enumeration
+				for (Enumeration<Object> enumeration = contextNodeSet.elements(); enumeration
 				.hasMoreElements();)
 					outputNodeSet.addElement(enumeration.nextElement());
 			}
 		}
 
 		if (predicate != null) {
-			Predicate predicateEvaluator = new Predicate(outputNodeSet,
-					predicate);
+			Predicate predicateEvaluator = new Predicate(outputNodeSet,	predicate);
 			outputNodeSet = predicateEvaluator.getResult();
 		}
 		return outputNodeSet;
 	}
 
-	private Vector getMatchingDescendants(Node node) {
-		Vector matchingDescendants = new Vector();
+	private Vector<Node> getMatchingDescendants(Node node) {
+		Vector<Node> matchingDescendants = new Vector<Node>();
 		int childCount = node.getChildNodes().getLength();
 
 		for (int j = 0; j < childCount; j++) {
@@ -240,7 +244,7 @@ public class XPathLocationStep implements Serializable{
 
 				Node[] moreDescendants = null;
 
-				Vector tmp = getMatchingDescendants(childNode);
+				Vector<Node> tmp = getMatchingDescendants(childNode);
 
 				moreDescendants = new Node[tmp.size()];
 				tmp.copyInto(moreDescendants);

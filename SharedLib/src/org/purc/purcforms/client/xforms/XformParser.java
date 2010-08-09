@@ -476,9 +476,9 @@ public class XformParser {
 			xpath = xpath.substring(node.getNodeName().length() + 2);
 		
 		XPathExpression xpls = new XPathExpression(node, xpath);
-		Vector result = xpls.getResult();
+		Vector<?> result = xpls.getResult();
 
-		for (Enumeration e = result.elements(); e.hasMoreElements();) {
+		for (Enumeration<?> e = result.elements(); e.hasMoreElements();) {
 			Object obj = e.nextElement();
 			if (obj instanceof Element){
 				if(pos > 0) //Check if we are to set attribute value.

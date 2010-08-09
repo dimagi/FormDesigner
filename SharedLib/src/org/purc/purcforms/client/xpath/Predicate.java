@@ -91,7 +91,7 @@ public class Predicate  implements Serializable
 		//here we should start parsing the predicateExpr
 	}//constructor
 	
-	private void fillResultSet(Vector resultSet, String predicateExpr, Vector inNodeSet){
+	private void fillResultSet(Vector<Object> resultSet, String predicateExpr, Vector<Object> inNodeSet){
 		String operation = null;
 		int index = -1;
 
@@ -106,7 +106,7 @@ public class Predicate  implements Serializable
 
 			//Added by me on 11/05/2009 to cater for attributes without criteria values. eg [@name]
 			if(predicateExpr.indexOf("@") != -1){
-				for(Enumeration e = inNodeSet.elements(); e.hasMoreElements(); ) {
+				for(Enumeration<Object> e = inNodeSet.elements(); e.hasMoreElements(); ) {
 					Object obj = e.nextElement();
 
 					String val = ((Element)obj).getAttribute(predicateExpr.substring(1,predicateExpr.length()));
@@ -121,7 +121,7 @@ public class Predicate  implements Serializable
 		Member member1 = new Member(new String(predicateExpr.toCharArray(), 0, index));
 		Member member2 = new Member(new String(predicateExpr.toCharArray(), index+1, predicateExpr.length()-index-1));
 
-		for(Enumeration e = inNodeSet.elements(); e.hasMoreElements(); ) {
+		for(Enumeration<Object> e = inNodeSet.elements(); e.hasMoreElements(); ) {
 			Object obj = e.nextElement();
 
 			if(operation.equals("="))
@@ -133,6 +133,7 @@ public class Predicate  implements Serializable
 					else if(operation.equals("<"))
 						if(member1.eval(obj).compareTo(member2.eval(obj))>0)
 							continue;
+			
 			resultSet.addElement(obj);					
 		}		
 	}

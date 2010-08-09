@@ -110,8 +110,8 @@ public class XformBuilderUtil {
 	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element formNode){
 		//Some bindings may already be pointing to existing nodes. So just return that.
 		XPathExpression xpls = new XPathExpression(formDef.getDataNode(), variableName);
-		Vector result = xpls.getResult();
-		for (Enumeration e = result.elements(); e.hasMoreElements();) {
+		Vector<?> result = xpls.getResult();
+		for (Enumeration<?> e = result.elements(); e.hasMoreElements();) {
 			Object obj = e.nextElement();
 			if (obj instanceof Element)
 				return (Element) obj;

@@ -19,9 +19,9 @@ public class Predicate  implements Serializable
 	 */
 	private static final long serialVersionUID = -3214921069193850338L;
 	
-	Vector resultSet;
+	Vector<Object> resultSet;
 
-	Predicate(Vector inNodeSet, String predicateExpr)
+	Predicate(Vector<Object> inNodeSet, String predicateExpr)
 	{
 		int nodeIndex = -1;
 
@@ -29,7 +29,7 @@ public class Predicate  implements Serializable
 			resultSet = inNodeSet;
 			return;
 		} else //we need to parse predicateExpr
-			resultSet = new Vector();
+			resultSet = new Vector<Object>();
 		//check if this predicate is just a logical condition or a complete XPath query.
 		//for now we support only logical conditions
 		/*If it is a complete XPath expression
@@ -65,21 +65,21 @@ public class Predicate  implements Serializable
 				if(resultSet2.contains(obj))
 					resultSet.add(obj);
 			}*/
-			Vector[] resultSets = new Vector[tokens.length];
+			Vector<Object>[] resultSets = new Vector[tokens.length];
 			
 			for(int index = 0; index < tokens.length; index++){
-				resultSets[index] = new Vector();
+				resultSets[index] = new Vector<Object>();
 				fillResultSet(resultSets[index], tokens[index], inNodeSet);
 			}
 			
-			Vector resultSet1 = resultSets[0];
+			Vector<?> resultSet1 = resultSets[0];
 			for(int index = 0; index < resultSet1.size(); index++){
 				Object obj = resultSet1.get(index);
 				
 				boolean allFound = true;
 				
 				for(int i = 1; i < tokens.length; i++){
-					Vector curResultSet = resultSets[i];
+					Vector<?> curResultSet = resultSets[i];
 					if(!curResultSet.contains(obj)){
 						allFound = false;
 						break;
@@ -175,7 +175,7 @@ public class Predicate  implements Serializable
 		}
 	}
 
-	public Vector getResult()
+	public Vector<Object> getResult()
 	{
 		return resultSet;
 	}//getResult

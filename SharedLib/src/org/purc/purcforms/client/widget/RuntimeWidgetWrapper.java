@@ -71,8 +71,6 @@ public class RuntimeWidgetWrapper extends WidgetEx implements QuestionChangeList
 	/** The widget's validation rule. */
 	private ValidationRule validationRule;
 
-	private static int id = 0;
-
 	/**
 	 * Creates a copy of the widget.
 	 * 

@@ -44,9 +44,6 @@ public class LeftPanel extends Composite {
 	/** The GWT stack panel which serves as the main or root widget. */
 	private DecoratedStackPanel stackPanel = new DecoratedStackPanel();
 	
-	/** Listener to form item selection events. */
-	private IFormSelectionListener formSelectionListener;
-	
 	/** Widgets which displays the list of forms in a tree view. */
 	private FormsTreeView formsTreeView;
 	
@@ -63,8 +60,6 @@ public class LeftPanel extends Composite {
 	 * @param images a bundle that provides the images for this widget
 	 */
 	public LeftPanel(Images images, IFormSelectionListener formSelectionListener) {
-		this.formSelectionListener = formSelectionListener;
-
 		formsTreeView = new FormsTreeView(images,formSelectionListener);
 		widgetPropertiesView = new WidgetPropertiesView();
 		paletteView =  new PaletteView(images);

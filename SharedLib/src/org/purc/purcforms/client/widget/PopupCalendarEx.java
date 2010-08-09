@@ -343,7 +343,6 @@ public class PopupCalendarEx extends PopupPanel {
 	private Date getDaysGridOrigin(Date displayedMonth) {
 		int currentYear = displayedMonth.getYear();
 		int currentMonth = displayedMonth.getMonth();
-		CellFormatter cfJours = daysGrid.getCellFormatter();
 		Date monthFirstDay = new Date(currentYear, currentMonth, 1);
 		int indice = DateUtil.getWeekDayIndex(monthFirstDay);
 		Date origineTableau;

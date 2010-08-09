@@ -459,9 +459,8 @@ public class XformParser {
 		String xpath = qtn.getBinding();
 
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
-		int pos = xpath.lastIndexOf('@'); String attributeName = null;
+		int pos = xpath.lastIndexOf('@'); 
 		if(pos > 0){
-			attributeName = xpath.substring(pos+1,xpath.length());
 			xpath = xpath.substring(0,pos-1);
 		}
 

@@ -516,8 +516,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_FORE_COLOR, txtForeColor.getText());
 			}
 		});
-		sgstForeColor.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstForeColor.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				if(widget != null)
 					widget.setForeColor(txtForeColor.getText());
 				else
@@ -534,8 +534,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BACKGROUND_COLOR, txtBackgroundColor.getText());
 			}
 		});
-		sgstBackgroundColor.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstBackgroundColor.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				if(widget != null)			
 					widget.setBackgroundColor(txtBackgroundColor.getText());
 				else if(viewWidget != null)
@@ -554,8 +554,8 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 					widgetPropertyChangeListener.onWidgetPropertyChanged(WidgetPropertySetter.PROP_BORDER_COLOR, txtBorderColor.getText());
 			}
 		});
-		sgstBorderColor.addSelectionHandler(new SelectionHandler(){
-			public void onSelection(SelectionEvent event){
+		sgstBorderColor.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
 				if(widget != null)
 					widget.setBorderColor(txtBorderColor.getText());
 				else if(viewWidget != null && viewWidget instanceof DesignGroupWidget)

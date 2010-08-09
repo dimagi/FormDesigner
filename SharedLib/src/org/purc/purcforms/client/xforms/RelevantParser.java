@@ -86,7 +86,7 @@ public class RelevantParser {
 
 		//For now we only have one action target, much as the object model is
 		//flexible enough to support any number of them.
-		Vector actionTargets = new Vector();
+		Vector<Integer> actionTargets = new Vector<Integer>();
 		actionTargets.add(new Integer(questionId));
 		skipRule.setActionTargets(actionTargets);
 
@@ -108,7 +108,7 @@ public class RelevantParser {
 	private static Vector<Condition> getSkipRuleConditions(FormDef formDef, String relevant, int action){
 		Vector<Condition> conditions = new Vector<Condition>();
 
-		Vector list = XpathParser.getConditionsOperatorTokens(relevant);
+		Vector<?> list = XpathParser.getConditionsOperatorTokens(relevant);
 
 		Condition condition  = new Condition();
 		for(int i=0; i<list.size(); i++){

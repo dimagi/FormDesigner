@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -34,7 +35,7 @@ public class FieldWidget extends Composite{
 	private HorizontalPanel horizontalPanel;
 	private SuggestBox sgstField = new SuggestBox();
 	private TextBox txtField = new TextBox();
-	private Hyperlink fieldHyperlink;
+	private Anchor fieldAnchor;
 	private ItemSelectionListener itemSelectionListener;
 	private boolean forDynamicOptions = false;
 	private QuestionDef dynamicQuestionDef;
@@ -51,17 +52,17 @@ public class FieldWidget extends Composite{
 	}
 	
 	private void setupWidgets(){
-		fieldHyperlink = new Hyperlink("",""); //Field 1
+		fieldAnchor = new Anchor("",""); //Field 1
 		
 		horizontalPanel = new HorizontalPanel();
-		horizontalPanel.add(fieldHyperlink);
+		horizontalPanel.add(fieldAnchor);
 
-		fieldHyperlink.addClickHandler(new ClickHandler(){
+		fieldAnchor.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				itemSelectionListener.onStartItemSelection(this);
-				horizontalPanel.remove(fieldHyperlink);
+				horizontalPanel.remove(fieldAnchor);
 				horizontalPanel.add(sgstField);
-				sgstField.setText(fieldHyperlink.getText());
+				sgstField.setText(fieldAnchor.getText());
 				sgstField.setFocus(true);
 				txtField.selectAll();
 			}
@@ -89,15 +90,15 @@ public class FieldWidget extends Composite{
 	}
 	
 	public void stopSelection(){
-		if(horizontalPanel.getWidgetIndex(fieldHyperlink) != -1)
+		if(horizontalPanel.getWidgetIndex(fieldAnchor) != -1)
 			return;
 		
 		String val = sgstField.getText();
 		if(val.trim().length() == 0)
 			val = EMPTY_VALUE;
-		fieldHyperlink.setText(val);
+		fieldAnchor.setText(val);
 		horizontalPanel.remove(sgstField);
-		horizontalPanel.add(fieldHyperlink);
+		horizontalPanel.add(fieldAnchor);
 		QuestionDef qtn = formDef.getQuestionWithText(txtField.getText());
 		if(qtn != null)
 			itemSelectionListener.onItemSelected(this,qtn);
@@ -127,7 +128,7 @@ public class FieldWidget extends Composite{
 	}
 	
 	public void selectQuestion(QuestionDef questionDef){
-		fieldHyperlink.setText(questionDef.getText());
+		fieldAnchor.setText(questionDef.getText());
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}
 	
@@ -153,9 +154,9 @@ public class FieldWidget extends Composite{
 	
 	public void setQuestion(QuestionDef questionDef){
 		if(questionDef != null)
-			fieldHyperlink.setText(questionDef.getText());
+			fieldAnchor.setText(questionDef.getText());
 		else
-			fieldHyperlink.setText("");
+			fieldAnchor.setText("");
 	}
 	
 	public void setForDynamicOptions(boolean forDynamicOptions){

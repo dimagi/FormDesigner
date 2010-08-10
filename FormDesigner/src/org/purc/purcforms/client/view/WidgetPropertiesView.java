@@ -61,12 +61,6 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	/** The currently selected widget whose properties we are displaying. */
 	private DesignWidgetWrapper widget;
 
-	/** The previously selected widget whose properties we had displayed before the current. */
-	private DesignWidgetWrapper prevWidget;
-
-	/** The binding for the previous widget. */
-	private String prevBinding;
-
 	/** Widget for setting the text property. */
 	private TextBox txtText = new TextBox();
 
@@ -873,8 +867,7 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 	public void onWidgetSelected(Widget widget, boolean multipleSel) {
 
 		if(widget instanceof DesignWidgetWrapper){
-			prevWidget = this.widget;
-			prevBinding = sgstBinding.getText().trim();
+			sgstBinding.getText().trim();
 			this.widget = (DesignWidgetWrapper)widget;
 			viewWidget = null;
 			
@@ -883,7 +876,6 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 		}
 		else{
 			viewWidget = (DesignGroupView)widget;
-			prevWidget = this.widget;
 			this.widget = null;
 		}
 

@@ -62,7 +62,7 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 		setText("");	
 		sinkEvents(Event.ONCHANGE | Event.ONKEYPRESS);
 		addClickHandler(this);
-		addChangeListener(this);
+		addChangeHandler(this);
 		addKeyPressHandler(this);
 	}
 
@@ -240,7 +240,6 @@ public class DatePickerWidget extends DatePickerEx implements KeyPressHandler, C
 					popup.setDisplayedMonth(this.selectedDate);
 				popup.setPopupPosition(this.getAbsoluteLeft()+150, this.getAbsoluteTop());
 				popup.displayMonth();
-				doAfterShowPopup(popup);
 			}
 		}
 	}

@@ -109,8 +109,8 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		actionPanel.add(chkMakeRequired);
 		actionPanel.setSpacing(5);
 
-		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),"");
-		hyperlink.addClickHandler(new ClickHandler(){
+		Anchor click4OtherQuestionsAnchor = new Anchor(LocaleText.get("clickForOtherQuestions"),"");
+		click4OtherQuestionsAnchor.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				showOtherQuestions();
 			}
@@ -120,7 +120,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		horzPanel.setSpacing(10);
 		horzPanel.add(lblAction);
 		horzPanel.add(lblAnd);
-		horzPanel.add(hyperlink);
+		horzPanel.add(click4OtherQuestionsAnchor);
 
 		verticalPanel.add(horzPanel);
 		verticalPanel.add(actionPanel);

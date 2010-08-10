@@ -10,8 +10,8 @@ import org.purc.purcforms.client.model.FormDef;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.model.OptionDef;
 import org.purc.purcforms.client.model.QuestionDef;
-import org.purc.purcforms.client.util.QueryBuilderUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.util.QueryBuilderUtil;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -28,10 +28,10 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -62,7 +62,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private TextBox txtValue1 = new TextBox();
 	private TextBox txtValue2 = new TextBox();
 	private Label lblAnd = new Label(BETWEEN_WIDGET_SEPARATOR);
-	private Hyperlink valueHyperlink;
+	private Anchor valueHyperlink;
 	private PopupPanel popup;
 
 	private KeyPressHandler keyboardListener1;
@@ -104,7 +104,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueHyperlink = new Hyperlink(EMPTY_VALUE,"");
+		valueHyperlink = new Anchor(EMPTY_VALUE,"");
 		horizontalPanel.add(valueHyperlink);
 
 		valueHyperlink.addClickHandler(new ClickHandler(){

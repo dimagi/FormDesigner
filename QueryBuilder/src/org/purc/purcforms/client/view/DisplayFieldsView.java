@@ -17,9 +17,9 @@ import org.purc.purcforms.client.widget.SortColumnWidget;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,7 +43,7 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 	private HorizontalPanel horizontalPanel = new HorizontalPanel();
 	private VerticalPanel columnPanel = new VerticalPanel();
 	private VerticalPanel sortPanel = new VerticalPanel();
-	private Hyperlink addColumnLink = new Hyperlink("Click to add new column",""); //LocaleText.get("????")
+	private Anchor addColumnLink = new Anchor("Click to add new column",""); //LocaleText.get("????")
 
 	private FormDef formDef;
 	private boolean enabled = true;

@@ -44,7 +44,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 
 
 	private VerticalPanel verticalPanel = new VerticalPanel();
-	private AddConditionHyperlink addConditionLink = new AddConditionHyperlink(LocaleText.get("clickToAddNewCondition"),"",1);
+	private AddConditionHyperlink addConditionAnchor = new AddConditionHyperlink(LocaleText.get("clickToAddNewCondition"),"",1);
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"",1);
 	private ConditionActionHyperlink actionHyperlink;
 
@@ -61,7 +61,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 
-		actionHyperlink = new ConditionActionHyperlink("<>","",false,1,addConditionLink,this);
+		actionHyperlink = new ConditionActionHyperlink("<>","",false,1,addConditionAnchor,this);
 
 		horizontalPanel.add(actionHyperlink);
 		horizontalPanel.add(new Label("Choose records where")); //LocaleText.get("when")
@@ -69,7 +69,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
 		verticalPanel.add(horizontalPanel);
 
-		addConditionLink.addClickHandler(new ClickHandler(){
+		addConditionAnchor.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				addCondition((Widget)event.getSource());
 			}
@@ -83,7 +83,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 		ConditionWidget conditionWidget = null;
 		
 		if(formDef != null && enabled){
-			Widget widget = conditionWidget = new ConditionWidget(formDef,this,true,questionDef,1,addConditionLink);
+			Widget widget = conditionWidget = new ConditionWidget(formDef,this,true,questionDef,1,addConditionAnchor);
 			int index = verticalPanel.getWidgetIndex(sender);
 			if(index == -1){
 				AddConditionHyperlink addConditionHyperlink = (AddConditionHyperlink)sender;
@@ -177,7 +177,7 @@ public class FilterConditionsView  extends Composite implements ConditionControl
 	public void addAddConditionLink(){
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
-		horizontalPanel.add(addConditionLink);
+		horizontalPanel.add(addConditionAnchor);
 		verticalPanel.add(horizontalPanel);
 	}
 

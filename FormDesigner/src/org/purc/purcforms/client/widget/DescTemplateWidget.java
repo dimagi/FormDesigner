@@ -10,9 +10,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
@@ -32,7 +32,7 @@ public class DescTemplateWidget extends Composite{
 	private FormDef formDef;
 
 	private SuggestBox sgstField = new SuggestBox();
-	private Hyperlink fieldHyperlink = new Hyperlink(LocaleText.get("addField"),"");
+	private Anchor fieldAnchor = new Anchor(LocaleText.get("addField"),"");
 	private TextBox txtField = new TextBox();
 
 	private MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
@@ -44,17 +44,17 @@ public class DescTemplateWidget extends Composite{
 	public DescTemplateWidget(ItemSelectionListener itemSelectionListener){
 		this.itemSelectionListener = itemSelectionListener;
 
-		horizontalPanel.add(fieldHyperlink);
+		horizontalPanel.add(fieldAnchor);
 
-		fieldHyperlink.addClickHandler(new ClickHandler(){
+		fieldAnchor.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				if(enabled){
 					if(questionCount == 0)
 						setFormDef(formDef);
 					
-					horizontalPanel.remove(fieldHyperlink);
+					horizontalPanel.remove(fieldAnchor);
 					horizontalPanel.add(sgstField);
-					sgstField.setText(fieldHyperlink.getText());
+					sgstField.setText(fieldAnchor.getText());
 					sgstField.setFocus(true);
 					txtField.selectAll();
 				}
@@ -81,7 +81,7 @@ public class DescTemplateWidget extends Composite{
 		
 		txtField = new TextBox();
 		sgstField = new SuggestBox(oracle,txtField);
-		fieldHyperlink.setText(LocaleText.get("addField"));
+		fieldAnchor.setText(LocaleText.get("addField"));
 
 		sgstField.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
 			public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event){
@@ -91,25 +91,25 @@ public class DescTemplateWidget extends Composite{
 	}
 
 	public void stopSelection(){
-		if(horizontalPanel.getWidgetIndex(fieldHyperlink) != -1)
+		if(horizontalPanel.getWidgetIndex(fieldAnchor) != -1)
 			return;
 
 		String val = sgstField.getText();
 		if(val.trim().length() == 0)
 			val = LocaleText.get("addField");
-		fieldHyperlink.setText(val);
+		fieldAnchor.setText(val);
 		horizontalPanel.remove(sgstField);
-		horizontalPanel.add(fieldHyperlink);
+		horizontalPanel.add(fieldAnchor);
 		QuestionDef qtn = formDef.getQuestionWithText(sgstField.getText());
 		if(qtn != null){
-			fieldHyperlink.setText(LocaleText.get("addField"));
+			fieldAnchor.setText(LocaleText.get("addField"));
 			itemSelectionListener.onItemSelected(this,"/"+formDef.getBinding()+"/"+qtn.getBinding());
 		}
 	}
 
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-		if(!enabled && horizontalPanel.getWidgetIndex(fieldHyperlink) == -1)
+		if(!enabled && horizontalPanel.getWidgetIndex(fieldAnchor) == -1)
 			stopSelection();
 	}
 }

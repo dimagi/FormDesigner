@@ -1,6 +1,6 @@
 package org.purc.purcforms.client.widget;
 
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Anchor;
 
 
 /**
@@ -8,12 +8,12 @@ import com.google.gwt.user.client.ui.Hyperlink;
  * @author daniel
  *
  */
-public class AddConditionHyperlink extends Hyperlink {
+public class AddConditionHyperlink extends Anchor {
 	
 	private int depth = 1;
 	
 	public AddConditionHyperlink(String text, String targetHistoryToken, int depth){
-		super(text,targetHistoryToken);
+		super(text, targetHistoryToken);
 		this.depth = depth;
 	}
 	

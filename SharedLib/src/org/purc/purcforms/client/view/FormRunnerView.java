@@ -1397,7 +1397,7 @@ public class FormRunnerView extends Composite implements SelectionHandler<Intege
 	 * 
 	 * @param authenticated true o
 	 */
-	private static void authenticationCallback(boolean authenticated) {	
+	public static void authenticationCallback(boolean authenticated) {	
 
 		if(authenticated){
 			loginDlg.hide();

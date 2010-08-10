@@ -11,9 +11,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -28,7 +28,7 @@ public class FieldNameWidget extends Composite {
 
 	private HorizontalPanel horizontalPanel;
 	private TextBox txtValue = new TextBox();
-	private Hyperlink valueHyperlink;
+	private Anchor valueHyperlink;
 	ItemSelectionListener itemSelectionListener;
 	private String defaultValue;
 
@@ -40,7 +40,7 @@ public class FieldNameWidget extends Composite {
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueHyperlink = new Hyperlink(EMPTY_VALUE,"");
+		valueHyperlink = new Anchor(EMPTY_VALUE,"");
 		horizontalPanel.add(valueHyperlink);
 
 		valueHyperlink.addClickHandler(new ClickHandler(){

@@ -6,6 +6,7 @@ import org.zenika.widget.client.util.DateUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -165,11 +166,11 @@ public class DatePickerEx extends TextBoxWidget implements ClickHandler, ChangeL
 	 */
 	public void onKeyPress(Widget sender, char keyCode, int modifiers) {
 		switch (keyCode) {
-		case KEY_ENTER:
+		case KeyCodes.KEY_ENTER:
 			parseDate();
 			showPopup();
 			break;
-		case KEY_ESCAPE:
+		case KeyCodes.KEY_ESCAPE:
 			if (popup.isVisible())
 				popup.hidePopupCalendar();
 			break;

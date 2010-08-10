@@ -411,9 +411,6 @@ public class WidgetPropertiesView extends Composite implements WidgetSelectionLi
 			public void onFocus(FocusEvent event){
 				txtBinding.selectAll();
 			}
-			public void onLostFocus(Widget sender){
-				updateBinding(prevWidget,prevBinding);
-			}
 		});
 
 		sgstBinding.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){

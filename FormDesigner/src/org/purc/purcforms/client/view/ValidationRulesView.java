@@ -15,9 +15,9 @@ import org.purc.purcforms.client.widget.skiprule.GroupHyperlink;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -42,7 +42,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	
 	/** Widget for adding new conditions. */
-	private Hyperlink addConditionLink = new Hyperlink(LocaleText.get("clickToAddNewCondition"),"");
+	private Anchor addConditionLink = new Anchor(LocaleText.get("clickToAddNewCondition"),"");
 	
 	/** Widget for grouping conditions. Has all,any, none, and not all. */
 	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"");

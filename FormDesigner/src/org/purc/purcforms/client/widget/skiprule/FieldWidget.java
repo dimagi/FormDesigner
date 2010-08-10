@@ -11,9 +11,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
@@ -47,7 +47,7 @@ public class FieldWidget extends Composite{
 	private TextBox txtField = new TextBox();
 
 	/** The widget to display the selected question text when not in selection mode. */
-	private Hyperlink fieldHyperlink;
+	private Anchor fieldHyperlink;
 
 	/** The listener for item selection events. */
 	private ItemSelectionListener itemSelectionListener;
@@ -83,7 +83,7 @@ public class FieldWidget extends Composite{
 	}
 
 	private void setupWidgets(){
-		fieldHyperlink = new Hyperlink("",""); //Field 1
+		fieldHyperlink = new Anchor("",""); //Field 1
 
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);

@@ -28,7 +28,7 @@ public class FieldNameWidget extends Composite {
 
 	private HorizontalPanel horizontalPanel;
 	private TextBox txtValue = new TextBox();
-	private Anchor valueHyperlink;
+	private Anchor valueAnchor;
 	ItemSelectionListener itemSelectionListener;
 	private String defaultValue;
 
@@ -40,10 +40,10 @@ public class FieldNameWidget extends Composite {
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueHyperlink = new Anchor(EMPTY_VALUE,"");
-		horizontalPanel.add(valueHyperlink);
+		valueAnchor = new Anchor(EMPTY_VALUE,"");
+		horizontalPanel.add(valueAnchor);
 
-		valueHyperlink.addClickHandler(new ClickHandler(){
+		valueAnchor.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				startEdit();
 			}
@@ -84,11 +84,11 @@ public class FieldNameWidget extends Composite {
 	}
 
 	private void startEdit(){
-		horizontalPanel.remove(valueHyperlink);
+		horizontalPanel.remove(valueAnchor);
 		horizontalPanel.add(txtValue);
 
-		if(!valueHyperlink.getText().equals(EMPTY_VALUE))
-			txtValue.setText(valueHyperlink.getText());
+		if(!valueAnchor.getText().equals(EMPTY_VALUE))
+			txtValue.setText(valueAnchor.getText());
 
 		txtValue.setFocus(true);
 		txtValue.setFocus(true);
@@ -102,16 +102,16 @@ public class FieldNameWidget extends Composite {
 		if(val.trim().length() == 0)
 			val = EMPTY_VALUE;
 
-		valueHyperlink.setText(val);
+		valueAnchor.setText(val);
 		horizontalPanel.remove(txtValue);
-		horizontalPanel.add(valueHyperlink);
+		horizontalPanel.add(valueAnchor);
 		
 		itemSelectionListener.onItemSelected(this,val);
 	}
 
 
 	public String getValue(){
-		String val = valueHyperlink.getText();
+		String val = valueAnchor.getText();
 		if(val.equals(EMPTY_VALUE))
 			return defaultValue;
 
@@ -120,7 +120,7 @@ public class FieldNameWidget extends Composite {
 
 	public void setValue(String value){
 		defaultValue = value;
-		valueHyperlink.setText(value);
+		valueAnchor.setText(value);
 		txtValue.setText(value);
 	}
 }

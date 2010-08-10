@@ -51,7 +51,7 @@ public class FieldWidget extends Composite{
 	}
 	
 	private void setupWidgets(){
-		fieldAnchor = new Anchor("",""); //Field 1
+		fieldAnchor = new Anchor("", "#"); //Field 1
 		
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldAnchor);

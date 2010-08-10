@@ -40,7 +40,7 @@ public class FieldNameWidget extends Composite {
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueAnchor = new Anchor(EMPTY_VALUE,"");
+		valueAnchor = new Anchor(EMPTY_VALUE, "#");
 		horizontalPanel.add(valueAnchor);
 
 		valueAnchor.addClickHandler(new ClickHandler(){

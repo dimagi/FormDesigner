@@ -42,10 +42,10 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private VerticalPanel verticalPanel = new VerticalPanel();
 	
 	/** Widget for adding new conditions. */
-	private Anchor addConditionLink = new Anchor(LocaleText.get("clickToAddNewCondition"),"");
+	private Anchor addConditionLink = new Anchor(LocaleText.get("clickToAddNewCondition"), "#");
 	
 	/** Widget for grouping conditions. Has all,any, none, and not all. */
-	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL,"");
+	private GroupHyperlink groupHyperlink = new GroupHyperlink(GroupHyperlink.CONDITIONS_OPERATOR_TEXT_ALL, "#");
 	
 	/** The form definition object that this validation rule belongs to. */
 	private FormDef formDef;

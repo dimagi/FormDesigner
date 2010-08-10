@@ -6,17 +6,17 @@ import org.purc.purcforms.client.model.ModelConstants;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
-/*
+/**
  * 
  * @author daniel
  *
  */
-public class GroupHyperlink extends Hyperlink{
+public class GroupHyperlink extends Anchor {
 
 	public static final String CONDITIONS_OPERATOR_TEXT_ALL = LocaleText.get("all");
 	public static final String CONDITIONS_OPERATOR_TEXT_ANY = LocaleText.get("any");
@@ -27,8 +27,8 @@ public class GroupHyperlink extends Hyperlink{
 	private boolean enabled = true;
 	private int depth = 1;
 
-	public GroupHyperlink(String text, String targetHistoryToken,int depth){
-		super(text,targetHistoryToken);
+	public GroupHyperlink(String text, int depth){
+		super(text, "#");
 		this.depth = depth;
 
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );

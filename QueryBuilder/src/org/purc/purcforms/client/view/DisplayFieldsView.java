@@ -43,7 +43,7 @@ public class DisplayFieldsView  extends Composite implements DisplayColumnAction
 	private HorizontalPanel horizontalPanel = new HorizontalPanel();
 	private VerticalPanel columnPanel = new VerticalPanel();
 	private VerticalPanel sortPanel = new VerticalPanel();
-	private Anchor addColumnLink = new Anchor("Click to add new column",""); //LocaleText.get("????")
+	private Anchor addColumnLink = new Anchor("Click to add new column", "#"); //LocaleText.get("????")
 
 	private FormDef formDef;
 	private boolean enabled = true;

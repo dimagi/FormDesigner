@@ -32,7 +32,7 @@ public class DescTemplateWidget extends Composite{
 	private FormDef formDef;
 
 	private SuggestBox sgstField = new SuggestBox();
-	private Anchor fieldAnchor = new Anchor(LocaleText.get("addField"),"");
+	private Anchor fieldAnchor = new Anchor(LocaleText.get("addField"), "#");
 	private TextBox txtField = new TextBox();
 
 	private MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();

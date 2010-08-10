@@ -24,9 +24,9 @@ public class ConditionActionHyperlink extends AddConditionHyperlink {
 	private boolean allowDelete = true;
 	private AddConditionHyperlink addConditionHyperlink;
 
-	public ConditionActionHyperlink(String text, String targetHistoryToken,boolean allowDelete, int depth, AddConditionHyperlink addConditionHyperlink,
+	public ConditionActionHyperlink(String text, String targetHistoryToken, boolean allowDelete, int depth, AddConditionHyperlink addConditionHyperlink,
 			FilterRowActionListener actionListener){
-		super(text, targetHistoryToken, depth);
+		super(text, "#", depth);
 		this.allowDelete = allowDelete;
 		this.actionListener = actionListener;
 		this.addConditionHyperlink = addConditionHyperlink;

@@ -104,7 +104,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private void setupWidgets(){
 		horizontalPanel = new HorizontalPanel();;
 
-		valueHyperlink = new Anchor(EMPTY_VALUE,"");
+		valueHyperlink = new Anchor(EMPTY_VALUE, "#");
 		horizontalPanel.add(valueHyperlink);
 
 		valueHyperlink.addClickHandler(new ClickHandler(){

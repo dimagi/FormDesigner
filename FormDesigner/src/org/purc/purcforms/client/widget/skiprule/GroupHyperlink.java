@@ -6,7 +6,7 @@ import org.purc.purcforms.client.model.ModelConstants;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * @author daniel
  *
  */
-public class GroupHyperlink extends Hyperlink{
+public class GroupHyperlink extends Anchor {
 
 	/** The conditions grouping operator text: all */
 	public static final String CONDITIONS_OPERATOR_TEXT_ALL = LocaleText.get("all");
@@ -46,7 +46,7 @@ public class GroupHyperlink extends Hyperlink{
 	 * @param targetHistoryToken the history token to which it will link.
 	 */
 	public GroupHyperlink(String text, String targetHistoryToken){
-		super(text,targetHistoryToken);
+		super(text, targetHistoryToken);
 
 		DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN );
 	}

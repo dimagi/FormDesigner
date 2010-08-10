@@ -12,8 +12,8 @@ public class AddConditionHyperlink extends Anchor {
 	
 	private int depth = 1;
 	
-	public AddConditionHyperlink(String text, String targetHistoryToken, int depth){
-		super(text, targetHistoryToken);
+	public AddConditionHyperlink(String text, String target, int depth){
+		super(text, target);
 		this.depth = depth;
 	}
 	

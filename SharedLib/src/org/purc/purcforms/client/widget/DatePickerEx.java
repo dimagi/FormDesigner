@@ -47,7 +47,10 @@ public class DatePickerEx extends TextBoxWidget implements ClickHandler, ChangeH
 	private Date youngestDate;
 	private DateTimeFormat dateFormatter;
 	
-	private ChangeListenerCollection changeListeners;{
+	private ChangeListenerCollection changeListeners;
+	
+	// TODO: Needs an explanation
+	{
 		
 		dateFormatter = DateUtil.getDateTimeFormat();
 		popup = new PopupCalendarEx(this);

@@ -14,6 +14,7 @@ import org.purc.purcforms.client.model.QuestionDef;
 import org.purc.purcforms.client.model.RepeatQtnsDef;
 import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
+import org.purc.purcforms.client.view.helper.PropertiesViewHelper;
 import org.purc.purcforms.client.widget.DescTemplateWidget;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -36,13 +37,13 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 
 /**
@@ -330,12 +331,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//Text boxes.
 		txtDefaultValue.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
-				updateDefaultValue();
+				if(checkDefaultValueAgainstQuestionType()){
+					updateDefaultValue();
+				}
 			}
 		});
 		txtDefaultValue.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
-				updateDefaultValue();
+				if(checkDefaultValueAgainstQuestionType()){
+					updateDefaultValue();
+				}
+				else{
+					Window.alert(LocaleText.get("invalidDefaultValueForQuestionType"));
+				}
 			}
 		});
 
@@ -544,7 +552,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 	}
 
-
 	/**
 	 * Gets text without the description template, for a given text.
 	 * 
@@ -560,7 +567,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 		return text;
 	}
-
 
 	/**
 	 * Checks if a given character is allowed to begin an xml node name.
@@ -620,7 +626,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 	
-
 	private void updateFormKey(){
 		if(propertiesObj == null)
 			return;
@@ -630,7 +635,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		formChangeListener.onFormItemChanged(propertiesObj);
 	}
-
 	
 	/**
 	 * Updates the selected object with the new description template as typed by the user.
@@ -645,7 +649,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		}
 	}
 
-
 	private void updateCalculation(){
 		if(propertiesObj == null)
 			return;
@@ -653,7 +656,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		assert(propertiesObj instanceof QuestionDef);
 		Context.getFormDef().updateCalculation((QuestionDef)propertiesObj, txtCalculation.getText());
 	}
-
 
 	/**
 	 * Updates the selected object with the new binding as typed by the user.
@@ -699,9 +701,54 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private void updateDefaultValue(){
 		if(propertiesObj == null)
 			return;
-
+		
 		((QuestionDef)propertiesObj).setDefaultValue(txtDefaultValue.getText());
 		formChangeListener.onFormItemChanged(propertiesObj);
+	}
+	
+	/**
+	 * Checks if the value entered for Default Value matches the selected Question Data Type.
+	 * 
+	 * @return True if and only if the entered value is in sync with the Question Data Type.
+	 */
+	private boolean checkDefaultValueAgainstQuestionType(){
+		
+		String defaultValue = txtDefaultValue.getText();
+		QuestionDef questionDef = (QuestionDef) propertiesObj;
+		
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC && 
+				!PropertiesViewHelper.isDefaultValueNumeric(defaultValue)){
+			
+			txtDefaultValue.setText("");
+			return false;
+		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL &&
+				!PropertiesViewHelper.isDefaultValueDecimal(defaultValue)){
+			txtDefaultValue.setText("");
+			return false;
+		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE &&
+				!PropertiesViewHelper.isDefaultValueDate(defaultValue)){
+			txtDefaultValue.setText("");
+			return false;
+		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME &&
+				!PropertiesViewHelper.isDefaultValueDateTime(defaultValue)){
+			txtDefaultValue.setText("");
+			return false;
+			
+		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME &&
+				!PropertiesViewHelper.isDefaultValueTime(defaultValue)){
+			txtDefaultValue.setText("");
+			return false;
+		}
+		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN &&
+				!PropertiesViewHelper.isDefaultValueBoolean(defaultValue)){			
+			txtDefaultValue.setText("");
+			return false;
+		}
+		return true;
 	}
 
 	/**

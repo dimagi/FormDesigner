@@ -116,7 +116,7 @@ public class Predicate  implements Serializable
 		}
 	}
 		
-	public Vector getResult()
+	public Vector<Object> getResult()
 	{
 		return resultSet;
 	}//getResult

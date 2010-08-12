@@ -799,48 +799,63 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		switch(cbDataType.getSelectedIndex()){
 		case DT_INDEX_NUMBER:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_NUMERIC;
 			break;
 		case DT_INDEX_DECIMAL:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_DECIMAL;
 			break;
 		case DT_INDEX_DATE:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_DATE;
 			break;
 		case DT_INDEX_TIME:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_TIME;
 			break;
 		case DT_INDEX_DATE_TIME:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_DATE_TIME;
 			break;
 		case DT_INDEX_BOOLEAN:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_BOOLEAN;
 			break;
 		case DT_INDEX_SINGLE_SELECT:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE;
 			break;
 		case DT_INDEX_MULTIPLE_SELECT:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_LIST_MULTIPLE;
 			break;
 		case DT_INDEX_REPEAT:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_REPEAT;
 			break;
 		case DT_INDEX_IMAGE:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_IMAGE;
 			break;
 		case DT_INDEX_VIDEO:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_VIDEO;
 			break;
 		case DT_INDEX_AUDIO:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_AUDIO;
 			break;
 		case DT_INDEX_SINGLE_SELECT_DYNAMIC:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
 			break;
 		case DT_INDEX_GPS:
+			txtDefaultValue.setEnabled(true);
 			dataType = QuestionDef.QTN_TYPE_GPS;
 			break;
 		case DT_INDEX_BARCODE:
+			txtDefaultValue.setEnabled(false);
 			dataType = QuestionDef.QTN_TYPE_BARCODE;
 			break;
 		}

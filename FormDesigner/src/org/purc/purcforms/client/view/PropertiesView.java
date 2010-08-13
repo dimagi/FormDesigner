@@ -727,22 +727,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			txtDefaultValue.setText("");
 			return false;
 		}
-		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE &&
-				!PropertiesViewHelper.isDefaultValueDate(defaultValue)){
-			txtDefaultValue.setText("");
-			return false;
-		}
-		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_DATE_TIME &&
-				!PropertiesViewHelper.isDefaultValueDateTime(defaultValue)){
-			txtDefaultValue.setText("");
-			return false;
-			
-		}
-		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_TIME &&
-				!PropertiesViewHelper.isDefaultValueTime(defaultValue)){
-			txtDefaultValue.setText("");
-			return false;
-		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN &&
 				!PropertiesViewHelper.isDefaultValueBoolean(defaultValue)){			
 			txtDefaultValue.setText("");
@@ -1051,21 +1035,27 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_IMAGE:
 			index = DT_INDEX_IMAGE;
+			txtDefaultValue.setEnabled(false);
 			break;
 		case QuestionDef.QTN_TYPE_VIDEO:
 			index = DT_INDEX_VIDEO;
+			txtDefaultValue.setEnabled(false);
 			break;
 		case QuestionDef.QTN_TYPE_AUDIO:
 			index = DT_INDEX_AUDIO;
+			txtDefaultValue.setEnabled(false);
 			break;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			index = DT_INDEX_SINGLE_SELECT_DYNAMIC;
+			txtDefaultValue.setEnabled(false);
 			break;
 		case QuestionDef.QTN_TYPE_GPS:
 			index = DT_INDEX_GPS;
+			txtDefaultValue.setEnabled(false);
 			break;
 		case QuestionDef.QTN_TYPE_BARCODE:
 			index = DT_INDEX_BARCODE;
+			txtDefaultValue.setEnabled(false);
 			break;
 		}
 

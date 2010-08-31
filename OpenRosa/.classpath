@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="/SharedLib/lib/gwt-user.jar"/>
 	<classpathentry kind="lib" path="lib/gxt.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-datepicker-r29.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

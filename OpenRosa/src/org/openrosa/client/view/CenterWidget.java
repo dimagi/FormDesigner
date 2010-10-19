@@ -141,6 +141,13 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		xformsWidget.showWindow();
 	}
 	public void onOpen(){
+		
+		if(!xformsWidget.isVisible()){
+			xformsWidget.setXform(null);
+			xformsWidget.showWindow();
+			return;
+		}
+		
 		xformsWidget.hideWindow();
 		FormUtil.dlg.setText("Opening...");
 		FormUtil.dlg.show();

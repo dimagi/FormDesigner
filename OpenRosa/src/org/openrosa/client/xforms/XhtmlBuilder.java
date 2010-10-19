@@ -42,6 +42,7 @@ public class XhtmlBuilder {
 		//formDef.setXformsNode(htmlNode);
 
 		htmlNode.setAttribute("xmlns:h", "http://www.w3.org/1999/xhtml");
+		htmlNode.setAttribute("xmlns:orx", "http://openrosa.org/jr/xforms");
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE /*XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XFORMS*/, XformConstants.NAMESPACE_XFORMS);
 		htmlNode.setAttribute(XformConstants.XML_NAMESPACE_PREFIX+XformConstants.PREFIX_XML_SCHEMA, XformConstants.NAMESPACE_XML_SCHEMA);
 

@@ -96,6 +96,7 @@ public class XformBuilder {
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, String.valueOf(formDef.getId()));
 		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
+		addMetaData(doc, formNode);
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 
@@ -162,6 +163,25 @@ public class XformBuilder {
 			ItemsetBuilder.updateDynamicOptions(dynamicOptions,orphanQuestions,formDef,doc);
 	}
 
+	private static void addMetaData(Document doc, Element dataNode){
+		Element metaNode =  doc.createElement("orx:meta");
+		dataNode.appendChild(metaNode);
+		
+		Element node =  doc.createElement("orx:timeStart");
+		metaNode.appendChild(node);
+		
+		node =  doc.createElement("orx:timeEnd");
+		metaNode.appendChild(node);
+		
+		node =  doc.createElement("orx:instanceID");
+		metaNode.appendChild(node);
+		
+		node =  doc.createElement("orx:userID");
+		metaNode.appendChild(node);
+		
+		node =  doc.createElement("orx:deviceID");
+		metaNode.appendChild(node);
+	}
 
 	/**
 	 * Converts a page definition object to xforms.

@@ -354,6 +354,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.setTitle(LocaleText.get("questionTypeDesc"));
 
 		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
+		
+		cellFormatter = table.getFlexCellFormatter();
+		cellFormatter.setVisible(4, 0, false);
+		cellFormatter.setVisible(4, 1, false);
 	}
 
 	/**

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.controller.ILocaleSelectionListener;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.ItextModel;
 import org.purc.purcforms.client.controller.ILocaleListChangeListener;
 import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormUtil;
@@ -70,7 +72,9 @@ public class Context {
 	private static boolean offlineMode = true;
 	
 	/** List of those interested in being notified whenever the locale list changes. */
-	private static List<ILocaleListChangeListener> localeListeners = new ArrayList<ILocaleListChangeListener>();
+	private static List<ILocaleListChangeListener> localeListListeners = new ArrayList<ILocaleListChangeListener>();
+	
+	private static List<ILocaleSelectionListener> localeSelectionListeners = new ArrayList<ILocaleSelectionListener>(); 
 	
 	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
 	 * key and text, where locale key is the value map key and text is the value map value.
@@ -78,6 +82,9 @@ public class Context {
 	private static HashMap<Integer,HashMap<String,String>> languageText = new HashMap<Integer,HashMap<String,String>>();
 
 	private static EventBus eventBus = new EventBus();
+	
+	/** Mapping of ItextModel objects to their ids as they are in the id column of the grid. */
+	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
 	
 	
 	/**
@@ -105,6 +112,9 @@ public class Context {
 	 */
 	public static void setLocale(Locale locale){
 		Context.locale = locale;
+		
+		for(ILocaleSelectionListener localeSelectionListener : localeSelectionListeners)
+			localeSelectionListener.onLocaleSelected(locale);
 	}
 	
 	/**
@@ -160,7 +170,7 @@ public class Context {
 	public static void setLocales(List<Locale> locales){
 		Context.locales = locales;
 		
-		for(ILocaleListChangeListener listener : localeListeners)
+		for(ILocaleListChangeListener listener : localeListListeners)
 			listener.onLocaleListChanged();
 	}
 	
@@ -170,7 +180,11 @@ public class Context {
 	 * @param listener the listener.
 	 */
 	public static void addLocaleListChangeListener(ILocaleListChangeListener listener){
-		localeListeners.add(listener);
+		localeListListeners.add(listener);
+	}
+	
+	public static void addLocaleSelectionListener(ILocaleSelectionListener listener){
+		localeSelectionListeners.add(listener);
 	}
 	
 	/**
@@ -256,5 +270,9 @@ public class Context {
 	
 	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
 		return languageText;
+	}
+	
+	public static HashMap<String,ItextModel> getItextMap(){
+		return itextMap;
 	}
 }

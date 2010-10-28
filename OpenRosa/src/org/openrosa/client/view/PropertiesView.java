@@ -1,6 +1,7 @@
 package org.openrosa.client.view;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.controller.ILocaleSelectionListener;
 import org.openrosa.client.model.Calculation;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.GroupDef;
@@ -14,6 +15,7 @@ import org.purc.purcforms.client.controller.IFormChangeListener;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.ItemSelectionListener;
 import org.purc.purcforms.client.locale.LocaleText;
+import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.model.PageDef;
 import org.purc.purcforms.client.util.FormUtil;
 
@@ -56,7 +58,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * @author daniel
  *
  */
-public class PropertiesView extends Composite implements IFormSelectionListener,ItemSelectionListener{
+public class PropertiesView extends Composite implements IFormSelectionListener, ItemSelectionListener, ILocaleSelectionListener{
 
 	/** List box index for no selected data type. */
 	private static final byte DT_INDEX_NONE = -1;
@@ -177,11 +179,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** Widget for defining dynamic selection lists. */
 	private DynamicListsView dynamicListsView = new DynamicListsView();
+	
+	private QuestionItextView itextView = new QuestionItextView();
 
 	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
 
-	Label lblText = new Label(LocaleText.get("text"));
+	Label lblText = new Label(LocaleText.get("text") + " (" + Context.getLocale().getName() + ")");
 	Label lblQtnID = new Label("ID");
 	Label lblHelpText = new Label(LocaleText.get("helpText"));
 	Label lblType = new Label(LocaleText.get("type"));
@@ -312,6 +316,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		verticalPanel.setSpacing(0);
 		verticalPanel.add(table);
 
+		tabs.add(itextView, "Itext");
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
 		tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
@@ -358,6 +363,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setVisible(4, 0, false);
 		cellFormatter.setVisible(4, 1, false);
+		
+		Context.addLocaleSelectionListener(this);
 	}
 
 	/**
@@ -1012,6 +1019,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
 		dynamicListsView.setEnabled(enable2);
+		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
 		lblVisible.setVisible(enable2);
@@ -1087,10 +1095,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				if(propertiesObj instanceof QuestionDef){
 					validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
 					dynamicListsView.setQuestionDef((QuestionDef)propertiesObj);
+					itextView.setQuestionDef((QuestionDef)propertiesObj);
 				}
 				else{
 					validationRulesView.setQuestionDef(null);
 					dynamicListsView.setQuestionDef(null);
+					itextView.setQuestionDef(null);
 				}
 			}
 		});
@@ -1137,6 +1147,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
 		dynamicListsView.setEnabled(enable2);
+		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
 		lblVisible.setVisible(enable2);
@@ -1314,6 +1325,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.updateSkipRule();
 		validationRulesView.updateValidationRule();
 		dynamicListsView.updateDynamicLists();
+		itextView.update();
 	}
 
 	/**
@@ -1414,5 +1426,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//table.removeStyleName("cw-FlexTable");
 
 		//txtDescTemplate.getParent().setVisible(enable);
+	}
+	
+	public void onLocaleSelected(Locale locale){
+		lblText.setText(LocaleText.get("text") + " (" + locale.getName() + ")");
 	}
 }

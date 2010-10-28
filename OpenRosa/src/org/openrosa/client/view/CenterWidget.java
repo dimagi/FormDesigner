@@ -13,7 +13,6 @@ import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.FormDesignerController;
 import org.purc.purcforms.client.controller.IFormSelectionListener;
 import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
 import org.purc.purcforms.client.locale.LocaleText;
@@ -65,10 +64,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	/** Mapping of itext id's to their form attribute values. eg id=name, form=short */
 	private static HashMap<String,String> formAttrMap = new HashMap<String,String>();
 
-	/** Mapping of ItextModel objects to their ids as they are in the id column of the grid. */
-	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
-
-	/** Lost of ItextModel objects as they are shown in the grid. */
+	/** List of ItextModel objects as they are shown in the grid. */
 	ListStore<ItextModel> itextList = new ListStore<ItextModel>();
 
 	/**
@@ -178,12 +174,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
 
 		formAttrMap.clear();
-		itextMap.clear();
+		Context.getItextMap().clear();
 		ItextParser.itextFormAttrList.clear();
 		itextList = new ListStore<ItextModel>();
 		ItextBuilder.itextIds.clear();
 
-		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
+		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
 
 		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
 		/*if(formDef.getQuestionCount() > 0){
@@ -287,7 +283,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 				formDef.setXformsNode(doc.getDocumentElement());
 			}
 
-			ItextBuilder.updateItextBlock(doc,formDef,itextList,formAttrMap,itextMap);
+			ItextBuilder.updateItextBlock(doc,formDef,itextList,formAttrMap,Context.getItextMap());
 			//itextWidget.loadItext(itextList);
 
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
@@ -322,11 +318,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		//this line is necessary for gxt to load the form with text on the design tab.
 		tabs.selectTab(TAB_INDEX_DESIGN);
 
-		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,itextMap);
+		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,Context.getItextMap());
 		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 
 		//update form outline with the itext changes
-		formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,itextMap));
+		formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
 		designWidget.refreshForm(formDef);
 		return xml;
 	}

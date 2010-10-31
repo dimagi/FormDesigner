@@ -322,7 +322,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
 
 		tabs.selectTab(0);
-		verticalPanel.add(tabs);
+		
+		table.setWidget(12, 0, tabs);
+		table.getFlexCellFormatter().setColSpan(12, 0, 2);
+		//verticalPanel.add(pnl);
 		//FormUtil.maximizeWidget(tabs);
 
 		//FormUtil.maximizeWidget(verticalPanel);
@@ -365,6 +368,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cellFormatter.setVisible(4, 1, false);
 		
 		Context.addLocaleSelectionListener(this);
+		
+		setHeight("100%");
 	}
 
 	/**

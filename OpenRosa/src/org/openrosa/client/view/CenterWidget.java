@@ -161,6 +161,14 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			}
 		});
 	}
+	
+	private void clearItextData(){
+		formAttrMap.clear();
+		Context.getItextMap().clear();
+		ItextParser.itextFormAttrList.clear();
+		itextList = new ListStore<ItextModel>();
+		ItextBuilder.itextIds.clear();
+	}
 
 	private void openFile(){
 		String xml = xformsWidget.getXform();
@@ -173,11 +181,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
 
-		formAttrMap.clear();
-		Context.getItextMap().clear();
-		ItextParser.itextFormAttrList.clear();
-		itextList = new ListStore<ItextModel>();
-		ItextBuilder.itextIds.clear();
+		clearItextData();
 
 		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
 
@@ -328,6 +332,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 	public void onFormItemSelected(Object formItem){
+		
+		if(formItem == null)
+			clearItextData();
+		
 		if(!(formItem instanceof FormDef))
 			return;
 

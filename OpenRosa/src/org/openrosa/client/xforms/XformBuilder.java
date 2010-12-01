@@ -102,7 +102,7 @@ public class XformBuilder {
 		formNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
 		formNode.setAttribute("uiVersion", "1");
 		formNode.setAttribute("version", "1");
-		addMetaData(doc, formNode);
+//		addMetaData(doc, formNode);
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 

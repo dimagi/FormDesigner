@@ -182,11 +182,11 @@ public class XformBuilder {
 		node =  doc.createElement("orx:instanceID");
 		metaNode.appendChild(node);
 		
-		node =  doc.createElement("orx:userID");
-		metaNode.appendChild(node);
-		
-		node =  doc.createElement("orx:deviceID");
-		metaNode.appendChild(node);
+//		node =  doc.createElement("orx:userID");
+//		metaNode.appendChild(node);
+//		
+//		node =  doc.createElement("orx:deviceID");
+//		metaNode.appendChild(node);
 	}
 
 	/**

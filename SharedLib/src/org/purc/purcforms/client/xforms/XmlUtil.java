@@ -216,7 +216,23 @@ public class XmlUtil {
 	 * @return the xml string.
 	 */
 	public static String fromDoc2String(Document doc){
-		return doc.toString();
+		return setDataNodeXMLNS(doc.toString());
+	}
+	
+	
+	/**
+	 * So hacky I don't want to think about it.
+	 * 
+	 * Takes in the xml text (as a string), 
+	 * looks for a specific phrase ("xmlnsCHANGEME") and modifies
+	 * it such that it looks right when it comes time to displaying it
+	 * 
+	 * 
+	 * @param namespaceURI
+	 * @return
+	 */
+	public static String setDataNodeXMLNS(String xmlString){
+		return xmlString.replaceAll("xmlnsCHANGEME", "xmlns");
 	}
 
 

@@ -389,7 +389,7 @@ public class FormDef implements IFormElement, Serializable{
 		//the existing ids.
 		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
-			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,UUID.uuid());
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,"http://openrosa.org/formdesigner/"+UUID.uuid());
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){

@@ -97,7 +97,7 @@ public class XformBuilder {
 		//Create the form data node and add it to the instance node.
 		Element formNode =  doc.createElement("data");
 //		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
-		formNode.setAttribute("xmlns", UUID.uuid());
+		formNode.setAttribute("xmlns", "http://openrosa.org/formdesigner/"+UUID.uuid());
 //		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
 		formNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
 		formNode.setAttribute("uiVersion", "1");

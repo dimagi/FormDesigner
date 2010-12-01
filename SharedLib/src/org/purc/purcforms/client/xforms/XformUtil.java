@@ -286,4 +286,13 @@ public class XformUtil {
 
 		return null;
 	}
+	
+	/**
+	 * Hardcoded here for now. Returns the xmlns:jrm attribute value for the data node in instance node.
+	 * @return
+	 */
+	public static String getDataXMLNSjrm(){
+		return "http://dev.commcarehq.org/jr/xforms";
+	}
+	
 }

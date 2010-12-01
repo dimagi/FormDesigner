@@ -882,7 +882,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	public void addNewForm(int qtnDataType){
 		int id = nextFormId;
-		addNewForm(LocaleText.get("newForm")+id,"new_form"+id,id);
+		addNewForm(LocaleText.get("newForm")+id,"data",id);
 
 		//Automatically add a new question
 		addNewChildItem(false, qtnDataType);

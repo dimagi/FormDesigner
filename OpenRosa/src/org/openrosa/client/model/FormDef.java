@@ -9,6 +9,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.openrosa.client.OpenRosaConstants;
+import org.openrosa.client.util.UUID;
 import org.purc.purcforms.client.model.ModelConstants;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
@@ -388,7 +389,7 @@ public class FormDef implements IFormElement, Serializable{
 		//the existing ids.
 		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
-			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,String.valueOf(id));
+			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,UUID.uuid());
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){

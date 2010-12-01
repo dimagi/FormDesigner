@@ -15,7 +15,9 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
+import org.openrosa.client.util.UUID;
 import org.purc.purcforms.client.xforms.XformConstants;
+import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
@@ -87,15 +89,19 @@ public class XformBuilder {
 
 		//Create the instance node and add it to the model node.
 		Element instanceNode =  doc.createElement(XformConstants.NODE_NAME_INSTANCE);
-		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getVariableName());
+//		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getVariableName());
+//		instanceNode.setAttribute("xmlns", UUID.uuid());
 		modelNode.appendChild(instanceNode);
 		formDef.setModelNode(modelNode);
 
 		//Create the form data node and add it to the instance node.
-		Element formNode =  doc.createElement(formDef.getVariableName());
-		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
-		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, String.valueOf(formDef.getId()));
-		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
+		Element formNode =  doc.createElement("data");
+//		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
+		formNode.setAttribute("xmlns", UUID.uuid());
+//		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
+		formNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
+		formNode.setAttribute("uiVersion", "1");
+		formNode.setAttribute("version", "1");
 		addMetaData(doc, formNode);
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);

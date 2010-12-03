@@ -1,10 +1,17 @@
 package org.openrosa.client.view;
 
+import org.openrosa.client.FormDesigner;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -23,7 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author daniel
  *
  */
-public class FormDesignerWidget extends Composite {
+public class FormDesignerWidget extends Composite{
 
 	/**
 	 * Instantiate an application-level image bundle. This object will provide
@@ -40,6 +47,9 @@ public class FormDesignerWidget extends Composite {
 	private DockPanel dockPanel;
 	
 	private CenterWidget centerWidget = new CenterWidget();
+	
+	private String returnXml;    
+	private int returnErrorCode;
 
 
 	public FormDesignerWidget(boolean showToolbar,boolean showFormAsRoot){
@@ -69,6 +79,23 @@ public class FormDesignerWidget extends Composite {
 		initWidget(dockPanel);
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
+		
+		
+		//Check to see if a token was included in the URL and load the form
+		//if so.
+		if(FormDesigner.token != null){
+			String xml = getExternalForm();
+			
+			if (xml == ""){
+				FormDesigner.alert("Blank Xform received! Loading anyway...");
+			}
+
+			if (xml != null){
+				centerWidget.openExternalXML(xml);  //<----
+			}else{
+				FormDesigner.alert("Problem Retreiving external form! Return Error Code: "+returnErrorCode);
+			}
+		}
 	}
 
 	/**
@@ -77,5 +104,44 @@ public class FormDesignerWidget extends Composite {
 	public void onWindowResized(int width, int height){		
 		centerWidget.onWindowResized(width, height);
 	}
+	
+	private String getExternalForm(){
+		
+		String url = "http://192.168.56.101:8011/xep/xform/"+FormDesigner.token;
+		Window.alert("Doing GET to url: "+url);
+		doGet(url);
+		Window.alert("Return Code is:"+returnErrorCode+"\n"+
+				"Content is:"+returnXml);
+		return this.returnXml;
+	}
+
+
+	private void setRetrievedXML(String xml){
+		this.returnXml = xml;
+	}
+	
+	private void setReturnErrorCode(int code){
+		this.returnErrorCode = code;
+	}
+	
+	public void doGet(String url) {
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+		try {
+			Request response = builder.sendRequest(null, new RequestCallback() {
+				public void onError(Request request, Throwable exception) {
+					FormDesigner.alert("Error on while doing GET Request. In FormDesignerWidget.MyRequestCallback, exception: "+exception.getStackTrace());
+				}
+				
+				public void onResponseReceived(Request request, Response response) {
+					setReturnErrorCode(response.getStatusCode());
+					setRetrievedXML(response.getText());
+				}
+			});
+		} catch (RequestException e) {
+			FormDesigner.alert("Problem with Getting External Form: FormDesignerWidget.doGet, RequestException:"+e.getStackTrace());
+		}
+	}
+		    
+		    
 	
 }

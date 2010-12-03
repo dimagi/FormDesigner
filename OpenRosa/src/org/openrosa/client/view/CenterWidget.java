@@ -81,6 +81,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	 *  a reference to proceed with the current action.
 	 */
 	private static CenterWidget centerWidget;
+	
+	
+	private String externalXML;
+	private Boolean loadExternalXML;
 
 
 	public CenterWidget() {	
@@ -93,6 +97,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(TAB_INDEX_DESIGN);
+		this.loadExternalXML = false;
 
 		//////////////////////////////!!!!!!!!!!!!!!!!!
 		initWidget(designWidget);   /// <<<<<<---------------------- This is a gruesome shortcut
@@ -170,8 +175,20 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		ItextBuilder.itextIds.clear();
 	}
 
+	public void openExternalXML(String xml){
+		this.loadExternalXML = true;
+		this.externalXML = xml;
+		openFile();
+	}
+	
 	private void openFile(){
-		String xml = xformsWidget.getXform();
+		String xml;
+		if(loadExternalXML && externalXML != null){
+			xml = externalXML;
+			loadExternalXML = false;  //to keep standard operation going
+		}else{
+			xml = xformsWidget.getXform();
+		}
 		if(xml == null || xml.trim().length() == 0){
 			showOpen();
 			return;

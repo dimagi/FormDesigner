@@ -29,11 +29,21 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 */
 	private FormDesignerWidget designer;
 
+	public static native void alert(String msg)
+	/*-{
+	 $wnd.alert(msg);
+	}-*/;
+	
+	public static String status;
+	public static String token;
+	
 	/**
 	 * This is the GWT entry point method.
 	 */
 	public void onModuleLoad() {
 		
+		FormDesigner.token = com.google.gwt.user.client.Window.Location.getParameter("token");
+		FormDesigner.status = com.google.gwt.user.client.Window.Location.getParameter("status");
 		FormUtil.setupUncaughtExceptionHandler();
 		
 		FormUtil.dlg.setText(LocaleText.get("loading"));
@@ -60,7 +70,6 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 				FormUtil.dlg.hide();
 				return;
 			}
-
 			FormUtil.setupUncaughtExceptionHandler();
 
 			FormDesignerUtil.setDesignerTitle();

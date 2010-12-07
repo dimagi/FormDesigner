@@ -8,6 +8,47 @@
 
 <html>
   <head>
+  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+       <script src="https://gist.github.com/raw/662940/6819983cb03f3873bbb930f3c805548a0ef1b751/gistfile1.js"></script>
+<!--        <script>
+            $(function(){
+                /* Load URL params */
+                var token = get_url_param('token');
+                var status = get_url_param('status');
+                /*
+                    Get the form content:
+                    1. Make AJAX call to '/xep/xform/{token}/'
+                    2. Load the response into the DOM
+                 */
+                var xform_url = 'http://127.0.0.1:8011/xep/xform/' + token + '/';
+                $.get(xform_url, function(data){
+                    alert(data);
+                    $("#xform") = data;
+                });
+
+                /*
+                    Add the token to the DOM
+                 */
+                $("#token").attr('value', token).hide();
+                /*
+                    Display a message, depending on the status:
+                    1. "" -> Haven't yet tried to save.
+                    2. "OK" -> Successfully saved to HQ
+                    3. "failed" -> Tried to save to HQ but failed
+                 */
+                $("#status").text(function(){
+                    if(status == "OK") {
+                        return "Successfully saved to HQ.";
+                    }
+                    else if(status == "failed") {
+                        return "Failed to save to HQ!";
+                    }
+                    else {
+                        return status;
+                    }
+                }());
+            });
+        </script> -->
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="gwt:module" content="purcforms"/>
     <title>OpenRosa FormDesigner</title>
@@ -363,6 +404,5 @@
 		  }
 		  
     </script>
-    
   </body>
 </html>

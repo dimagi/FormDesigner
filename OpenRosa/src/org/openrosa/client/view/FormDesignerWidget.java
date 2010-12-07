@@ -1,15 +1,21 @@
 package org.openrosa.client.view;
 
+import java.util.Iterator;
+
 import org.openrosa.client.FormDesigner;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Header;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -83,20 +89,32 @@ public class FormDesignerWidget extends Composite{
 		
 		//Check to see if a token was included in the URL and load the form
 		//if so.
-		if(FormDesigner.token != null){
-			String xml = getExternalForm();
-			
-			if (xml == ""){
-				FormDesigner.alert("Blank Xform received! Loading anyway...");
-			}
+		DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				if(FormDesigner.token != null){
+					FormUtil.dlg.setText("Opening Form, Please Wait...");
+					FormUtil.dlg.show();
+					String xml = getExternalForm();
+					
 
-			if (xml != null){
-				centerWidget.openExternalXML(xml);  //<----
-			}else{
-				FormDesigner.alert("Problem Retreiving external form! Return Error Code: "+returnErrorCode);
+				}
 			}
-		}
+		});	
+
+//		String xml=getFirstName();
+	
+//	Window.alert(xml);
+		
+		
+		
 	}
+	
+	
+	public native String getFirstName()/*-{
+
+	return $wnd.gottenXML;
+
+	}-*/;
 
 	/**
 	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
@@ -107,17 +125,27 @@ public class FormDesignerWidget extends Composite{
 	
 	private String getExternalForm(){
 		
-		String url = "http://192.168.56.101:8011/xep/xform/"+FormDesigner.token;
+		String url = "http://127.0.0.1:8011/xep/xform/"+FormDesigner.token+"/";
 		Window.alert("Doing GET to url: "+url);
 		doGet(url);
-		Window.alert("Return Code is:"+returnErrorCode+"\n"+
-				"Content is:"+returnXml);
+
 		return this.returnXml;
 	}
 
 
 	private void setRetrievedXML(String xml){
 		this.returnXml = xml;
+		if (xml == ""){
+			FormDesigner.alert("Blank Xform received! Loading anyway...");
+		}
+
+		if (xml != null){
+
+			centerWidget.openExternalXML(xml);  //<----
+		}else{
+			FormDesigner.alert("Problem Retreiving external form! Return Error Code: "+returnErrorCode);
+		}
+		
 	}
 	
 	private void setReturnErrorCode(int code){
@@ -126,6 +154,13 @@ public class FormDesignerWidget extends Composite{
 	
 	public void doGet(String url) {
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+		String s = "";
+		Iterator<String> iter = Cookies.getCookieNames().iterator();
+		for(int i=0;i<Cookies.getCookieNames().size();i++){
+			s +=iter.next()+", ";
+		}
+		
+		//Window.alert(s);
 		try {
 			Request response = builder.sendRequest(null, new RequestCallback() {
 				public void onError(Request request, Throwable exception) {
@@ -133,6 +168,7 @@ public class FormDesignerWidget extends Composite{
 				}
 				
 				public void onResponseReceived(Request request, Response response) {
+//					parseCookies(response);
 					setReturnErrorCode(response.getStatusCode());
 					setRetrievedXML(response.getText());
 				}
@@ -140,8 +176,30 @@ public class FormDesignerWidget extends Composite{
 		} catch (RequestException e) {
 			FormDesigner.alert("Problem with Getting External Form: FormDesignerWidget.doGet, RequestException:"+e.getStackTrace());
 		}
+		
+		
+		
+		
+		
 	}
 		    
+	
+    public static void parseCookies(final Response pResponse) { 
+        final Header[] headers = pResponse.getHeaders(); 
+        if (headers == null || headers.length == 0) { 
+          return; 
+        } 
+        for (int i = 0; i < headers.length; i++) { 
+                if (headers[i] != null && "Set-Cookie".equalsIgnoreCase(headers[i].getName())) { 
+                        final String cookieRaw = headers[i].getValue(); 
+                        jsAddCookie( cookieRaw ); 
+                } 
+        } 
+    } 
+    
+	private static native void jsAddCookie( String pRaw ) /*-{
+		$doc.cookie = pRaw;
+	}-*/; 
 		    
 	
 }

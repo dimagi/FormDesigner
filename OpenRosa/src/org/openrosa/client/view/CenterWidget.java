@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.FormDesigner;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.FormDef;
@@ -176,6 +177,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 	public void openExternalXML(String xml){
+
 		this.loadExternalXML = true;
 		this.externalXML = xml;
 		openFile();
@@ -212,6 +214,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);
+		FormUtil.dlg.hide();
 		//itextWidget.loadItext(list); on loading, form item is selected and this is eventually called.
 	}
 
@@ -450,7 +453,17 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		if(formDef == null)
 			Window.alert("No form to submit");
 		else
-			FormUtil.isAuthenticated();
+//			FormUtil.isAuthenticated();
+			sendForm();
+			
+			
+			
+	}
+	
+	
+	private void sendForm(){
+		FormUtil.dlg.setText("Submitting Form...");
+		boolean canSubmit = submitData();
 	}
 
 
@@ -473,33 +486,58 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			loginDlg.center();
 	}
 	
-	private void submitData(){
-		String url = FormUtil.getHostPageBaseURL();
-		url += FormUtil.getFormDefUploadUrlSuffix();
+	private boolean submitData(){
+		
+		if(FormDesigner.token == null || FormDesigner.token.length() == 0){
+			return false;
+		}
+		String url = "http://127.0.0.1:8011/xep/save/";
+		
+//		String url = FormUtil.getHostPageBaseURL();
+//		url += FormUtil.getFormDefUploadUrlSuffix();
 		//url += FormUtil.getFormIdName()+"="+this.formId;
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
 
 		try{
-			builder.sendRequest(xformsWidget.getXform(), new RequestCallback(){
+			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			String data = "token="+FormDesigner.token + "&";
+			data += "continue=true&";
+			saveFile(false);
+			String xml = xformsWidget.getXform();
+			if(xml == null || xml.isEmpty()){
+				Window.alert("XML IS BLANK");
+			}else{
+				Window.alert("XML IS:"+xml+":");
+			}
+			data += URL.encode("xform="+xml);
+			builder.sendRequest(data, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
-
-					if(response.getStatusCode() != Response.SC_OK){
-						FormUtil.displayReponseError(response);
+					int code = response.getStatusCode();
+					if(response.getStatusCode() == Response.SC_OK){
+						FormUtil.dlg.hide();
+						Window.alert("Response Received. SUCCESS");
 						return;
+					}else{
+						Window.alert("Received Status Code != 200. Code is: "+response.getStatusCode()+"\n"+
+								"Headers:"+response.getHeadersAsString());
+						FormUtil.displayReponseError(response);
+						
+						
 					}
-
-					FormUtil.dlg.hide();
-					Window.alert(LocaleText.get("formSaveSuccess"));
 				}
 
 				public void onError(Request request, Throwable exception){
+					Window.alert("sendRequest onError exception....");
 					FormUtil.displayException(exception);
 				}
 			});
+			
+			return true;
 		}
 		catch(RequestException ex){
 			FormUtil.displayException(ex);
+			return false;
 		}
 	}
 }

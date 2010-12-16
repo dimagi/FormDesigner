@@ -106,7 +106,7 @@ public class ItextParser {
 
 		tranlateNodes("label", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
 		tranlateNodes("hint", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
-		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
+//		tranlateNodes("title", doc, defaultText, list, Context.getLocale().getName(),itextMap); //getKey()??????
 
 		Context.getLanguageText().clear();
 

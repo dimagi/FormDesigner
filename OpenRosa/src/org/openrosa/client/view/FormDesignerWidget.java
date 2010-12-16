@@ -89,17 +89,6 @@ public class FormDesignerWidget extends Composite{
 		
 		//Check to see if a token was included in the URL and load the form
 		//if so.
-		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				if(FormDesigner.token != null){
-					FormUtil.dlg.setText("Opening Form, Please Wait...");
-					FormUtil.dlg.show();
-					String xml = getExternalForm();
-					
-
-				}
-			}
-		});	
 
 //		String xml=getFirstName();
 	
@@ -123,10 +112,9 @@ public class FormDesignerWidget extends Composite{
 		centerWidget.onWindowResized(width, height);
 	}
 	
-	private String getExternalForm(){
+	public String getExternalForm(){
 		
-		String url = "http://127.0.0.1:8011/xep/xform/"+FormDesigner.token+"/";
-		Window.alert("Doing GET to url: "+url);
+		String url = FormDesigner.XEP_GET_FORM_URL+FormDesigner.token+"/";
 		doGet(url);
 
 		return this.returnXml;
@@ -135,8 +123,10 @@ public class FormDesignerWidget extends Composite{
 
 	private void setRetrievedXML(String xml){
 		this.returnXml = xml;
-		if (xml == ""){
-			FormDesigner.alert("Blank Xform received! Loading anyway...");
+		if (xml.trim().isEmpty()){
+			FormUtil.dlg.hide();
+//			FormDesigner.alert("Blank Xform received! Please create a form and submit to server...");
+			return;
 		}
 
 		if (xml != null){

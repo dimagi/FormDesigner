@@ -43,7 +43,7 @@ public class Context {
 	public static final byte MODE_XFORMS_SOURCE = 4;
 	
 	/** The default locale key. */
-	private static Locale defaultLocale = new Locale("en","English");
+	private static Locale defaultLocale = new Locale("en","en");
 	
 	/** The current locale. */
 	private static Locale locale = defaultLocale;

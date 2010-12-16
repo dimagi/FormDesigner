@@ -88,6 +88,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		ImageResource newformmenu();
 		ImageResource validate();
 		ImageResource blankbutton();
+		ImageResource send();
 	}
 
 	/** Main widget for this tool bar. */
@@ -96,11 +97,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	/** The tool bar buttons. */
 	private Menu menu;
 	private SplitButton menuBut;
-	private Button saveBut;
+	private Button previewBut;
 	private Button saveFileBut;
 	private Button openBut;
 	private Button openFileBut;
 	private Button submitBut;
+	private Button submitButContinue;
 	private Button locBut;
 	private Button addSelect;
 	private Button txtBut;
@@ -131,7 +133,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 	//This should be localized in the same way everything else is, eventually.
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
-			"MultiSelect Question","SingleSelect Question","Menu","View Form Text","Save To File...","Load from Text...","Localization","Open From File...",
+			"MultiSelect Question","SingleSelect Question","Menu","Preview Form XML","Save To File...","Load Pasted Text...","Localization","Open From File...",
 			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
 
 	ListBox cbLocales = new ListBox(false);
@@ -182,35 +184,41 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		newBut.setIconAlign(IconAlign.LEFT);
 		newBut.addStyleName("myMenuButton");
 
-		saveBut = new Button(buttonLabels[8]);
-		saveBut.setIcon(AbstractImagePrototype.create(images.save()));
-		saveBut.setScale(ButtonScale.LARGE);
-		saveBut.setIconAlign(IconAlign.LEFT);
-		saveBut.addStyleName("myMenuButton");
+		previewBut = new Button(buttonLabels[8]);
+		previewBut.setIcon(AbstractImagePrototype.create(images.load()));
+		previewBut.setScale(ButtonScale.LARGE);
+		previewBut.setIconAlign(IconAlign.LEFT);
+		previewBut.addStyleName("myMenuButton");
 
 		saveFileBut = new Button(buttonLabels[9]);
-		saveFileBut.setIcon(AbstractImagePrototype.create(images.validate()));
+		saveFileBut.setIcon(AbstractImagePrototype.create(images.save()));
 		saveFileBut.setScale(ButtonScale.LARGE);
 		saveFileBut.setIconAlign(IconAlign.LEFT);
 		saveFileBut.addStyleName("myMenuButton");
 
 		openBut = new Button(buttonLabels[10]);
-		openBut.setIcon(AbstractImagePrototype.create(images.load()));
+		openBut.setIcon(AbstractImagePrototype.create(images.open()));
 		openBut.setScale(ButtonScale.LARGE);
 		openBut.setIconAlign(IconAlign.LEFT);
 		openBut.addStyleName("myMenuButton");
 
-		openFileBut = new Button(buttonLabels[12]);
-		openFileBut.setIcon(AbstractImagePrototype.create(images.showxml()));
-		openFileBut.setScale(ButtonScale.LARGE);
-		openFileBut.setIconAlign(IconAlign.LEFT);
-		openFileBut.addStyleName("myMenuButton");
+//		openFileBut = new Button(buttonLabels[12]);
+//		openFileBut.setIcon(AbstractImagePrototype.create(images.showxml()));
+//		openFileBut.setScale(ButtonScale.LARGE);
+//		openFileBut.setIconAlign(IconAlign.LEFT);
+//		openFileBut.addStyleName("myMenuButton");
 		
 		submitBut = new Button("Submit to server");
-		submitBut.setIcon(AbstractImagePrototype.create(images.localization()));
+		submitBut.setIcon(AbstractImagePrototype.create(images.send()));
 		submitBut.setScale(ButtonScale.LARGE);
 		submitBut.setIconAlign(IconAlign.LEFT);
 		submitBut.addStyleName("myMenuButton");
+		
+		submitButContinue = new Button("Submit to server and continue editing");
+		submitButContinue.setIcon(AbstractImagePrototype.create(images.send()));
+		submitButContinue.setScale(ButtonScale.LARGE);
+		submitButContinue.setIconAlign(IconAlign.LEFT);
+		submitButContinue.addStyleName("myMenuButton");
 
 		locBut = new Button(buttonLabels[11]);
 		locBut.setIcon(AbstractImagePrototype.create(images.localization()));
@@ -221,11 +229,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		//menu.add(newBut);
 		menu.add(openBut);
-		menu.add(saveBut);
+		menu.add(previewBut);
 
-		menu.add(openFileBut);
+//		menu.add(openFileBut);
 		menu.add(saveFileBut);
 		menu.add(submitBut);
+		menu.add(submitButContinue);
 
 		//menu.add(locBut);
 
@@ -678,7 +687,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			}
 		});
 
-		saveBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+		previewBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
@@ -688,16 +697,16 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			}
 		});
 
-		openFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
-
-			@Override
-			public void componentSelected(ButtonEvent ce) {
-				// TODO Auto-generated method stub
-				//fileListener.onSave(true);
-				menuBut.hideMenu();
-				fileListener.onOpenFile();
-			}
-		});
+//		openFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+//
+//			@Override
+//			public void componentSelected(ButtonEvent ce) {
+//				// TODO Auto-generated method stub
+//				//fileListener.onSave(true);
+//				menuBut.hideMenu();
+//				fileListener.onOpenFile();
+//			}
+//		});
 
 		saveFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
@@ -718,7 +727,18 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				// TODO Auto-generated method stub
 				//fileListener.onSave(true);
 				menuBut.hideMenu();
-				fileListener.onSubmit();
+				fileListener.onSubmit(false);
+			}
+		});
+		
+		submitButContinue.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				// TODO Auto-generated method stub
+				//fileListener.onSave(true);
+				menuBut.hideMenu();
+				fileListener.onSubmit(true);
 			}
 		});
 		

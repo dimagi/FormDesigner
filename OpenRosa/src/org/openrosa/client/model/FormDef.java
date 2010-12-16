@@ -15,6 +15,7 @@ import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 import org.purc.purcforms.client.xforms.XformUtil;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.XMLParser;
@@ -373,7 +374,7 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public void updateDoc(boolean withData){
 		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, name);
-		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
+//		dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, formKey);
 
 		//TODO Check that this comment out does not introduce bugs
 		//We do not want a refreshed xform to overwrite existing formDef id
@@ -388,21 +389,21 @@ public class FormDef implements IFormElement, Serializable{
 		//Some use non numeric ids like in ODK. And so in such cases, we do not want to overwrite
 		//the existing ids.
 		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
-		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
-			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,"http://openrosa.org/formdesigner/"+UUID.uuid());
+//		if(sid == null || sid.trim().length() == 0 || FormUtil.isNumeric(sid))
+//			dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,"http://openrosa.org/formdesigner/"+UUID.uuid());
 
 		String orgVarName = dataNode.getNodeName();
 		if(!orgVarName.equalsIgnoreCase(variableName)){
 			dataNode = XformUtil.renameNode(dataNode,variableName);
 			updateDataNodes();
-			((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
+//			((Element)dataNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 		}
 
 		if(dataNode != null){
 			if(descriptionTemplate == null || descriptionTemplate.trim().length() == 0)
 				dataNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE);
-			else
-				dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
+//			else
+//				dataNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, descriptionTemplate);
 		}
 		
 		if(children != null){

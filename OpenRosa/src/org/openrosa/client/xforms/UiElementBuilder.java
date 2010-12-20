@@ -8,8 +8,10 @@ import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.purc.purcforms.client.xforms.XformConstants;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -44,10 +46,10 @@ public class UiElementBuilder {
 	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
 		if(qtn.getParent() != null && qtn.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			formNode = qtn.getParent().getDataNode();
-		
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
-		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0)
+		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
+		}
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(XformConstants.NODE_NAME_BIND);
@@ -206,7 +208,7 @@ public class UiElementBuilder {
 			name = XformConstants.NODE_NAME_TRIGGER;
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
-		Element node = doc.createElement(name);
+		Element node = createElementNS(name,null,null);
 		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
 			node.setAttribute(bindAttributeName, id);
 		else
@@ -218,6 +220,48 @@ public class UiElementBuilder {
 		//	node.setAttribute("selection", "closed");
 
 		return node;
+	}
+	
+//	  public static native Element createElementNS(Document doc, String tag, String NS) /*-{
+//	    return doc.createElementNS(NS, tag);
+//	  }-*/;
+	
+	/**
+	 * @param localName the local name of the element to create
+	 * @param prefix the namespace prefix to use
+	 * @param namespaceUri the namespace URI to use
+	 * @return
+	 */
+	public static Element createElementNS(String localName, String prefix, String namespaceUri) {
+		
+		String tagName = (prefix != null) ? prefix + ":" +localName : localName;
+		
+		String xmlnsAttribute = null;
+		
+		if (namespaceUri != null) {
+			xmlnsAttribute = "xmlns";
+			if (prefix != null) {
+				xmlnsAttribute += ":" +prefix;
+			}
+			xmlnsAttribute += "=\"" + namespaceUri + "\"";
+		}
+
+		String template = "<" + tagName + " ";
+		
+		if (xmlnsAttribute != null) {
+			template += xmlnsAttribute + " ";
+		}
+		
+		template += "/>";
+		
+		Element e = XMLParser.parse(template).getDocumentElement();
+		
+		// return clone to work around chrome wrong document error
+		// see http://code.google.com/p/google-web-toolkit/issues/detail?id=4074
+		Element clone = (Element) e.cloneNode(true);
+//		Window.alert ("using 	cool createElementNS");
+		return clone;
+//		return e;
 	}
 
 	public static void setMediaType(Element node, int type){

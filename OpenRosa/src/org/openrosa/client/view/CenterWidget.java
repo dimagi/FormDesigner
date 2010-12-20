@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.FormDesigner;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
+import org.openrosa.client.util.ContinueEditDialog;
 import org.openrosa.client.util.ItextBuilder;
 import org.openrosa.client.util.ItextParser;
+import org.openrosa.client.util.XEPResponse;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
 import org.purc.purcforms.client.PurcConstants;
@@ -23,6 +26,10 @@ import org.purc.purcforms.client.view.SaveFileDialog;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -81,11 +88,17 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	 *  a reference to proceed with the current action.
 	 */
 	private static CenterWidget centerWidget;
+	
+	
+	private String externalXML;
+	private Boolean loadExternalXML;
+	
+	private ContinueEditDialog submitDialogue;
 
 
 	public CenterWidget() {	
 		centerWidget = this;
-		
+		submitDialogue = new ContinueEditDialog();
 		initDesignTab();
 		initXformsTab();
 		initItextTab();
@@ -93,6 +106,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		FormUtil.maximizeWidget(tabs);
 
 		tabs.selectTab(TAB_INDEX_DESIGN);
+		this.loadExternalXML = false;
 
 		//////////////////////////////!!!!!!!!!!!!!!!!!
 		initWidget(designWidget);   /// <<<<<<---------------------- This is a gruesome shortcut
@@ -170,8 +184,21 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		ItextBuilder.itextIds.clear();
 	}
 
+	public void openExternalXML(String xml){
+
+		this.loadExternalXML = true;
+		this.externalXML = xml;
+		openFile();
+	}
+	
 	private void openFile(){
-		String xml = xformsWidget.getXform();
+		String xml;
+		if(loadExternalXML && externalXML != null){
+			xml = externalXML;
+			loadExternalXML = false;  //to keep standard operation going
+		}else{
+			xml = xformsWidget.getXform();
+		}
 		if(xml == null || xml.trim().length() == 0){
 			showOpen();
 			return;
@@ -195,6 +222,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		formDef.setXformXml(xml);
 		designWidget.loadForm(formDef);
+		FormUtil.dlg.hide();
 		//itextWidget.loadItext(list); on loading, form item is selected and this is eventually called.
 	}
 
@@ -269,19 +297,17 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			formDef = null;
 
 		String xml = null;
-
-		if(tabs.getTabBar().getSelectedTab() == TAB_INDEX_ITEXT)
-			xml = saveItext();
-		else if(formDef != null){
+		if(formDef != null){
 			designWidget.commitChanges();
 
 			//TODO need to solve bug when opened forms do not reflect changes in the instance data node names.
 			//This is caused by copying a new model during the xhtml conversion
 			Document doc = formDef.getDoc();
 
-			if(doc != null)
+			if(doc != null){
+//				Window.alert("Lol, doc is not null");
 				formDef.updateDoc(false);
-			else{
+			}else{
 				doc = XhtmlBuilder.fromFormDef2XhtmlDoc(formDef);
 				formDef.setDoc(doc);
 				formDef.setXformsNode(doc.getDocumentElement());
@@ -291,7 +317,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			//itextWidget.loadItext(itextList);
 
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
-			doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+			doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/2002/xforms");
 
 			//These purcforms attributes are not needed by javarosa
 			if(formDef.getDataNode() != null){
@@ -307,11 +333,28 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			itextWidget.loadItext(itextList);
 
 		xformsWidget.setXform(xml);
+		
+		//hack
+		cleanupBadXML(formDef.getDoc());
+		
+		
+		
 		if(showWindow){
 			xformsWidget.showWindow();
 		}
 		//		tabs.selectTab(TAB_INDEX_XFORMS);
 
+	}
+	
+	public void cleanupBadXML(Document doc){
+////		Window.alert("Cleaning?");
+//		((Element)doc.getElementsByTagName("model").item(0)).removeAttribute("xmlns");
+//		NodeList nl = doc.getElementsByTagName("input");
+////		Window.alert("number of input tags found:"+nl.getLength());
+//		for (int i=0;i<nl.getLength();i++){
+//			((Element)nl.item(i)).removeAttribute("xmlns");
+//		}
+//		return;
 	}
 
 	public String saveItext() {
@@ -429,11 +472,22 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 
-	public void onSubmit(){
+	public void onSubmit(boolean continueEdit){
+		CenterWidget.continueEditing = continueEdit;
 		if(formDef == null)
 			Window.alert("No form to submit");
 		else
-			FormUtil.isAuthenticated();
+//			FormUtil.isAuthenticated();
+			sendForm();
+			
+			
+			
+	}
+	
+	
+	private void sendForm(){
+		FormUtil.dlg.setText("Submitting Form...");
+		boolean canSubmit = submitData();
 	}
 
 
@@ -456,33 +510,90 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			loginDlg.center();
 	}
 	
-	private void submitData(){
-		String url = FormUtil.getHostPageBaseURL();
-		url += FormUtil.getFormDefUploadUrlSuffix();
+	
+	public static boolean continueEditing = false;
+	private boolean submitData(){
+		
+		if(FormDesigner.token == null || FormDesigner.token.length() == 0){
+			return false;
+		}
+		
+//		submitDialogue.show();
+		String url = FormDesigner.XEP_POST_FORM_URL;
+		
+//		String url = FormUtil.getHostPageBaseURL();
+//		url += FormUtil.getFormDefUploadUrlSuffix();
 		//url += FormUtil.getFormIdName()+"="+this.formId;
 
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(url));
 
 		try{
-			builder.sendRequest(xformsWidget.getXform(), new RequestCallback(){
+			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			String data = "token="+FormDesigner.token + "&";
+			if(continueEditing){
+				data += "continue=true&";
+			}else{
+				data += "continue=false&";
+			}
+			saveFile(false);
+			String xml = xformsWidget.getXform();
+			if(xml == null || xml.isEmpty()){
+//				Window.alert("Form being sent is blank.");
+			}else{
+//				Window.alert("Sending Form...");
+				FormUtil.dlg.center("Sending Form...");
+				FormUtil.dlg.show();
+			}
+			data += URL.encode("xform="+xml);
+			builder.sendRequest(data, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
-
-					if(response.getStatusCode() != Response.SC_OK){
-						FormUtil.displayReponseError(response);
-						return;
-					}
-
+					int code = response.getStatusCode();
 					FormUtil.dlg.hide();
-					Window.alert(LocaleText.get("formSaveSuccess"));
+//					Window.alert("Received Status Code is: "+code+"\n"+
+//							"Headers:"+response.getHeadersAsString());
+					if(response.getStatusCode() == Response.SC_OK){
+						FormUtil.dlg.center("Succesfully Sent Form!");
+						FormUtil.dlg.show();
+						FormUtil.dlg.hide();
+						XEPResponse xepResponse = ParseXEPResponse(response.getText());
+						
+						
+						if(xepResponse.getContinue()){
+//							Window.alert("Successfully submitted! Status: "+xepResponse.getStatus()+".\nPlease continue editing");
+						}else{
+//							Window.alert("Successfully submitted.  Status: "+xepResponse.getStatus()+"\nRedirecting you back to HQ...");
+							Window.Location.assign(xepResponse.getCallback());
+						}
+						
+						
+						
+						
+						return;
+					}else{
+						FormUtil.displayReponseError(response);
+					}
+					
+					
+//					if(!continueEditing){
+//						Window.Loation.assign(response.getHeader("Location"));
+//					}
 				}
 
 				public void onError(Request request, Throwable exception){
+					Window.alert("sendRequest onError exception....");
 					FormUtil.displayException(exception);
 				}
 			});
+			
+			return true;
 		}
 		catch(RequestException ex){
 			FormUtil.displayException(ex);
+			return false;
 		}
 	}
+	
+	  private final native XEPResponse ParseXEPResponse(String json) /*-{
+	    return eval("(" + json + ")");
+	  }-*/;
 }

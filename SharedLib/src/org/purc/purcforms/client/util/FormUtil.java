@@ -674,11 +674,12 @@ public class FormUtil {
 		dlg.hide();
 
 		ErrorDialog dialogBox = new ErrorDialog();
-		dialogBox.setText(LocaleText.get("unexpectedFailure"));
+		dialogBox.setText("Response Error");
 
-		String errorMessage = response.getHeader("PURCFORMS-ERROR-MESSAGE");
-		if(errorMessage == null || errorMessage.trim().length() == 0)
-			errorMessage = response.getStatusText();
+		String errorMessage = "Status Code: "+response.getStatusCode()+"\n" 
+								+ "Status Text: "+response.getStatusText()+"\n"
+								+ "Response Text: "+response.getText();
+		
 
 		dialogBox.setErrorMessage(errorMessage);
 		String stackTrace = "NO STACK TRACE";

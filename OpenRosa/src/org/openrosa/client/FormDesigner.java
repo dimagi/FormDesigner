@@ -28,12 +28,33 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 * Reference to the form designer widget.
 	 */
 	private FormDesignerWidget designer;
+	
+	/**
+	 * URL used for retreving the xforms from the XEP Server.
+	 * REMEMBER TO INCLUDE THE XEP SESSION TOKEN AFTER THIS POSTFIX!
+	 */
+	public static final String XEP_GET_FORM_URL = "/xep/xform/";
+	
+	/**
+	 * URL used for sending an xform TO the XEP server.
+	 */
+	public static final String XEP_POST_FORM_URL = "/xep/save/";
 
+	public static native void alert(String msg)
+	/*-{
+	 $wnd.alert(msg);
+	}-*/;
+	
+	public static String status;
+	public static String token;
+	
 	/**
 	 * This is the GWT entry point method.
 	 */
 	public void onModuleLoad() {
 		
+		FormDesigner.token = com.google.gwt.user.client.Window.Location.getParameter("token");
+		FormDesigner.status = com.google.gwt.user.client.Window.Location.getParameter("status");
 		FormUtil.setupUncaughtExceptionHandler();
 		
 		FormUtil.dlg.setText(LocaleText.get("loading"));
@@ -60,7 +81,6 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 				FormUtil.dlg.hide();
 				return;
 			}
-
 			FormUtil.setupUncaughtExceptionHandler();
 
 			FormDesignerUtil.setDesignerTitle();
@@ -121,6 +141,17 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 					String id = FormUtil.getFormId();
 					if(id == null || id.equals("-1"))
 						FormUtil.dlg.hide();
+					
+					
+					
+					if(FormDesigner.token != null){
+//						Window.alert("showing dlg?");
+						FormUtil.dlg.setText("Opening Form, Please Wait...");
+						FormUtil.dlg.show();
+						String xml = designer.getExternalForm();
+					}
+					
+					
 				}
 			});
 			

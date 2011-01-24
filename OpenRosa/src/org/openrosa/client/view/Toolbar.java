@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.widget.button.ButtonGroup;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.menu.SeparatorMenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -177,6 +178,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 		menu = new Menu();
 		menu.addStyleName("myMenu");
+		
+		SeparatorMenuItem menuSep = new SeparatorMenuItem();
+		menuSep.addStyleName("myMenuSeperator");
 
 		newBut = new Button(buttonLabels[13]);
 		newBut.setIcon(AbstractImagePrototype.create(images.newformmenu()));
@@ -184,19 +188,19 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		newBut.setIconAlign(IconAlign.LEFT);
 		newBut.addStyleName("myMenuButton");
 
-		previewBut = new Button(buttonLabels[8]);
+		previewBut = new Button("Preview XML");
 		previewBut.setIcon(AbstractImagePrototype.create(images.load()));
 		previewBut.setScale(ButtonScale.LARGE);
 		previewBut.setIconAlign(IconAlign.LEFT);
 		previewBut.addStyleName("myMenuButton");
 
-		saveFileBut = new Button(buttonLabels[9]);
+		saveFileBut = new Button("Save to Local File");
 		saveFileBut.setIcon(AbstractImagePrototype.create(images.save()));
 		saveFileBut.setScale(ButtonScale.LARGE);
 		saveFileBut.setIconAlign(IconAlign.LEFT);
 		saveFileBut.addStyleName("myMenuButton");
 
-		openBut = new Button(buttonLabels[10]);
+		openBut = new Button("Load Pasted Text");
 		openBut.setIcon(AbstractImagePrototype.create(images.open()));
 		openBut.setScale(ButtonScale.LARGE);
 		openBut.setIconAlign(IconAlign.LEFT);
@@ -208,13 +212,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 //		openFileBut.setIconAlign(IconAlign.LEFT);
 //		openFileBut.addStyleName("myMenuButton");
 		
-		submitBut = new Button("Submit to server");
+		submitBut = new Button("Submit and Return");
 		submitBut.setIcon(AbstractImagePrototype.create(images.send()));
 		submitBut.setScale(ButtonScale.LARGE);
 		submitBut.setIconAlign(IconAlign.LEFT);
 		submitBut.addStyleName("myMenuButton");
 		
-		submitButContinue = new Button("Submit to server and continue editing");
+		submitButContinue = new Button("Submit and Continue");
 		submitButContinue.setIcon(AbstractImagePrototype.create(images.send()));
 		submitButContinue.setScale(ButtonScale.LARGE);
 		submitButContinue.setIconAlign(IconAlign.LEFT);
@@ -227,14 +231,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		locBut.addStyleName("myMenuButton");
 		locBut.disable(); //feature not ready yet.
 
-		//menu.add(newBut);
-		menu.add(openBut);
-		menu.add(previewBut);
-
-//		menu.add(openFileBut);
-		menu.add(saveFileBut);
 		menu.add(submitBut);
 		menu.add(submitButContinue);
+		menu.add(menuSep);
+		menu.add(openBut);
+		menu.add(previewBut);
+		menu.add(saveFileBut);
+
 
 		//menu.add(locBut);
 

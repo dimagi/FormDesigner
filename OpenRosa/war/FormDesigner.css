@@ -8,11 +8,21 @@ body, html {
 	
 }
 
+.myMenuSeperator{
+	height: 1px;
+	margin:1px;
+	padding:0px;
+
+}
 .myMenuButton {
   width: 150px;
   text-align: left;
 }
 
+.x-menu-sep-li {
+	margin:0px;
+	padding:0px;
+}
 .myMenu {
   text-align: left;
 }

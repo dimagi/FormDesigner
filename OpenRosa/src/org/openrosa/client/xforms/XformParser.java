@@ -20,6 +20,7 @@ import org.purc.purcforms.client.xforms.XformUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 import org.purc.purcforms.client.xpath.XPathExpression;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -197,6 +198,7 @@ public class XformParser {
 	 * @return the form definition object.
 	 */
 	public static FormDef getFormDef(Document doc){
+		GWT.log("'getting' FormDef");
 		Element rootNode = doc.getDocumentElement();
 		FormDef formDef = new FormDef();
 		formDef.setDoc(doc);
@@ -236,13 +238,14 @@ public class XformParser {
 
 		for(int index = 0; index < elements.size(); index++){
 			IFormElement element = elements.get(index);
-			if(element.getText() == null || element.getText().trim().length() == 0){
+			if((element.getText() == null || element.getText().trim().length() == 0) && !(element instanceof GroupDef)){
 				//element.getParent().removeChild(element); //We do not want to lose the bindings if any.
 				element.getParent().getChildren().remove(element);
 				index--;
 			}
-			else if(element instanceof GroupDef)
-				removeElementsWithoutText(element.getChildren());
+			else if(element instanceof GroupDef){
+//				removeElementsWithoutText(element.getChildren());
+			}
 		}
 	}
 

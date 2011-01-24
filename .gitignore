@@ -5,3 +5,6 @@ SharedLib/.project
 */war/WEB-INF/classes/*
 OpenRosa/.classpath
 SharedLib/.project
+SharedLib/build/
+SharedLib/dist/
+SharedLib/lib/gwt-purcforms-2.0.1.jar

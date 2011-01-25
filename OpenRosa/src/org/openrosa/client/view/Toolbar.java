@@ -90,6 +90,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		ImageResource validate();
 		ImageResource blankbutton();
 		ImageResource send();
+		ImageResource save_exit();
+		ImageResource save_file();
 	}
 
 	/** Main widget for this tool bar. */
@@ -195,7 +197,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		previewBut.addStyleName("myMenuButton");
 
 		saveFileBut = new Button("Save to Local File");
-		saveFileBut.setIcon(AbstractImagePrototype.create(images.save()));
+		saveFileBut.setIcon(AbstractImagePrototype.create(images.save_file()));
 		saveFileBut.setScale(ButtonScale.LARGE);
 		saveFileBut.setIconAlign(IconAlign.LEFT);
 		saveFileBut.addStyleName("myMenuButton");
@@ -212,14 +214,14 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 //		openFileBut.setIconAlign(IconAlign.LEFT);
 //		openFileBut.addStyleName("myMenuButton");
 		
-		submitBut = new Button("Submit and Return");
-		submitBut.setIcon(AbstractImagePrototype.create(images.send()));
+		submitBut = new Button("Save");
+		submitBut.setIcon(AbstractImagePrototype.create(images.save()));
 		submitBut.setScale(ButtonScale.LARGE);
 		submitBut.setIconAlign(IconAlign.LEFT);
 		submitBut.addStyleName("myMenuButton");
 		
-		submitButContinue = new Button("Submit and Continue");
-		submitButContinue.setIcon(AbstractImagePrototype.create(images.send()));
+		submitButContinue = new Button("Save and Exit");
+		submitButContinue.setIcon(AbstractImagePrototype.create(images.save_exit()));
 		submitButContinue.setScale(ButtonScale.LARGE);
 		submitButContinue.setIconAlign(IconAlign.LEFT);
 		submitButContinue.addStyleName("myMenuButton");

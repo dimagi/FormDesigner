@@ -214,13 +214,13 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 //		openFileBut.setIconAlign(IconAlign.LEFT);
 //		openFileBut.addStyleName("myMenuButton");
 		
-		submitBut = new Button("Save");
+		submitBut = new Button("Save and Exit");
 		submitBut.setIcon(AbstractImagePrototype.create(images.save()));
 		submitBut.setScale(ButtonScale.LARGE);
 		submitBut.setIconAlign(IconAlign.LEFT);
 		submitBut.addStyleName("myMenuButton");
 		
-		submitButContinue = new Button("Save and Exit");
+		submitButContinue = new Button("Save");
 		submitButContinue.setIcon(AbstractImagePrototype.create(images.save_exit()));
 		submitButContinue.setScale(ButtonScale.LARGE);
 		submitButContinue.setIconAlign(IconAlign.LEFT);

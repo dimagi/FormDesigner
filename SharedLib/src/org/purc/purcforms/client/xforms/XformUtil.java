@@ -36,7 +36,6 @@ public class XformUtil {
 	 * @return the node.
 	 */
 	public static Element getNode(String xml){
-		Window.alert("WTF Method called.");
 		xml = "<xf:xforms xmlns:xf=\"http://www.w3.org/2002/xforms\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"  xmlns:h=\"http://www.w3.org/1999/xhtml\">" + xml;
 		xml = xml + "</xf:xforms>";
 		Document doc = XMLParser.parse(xml);

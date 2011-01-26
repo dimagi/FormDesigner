@@ -7,6 +7,7 @@ import org.purc.purcforms.client.model.Locale;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -57,9 +58,8 @@ public class QuestionItextView extends Composite {
 		for(Locale locale : Context.getLocales()){
 			
 			//Text for the current locale is not shown in this itext tab.
-			if(locale.getKey().equals(Context.getLocale().getKey()))
-				continue;
-			
+//			if(locale.getKey().equals(Context.getLocale().getKey()))
+//				continue;
 			final String localeName = locale.getName();
 			
 			table.setWidget(row, 0, new Label(localeName));

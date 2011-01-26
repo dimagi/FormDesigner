@@ -73,7 +73,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		this.listener = listener;
 		this.images = GWT.create(Images.class);
 		window.setMaximizable(true);  
-		window.setHeading("Xform Source");  
+		window.setHeading("Localization");  
 		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), getColumnModel());
 		grid.setBorders(true);
 		grid.setStripeRows(true);

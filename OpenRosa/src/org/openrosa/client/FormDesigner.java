@@ -61,6 +61,12 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		FormUtil.dlg.center();
 		
 		publishJS();
+		
+		Window.addWindowClosingHandler(new Window.ClosingHandler() {
+		      public void onWindowClosing(Window.ClosingEvent closingEvent) {
+		        closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
+		      }
+		    });
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {

@@ -428,17 +428,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
-		txtHelpText.addKeyDownHandler(new KeyDownHandler(){
-			public void onKeyDown(KeyDownEvent event) {
-				int keyCode = event.getNativeKeyCode();
-				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN)
-					cbDataType.setFocus(true);
-				else if(keyCode == KeyCodes.KEY_UP){
-					txtText.setFocus(true);
-					txtText.selectAll();
-				}
-			}
-		});
 
 		txtBinding.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
@@ -464,41 +453,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
-		txtBinding.addKeyDownHandler(new KeyDownHandler(){
-			public void onKeyDown(KeyDownEvent event) {
-				if(event.getNativeKeyCode() == KeyCodes.KEY_UP){
-					if(cbDataType.isEnabled())
-						cbDataType.setFocus(true);
-					else{
-						txtText.setFocus(true);
-						txtText.selectAll();
-					}
-				}
-			}
-		});
 
-		txtBinding.addKeyPressHandler(new KeyPressHandler(){
-			public void onKeyPress(KeyPressEvent event) {
-				if(propertiesObj instanceof PageDef){
-					if(!Character.isDigit(event.getCharCode())){
-						((TextBox) event.getSource()).cancelKey(); 
-						return;
-					}
-				}
-				else if(propertiesObj instanceof FormDef || propertiesObj instanceof QuestionDef){
-					if(((TextBox) event.getSource()).getCursorPos() == 0){
-						if(!isAllowedXmlNodeNameStartChar(event.getCharCode())){
-							((TextBox) event.getSource()).cancelKey(); 
-							return;
-						}
-					}
-					else if(!isAllowedXmlNodeNameChar(event.getCharCode())){
-						((TextBox) event.getSource()).cancelKey(); 
-						return;
-					}
-				} //else OptionDef varname can be anything
-			}
-		});
 
 		txtText.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
@@ -516,18 +471,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
-		txtText.addKeyDownHandler(new KeyDownHandler(){
-			public void onKeyDown(KeyDownEvent event) {
-				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
-					if(txtHelpText.isEnabled())
-						txtHelpText.setFocus(true);
-					else{
-						txtBinding.setFocus(true);
-						txtBinding.selectAll();
-					}
-				}
-			}
-		});
+
 
 		qtnID.addKeyUpHandler(new KeyUpHandler(){
 			public void onKeyUp(KeyUpEvent event) {
@@ -535,18 +479,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 		});
 
-		qtnID.addKeyDownHandler(new KeyDownHandler(){
-			public void onKeyDown(KeyDownEvent event) {
-				if(event.getNativeKeyCode() == KeyCodes.KEY_ENTER || event.getNativeKeyCode() == KeyCodes.KEY_DOWN){
-					if(txtText.isEnabled())
-						txtText.setFocus(true);
-					else{
-						txtBinding.setFocus(true);
-						txtBinding.selectAll();
-					}
-				}
-			}
-		});
 
 		txtDescTemplate.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
@@ -579,19 +511,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				updateDataType();
-			}
-		});
-		cbDataType.addKeyDownHandler(new KeyDownHandler(){
-			public void onKeyDown(KeyDownEvent event) {
-				int keyCode = event.getNativeEvent().getKeyCode();
-				if(keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_DOWN){
-					txtBinding.setFocus(true);
-					txtBinding.selectAll();
-				}
-				else if(keyCode == KeyCodes.KEY_UP){
-					txtHelpText.setFocus(true);
-					txtHelpText.selectAll();
-				}
 			}
 		});
 
@@ -1310,8 +1229,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Sets focus to the first input widget.
 	 */
 	public void setFocus(){
-		txtText.setFocus(true);
-		txtText.selectAll();
+//		txtText.setFocus(true);
+//		txtText.selectAll();
 	}
 
 	/**
@@ -1344,19 +1263,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			if(propertiesObj instanceof QuestionDef){
 				txtText.setText(txtText.getText() + " " + txtDescTemplate.getText() + item);
 				updateText();
-				txtText.setFocus(true);
+//				txtText.setFocus(true);
 			}
 			else{
 				txtDescTemplate.setText(txtDescTemplate.getText() + item);
 				updateDescTemplate(); //Added for IE which does not properly throw change events for the desc template textbox
-				txtDescTemplate.setFocus(true);
+//				txtDescTemplate.setFocus(true);
 			}
 		}
 		else if(sender == btnCalculation){
 			assert(propertiesObj instanceof QuestionDef);
 			txtCalculation.setText(txtCalculation.getText() + item);
 			updateCalculation(); //Added for IE which does not properly throw change events for the desc template textbox
-			txtCalculation.setFocus(true);
+//			txtCalculation.setFocus(true);
 		}
 	}
 

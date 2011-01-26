@@ -667,11 +667,11 @@ public class GroupDef implements IFormElement, Serializable{
 		for(int k = 0; k < newElements.size(); k++){
 			IFormElement element = newElements.get(k);
 
-			//We do not update data nodes which deal with attributes.
-			if(element.getDataNode() == null && !element.getBinding().contains("@")){
-				Window.alert(LocaleText.get("missingDataNode") + element.getText());
-				continue; //TODO This is a bug which should be resolved
-			}
+//			//We do not update data nodes which deal with attributes.
+//			if(element.getDataNode() == null && !element.getBinding().contains("@")){
+//				Window.alert(LocaleText.get("missingDataNode") + element.getText());
+//				continue; //TODO This is a bug which should be resolved
+//			}
 
 			int proposedIndex = children.size() - (newElements.size() - k);
 			int currentIndex = children.indexOf(element);

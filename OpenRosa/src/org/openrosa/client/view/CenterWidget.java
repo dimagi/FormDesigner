@@ -477,17 +477,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		if(formDef == null)
 			Window.alert("No form to submit");
 		else
-//			FormUtil.isAuthenticated();
-			sendForm();
+			FormUtil.dlg.setText("Submitting Form...");
+			boolean canSubmit = submitData();
 			
 			
 			
-	}
-	
-	
-	private void sendForm(){
-		FormUtil.dlg.setText("Submitting Form...");
-		boolean canSubmit = submitData();
 	}
 
 
@@ -562,7 +556,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 //							Window.alert("Successfully submitted! Status: "+xepResponse.getStatus()+".\nPlease continue editing");
 						}else{
 //							Window.alert("Successfully submitted.  Status: "+xepResponse.getStatus()+"\nRedirecting you back to HQ...");
-							Window.Location.assign(xepResponse.getCallback());
+							FormDesigner.setShowClosingWindowMessage(false);
+							String redirectURL = xepResponse.getCallback();
+							Window.Location.assign(redirectURL);
 						}
 						
 						

@@ -10,3 +10,10 @@ SharedLib/build/
 SharedLib/dist/
 SharedLib/lib/gwt-purcforms-2.0.1.jar
 OpenRosa/war/formdesigner/
+boolean canSubmit = submitData();
+FormDesigner/war/WEB-INF/lib/
+FormDesigner/.settings/
+.settings
+FormDesigner/.classpath/
+FormDesigner/.project/*
+purcforms/.settings/*

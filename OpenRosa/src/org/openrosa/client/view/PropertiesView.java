@@ -126,8 +126,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** Widget for setting the visibility property. */
 	private CheckBox chkVisible = new CheckBox();
 
-	/** Widget for setting the enabled property. */
-	private CheckBox chkEnabled = new CheckBox();
 
 	/** Widget for setting the locked property. */
 	private CheckBox chkLocked = new CheckBox();
@@ -177,9 +175,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** Widget for defining validation rules. */
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
 
-	/** Widget for defining dynamic selection lists. */
-	private DynamicListsView dynamicListsView = new DynamicListsView();
-	
 	private QuestionItextView itextView = new QuestionItextView();
 
 	/** Listener to form action events. */
@@ -243,7 +238,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(3, 1, cbDataType);
 		table.setWidget(4, 1, txtBinding);
 		table.setWidget(5, 1, chkVisible);
-		table.setWidget(6, 1, chkEnabled);
 		//table.setWidget(7, 1, chkLocked);
 		table.setWidget(7, 1, chkRequired);
 		table.setWidget(8, 1, txtDefaultValue);
@@ -319,8 +313,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(itextView, "Itext");
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
-		tabs.add(dynamicListsView, LocaleText.get("dynamicLists"));
-
 		tabs.selectTab(0);
 		
 		table.setWidget(12, 0, tabs);
@@ -380,13 +372,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				((QuestionDef)propertiesObj).setVisible(chkVisible.getValue() == true);
-				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
-			}
-		});
-
-		chkEnabled.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){
-				((QuestionDef)propertiesObj).setEnabled(chkEnabled.getValue() == true);
 				propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 			}
 		});
@@ -878,10 +863,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		questionDef.setDataType(dataType);
 
-		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-			dynamicListsView.setVisible(false);
-		else if(!dynamicListsView.isEnabled() && questionDef instanceof QuestionDef)
-			dynamicListsView.setQuestionDef((QuestionDef)questionDef);
 	}
 
 	/**
@@ -933,7 +914,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);
-		chkEnabled.setVisible(enable2);
 		chkLocked.setVisible(enable2);
 		chkRequired.setVisible(enable2);
 		txtDefaultValue.setVisible(enable2);
@@ -942,7 +922,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//We do not just wanna show this but rather want to enable them.
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
-		dynamicListsView.setEnabled(enable2);
 		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
@@ -972,7 +951,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//txtDefaultValue.setText(pageDef.getDefaultValue());
 
 		/*chkVisible.setValue(pageDef.isVisible());
-		chkEnabled.setValue(pageDef.isEnabled());
 		chkLocked.setValue(pageDef.isLocked());
 		chkRequired.setValue(pageDef.isRequired());*/
 
@@ -998,7 +976,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultValue.setText(questionDef.getDefaultValue());
 
 		chkVisible.setValue(questionDef.isVisible());
-		chkEnabled.setValue(questionDef.isEnabled());
 		chkLocked.setValue(questionDef.isLocked());
 		chkRequired.setValue(questionDef.isRequired());
 
@@ -1018,12 +995,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				
 				if(propertiesObj instanceof QuestionDef){
 					validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
-					dynamicListsView.setQuestionDef((QuestionDef)propertiesObj);
 					itextView.setQuestionDef((QuestionDef)propertiesObj);
 				}
 				else{
 					validationRulesView.setQuestionDef(null);
-					dynamicListsView.setQuestionDef(null);
 					itextView.setQuestionDef(null);
 				}
 			}
@@ -1061,7 +1036,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);
-		chkEnabled.setVisible(enable2);
 		chkLocked.setVisible(enable2);
 		chkRequired.setVisible(enable2);
 		txtDefaultValue.setVisible(enable2);
@@ -1070,7 +1044,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//We do not just wanna show this but rather want to enable them.
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
-		dynamicListsView.setEnabled(enable2);
 		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
@@ -1166,7 +1139,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public void clearProperties(){
 		cbDataType.setSelectedIndex(DT_INDEX_NONE);
 		chkVisible.setValue(false);
-		chkEnabled.setValue(false);
 		chkLocked.setValue(false);
 		chkRequired.setValue(false);
 		txtDefaultValue.setText(null);
@@ -1248,7 +1220,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public void commitChanges(){
 		skipRulesView.updateSkipRule();
 		validationRulesView.updateValidationRule();
-		dynamicListsView.updateDynamicLists();
 		itextView.update();
 	}
 

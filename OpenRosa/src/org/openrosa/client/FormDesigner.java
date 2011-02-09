@@ -39,6 +39,8 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 * URL used for sending an xform TO the XEP server.
 	 */
 	public static final String XEP_POST_FORM_URL = "/xep/save/";
+	
+	public static boolean showClosingMessage = true;
 
 	public static native void alert(String msg)
 	/*-{
@@ -47,7 +49,6 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	
 	public static String status;
 	public static String token;
-	
 	/**
 	 * This is the GWT entry point method.
 	 */
@@ -64,17 +65,20 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		
 		Window.addWindowClosingHandler(new Window.ClosingHandler() {
 		      public void onWindowClosing(Window.ClosingEvent closingEvent) {
-		        closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
-		      }
+		    	  if(showClosingMessage){
+			        closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
+			      }
+		      }  
 		    });
-
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				onModuleLoadDeffered();
 			}
 		});		
 	}
-
+	public static void setShowClosingWindowMessage(boolean showMsg){
+		showClosingMessage = showMsg;
+	}
 	
 	/**
 	 * Sets up the form designer.

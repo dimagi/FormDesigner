@@ -553,7 +553,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 						
 						
 						if(xepResponse.getContinue()){
-//							Window.alert("Successfully submitted! Status: "+xepResponse.getStatus()+".\nPlease continue editing");
+							Window.alert("Successfully Saved! Please continue editing\n Status: "+xepResponse.getStatus());
 						}else{
 //							Window.alert("Successfully submitted.  Status: "+xepResponse.getStatus()+"\nRedirecting you back to HQ...");
 							FormDesigner.closeHandler.removeHandler();

@@ -81,41 +81,41 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** List box index for dateTime data type. */
 	private static final byte DT_INDEX_DATE_TIME = 5;
 
-	/** List box index for boolean data type. */
-	private static final byte DT_INDEX_BOOLEAN = 6;
-
 	/** List box index for single select data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT = 7;
+	private static final byte DT_INDEX_SINGLE_SELECT = 6;
 
 	/** List box index for multiple select data type. */
-	private static final byte DT_INDEX_MULTIPLE_SELECT = 8;
+	private static final byte DT_INDEX_MULTIPLE_SELECT = 7;
 
 	/** List box index for repeat data type. */
-	private static final byte DT_INDEX_REPEAT = 9;
+	private static final byte DT_INDEX_REPEAT = 8;
 
 	/** List box index for image data type. */
-	private static final byte DT_INDEX_IMAGE = 10;
+	private static final byte DT_INDEX_IMAGE = 9;
 
 	/** List box index for video data type. */
-	private static final byte DT_INDEX_VIDEO = 11;
+	private static final byte DT_INDEX_VIDEO = 10;
 
 	/** List box index for audio data type. */
-	private static final byte DT_INDEX_AUDIO = 12;
-
-	/** List box index for single select dynamic data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 13;
+	private static final byte DT_INDEX_AUDIO = 11;
 
 	/** List box index for gps data type. */
-	private static final byte DT_INDEX_GPS = 14;
+	private static final byte DT_INDEX_GPS = 12;
 	
 	/** List box index for barcode data type. */
-	private static final byte DT_INDEX_BARCODE = 15;
+	private static final byte DT_INDEX_BARCODE = 13;
 	
 	/** List box index for group data type. */
-	private static final byte DT_INDEX_LABEL = 16;
+	private static final byte DT_INDEX_LABEL = 14;
 	
 	/** List box index for group data type. */
-	private static final byte DT_INDEX_GROUP = 17;
+	private static final byte DT_INDEX_GROUP = 15;
+	
+	/** List box index for boolean data type. */
+	private static final byte DT_INDEX_BOOLEAN = 17;
+	
+	/** List box index for single select dynamic data type. */
+	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 18;
 
 	/** Table used for organizing widgets in a table format. */
 	private FlexTable table = new FlexTable();
@@ -275,18 +275,20 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeDate"));
 		cbDataType.addItem(LocaleText.get("qtnTypeTime"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDateTime"));
-		cbDataType.addItem(LocaleText.get("qtnTypeBoolean"));
 		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelect"));
 		cbDataType.addItem(LocaleText.get("qtnTypeMultSelect"));
 		cbDataType.addItem(LocaleText.get("qtnTypeRepeat"));
 		cbDataType.addItem(LocaleText.get("qtnTypePicture"));
 		cbDataType.addItem(LocaleText.get("qtnTypeVideo"));
 		cbDataType.addItem(LocaleText.get("qtnTypeAudio"));
-		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
+
 		cbDataType.addItem(LocaleText.get("qtnTypeGPS"));
 		cbDataType.addItem(LocaleText.get("qtnTypeBarcode"));
 		cbDataType.addItem("Label");
 		cbDataType.addItem("Group");
+		cbDataType.addItem("------------");
+		cbDataType.addItem(LocaleText.get("qtnTypeBoolean"));
+		cbDataType.addItem(LocaleText.get("qtnTypeSingleSelectDynamic"));
 
 		FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setHorizontalAlignment(14, 1, HasHorizontalAlignment.ALIGN_CENTER);

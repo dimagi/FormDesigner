@@ -11,12 +11,15 @@ import org.purc.purcforms.client.util.FormDesignerUtil;
 import org.purc.purcforms.client.util.FormUtil;
 import org.purc.purcforms.client.xforms.XformConstants;
 
+import com.extjs.gxt.ui.client.aria.WindowHandler;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -40,7 +43,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 */
 	public static final String XEP_POST_FORM_URL = "/xep/save/";
 	
-	public static boolean showClosingMessage = true;
+	public static HandlerRegistration closeHandler;
 
 	public static native void alert(String msg)
 	/*-{
@@ -63,22 +66,21 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		
 		publishJS();
 		
-		Window.addWindowClosingHandler(new Window.ClosingHandler() {
+		closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
 		      public void onWindowClosing(Window.ClosingEvent closingEvent) {
-		    	  if(showClosingMessage){
-			        closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
-			      }
+		    	  closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
 		      }  
 		    });
+		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				onModuleLoadDeffered();
 			}
 		});		
+		
+	   
 	}
-	public static void setShowClosingWindowMessage(boolean showMsg){
-		showClosingMessage = showMsg;
-	}
+
 	
 	/**
 	 * Sets up the form designer.

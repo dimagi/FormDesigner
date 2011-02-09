@@ -556,7 +556,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 //							Window.alert("Successfully submitted! Status: "+xepResponse.getStatus()+".\nPlease continue editing");
 						}else{
 //							Window.alert("Successfully submitted.  Status: "+xepResponse.getStatus()+"\nRedirecting you back to HQ...");
-							FormDesigner.setShowClosingWindowMessage(false);
+							FormDesigner.closeHandler.removeHandler();
 							String redirectURL = xepResponse.getCallback();
 							Window.Location.assign(redirectURL);
 						}

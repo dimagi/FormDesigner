@@ -222,7 +222,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(3, 0, lblType);
 		table.setWidget(4, 0, lblBinding);
 		table.setWidget(5, 0, lblVisible);
-		table.setWidget(6, 0, lblEnabled);
+//		table.setWidget(6, 0, lblEnabled);
 		//table.setWidget(7, 0, lblLocked);
 		table.setWidget(7, 0, lblRequired);
 		table.setWidget(8, 0, lblDefault);

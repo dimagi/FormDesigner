@@ -201,6 +201,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		saveFileBut.setScale(ButtonScale.LARGE);
 		saveFileBut.setIconAlign(IconAlign.LEFT);
 		saveFileBut.addStyleName("myMenuButton");
+		saveFileBut.disable();
 
 		openBut = new Button("Load Pasted Text");
 		openBut.setIcon(AbstractImagePrototype.create(images.open()));

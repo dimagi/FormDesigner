@@ -1,6 +1,7 @@
 package org.openrosa.client.view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openrosa.client.Context;
@@ -10,6 +11,7 @@ import org.purc.purcforms.client.model.Locale;
 import org.purc.purcforms.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.data.ModelStringProvider;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
@@ -116,7 +118,6 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			public void handleEvent(final GridEvent<ModelData> ge)
 			{
 				currentColumnIndex = ge.getColIndex();
-
 				MenuItem menuItem = new MenuItem("Add Language");
 				menuItem.addListener(Events.Select, new Listener<BaseEvent>(){
 					public void handleEvent(BaseEvent be)
@@ -146,7 +147,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 					menuItem.addListener(Events.Select, new Listener<BaseEvent>(){
 						public void handleEvent(BaseEvent be)
 						{
-							renameLanguage();
+							renameLanguage(currentColumnIndex);
 						}
 					});
 
@@ -403,9 +404,16 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		String language = cm.getColumnHeader(currentColumnIndex);
 		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + language + " language?"))
 			return;
-
-		for(ItextModel model : store.getModels())
+		
+		Iterator<ItextModel> it = store.getModels().iterator();
+		
+		while(it.hasNext()){
+			ItextModel model = it.next();
 			model.remove(language);
+		}
+		
+//		for(ItextModel model : store.getModels())
+//			model.remove(language);
 
 		cm.getColumns().remove(currentColumnIndex);
 		grid.reconfigure(store, cm);
@@ -421,36 +429,45 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		Context.setLocales(locales);
 	}
 
-	public void renameLanguage(){
-		String oldLanguage = cm.getColumnHeader(currentColumnIndex);
-
+	public void renameLanguage(int curColIndex){
+		String oldLanguage = cm.getColumnHeader(curColIndex);
+		
 		String newLanguage = com.google.gwt.user.client.Window.prompt("Please enter the new name", oldLanguage);
 		if(newLanguage != null && newLanguage.trim().length() > 0){
 
 			List<ItextModel> models = store.getModels();
-			for(ItextModel model : models){
-				model.set(newLanguage, model.get(oldLanguage));
-				//model.remove(oldLanguage);
-			}
-
 			cm.getColumns().get(currentColumnIndex).setHeader(newLanguage);
 			grid.reconfigure(store, cm);
-
-			List<Locale> locales = Context.getLocales();
-			for(Locale locale : locales){
-				if(locale.getName().equals(oldLanguage)){
-					locale.setName(newLanguage);
-					locale.setKey(newLanguage);
-					break;
-				}
+			for(ItextModel row : models){
+				//remove old key (which returns value of key) and add new key
+				row.set(newLanguage, row.remove(oldLanguage));
 			}
 
-			Context.setLocales(Context.getLocales()); //for locale change notification
+
+
+			List<Locale> locales = Context.getLocales();
+			int oldLocaleIndex = 0;
+			for(int i=0;i<locales.size();i++){
+//				if(locale.getName().equals(oldLanguage)){
+//					locale.setName(newLanguage);
+//					locale.setKey(newLanguage);
+//					break;
+//				}
+				
+				if(locales.get(i).getName().equals(oldLanguage)) oldLocaleIndex = i;
+			}
+			
+			locales.remove(oldLocaleIndex=0);
+			Locale l = new Locale(newLanguage,newLanguage);
+			locales.add(l);
+
+			Context.setLocales(locales); //for locale change notification
 		}
 	}
 
 	public void addNewRow(){
 		grid.getStore().add(new ItextModel());
+		grid.getStore().commitChanges();
 		grid.reconfigure(store, cm);
 	}
 
@@ -468,7 +485,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void save(){
-		
+		grid.getStore().commitChanges();
 		hideWindow();
 		
 		FormUtil.dlg.setText("Saving Itext...");

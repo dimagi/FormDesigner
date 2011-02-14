@@ -504,7 +504,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		this.labelNode = labelNode;
 
 		if(itextId == null)
-			setItextId(ItextParser.getItextId(labelNode));
+			setItextId(XmlUtil.getItextId(labelNode));
 	}
 
 	/**
@@ -1501,7 +1501,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, helpText);
 			parentLangNode.appendChild(node);
 			
-			String id = ItextParser.getItextId(hintNode);
+			String id = XmlUtil.getItextId(hintNode);
 			if(id == null)
 				id =  itextId + "-hint";
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);

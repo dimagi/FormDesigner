@@ -276,4 +276,20 @@ public class XmlUtil {
 		
 		return node;
 	}
+	
+	
+	public static String getItextId(Element node) {		
+	//Check if node has a ref attribute.
+	String ref = node.getAttribute("ref");
+	if(ref == null)
+		return null;
+
+	//Check if node has jr:itext value in the ref attribute value.
+	int pos = ref.indexOf("jr:itext('");
+	if(pos < 0)
+		return null;
+
+	//Get the itext id which starts at the 11th character.
+	return ref.substring(10,ref.lastIndexOf("'"));
+}
 }

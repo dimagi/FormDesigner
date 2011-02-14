@@ -4,9 +4,17 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SharedLib"/>
 	<classpathentry kind="lib" path="/SharedLib/lib/gwt-datepicker-r29.jar"/>
-	<classpathentry kind="lib" path="/SharedLib/lib/gwt-user.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
-	<classpathentry kind="lib" path="/SharedLib/lib/gwt-dev.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-dnd-3.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.0.4_2.0.4.v201006301254/gwt-2.0.4/gwt-user.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.0.4_2.0.4.v201006301254/gwt-2.0.4/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.0.4_2.0.4.v201006301254/gwt-2.0.4/gwt-dev.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.2.0.4_2.0.4.v201006301254/gwt-2.0.4/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

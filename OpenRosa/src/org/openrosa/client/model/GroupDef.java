@@ -143,7 +143,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this.labelNode = labelNode;
 
 		if(itextId == null)
-			setItextId(ItextParser.getItextId(labelNode));
+			setItextId(XmlUtil.getItextId(labelNode));
 	}
 
 	/**

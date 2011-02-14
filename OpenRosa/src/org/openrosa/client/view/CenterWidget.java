@@ -10,6 +10,7 @@ import org.openrosa.client.controller.ITextListener;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
 import org.openrosa.client.util.ContinueEditDialog;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextBuilder;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.util.XEPResponse;
@@ -176,13 +177,6 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		});
 	}
 	
-	private void clearItextData(){
-		formAttrMap.clear();
-		Context.getItextMap().clear();
-		ItextParser.itextFormAttrList.clear();
-		itextList = new ListStore<ItextModel>();
-		ItextBuilder.itextIds.clear();
-	}
 
 	public void openExternalXML(String xml){
 
@@ -208,9 +202,9 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		//org.openrosa.client.jr.core.model.FormDef formDef1 = org.openrosa.client.jr.xforms.parse.XFormParser.getFormDef(xml);
 
-		clearItextData();
-
-		FormDef formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
+		Itext.clearLocales();
+		Document doc = ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap());
+		FormDef formDef = XformParser.getFormDef(doc);
 
 		//Because we are still reusing the default purcforms xforms parsing, we need to set the page node.
 		/*if(formDef.getQuestionCount() > 0){
@@ -263,6 +257,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 					if(formDef == null || formDef.getDoc() == null)
 						return;
+					
+					if(formDef.getText() == null || formDef.getText().isEmpty()){
+						return;
+					}
 
 					//this line is necessary for gxt to load the form with text on the design tab.
 					tabs.selectTab(TAB_INDEX_DESIGN);
@@ -376,8 +374,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 	public void onFormItemSelected(Object formItem){
 		
-		if(formItem == null)
-			clearItextData();
+//		if(formItem == null)
+//			clearItextData();
 		
 		if(!(formItem instanceof FormDef))
 			return;

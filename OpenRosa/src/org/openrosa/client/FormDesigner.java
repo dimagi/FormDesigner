@@ -36,12 +36,12 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 * URL used for retreving the xforms from the XEP Server.
 	 * REMEMBER TO INCLUDE THE XEP SESSION TOKEN AFTER THIS POSTFIX!
 	 */
-	public static final String XEP_GET_FORM_URL = "/xep/xform/";
+	public static String XEP_GET_FORM_URL = "/xep/xform/"; //these are intial default values
 	
 	/**
 	 * URL used for sending an xform TO the XEP server.
 	 */
-	public static final String XEP_POST_FORM_URL = "/xep/save/";
+	public static String XEP_POST_FORM_URL = "/xep/save/"; //these are initial default values
 	
 	public static HandlerRegistration closeHandler;
 
@@ -59,6 +59,8 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		
 		FormDesigner.token = com.google.gwt.user.client.Window.Location.getParameter("token");
 		FormDesigner.status = com.google.gwt.user.client.Window.Location.getParameter("status");
+		FormDesigner.XEP_GET_FORM_URL = com.google.gwt.user.client.Window.Location.getParameter("get_url");
+		FormDesigner.XEP_POST_FORM_URL = com.google.gwt.user.client.Window.Location.getParameter("save_url");
 		FormUtil.setupUncaughtExceptionHandler();
 		
 		FormUtil.dlg.setText(LocaleText.get("loading"));

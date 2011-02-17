@@ -6,5 +6,5 @@ import org.openrosa.client.model.ItextModel;
 
 public interface ITextListener {
 	
-	void onSaveItext(List<ItextModel> itext);
+	void onSaveItext();
 }

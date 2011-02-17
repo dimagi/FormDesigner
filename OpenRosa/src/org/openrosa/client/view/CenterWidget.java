@@ -327,8 +327,6 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 		if(formDef != null)
 			formDef.setXformXml(xml);
-		else
-			itextWidget.loadItext(itextList);
 
 		xformsWidget.setXform(xml);
 		
@@ -355,22 +353,6 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 //		return;
 	}
 
-	public String saveItext() {
-		String xml;
-		if(formDef == null || formDef.getDoc() == null)
-			return null;
-
-		//this line is necessary for gxt to load the form with text on the design tab.
-		tabs.selectTab(TAB_INDEX_DESIGN);
-
-		ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itextWidget.getItext(),formAttrMap,Context.getItextMap());
-		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
-
-		//update form outline with the itext changes
-		formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
-		designWidget.refreshForm(formDef);
-		return xml;
-	}
 
 	public void onFormItemSelected(Object formItem){
 		
@@ -396,8 +378,30 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		this.formDef = formDef;
 	}
 
-	public void onSaveItext(List<ItextModel> itext){
-		String xml = saveItext();
+	public void onSaveItext(){
+		//TODO: Take Itext.ListStore<ItextModel>
+		//inject changed/new values into the XML Doc (formDef.getDoc())
+		//trigger a new parsing of the form.
+		//Then do:
+		// formDef.setXformXml(xml);
+		// xformsWidget.setXform(xml);
+		//
+		
+		
+		
+		ListStore<ItextModel> itext = Itext.getItextRows();
+		String xml = null;
+		if(!(formDef == null || formDef.getDoc() == null)){
+			//this line is necessary for gxt to load the form with text on the design tab.
+			tabs.selectTab(TAB_INDEX_DESIGN);
+	
+			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itext, formAttrMap, Context.getItextMap());
+			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
+	
+			//update form outline with the itext changes
+			formDef = XformParser.getFormDef(ItextParser.parse(xml,itextList,formAttrMap,Context.getItextMap()));
+			designWidget.refreshForm(formDef);
+		}
 		formDef.setXformXml(xml);
 		xformsWidget.setXform(xml);
 	}

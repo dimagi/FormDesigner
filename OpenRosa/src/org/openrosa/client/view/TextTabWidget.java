@@ -76,7 +76,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		this.images = GWT.create(Images.class);
 		window.setMaximizable(true);  
 		window.setHeading("Localization");  
-		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), getColumnModel());
+		grid = new EditorGrid<ItextModel>(new ListStore<ItextModel>(), createColumnModel());
 		grid.setBorders(true);
 		grid.setStripeRows(true);
 		grid.setWidth(700);
@@ -311,7 +311,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		window.hide();
 	}
 
-	private ColumnModel getColumnModel(){
+	private ColumnModel createColumnModel(){
 		List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
 
 		ColumnConfig xpath = new ColumnConfig("xpath", "Xpath", 5);
@@ -340,36 +340,16 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	public void loadItext(ListStore<ItextModel> list){
 		store = list;
-		cm = getColumnModel();
+		cm = createColumnModel();
 		grid.reconfigure(store, cm);
 
-		//setupContextMenu();
 
-		//		MenuItem closeMenuItem = new MenuItem();
-		//		closeMenuItem.setText("Close");
-		//		closeMenuItem.addSelectionListener(new SelectionListener<MenuEvent>(){
-		//			public void componentSelected(MenuEvent ce){
-		//		                //this.close();
-		//			}
-		//		});
-		//		
-		//		final Menu contextMenu = new Menu();
-		//		contextMenu.add(closeMenuItem);
-		//		
-		//		grid.getView().getHeader().addListener(Events.OnMouseUp, new Listener<ComponentEvent>(){
-		//		    public void handleEvent(ComponentEvent event){
-		//		        if(event.isRightClick()){
-		//		            event.stopEvent();
-		//		            contextMenu.showAt(event.getClientX(), event.getClientY());
-		//		        }
-		//		    }
-		//		});
 	}
 
-	public List<ItextModel> getItext(){
-		grid.getStore().commitChanges();
-		return grid.getStore().getModels();
-	}
+//	public List<ItextModel> getItext(){
+//		grid.getStore().commitChanges();
+//		return grid.getStore().getModels();
+//	}
 
 	public void adjustHeight(String height){
 		contentPanel.setHeight(height);
@@ -390,8 +370,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			columnConfig.setEditor(new CellEditor(new TextField<String>()));
 
 			String id = cm.getColumnId(2);
-			for(ItextModel model : store.getModels())
-				model.set(lang, model.get(id));
+			for(ItextModel row : store.getModels())
+				row.set(lang, row.get(id));
 
 			grid.reconfigure(store, cm);
 
@@ -494,7 +474,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				try{
-					listener.onSaveItext(getItext());
+					listener.onSaveItext();
 					FormUtil.dlg.hide();
 					showWindow();
 					//com.google.gwt.user.client.Window.alert("Saved Successfully");

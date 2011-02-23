@@ -311,8 +311,12 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 				formDef.setXformsNode(doc.getDocumentElement());
 			}
 
-			ItextBuilder.updateItextBlock(doc,formDef,itextList,formAttrMap,Context.getItextMap());
-			//itextWidget.loadItext(itextList);
+			ListStore<ItextModel> itextData = TextTabWidget.getStore();
+			if(itextData == null){
+				Window.alert("iTextStore is null!");
+				itextData = new ListStore<ItextModel>();
+			}
+			ItextBuilder.updateItextBlock(formDef, itextData);
 
 			doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 			doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/2002/xforms");
@@ -395,7 +399,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			//this line is necessary for gxt to load the form with text on the design tab.
 			tabs.selectTab(TAB_INDEX_DESIGN);
 	
-			ItextBuilder.updateItextBlock(formDef.getDoc(), formDef, itext, formAttrMap, Context.getItextMap());
+			ItextBuilder.updateItextBlock(formDef, itext);
 			xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
 	
 			//update form outline with the itext changes

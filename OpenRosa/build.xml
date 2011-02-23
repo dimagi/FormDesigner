@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="OpenRosa" default="gwtc" basedir=".">
   <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="../../gwt-2.0.4" />
+  <property file="build.properties" /> 
+<!--  <property name="gwt.sdk" location="../../gwt-2.0.4" /> -->
 
 	<!-- SWT on Mac requires the -XstartOFirstThreadFlag. -->
 	<condition property="XstartOnFirstThreadFlag" value="-XstartOnFirstThread"

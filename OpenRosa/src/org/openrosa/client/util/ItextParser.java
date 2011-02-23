@@ -12,6 +12,8 @@ import org.purc.purcforms.client.util.LanguageUtil;
 import org.purc.purcforms.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -70,7 +72,11 @@ public class ItextParser {
 
 			
 			NodeList textNodes = translation.getChildNodes();
+			
 			for(int j=0; j<textNodes.getLength(); j++){
+				if(textNodes.item(j).getNodeType() != Node.ELEMENT_NODE){
+					continue;
+				}
 				Element text = (Element)textNodes.item(j);
 				String id= text.getAttribute("id");
 				if(id == null) continue; //invalid javarosa xform xml at this point

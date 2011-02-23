@@ -55,7 +55,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	private ContentPanel contentPanel = new ContentPanel();
 	private Window window = new Window();
 
-	private ListStore<ItextModel> store;
+	private static ListStore<ItextModel> store;
 	private ColumnModel cm;
 	private int currentColumnIndex = 0;
 	private int currentRowIndex = 0;
@@ -428,18 +428,12 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			List<Locale> locales = Context.getLocales();
 			int oldLocaleIndex = 0;
 			for(int i=0;i<locales.size();i++){
-//				if(locale.getName().equals(oldLanguage)){
-//					locale.setName(newLanguage);
-//					locale.setKey(newLanguage);
-//					break;
-//				}
-				
 				if(locales.get(i).getName().equals(oldLanguage)) oldLocaleIndex = i;
 			}
 			
-			locales.remove(oldLocaleIndex=0);
+			locales.remove(oldLocaleIndex);
 			Locale l = new Locale(newLanguage,newLanguage);
-			locales.add(l);
+			locales.add(oldLocaleIndex, l);
 
 			Context.setLocales(locales); //for locale change notification
 		}
@@ -495,5 +489,13 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		}
 
 		return false;
+	}
+
+	public static ListStore<ItextModel> getStore() {
+		return TextTabWidget.store;
+	}
+
+	public static void setStore(ListStore<ItextModel> store) {
+		TextTabWidget.store = store;
 	}
 }

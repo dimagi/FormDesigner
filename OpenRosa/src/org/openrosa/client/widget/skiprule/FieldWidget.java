@@ -7,7 +7,7 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
+import org.openrosa.client.controller.ItemSelectionListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

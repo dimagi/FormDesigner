@@ -5,8 +5,8 @@ import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.model.ModelConstants;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.model.ModelConstants;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -127,7 +127,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(java.lang.Object, java.lang.Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onItemSelected(java.lang.Object, java.lang.Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender == fieldWidget /*fieldHyperlink*/){
@@ -156,7 +156,7 @@ public class ConditionWidget extends Composite implements ItemSelectionListener{
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onStartItemSelection(Object)
 	 */
 	public void onStartItemSelection(Object sender){
 		if(sender != valueWidget)

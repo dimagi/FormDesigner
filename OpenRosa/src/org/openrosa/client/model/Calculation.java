@@ -2,7 +2,7 @@ package org.openrosa.client.model;
 
 import java.io.Serializable;
 
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 

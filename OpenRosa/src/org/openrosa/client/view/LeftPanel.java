@@ -3,14 +3,15 @@ package org.openrosa.client.view;
 import java.util.List;
 
 import org.openrosa.client.model.FormDef;
-import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.Itext;
+import org.openrosa.client.util.ItextLocale;
+import org.openrosa.client.Context;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -124,7 +125,7 @@ public class LeftPanel extends Composite {
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem(){
 		formsTreeView.deleteSelectedItem();
@@ -149,63 +150,63 @@ public class LeftPanel extends Composite {
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem(){
 		formsTreeView.addNewItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem(){
 		formsTreeView.addNewChildItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
 		formsTreeView.moveItemUp();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown(){
 		formsTreeView.moveItemDown();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem(){
 		formsTreeView.cutItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
 		formsTreeView.copyItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem(){
 		formsTreeView.pasteItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#refreshItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#refreshItem()
 	 */
 	public void refreshItem(){
 		formsTreeView.refreshItem();
 	}
 	
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewQuestion()
 	 */
 	public void addNewQuestion(int dataType){
 		formsTreeView.addNewQuestion(dataType);
@@ -260,8 +261,8 @@ public class LeftPanel extends Composite {
 	 * 
 	 * @param locale the localey key.
 	 */
-	public void setDefaultLocale(Locale locale){
-		Context.setDefaultLocale(locale);
+	public void setDefaultLocale(ItextLocale locale){
+		Itext.setDefaultLocale(locale.name);
 	}
 	
 	/**

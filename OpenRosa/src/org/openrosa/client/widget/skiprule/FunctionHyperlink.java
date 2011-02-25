@@ -1,11 +1,11 @@
 package org.openrosa.client.widget.skiprule;
 
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.widget.SelectItemCommand;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.widget.SelectItemCommand;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -120,7 +120,7 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 	}
 	
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender instanceof SelectItemCommand){
@@ -131,7 +131,7 @@ public class FunctionHyperlink extends Hyperlink implements ItemSelectionListene
 	}
 	
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onStartItemSelection(Object)
 	 */
 	public void onStartItemSelection(Object sender){
 		

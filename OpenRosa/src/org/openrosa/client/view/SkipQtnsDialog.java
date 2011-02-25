@@ -7,10 +7,10 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.QuestionSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.QuestionSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;

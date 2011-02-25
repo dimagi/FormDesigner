@@ -9,13 +9,11 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.openrosa.client.OpenRosaConstants;
-import org.openrosa.client.util.UUID;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.XMLParser;

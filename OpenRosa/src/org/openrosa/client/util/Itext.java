@@ -9,24 +9,36 @@ import org.openrosa.client.model.ItextModel;
 import com.extjs.gxt.ui.client.store.ListStore;
 
 /**
- * Rename me to parseItext
+ * This static objects holds *all* itext data, and is the only
+ * object that should be used for storage getting/setting itext values.
+ * 
+ * (It acts as the CONTROLLER and internally as a model for all Itext related
+ * business)
+ * 
+ * There are two types of storage going on.  One for the internal model
+ * of the itexts, the other (a ListStore) for GUI use.
+ * Both are automatically updated/changed when using the methods of this object.
  * @author adewinter
  *
  */
 public class Itext {
-	private static ListStore<ItextModel> itextRows;
-	public static List<ItextLocale> locales;
+	private static ListStore<ItextModel> itextRows = new ListStore<ItextModel>();
+	public static List<ItextLocale> locales = new ArrayList<ItextLocale>();
 	
-	public Itext(){
+	
+	/**
+	 * Cleans out everything in this static Itext object and starts fresh.
+	 */
+	public static void reset(){
 		itextRows = new ListStore<ItextModel>();
 		locales = new ArrayList<ItextLocale>();
 	}
-	
 	/**
 	 * Returns a row of ONLY the itext values (for all languages) specified by
-	 * the FULL id (ie, in the style of 'id;form' or 'id_hint' where id=textID of the element)
+	 * the FULL id (ie, in the style of 'id;form' or 'id_hint' where id=textID of the element).
+	 * This row can be used by the GUI.
 	 * e.g.
-	 * getItextValues('ID3KAB') -> ItextModel representing: ['ID3KAB','yes','ja','da'] for ID, english, afrikaans
+	 * getItextValueRow('ID3KAB') -> ItextModel representing: ['ID3KAB','yes','ja','da'] for ID, english, afrikaans
 	 * and russian translations respectively
 	 * 
 	 * The order of the row corresponds to the locales list (a static list located in THIS class only)
@@ -46,16 +58,52 @@ public class Itext {
 	}
 	
 	/**
-	 * Adds a new translation item.  Also updates the ListStore (for GUI use)
+	 * Adds a new translation item to the row specified by ID.  Also updates the ListStore (for GUI use)
+	 * Will create new everything (row, language, ID) if they don't exist, or just update them if they do.
 	 * @param language
 	 * @param ID
 	 * @param value
 	 */
 	public static void addText(String language, String ID, String value){
 		ItextLocale lang = Itext.getLocale(language);
-		lang.setTranslation(ID, null, value); //since we don't know what the form is, we'll pretend it's a full ID and move on
+		lang.setTranslation(ID, value);
+		ItextModel row = itextRows.findModel("id", ID); //gets the first one that matches, but there *should* only ever be one if coder abides by contract of this method
+		if(row == null){
+			row = new ItextModel();
+			row.set("id", ID);
+		}
 		
-		updateListStoreFromModel();
+		row.set(language, value);
+		itextRows.add(row);
+		
+	}
+	
+	/**
+	 * Removes a row specified by ID (full ID with text form if it exists!)
+	 * Updated the internal model as well as the GUI ListStore
+	 * @param id
+	 * @return True if row was successfully removed, False if row does not exist
+	 */
+	public static boolean removeRow(String id){
+		ItextModel row = itextRows.findModel("id", id);
+		
+		if(row != null){
+			itextRows.remove(row);
+			
+			//find entry in each locale corresponding to this id
+			//and remove it
+			for(ItextLocale locale : locales){
+				if(locale.hasID(id)){
+					locales.remove(locale);
+				}
+			}
+			
+			
+			
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -70,40 +118,93 @@ public class Itext {
 				return language;
 		}
 		
-		//If we get here, then obviously then language doesn't exist, so create it
+		//If we get here, then obviously the language doesn't exist, so create it
+		return addLocale(name);
+	}
+	
+	/**
+	 * Removes the specified locale (updating both the internal model and the ListStore).
+	 * 
+	 * If locale does not exist, this method does nothing.
+	 * @param name - The Locale name
+	 * @return
+	 */
+	public static void removeLocale(String name){
+		//First clear locale from locales list
+		ItextLocale lang = null;
+		for(ItextLocale language : locales){
+			if(language.getName().equals(name))
+				lang = language;
+		}
+		if(lang != null){
+			locales.remove(lang);
+		}
+		
+		//loop through all itextrows and remove specified language key-value pair.
+		for(ItextModel row: itextRows.getModels()){
+			row.remove(name);
+		}
+		
+	}
+	
+	/**
+	 * Renames a locale.
+	 * @param name
+	 * @return True if locale exists (and rename succesful), else returns false (locale does not exist)
+	 */
+	public static boolean renameLocale(String oldName, String newName){
+		ItextLocale lang = null;
+		for(ItextLocale language : locales){
+			if(language.getName().equals(oldName))
+				lang = language;
+		}
+		if(lang != null){
+			lang.setName(newName);
+		}else{
+			return false; //something is wrong.
+		}
+		//loop through all itextrows and remove specified language key-value pair.
+		for(ItextModel row: itextRows.getModels()){
+			row.set(newName, row.remove(oldName));
+		}
+		
+		return (lang != null);
+		
+	}
+	
+	/**
+	 * Add a new locale to the internal model (as well as the ListStore (for the GUI)) and
+	 * return it
+	 * @param name - The name of the new language to be added.
+	 * @return
+	 */
+	public static ItextLocale addLocale(String name){
 		ItextLocale language = new ItextLocale(name);
 		locales.add(language);
-		updateListStoreFromModel(); //The new locale should show up in the gui as well
+		
+		//update each row to have a new key-value pair for the language. Init with null value
+		for(ItextModel row: itextRows.getModels()){ 
+			row.set(name, null);
+		}
+		
 		return language;
 	}
+	
+
 	
 	/**
 	 * THIS METHOD REMOVES ALL LOCALES (where all the language data is stored)
 	 */
 	public static void clearLocales(){
 		locales = new ArrayList<ItextLocale>();
-		updateListStoreFromModel();
-	}
-	
-
-	
-	private static void updateListStoreFromModel(){
-		//TODO WRITE THE UPDATE CODE!
-		
+		itextRows = new ListStore<ItextModel>();
 	}
 	
 	
-	/**
-	 * Usually used in conjunction with setListStore (when the itext has been updated through the GUI the model
-	 * needs to be updated too)
-	 */
-	private static void updateModelFromListStore(){
-		//TODO WRITE THE UPDATE CODE!
-	}
 	
-	public static void setItextRows(ListStore<ItextModel> itextRows){
+	
+	private static void setItextRows(ListStore<ItextModel> itextRows){
 		Itext.itextRows = itextRows;
-		updateModelFromListStore();
 	}
 	
 	/**
@@ -128,5 +229,53 @@ public class Itext {
 		getLocale(localeName).setDefault(true);
 		
 		// to ensure that we only ever have one default locale
+	}
+	
+	
+	public static ItextLocale getDefaultLocale(){
+		ItextLocale defLocale = null;
+		for (ItextLocale locale : locales){
+			if(locale.isDefault()) defLocale = locale;
+		}
+		
+		//if no default locale is found set the first one as default and continue
+		if(defLocale==null){
+			defLocale = locales.get(0);
+			setDefaultLocale(defLocale.name);
+		}
+		
+		return defLocale;
+	}
+	
+	
+	/**
+	 * Takes in a liststore of itext rows
+	 * and updates the internal model + internal row store (in the
+	 * event that the one passed and the one stored here are different)
+	 * @param rows
+	 */
+	public static void updateModel(ListStore<ItextModel> rows){
+		//for the ListStore
+		//actually we'll just switch the pointer to point to this new ListStore, it's
+		//computationally less expensive and achieves the same goal
+		itextRows = rows;
+		itextRows.commitChanges();
+		for (ItextModel row : itextRows.getModels()){
+		//first go by row	
+			
+			String id = (String)row.get("id");
+			if(id == null){
+				itextRows.remove(row);
+				continue; //Don't really want to store something against a null key
+			}
+			for (ItextLocale locale : locales){
+			//then by column
+				if(locale.hasID(id)){
+					locale.setTranslation(id,(String)row.get(locale.name));
+				}
+			}
+		}
+		
+		
 	}
 }

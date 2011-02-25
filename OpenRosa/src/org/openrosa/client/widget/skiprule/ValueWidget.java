@@ -8,12 +8,12 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.widget.SelectItemCommand;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.widget.SelectItemCommand;
 import org.zenika.widget.client.datePicker.DatePicker;
 
 import com.google.gwt.event.dom.client.BlurEvent;

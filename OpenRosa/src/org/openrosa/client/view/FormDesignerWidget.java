@@ -3,7 +3,7 @@ package org.openrosa.client.view;
 import java.util.Iterator;
 
 import org.openrosa.client.FormDesigner;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Header;

@@ -1,5 +1,6 @@
 package org.openrosa.client.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -29,6 +30,19 @@ public class ItextLocale {
 
 	private HashMap<String, String> getValues() {
 		return values;
+	}
+	
+	/**
+	 * Returns the available itext forms for the specified textID
+	 * @param textID
+	 * @return
+	 */
+	public ArrayList<String> getAvailableForms(String textID){
+		ArrayList<String> keys = new ArrayList<String>();
+		for (String key: getValues().keySet()){
+			keys.add(key);
+		}
+		return keys;
 	}
 	
 	/**
@@ -62,7 +76,7 @@ public class ItextLocale {
 	 * @param form - can be null
 	 * @param value
 	 */
-	public void setTranslation(String ID, String form, String value){
+	private void setTranslation(String ID, String form, String value){
 		if(form!=null)
 			setTranslation(ID+";"+form, value);
 		else
@@ -73,13 +87,17 @@ public class ItextLocale {
 		return values.get(fullID);
 	}
 	
+	public boolean hasID(String fullID){
+		return values.get(fullID)!=null;
+	}
+	
 	/**
 	 * Gets a translation. If no form is present, use null
 	 * @param ID
 	 * @param form - null allowed
 	 * @return
 	 */
-	public String getTranslation(String ID, String form){
+	private String getTranslation(String ID, String form){
 		return getTranslation(ID+";"+form);
 	}
 	
@@ -110,10 +128,20 @@ public class ItextLocale {
 		return getTranslation(ID,"short");
 	}
 
+	/**
+	 * Determines if this locale has been set to be the 
+	 * default locale
+	 * @return
+	 */
 	public boolean isDefault() {
 		return isDefault;
 	}
 
+	/**
+	 * Set whether this locale should be the 'default'
+	 * locale
+	 * @param isDefault
+	 */
 	public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
 	}

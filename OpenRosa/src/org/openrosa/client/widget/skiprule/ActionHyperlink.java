@@ -1,7 +1,7 @@
 package org.openrosa.client.widget.skiprule;
 
 
-import org.purc.purcforms.client.locale.LocaleText;
+import org.openrosa.client.locale.LocaleText;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;

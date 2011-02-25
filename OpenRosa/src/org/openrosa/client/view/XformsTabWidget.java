@@ -2,7 +2,7 @@ package org.openrosa.client.view;
 
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.view.FormDesignerWidget.Images;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.event.ButtonEvent;

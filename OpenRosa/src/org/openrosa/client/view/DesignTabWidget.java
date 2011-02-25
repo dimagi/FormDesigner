@@ -6,8 +6,8 @@ import java.util.List;
 import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.FormDef;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
@@ -190,6 +190,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	}
 	
 	public void commitChanges(){
+		
 		centerPanel.commitChanges();
 	}
 	

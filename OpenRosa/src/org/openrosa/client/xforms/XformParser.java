@@ -14,11 +14,11 @@ import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.RepeatQtnsDef;
 import org.openrosa.client.util.ItextParser;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
-import org.purc.purcforms.client.xpath.XPathExpression;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
+import org.openrosa.client.xpath.XPathExpression;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Document;

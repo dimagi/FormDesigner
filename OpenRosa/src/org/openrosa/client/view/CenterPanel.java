@@ -5,21 +5,21 @@ import org.openrosa.client.controller.ICenterPanel;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.view.FormDesignerWidget.Images;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.controller.LayoutChangeListener;
-import org.purc.purcforms.client.controller.SubmitListener;
-import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
-import org.purc.purcforms.client.controller.WidgetSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.LanguageUtil;
-import org.purc.purcforms.client.view.DesignSurfaceView;
-import org.purc.purcforms.client.view.PreviewView;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.controller.LayoutChangeListener;
+import org.openrosa.client.controller.SubmitListener;
+import org.openrosa.client.controller.WidgetPropertyChangeListener;
+import org.openrosa.client.controller.WidgetSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.LanguageUtil;
+import org.openrosa.client.view.DesignSurfaceView;
+import org.openrosa.client.view.PreviewView;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -135,19 +135,6 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @param images
 	 */
 	public CenterPanel(Images images) {
-		//designSurfaceView = new DesignSurfaceView();
-		//designSurfaceView = new DesignSurfaceView(images);
-		//previewView = new PreviewView((PreviewView.Images)images);
-
-		//initProperties();
-		/*initXformsSource();
-		initDesignSurface();
-		initJavaScriptSource();
-		initLayoutXml();
-		initLanguageXml();
-		initPreview();
-		initModelXml();*/
-		
 		
 		propertiesView.addStyleName("myPropsStyle");
 		FormUtil.maximizeWidget(tabs);
@@ -167,6 +154,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	/**
 	 * @see com.google.gwt.user.client.DOM#addEventPreview(EventPreview)
 	 */
+	@SuppressWarnings("deprecation")
 	private void previewEvents(){
 
 		DOM.addEventPreview(new EventPreview() { 
@@ -364,7 +352,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
+	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
 	public void onFormItemSelected(Object formItem) {
 		propertiesView.onFormItemSelected(formItem);
@@ -591,8 +579,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			//designSurfaceView.setLayoutXml(layoutXml,Context.inLocalizationMode() ? formDef : null); //TODO This passed null formdef in localization mode
 
 			FormDef frmDef = null;
-			if(Context.inLocalizationMode())
-				frmDef = formDef;
+//			if(Context.inLocalizationMode())
+//				frmDef = formDef;
 			;//designSurfaceView.setLayoutXml(layoutXml,frmDef); //TODO This passed null formdef in localization mode
 
 			updateScrollPos();
@@ -676,7 +664,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#format()()
+	 * @see org.openrosa.client.controller.IFormDesignerListener#format()()
 	 */
 	public void format(){
 		if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)
@@ -708,7 +696,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -716,7 +704,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -724,7 +712,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -732,7 +720,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -740,7 +728,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.SubmitListener#onSubmit(String)()
+	 * @see org.openrosa.client.controller.SubmitListener#onSubmit(String)()
 	 */
 	public void onSubmit(String xml) {
 		this.txtModelXml.setText(xml);
@@ -752,14 +740,14 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.SubmitListener#onCancel()()
+	 * @see org.openrosa.client.controller.SubmitListener#onCancel()()
 	 */
 	public void onCancel(){
 
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void alignLeft() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -767,7 +755,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignRight()
 	 */
 	public void alignRight() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -775,7 +763,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -783,7 +771,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -791,7 +779,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameHeight()
 	 */
 	public void makeSameHeight() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -799,7 +787,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameSize()
 	 */
 	public void makeSameSize() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -807,7 +795,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameWidth()
 	 */
 	public void makeSameWidth() {
 		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
@@ -815,7 +803,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#refresh()
+	 * @see org.openrosa.client.controller.IFormDesignerController#refresh()
 	 */
 	public void refresh(){
 		if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
@@ -887,7 +875,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.LayoutChangeListener#onLayoutChanged(String)
+	 * @see org.openrosa.client.controller.LayoutChangeListener#onLayoutChanged(String)
 	 */
 	public void onLayoutChanged(String xml){
 		txtLayoutXml.setText(xml);

@@ -3,8 +3,8 @@ package org.openrosa.client.widget;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.locale.LocaleText;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

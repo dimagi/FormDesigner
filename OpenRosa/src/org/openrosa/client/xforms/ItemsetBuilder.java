@@ -10,8 +10,8 @@ import org.openrosa.client.model.DynamicOptionDef;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;

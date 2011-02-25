@@ -1,44 +1,27 @@
 package org.openrosa.client.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.openrosa.client.Context;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.LanguageUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.XMLParser;
 
 
 /**
- * Parses an xforms document and puts text in all nodes referencing an itext block for a given language.
- * The first language in the itext block is taken to be the current or default one.
+ * Parsing of a new XML (only the Itext section).
  * 
- * @author daniel
+ * Also provides tools for updating the FormDef using the Itext data stored
+ * in Itext
  *
  */
 public class ItextParser {	
 
-//	/**
-//	 * key could be "baseball" and list is {image|jr://images/baseball.gif, long|Baseball, short|bball}
-//	 */
-//	public static HashMap<String,List<String>> itextFormAttrList = new HashMap<String,List<String>>();
-
-//	/**
-//	 * A map of locale doc's xform node keyed by the locale key.
-//	 */
-//	private static HashMap<String, Element> localeXformNodeMap = new HashMap<String, Element>();
 
 	/**
 	 * Parses an xform and sets the text of various nodes based on the current a locale
@@ -46,10 +29,9 @@ public class ItextParser {
 	 * (if no default attribute is found) is the one taken as the default.
 	 * 
 	 * @param xml the xforms xml.
-	 * @param list the itext model which can be displayed in a gxt grid.
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
-	public static Document parse(String xml, ListStore<ItextModel> list, HashMap<String,String> formAttrMap, HashMap<String,ItextModel> itextMap){
+	public static Document parse(String xml){
 		Itext.clearLocales();
 		
 		Document doc = XmlUtil.getDocument(xml);
@@ -63,7 +45,7 @@ public class ItextParser {
 		NodeList translations = ((Element)itext.item(0)).getElementsByTagName("translation");
 		if(translations == null || translations.getLength() == 0)
 			return doc;
-		
+
 		for(int i=0; i<translations.getLength();i++){
 			Element translation = (Element)translations.item(i);
 			String languageName = translation.getAttribute("lang");
@@ -74,9 +56,8 @@ public class ItextParser {
 			NodeList textNodes = translation.getChildNodes();
 			
 			for(int j=0; j<textNodes.getLength(); j++){
-				if(textNodes.item(j).getNodeType() != Node.ELEMENT_NODE){
-					continue;
-				}
+				if(textNodes.item(j).getNodeType() != Node.ELEMENT_NODE) continue;
+				
 				Element text = (Element)textNodes.item(j);
 				String id= text.getAttribute("id");
 				if(id == null) continue; //invalid javarosa xform xml at this point
@@ -86,7 +67,8 @@ public class ItextParser {
 					if(!((Element)valNode).getTagName().toLowerCase().equals("value")) continue; //means invalid xml
 					String textform = ((Element)valNode).getAttribute("form");
 					if(textform != null){
-						language.setTranslation(id, textform, XmlUtil.getTextValue(valNode)); //some textform value
+						id = id + ";" + textform;
+						language.setTranslation(id, XmlUtil.getTextValue(valNode)); //some textform value
 					}else{
 						language.setTranslation(id, XmlUtil.getTextValue(valNode));  //this is obviously the default value
 					}
@@ -97,6 +79,89 @@ public class ItextParser {
 		}
 		
 		return doc;
+	}  
+	
+	/**
+	 * Updates an xforms document (XML) itext block based on data stored in the Itext object.
+	 * 
+	 * @param doc the xforms document.
+	 * @param formDef the form definition object.
+	 * @param list the gxt grid itext model.
+	 */
+	public static void updateItextBlock(FormDef formDef){
+		
+		Element modelNode = XmlUtil.getNode(formDef.getDoc().getDocumentElement(),"model");
+		assert(modelNode != null); //we must have a model in an xform.
+
+		Element itextNode = XmlUtil.getNode(modelNode,"itext");
+		if(itextNode != null)
+			itextNode.getParentNode().removeChild(itextNode);
+		
+		List<ItextLocale> locales = Itext.locales;
+		if(locales == null)
+			return; //Houston we have a problem
+
+		itextNode = formDef.getDoc().createElement("itext");
+		modelNode.appendChild(itextNode);
+		
+		for(ItextLocale locale : locales)
+			createTextValueNodes(formDef,locale,itextNode);
+	}
+
+	
+	/**
+	 * Creates the text (and value) nodes that fill up each translation block
+	 * @param formDef
+	 * @param list
+	 * @param locale
+	 */
+	private static void createTextValueNodes(FormDef formDef, ItextLocale locale, Element itextNode){
+		Document doc = formDef.getDoc();
+		Element translationNode = doc.createElement("translation");
+		translationNode.setAttribute("lang", locale.getName());
+		ListStore<ItextModel> itextRows = Itext.getItextRows();
+		
+		
+		//Check for default
+		if(locale.isDefault()){
+			translationNode.setAttribute("default", "");
+		}
+		itextNode.appendChild(translationNode);
+		
+		for(ItextModel row : itextRows.getModels()){ //we use the itextRows as an index as it's easier than getting a easy to use index from the ItextLocales
+			
+			String fullID = row.get("id");
+			String ID = null;
+			String form = null;
+			if(fullID.contains(";")){
+				ID = fullID.split(";")[0];
+				form = fullID.split(";")[1];
+			}else{
+				ID = fullID;
+			}
+			
+			
+			String language_name = locale.getName();
+			
+			//create nodes
+			Element textNode = doc.createElement("text");
+			Element valueNode = doc.createElement("value");
+			
+			//link nodes up
+			translationNode.appendChild(textNode);
+			textNode.appendChild(valueNode);
+			
+			//set values
+			textNode.setAttribute("id", ID);
+			if(form != null){
+				valueNode.setAttribute("form", form);
+				valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
+			}else{
+				valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
+			}
+			
+			
+		}
 	}
 		
 //		////////============================

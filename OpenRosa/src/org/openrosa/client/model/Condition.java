@@ -3,7 +3,7 @@ package org.openrosa.client.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 

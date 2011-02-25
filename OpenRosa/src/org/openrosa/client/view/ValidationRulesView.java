@@ -9,9 +9,9 @@ import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
 import org.openrosa.client.widget.skiprule.GroupHyperlink;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

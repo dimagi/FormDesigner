@@ -13,14 +13,14 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.TreeModelItem;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
@@ -531,7 +531,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItem()
 	 */
 	public void deleteSelectedItem(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -663,7 +663,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem(){
 		if(inReadOnlyMode())
@@ -912,7 +912,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem(){
 		addNewChildItem(true);
@@ -972,7 +972,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
 		if(inReadOnlyMode())
@@ -1063,7 +1063,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown(){
 		if(inReadOnlyMode())
@@ -1128,7 +1128,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
+	 * @see org.openrosa.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
 	 */
 	public Object onFormItemChanged(Object formItem) {
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1224,7 +1224,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onDeleteChildren(Object)
+	 * @see org.openrosa.client.controller.IFormChangeListener#onDeleteChildren(Object)
 	 */
 	public void onDeleteChildren(Object formItem){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1238,7 +1238,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem(){
 		if(inReadOnlyMode())
@@ -1256,7 +1256,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1267,7 +1267,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem(){
 		if(inReadOnlyMode())
@@ -1368,7 +1368,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#refresh(Object)
+	 * @see org.openrosa.client.controller.IFormDesignerListener#refresh(Object)
 	 */
 	public void refreshItem(){
 		if(inReadOnlyMode())
@@ -1378,7 +1378,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#saveForm()
+	 * @see org.openrosa.client.controller.IFormDesignerListener#saveForm()
 	 */
 	public void saveItem(){
 		formDesignerListener.saveForm();
@@ -1514,7 +1514,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveUp()
 	 */
 	public void moveUp(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1540,7 +1540,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveDown()
 	 */
 	public void moveDown(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();

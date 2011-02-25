@@ -9,9 +9,9 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
-import org.purc.purcforms.client.xpath.XPathExpression;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
+import org.openrosa.client.xpath.XPathExpression;
 
 import com.google.gwt.xml.client.Element;
 

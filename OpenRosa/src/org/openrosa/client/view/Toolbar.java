@@ -9,10 +9,10 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.controller.ILocaleListChangeListener;
-import org.purc.purcforms.client.model.Locale;
+import org.openrosa.client.util.ItextLocale;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.controller.ILocaleListChangeListener;
 
 import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
@@ -36,6 +36,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -101,9 +102,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Menu menu;
 	private SplitButton menuBut;
 	private Button previewBut;
-	private Button saveFileBut;
 	private Button openBut;
 	private Button openFileBut;
+	private Button saveFileBut;
 	private Button submitBut;
 	private Button submitButContinue;
 	private Button locBut;
@@ -123,10 +124,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 	private DesignTabWidget dtabWidget;
 
-	/** Widget to display the list of languages or locales. */
-	private ComboBox<BaseModel> cb;
-
-	private CheckBox chkDefault;
 
 	/** The images for the tool bar icons. */
 	public final Images images;
@@ -138,8 +135,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
 			"MultiSelect Question","SingleSelect Question","Menu","Preview Form XML","Save To File...","Load Pasted Text...","Localization","Open From File...",
 			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
-
-	ListBox cbLocales = new ListBox(false);
+	
+//	/** Widget to display the list of languages or locales. */
+//	ListBox localesComboBox = new ListBox(false);
 
 	ButtonGroup localeGroup;
 
@@ -416,43 +414,29 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		lang.setText("Language : ");
 		group.add(lang);
 
-		cb = new ComboBox<BaseModel>();
-		cb.setDisplayField("name");
+//		localesComboBox.addChangeHandler(new ChangeHandler(){
+//			public void onChange(ChangeEvent event){
+//				int index = getCurrentLocaleIndex();
+//				ListBox listBox = (ListBox)event.getSource();
+//				ItextLocale locale = new ItextLocale(listBox.getValue(listBox.getSelectedIndex()));
+//				if(!controller.changeLocale(locale))
+//					localesComboBox.setSelectedIndex(index);
+//				else
+//					chkDefault.setValue(locale.getKey().equals(Context.getDefaultLocale().getKey()));
+//			}
+//		});
 
-		populateLocales();
-		//cb.setValue(cb.getStore().getAt(0));
-		cb.addSelectionChangedListener(new SelectionChangedListener<BaseModel>() {
-			public void selectionChanged(SelectionChangedEvent<BaseModel> se) {
-
-				if (se.getSelection().size() > 0) {
-					controller.changeLocale(new Locale((String)se.getSelectedItem().get("key"),(String)se.getSelectedItem().get("name")));
-					Info.display("Alert","Language Selected: "+se.getSelectedItem().get("name"));
-				}
-			}});
-
-		cbLocales.addChangeHandler(new ChangeHandler(){
-			public void onChange(ChangeEvent event){
-				int index = getCurrentLocaleIndex();
-				ListBox listBox = (ListBox)event.getSource();
-				Locale locale = new Locale(listBox.getValue(listBox.getSelectedIndex()),listBox.getItemText(listBox.getSelectedIndex()));
-				if(!controller.changeLocale(locale))
-					cbLocales.setSelectedIndex(index);
-				else
-					chkDefault.setValue(locale.getKey().equals(Context.getDefaultLocale().getKey()));
-			}
-		});
-
-		cbLocales.setWidth("100px");
-		group.add(/*cb*/ cbLocales);
+//		localesComboBox.setWidth("100px");
+//		group.add(/*cb*/ localesComboBox);
 		localeGroup = group;
 		//group.addStyleName("localizationGroup");
 
-		chkDefault = new CheckBox("Default");
+//		chkDefault = new CheckBox("Default");
 		//group.add(chkDefault);
 
 		toolBar.add(group);    
 
-		Context.addLocaleListChangeListener(this);
+//		Context.addLocaleListChangeListener(this);
 	}
 
 	public ToolBar getToolBar(){
@@ -691,20 +675,9 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			public void componentSelected(ButtonEvent ce) {
 				// TODO Auto-generated method stub
 				menuBut.hideMenu();
-				fileListener.onSave(true);
+				fileListener.onPreview(true);
 			}
 		});
-
-//		openFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
-//
-//			@Override
-//			public void componentSelected(ButtonEvent ce) {
-//				// TODO Auto-generated method stub
-//				//fileListener.onSave(true);
-//				menuBut.hideMenu();
-//				fileListener.onOpenFile();
-//			}
-//		});
 
 		saveFileBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
@@ -713,7 +686,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				// TODO Auto-generated method stub
 				//fileListener.onSave(true);
 				menuBut.hideMenu();
-				fileListener.onSaveFile();
+				fileListener.saveFile(false);
 			}
 		});
 		
@@ -879,33 +852,33 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		cb.clear();
 		slocales.getModels().clear();*/
 
-		cbLocales.clear();
-
-		List<Locale> locales = Context.getLocales();
-		if(locales == null)
-			return;
-
-		for(Locale locale : locales)
-			cbLocales.addItem(locale.getName(), locale.getKey());
-
-		cbLocales.setSelectedIndex(getCurrentLocaleIndex());
+//		localesComboBox.clear();
+//
+//		List<Locale> locales = Context.getLocales();
+//		if(locales == null)
+//			return;
+//
+//		for(Locale locale : locales)
+//			localesComboBox.addItem(locale.getName(), locale.getKey());
+//
+//		localesComboBox.setSelectedIndex(getCurrentLocaleIndex());
 	}
 
 
-	private int getCurrentLocaleIndex(){
-		Locale currentLocale = Context.getLocale();
-
-		List<Locale> locales = Context.getLocales();
-		assert(locales != null);
-
-		for(int index = 0; index < locales.size(); index++){
-			Locale locale = locales.get(index);
-			if(locale.getKey().equals(currentLocale.getKey()))
-				return index;
-		}
-
-		return 0;
-	}
+//	private int getCurrentLocaleIndex(){
+//		ItextLocale currentLocale = Context.getLocale();
+//
+//		List<Locale> locales = Context.getLocales();
+//		assert(locales != null);
+//
+//		for(int index = 0; index < locales.size(); index++){
+//			Locale locale = locales.get(index);
+//			if(locale.getKey().equals(currentLocale.getKey()))
+//				return index;
+//		}
+//
+//		return 0;
+//	}
 
 	public void onLocaleListChanged(){
 		populateLocales();

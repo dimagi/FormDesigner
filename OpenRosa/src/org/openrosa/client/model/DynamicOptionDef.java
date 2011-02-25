@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.openrosa.client.xforms.ItemsetBuilder;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.ItemsetUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.ItemsetUtil;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 

@@ -6,9 +6,9 @@ import java.util.List;
 import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;

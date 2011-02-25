@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.openrosa.client.xforms.ConstraintBuilder;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 

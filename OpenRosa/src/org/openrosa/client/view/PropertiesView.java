@@ -9,15 +9,16 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.Itext;
+import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.widget.DescTemplateWidget;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.model.PageDef;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.PageDef;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
@@ -180,7 +181,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
 
-	Label lblText = new Label(LocaleText.get("text") + " (" + Context.getLocale().getName() + ")");
+	Label lblText = new Label(LocaleText.get("text") + " (" + Itext.getDefaultLocale().getName() + ")");
 	Label lblQtnID = new Label("ID");
 	Label lblHelpText = new Label(LocaleText.get("helpText"));
 	Label lblType = new Label(LocaleText.get("type"));
@@ -361,7 +362,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cellFormatter.setVisible(4, 0, false);
 		cellFormatter.setVisible(4, 1, false);
 		
-		Context.addLocaleSelectionListener(this);
+//		Context.addLocaleSelectionListener(this);
 		
 		setHeight("100%");
 	}
@@ -1154,7 +1155,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
+	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
 	public void onFormItemSelected(Object formItem) {
 		propertiesObj = formItem;
@@ -1226,7 +1227,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		if(sender == btnDescTemplate){
@@ -1253,7 +1254,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onStartItemSelection(Object)
 	 */
 	public void onStartItemSelection(Object sender) {
 
@@ -1325,7 +1326,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//txtDescTemplate.getParent().setVisible(enable);
 	}
 	
-	public void onLocaleSelected(Locale locale){
+
+	public void onLocaleSelected(ItextLocale locale) {
 		lblText.setText(LocaleText.get("text") + " (" + locale.getName() + ")");
+		
 	}
 }

@@ -11,9 +11,9 @@ import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
 import org.openrosa.client.widget.skiprule.GroupHyperlink;
-import org.purc.purcforms.client.controller.QuestionSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
+import org.openrosa.client.controller.QuestionSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -403,7 +403,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 
 
 	/**
-	 * @see org.purc.purcforms.client.controller.QuestionSelectionListener#onQuestionsSelected(List)
+	 * @see org.openrosa.client.controller.QuestionSelectionListener#onQuestionsSelected(List)
 	 */
 	public void onQuestionsSelected(List<String> questions){
 		if(skipRule == null)

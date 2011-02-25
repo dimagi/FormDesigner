@@ -3,15 +3,16 @@ package org.openrosa.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.util.Itext;
+import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.FormDesignerWidget;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.view.ProgressDialog;
 
-import com.extjs.gxt.ui.client.aria.WindowHandler;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -19,7 +20,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -65,8 +65,6 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		
 		FormUtil.dlg.setText(LocaleText.get("loading"));
 		FormUtil.dlg.center();
-		
-		publishJS();
 		
 		closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
 		      public void onWindowClosing(Window.ClosingEvent closingEvent) {
@@ -178,36 +176,10 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		}
 	}
 	
-	/*private void updateTabs(){
-		String s = FormUtil.getDivValue("showXformsSourceTab");
-		if(!("1".equals(s) || "true".equals(s)))
-			designer.removeXformSourceTab();
-		
-		s = FormUtil.getDivValue("showLayoutXmlTab");
-		if(!("1".equals(s) || "true".equals(s)))
-			designer.removeLayoutXmlTab();
-		
-		s = FormUtil.getDivValue("showLanguageTab");
-		if(!("1".equals(s) || "true".equals(s)))
-			designer.removeLanguageTab();
-		
-		s = FormUtil.getDivValue("showModelXmlTab");
-		if(!("1".equals(s) || "true".equals(s)))
-			designer.removeModelXmlTab();
-		
-		s = FormUtil.getDivValue("showJavaScriptTab");
-		if(!("1".equals(s) || "true".equals(s)))
-			designer.removeJavaScriptTab();
-	}*/
-	
 	public void onResize(ResizeEvent event){
 		designer.onWindowResized(event.getWidth(), event.getHeight());
 	}
 	
-	// Set up the JS-callable signature as a global JS function.
-	private native void publishJS() /*-{
-   		$wnd.authenticationCallback = @org.openrosa.client.view.CenterWidget::authenticationCallback(Z);
-	}-*/;
 	
 	
 	/**
@@ -223,18 +195,14 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		if(tokens == null || tokens.length == 0)
 			return;
 		
-		List<Locale> locales = new ArrayList<Locale>();
+		List<ItextLocale> locales = new ArrayList<ItextLocale>();
 		
 		for(String token: tokens){
-			int index = token.indexOf(':');
-			
-			//Should at least have one character for key or name
-			if(index < 1 || index == token.length() - 1)
-				continue;
-			
-			locales.add(new Locale(token.substring(0,index).trim(),token.substring(index+1).trim()));
+			String lang = token.split(":")[0];
+			if(lang == null || lang.length() == 0)continue;
+			locales.add(new ItextLocale(lang));
 		}
 		
-		Context.setLocales(locales);
+		Itext.locales = locales;
 	}
 }

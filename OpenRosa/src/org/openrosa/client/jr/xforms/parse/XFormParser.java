@@ -49,7 +49,7 @@ import org.openrosa.client.jr.xforms.util.XFormUtils;
 import org.openrosa.client.jr.xpath.XPathConditional;
 import org.openrosa.client.jr.xpath.expr.XPathPathExpr;
 import org.openrosa.client.jr.xpath.parser.XPathSyntaxException;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;

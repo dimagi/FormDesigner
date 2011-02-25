@@ -6,7 +6,7 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;

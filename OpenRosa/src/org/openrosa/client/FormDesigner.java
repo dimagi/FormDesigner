@@ -11,7 +11,6 @@ import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.xforms.XformConstants;
-import org.openrosa.client.view.ProgressDialog;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.logical.shared.ResizeEvent;

@@ -69,8 +69,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	/** Action for refreshing a form. */
 	private static final byte CA_REFRESH_FORM = 3;
 
-	/** Action for setting file contents. */
-	private static final byte CA_SET_FILE_CONTENTS = 4;
 
 	/** The object that is being refreshed. */
 	private Object refreshObject;
@@ -176,35 +174,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			leftPanel.addNewForm();
 	}
 
-
-	public void openForm() {
-		//if(isOfflineMode()){
-			String xml = centerPanel.getXformsSource();
-
-			//Only load layout if in layout mode and no xforms source is supplied.
-			if(centerPanel.isInLayoutMode() && (xml == null || xml.trim().length() == 0)){
-				xml = centerPanel.getLayoutXml();
-				if(xml == null || xml.trim().length() == 0){
-					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
-					dlg.center();
-				}
-			}
-			else{
-				//Whether in layout mode or not, as long as xforms source is supplied, we load it.
-				if(xml != null && xml.trim().length() > 0){
-					FormDef formDef = leftPanel.getSelectedForm();
-					if(formDef != null)
-						refreshFormDeffered();
-					else
-						openFormDeffered(isOfflineMode() ? ModelConstants.NULL_ID : formId,false);
-				}
-				else{
-					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
-					dlg.center();
-				}
-			}
-		//}
-	}
 
 	/**
 	 * Loads a form from the Xforms Source tab, in a deferred command.
@@ -1148,6 +1117,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	@Override
 	public void onSetFileContents(String contents) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openForm() {
 		// TODO Auto-generated method stub
 		
 	}

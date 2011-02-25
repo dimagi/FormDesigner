@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.PurcConstants;
-import org.openrosa.client.LeftPanel.Images;
 import org.openrosa.client.controller.DragDropListener;
 import org.openrosa.client.controller.FormDesignerDragController;
 import org.openrosa.client.controller.FormDesignerDropController;

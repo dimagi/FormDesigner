@@ -24,6 +24,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
 public class Itext {
 	private static ListStore<ItextModel> itextRows = new ListStore<ItextModel>();
 	public static List<ItextLocale> locales = new ArrayList<ItextLocale>();
+	public static ItextLocale currentLocale = null;
 	
 	
 	/**
@@ -278,4 +279,47 @@ public class Itext {
 		
 		
 	}
+	
+	/**
+	 * Set's the itext's idea of what is the 'current' locale to the one specified.
+	 * NB: If the locale does not exist in the internal store already it will be automatically added!
+	 * @param locale
+	 */
+	public static void setCurrentLocale(ItextLocale locale){
+		for(ItextLocale pLocale: locales){
+			if(pLocale.name.equals(locale.name)){
+				currentLocale = locale;
+				return;
+			}
+		}
+		
+		//if we're here, then the locale doesn't exist in the Locales List, so add it
+		addLocale(locale);
+		setCurrentLocale(locale);  //recursive call 
+		
+	}
+	
+	
+	/** 
+	 * Adds the given locale to the internal itext model.
+	 * NB: if a locale by that name already exists in the model it will be overwritten!
+	 * @param locale
+	 */
+	public static void addLocale(ItextLocale locale){
+		int oldLocaleIndex = -1;
+		for(int i=0;i<locales.size();i++){
+			if(locales.get(i).name == locale.name){
+				oldLocaleIndex = i;
+			}
+		}
+		
+		//There's already a locale by this name, so replace it
+		if(oldLocaleIndex != -1){
+			locales.remove(oldLocaleIndex);
+			locales.add(oldLocaleIndex, locale);
+		}else{
+			locales.add(locale);
+		}
+	}
+	
 }

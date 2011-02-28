@@ -53,7 +53,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	/**
 	 * Tool bar images.
 	 */
-	public interface Images extends ClientBundle{
+	public static interface Images extends ClientBundle{
 		ImageResource newform();
 		ImageResource open();
 		ImageResource save();
@@ -126,7 +126,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 
 	/** The images for the tool bar icons. */
-	public final Images images;
+	public static Images images;
 
 	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
@@ -149,7 +149,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	 * @param controller listener to the tool bar button click events.
 	 */
 	public Toolbar(Images images,IFormDesignerListener controller,IFileListener fileListener,DesignTabWidget dtab){
-		this.images = images;
+		Toolbar.images = images;
 		this.dtabWidget = dtab;
 		this.controller = controller;
 		setupToolbar(fileListener);

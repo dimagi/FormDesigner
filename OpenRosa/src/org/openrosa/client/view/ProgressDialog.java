@@ -3,6 +3,9 @@ package org.openrosa.client.view;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.util.FormUtil;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -14,6 +17,10 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class ProgressDialog extends DialogBox{
+	
+	public static interface Images extends ClientBundle{
+		ImageResource loading();
+	}
 
 	/** The label to show the progress or processing message. */
 	private Label label = new Label(LocaleText.get("processingMsg"));
@@ -23,9 +30,9 @@ public class ProgressDialog extends DialogBox{
 	 */
 	public ProgressDialog(){
 		super(false,true);
-
+		Images im = GWT.create(Images.class);
 		HorizontalPanel panel = new HorizontalPanel();
-		panel.add(FormUtil.createImage(FormRunnerView.images.loading()));
+		panel.add(FormUtil.createImage(im.loading()));
 		panel.add(label);
 		
 		setWidget(panel);

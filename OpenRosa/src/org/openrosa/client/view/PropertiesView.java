@@ -17,7 +17,6 @@ import org.openrosa.client.controller.IFormChangeListener;
 import org.openrosa.client.controller.IFormSelectionListener;
 import org.openrosa.client.controller.ItemSelectionListener;
 import org.openrosa.client.locale.LocaleText;
-import org.openrosa.client.model.PageDef;
 import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.dom.client.Style.BorderStyle;
@@ -702,13 +701,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			((OptionDef)propertiesObj).setBinding(txtBinding.getText());
 		else if(propertiesObj instanceof FormDef)
 			((FormDef)propertiesObj).setVariableName(txtBinding.getText());
-		else if(propertiesObj instanceof PageDef){
-			try{
-				((PageDef)propertiesObj).setPageNo(Integer.parseInt(txtBinding.getText()));
-			}catch(Exception ex){
-				return;
-			}
-		}
+//		else if(propertiesObj instanceof PageDef){
+//			try{
+//				((PageDef)propertiesObj).setPageNo(Integer.parseInt(txtBinding.getText()));
+//			}catch(Exception ex){
+//				return;
+//			}
+//		}
 
 		propertiesObj = formChangeListener.onFormItemChanged(propertiesObj);
 	}

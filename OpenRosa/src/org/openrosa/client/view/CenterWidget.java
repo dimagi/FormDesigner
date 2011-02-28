@@ -1,7 +1,5 @@
 package org.openrosa.client.view;
 
-import java.util.HashMap;
-import java.util.List;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.FormDesigner;
@@ -17,17 +15,10 @@ import org.openrosa.client.xforms.XhtmlBuilder;
 import org.openrosa.client.PurcConstants;
 import org.openrosa.client.controller.IFormSelectionListener;
 import org.openrosa.client.controller.OpenFileDialogEventListener;
-import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.util.FormUtil;
-import org.openrosa.client.view.LoginDialog;
-import org.openrosa.client.view.SaveFileDialog;
 import org.openrosa.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.xml.client.NodeList;
-import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.Node;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;

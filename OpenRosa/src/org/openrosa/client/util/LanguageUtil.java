@@ -170,39 +170,39 @@ public class LanguageUtil {
 	public static String getLayoutLocaleText(Document doc){
 		return getNodeText(doc, NODE_NAME_FORM);
 	}
-
-	/**
-	 * Creates a new language of locale document.
-	 * 
-	 * @return the new language document.
-	 */
-	public static Document createNewLanguageDoc(){
-		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
-		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
-		Element rootNode = doc.createElement("LanguageText");
-		rootNode.setAttribute("lang", Context.getLocale().getKey());
-		doc.appendChild(rootNode);
-		return doc;
-	}
-
-	/**
-	 * Gets an xml text which combines locale text for the xform and layout text.
-	 * 
-	 * @param xform the xform locale text.
-	 * @param layout the layout locale text.
-	 * @return the combined text.
-	 */
-	public static String getLocaleText(String xform, String layout){
-		Document doc = createNewLanguageDoc();
-
-		if(xform != null && xform.trim().length() > 0)
-			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(xform).getDocumentElement(),true));
-
-		if(layout != null && layout.trim().length() > 0)
-			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(layout).getDocumentElement(),true));
-
-		return doc.toString();
-	}
+//
+//	/**
+//	 * Creates a new language of locale document.
+//	 * 
+//	 * @return the new language document.
+//	 */
+//	public static Document createNewLanguageDoc(){
+//		com.google.gwt.xml.client.Document doc = XMLParser.createDocument();
+//		doc.appendChild(doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\""));
+//		Element rootNode = doc.createElement("LanguageText");
+//		rootNode.setAttribute("lang", Context.getLocale().getKey());
+//		doc.appendChild(rootNode);
+//		return doc;
+//	}
+//
+//	/**
+//	 * Gets an xml text which combines locale text for the xform and layout text.
+//	 * 
+//	 * @param xform the xform locale text.
+//	 * @param layout the layout locale text.
+//	 * @return the combined text.
+//	 */
+//	public static String getLocaleText(String xform, String layout){
+//		Document doc = createNewLanguageDoc();
+//
+//		if(xform != null && xform.trim().length() > 0)
+//			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(xform).getDocumentElement(),true));
+//
+//		if(layout != null && layout.trim().length() > 0)
+//			doc.getDocumentElement().appendChild(doc.importNode(XMLParser.parse(layout).getDocumentElement(),true));
+//
+//		return doc.toString();
+//	}
 	
 	/**
 	 * Extracts text for a given node name from a document.

@@ -52,7 +52,7 @@ public class FormDesignerWidget extends Composite{
 
 	private DockPanel dockPanel;
 	
-	private CenterWidget centerWidget = new CenterWidget();
+	private CenterWidget centerWidget;
 	
 	private String returnXml;    
 	private int returnErrorCode;
@@ -69,20 +69,25 @@ public class FormDesignerWidget extends Composite{
 	 * @param showToolbar set to true to show the tool bar.
 	 */
 	private void initDesigner(){
-		dockPanel = new DockPanel();
-
-		VerticalPanel panel = new VerticalPanel();
-
-//		panel.add(new FileToolbar(centerWidget));
-		panel.add(centerWidget);
+//		dockPanel = new DockPanel();
+//
+//		VerticalPanel panel = new VerticalPanel();
+//
+////		panel.add(new FileToolbar(centerWidget));
+//		panel.add(centerWidget);
+//		
+//		panel.setWidth("100%");
+//
+//		dockPanel.add(panel, DockPanel.CENTER);
+//
+//		FormUtil.maximizeWidget(dockPanel);
+//
+//		initWidget(dockPanel);
+		centerWidget = new CenterWidget();
+		centerWidget.setWidth("100%");
+		FormUtil.maximizeWidget(centerWidget);
+		initWidget(centerWidget);
 		
-		panel.setWidth("100%");
-
-		dockPanel.add(panel, DockPanel.CENTER);
-
-		FormUtil.maximizeWidget(dockPanel);
-
-		initWidget(dockPanel);
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 		

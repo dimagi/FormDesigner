@@ -9,7 +9,6 @@ import org.openrosa.client.controller.ILocaleSelectionListener;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.controller.ILocaleListChangeListener;
 import org.openrosa.client.util.FormUtil;
-import org.openrosa.client.widget.DesignWidgetWrapper;
 
 
 /**
@@ -57,8 +56,8 @@ public class Context {
 	/** Flag telling whether widgets and locked and hence allow no movement. */
 	private static boolean lockWidgets = false;
 	
-	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
-	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
+//	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
+//	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	
 	private static boolean offlineMode = true;
 	
@@ -179,6 +178,11 @@ public class Context {
 	
 	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
 		return languageText;
+	}
+
+	public static boolean inLocalizationMode() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 	
 }

@@ -9,6 +9,7 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.CenterPanel;
 import org.openrosa.client.view.LeftPanel;
+import org.openrosa.client.view.SaveFileDialog;
 import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
@@ -20,6 +21,7 @@ import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.LanguageUtil;
 import org.openrosa.client.view.FormsTreeView;
 import org.openrosa.client.xforms.XformUtil;
@@ -69,7 +71,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	/** Action for refreshing a form. */
 	private static final byte CA_REFRESH_FORM = 3;
 
-
+	public static byte currentAction = 0;
 	/** The object that is being refreshed. */
 	private Object refreshObject;
 
@@ -175,64 +177,64 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 
-	/**
-	 * Loads a form from the Xforms Source tab, in a deferred command.
-	 * 
-	 * @param id the form identifier.
-	 * @param readonly set to true to load the form in read only mode.
-	 */
-	public void openFormDeffered(int id, boolean readonly) {
-		final int tempFormId = id;
-		final boolean tempReadonly = readonly;
-
-		FormUtil.dlg.setText(LocaleText.get("openingForm"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					String xml = centerPanel.getXformsSource().trim();
-					if(xml.length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml,Context.getLanguageText());
-						formDef.setReadOnly(tempReadonly);
-
-						if(tempFormId != ModelConstants.NULL_ID)
-							formDef.setId(tempFormId);
-
-						if(formDef.getLayoutXml() != null)
-							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
-						else{
-							//Could be from form runner which puts these contents in center panel
-							//because it does not yet have a formdef by the time it has this data.
-							formDef.setXformXml(centerPanel.getXformsSource());
-							formDef.setLayoutXml(centerPanel.getLayoutXml());
-						}
-						
-						if(formDef.getJavaScriptSource() != null)
-							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
-						else
-							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
-
-						//TODO May also need to refresh UI if form was not stored in default lang.
-						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
-						if(locales != null){
-							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
-							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
-						}
-
-						leftPanel.loadForm(formDef);
-						centerPanel.loadForm(formDef,formDef.getLayoutXml());
-						centerPanel.format();
-					}
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
-			}
-		});
-	}
+//	/**
+//	 * Loads a form from the Xforms Source tab, in a deferred command.
+//	 * 
+//	 * @param id the form identifier.
+//	 * @param readonly set to true to load the form in read only mode.
+//	 */
+//	public void openFormDeffered(int id, boolean readonly) {
+//		final int tempFormId = id;
+//		final boolean tempReadonly = readonly;
+//
+//		FormUtil.dlg.setText(LocaleText.get("openingForm"));
+//		FormUtil.dlg.center();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//				try{
+//					String xml = centerPanel.getXformsSource().trim();
+//					if(xml.length() > 0){
+//						FormDef formDef = XformParser.fromXform2FormDef(xml,Context.getLanguageText());
+//						formDef.setReadOnly(tempReadonly);
+//
+//						if(tempFormId != ModelConstants.NULL_ID)
+//							formDef.setId(tempFormId);
+//
+//						if(formDef.getLayoutXml() != null)
+//							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
+//						else{
+//							//Could be from form runner which puts these contents in center panel
+//							//because it does not yet have a formdef by the time it has this data.
+//							formDef.setXformXml(centerPanel.getXformsSource());
+//							formDef.setLayoutXml(centerPanel.getLayoutXml());
+//						}
+//						
+//						if(formDef.getJavaScriptSource() != null)
+//							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
+//						else
+//							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
+//
+//						//TODO May also need to refresh UI if form was not stored in default lang.
+//						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
+//						if(locales != null){
+//							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
+//							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
+//						}
+//
+//						leftPanel.loadForm(formDef);
+//						centerPanel.loadForm(formDef,formDef.getLayoutXml());
+//						centerPanel.format();
+//					}
+//					FormUtil.dlg.hide();
+//				}
+//				catch(Exception ex){
+//					FormUtil.dlg.hide();
+//					FormUtil.displayException(ex);
+//				}	
+//			}
+//		});
+//	}
 
 
 	/**
@@ -388,32 +390,12 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			saveAs();
 	}
 
-	/**
-	 * @see org.openrosa.client.controller.IFormDesignerController#saveFormLayout()
-	 */
-	public void saveFormLayout() {
-		FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					centerPanel.saveFormLayout();
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
-			}
-		});
-	}
 
 
 	public void showAboutInfo() {
-		AboutDialog dlg = new AboutDialog();
-		dlg.setAnimationEnabled(true);
-		dlg.center();
+//		AboutDialog dlg = new AboutDialog();
+//		dlg.setAnimationEnabled(true);
+//		dlg.center();
 	}
 
 	/**
@@ -428,8 +410,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormDesignerController#showLanguages()
 	 */
 	public void showLanguages() {
-		LocalesDialog dlg = new LocalesDialog();
-		dlg.center();
+//		LocalesDialog dlg = new LocalesDialog();
+//		dlg.center();
+		
+		
+		//Appears unused
 	}
 
 	/**
@@ -808,7 +793,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 					if(forms != null && forms.size() > 0){
 						List<FormDef> newForms = new ArrayList<FormDef>();
 						for(FormDef form : forms){
-							xml = getFormLocaleText(form.getId(),Context.getLocale().getKey());
+							xml = null;//getFormLocaleText(form.getId(),Itext.currentLocale.getName());
 							if(xml != null){
 								String xform = FormUtil.formatXml(LanguageUtil.translate(form.getDoc(), xml, true));
 								FormDef newFormDef = XformParser.fromXform2FormDef(xform);
@@ -890,8 +875,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			FormDef formDef = centerPanel.getFormDef();
 
 			if(rebuild){
-				centerPanel.saveLanguageText(selTab);
-				setLocaleText(formDef.getId(),Context.getLocale().getKey(), centerPanel.getLanguageXml());
+//				centerPanel.saveLanguageText(selTab);
+//				setLocaleText(formDef.getId(),Itext.currentLocale.getName(), centerPanel.getLanguageXml());
 			}
 
 			String langXml = formDef.getLanguageXml();
@@ -906,8 +891,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 				FormUtil.dlg.hide();
 			}
-			else
-				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())));
+			else{}
+//				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())));
 		}
 		catch(Exception ex){
 			FormUtil.dlg.hide();
@@ -916,102 +901,93 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 
-	/**
-	 * Reloads forms in a given locale.
-	 * 
-	 * @param locale the locale.
-	 */
-	public boolean changeLocale(final ItextLocale locale){
+//	/**
+//	 * Reloads forms in a given locale.
+//	 * 
+//	 * @param locale the locale.
+//	 */
+//	public boolean changeLocale(final ItextLocale locale){
+//
+//		final FormDef formDef = centerPanel.getFormDef();
+//		if(formDef == null)
+//			return false;
+//
+//		//We need to have saved a form in order to translate it.
+//		if(formDef.getDoc() == null)
+//			saveForm();
+//		else if(!Window.confirm(LocaleText.get("localeChangePrompt")))
+//			return false;
+//
+//		//We need to do the translation in a differed command such that it happens after form saving,
+//		//just in case form hadn't yet been saved.
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//
+//				//Store the new locale.
+//				Itext.setCurrentLocale(locale);
+//
+//				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
+//
+//				String xml = null;
+//				//Get text for this locale, if we have it. 
+//				if(map != null)
+//					xml = map.get(locale.getName());
+//
+//				//If we don't, then get text for the default locale.
+//				if(xml == null && map != null)
+//					xml = map.get(Itext.getDefaultLocale().getName());
+//
+//				//Now reload the forms in this selected locale.
+//				centerPanel.setLanguageXml(xml, false);
+//				openLanguageText();
+//			}
+//		});
+//
+//		return true;
+//	}
 
-		final FormDef formDef = centerPanel.getFormDef();
-		if(formDef == null)
-			return false;
+//	/**
+//	 * Sets locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale the locale key.
+//	 * @param text the form locale text.
+//	 */
+//	private void setLocaleText(Integer formId, String locale, String text){
+//		HashMap<String,String> map = Context.getLanguageText().get(formId);
+//		if(map == null){
+//			map = new HashMap<String,String>();
+//			Context.getLanguageText().put(formId, map);
+//		}
+//
+//		map.put(locale, text);
+//	}
 
-		//We need to have saved a form in order to translate it.
-		if(formDef.getDoc() == null)
-			saveForm();
-		else if(!Window.confirm(LocaleText.get("localeChangePrompt")))
-			return false;
-
-		//We need to do the translation in a differed command such that it happens after form saving,
-		//just in case form hadn't yet been saved.
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-
-				//Store the new locale.
-				Context.setLocale(locale);
-
-				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
-
-				String xml = null;
-				//Get text for this locale, if we have it. 
-				if(map != null)
-					xml = map.get(locale.getName());
-
-				//If we don't, then get text for the default locale.
-				if(xml == null && map != null)
-					xml = map.get(Context.getDefaultLocale().getName());
-
-				//Now reload the forms in this selected locale.
-				centerPanel.setLanguageXml(xml, false);
-				openLanguageText();
-			}
-		});
-
-		return true;
-	}
-
-	/**
-	 * Sets locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale the locale key.
-	 * @param text the form locale text.
-	 */
-	private void setLocaleText(Integer formId, String locale, String text){
-		HashMap<String,String> map = Context.getLanguageText().get(formId);
-		if(map == null){
-			map = new HashMap<String,String>();
-			Context.getLanguageText().put(formId, map);
-		}
-
-		map.put(locale, text);
-	}
-
-	/**
-	 * Gets locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale  the locale key.
-	 * @return the form locale text.
-	 */
-	private String getFormLocaleText(int formId, String locale){
-		HashMap<String,String> map = Context.getLanguageText().get(formId);
-		if(map != null)
-			return map.get(locale);
-		return null;
-	}
-
-	/**
-	 * Sets xforms and layout locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale the locale key.
-	 * @param xform the xforms locale text.
-	 * @param layout the layout locale text.
-	 */
-	public void setLocaleText(Integer formId, String locale, String xform, String layout){
-		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
-	}
-
-	/**
-	 * Sets the default locale used by the form designer.
-	 * 
-	 * @param locale the locale.
-	 */
-	public void setDefaultLocale(Locale locale){
-		Context.setDefaultLocale(locale);
-	}
+//	/**
+//	 * Gets locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale  the locale key.
+//	 * @return the form locale text.
+//	 */
+//	private String getFormLocaleText(int formId, String locale){
+//		HashMap<String,String> map = Context.getLanguageText().get(formId);
+//		if(map != null)
+//			return map.get(locale);
+//		return null;
+//	}
+//
+//	/**
+//	 * Sets xforms and layout locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale the locale key.
+//	 * @param xform the xforms locale text.
+//	 * @param layout the layout locale text.
+//	 */
+//	public void setLocaleText(Integer formId, String locale, String xform, String layout){
+//		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
+//	}
 
 	/**
 	 * Embeds the selected xform into xhtml.
@@ -1089,20 +1065,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 
-
-	@Override
-	public boolean changeLocale(
-			org.openrosa.client.controller.Locale locale) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean changeLocale(Locale locale) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Override
 	public boolean handleKeyBoardEvent(Event event) {
 		// TODO Auto-generated method stub
@@ -1125,5 +1087,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void openForm() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void saveFormLayout() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean changeLocale(ItextLocale locale) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

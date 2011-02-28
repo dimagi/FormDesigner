@@ -45,7 +45,6 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 /**
  * The widget for the internationalization tab.
  * 
- * @author daniel
  *
  */
 public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {

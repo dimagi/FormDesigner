@@ -19,6 +19,7 @@ import org.openrosa.client.controller.ItemSelectionListener;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.util.FormUtil;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -635,8 +636,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Updates the selected object with the new text as typed by the user.
 	 */
 	private void updateText(){
-		if(propertiesObj == null)
+		if(propertiesObj == null){
+			GWT.log("propertiesObj is null, won't update properties!");
 			return;
+		}
 
 		if(propertiesObj instanceof QuestionDef)
 			((QuestionDef)propertiesObj).setText(txtText.getText());
@@ -1034,7 +1037,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	private void enableQuestionOnlyProperties(boolean enabled){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
-		boolean enable2 = (enabled /*&& !Context.inLocalizationMode()*/) ? true : false;
+		boolean enable2 = enabled;
+		GWT.log("enableQuestionOnlyProperties("+enabled+")");
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);
@@ -1044,9 +1048,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtHelpText.setVisible(enabled); //We allow localisation of help text.
 
 		//We do not just wanna show this but rather want to enable them.
-		skipRulesView.setEnabled(enable2);
-		validationRulesView.setEnabled(enable2);
-		itextView.setEnabled(enable2);
+//		skipRulesView.setEnabled(enable2);
+//		validationRulesView.setEnabled(enable2);
+//		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
 		lblVisible.setVisible(enable2);
@@ -1163,6 +1167,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		//For now these may be options for boolean question types (Yes & No)
 		if(formItem == null){
+			GWT.log("FormItem is null");
 			enableQuestionOnlyProperties(false);
 			txtText.setVisible(false);
 			lblText.setVisible(false);
@@ -1268,38 +1273,38 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		this.formActionListener = formActionListener;
 	}
 
-	@Override
-	public void onBrowserEvent(Event event) {
-		switch (DOM.eventGetType(event)) {
-		case Event.ONKEYDOWN:
-			if(!isVisible())
-				return;
-
-			int keyCode = event.getKeyCode();
-			if(event.getCtrlKey()){
-				if(keyCode == 'N' || keyCode == 'n'){
-					formActionListener.addNewItem();
-					DOM.eventPreventDefault(event);
-				}
-				else if(keyCode == KeyCodes.KEY_RIGHT){
-					formActionListener.moveToChild();
-					DOM.eventPreventDefault(event);
-				}
-				else if(keyCode == KeyCodes.KEY_LEFT){
-					formActionListener.moveToParent();
-					DOM.eventPreventDefault(event);
-				}
-				else if(keyCode == KeyCodes.KEY_UP){
-					formActionListener.moveUp();
-					DOM.eventPreventDefault(event);
-				}
-				else if(keyCode == KeyCodes.KEY_DOWN){
-					formActionListener.moveDown();
-					DOM.eventPreventDefault(event);
-				}
-			}
-		}
-	}
+//	@Override
+//	public void onBrowserEvent(Event event) {
+//		switch (DOM.eventGetType(event)) {
+//		case Event.ONKEYDOWN:
+//			if(!isVisible())
+//				return;
+//
+//			int keyCode = event.getKeyCode();
+//			if(event.getCtrlKey()){
+//				if(keyCode == 'N' || keyCode == 'n'){
+//					formActionListener.addNewItem();
+//					DOM.eventPreventDefault(event);
+//				}
+//				else if(keyCode == KeyCodes.KEY_RIGHT){
+//					formActionListener.moveToChild();
+//					DOM.eventPreventDefault(event);
+//				}
+//				else if(keyCode == KeyCodes.KEY_LEFT){
+//					formActionListener.moveToParent();
+//					DOM.eventPreventDefault(event);
+//				}
+//				else if(keyCode == KeyCodes.KEY_UP){
+//					formActionListener.moveUp();
+//					DOM.eventPreventDefault(event);
+//				}
+//				else if(keyCode == KeyCodes.KEY_DOWN){
+//					formActionListener.moveDown();
+//					DOM.eventPreventDefault(event);
+//				}
+//			}
+//		}
+//	}
 
 	private void enableDescriptionTemplate(boolean enable){
 

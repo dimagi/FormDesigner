@@ -128,29 +128,29 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
 
-		previewEvents();
+//		previewEvents();
 	}
 
-
-	// This method should get nuked as soon as it's verified that it
-	// doesn't actually do anything.
-	@SuppressWarnings("deprecation")
-	private void previewEvents(){
-
-		DOM.addEventPreview(new EventPreview() { 
-			public boolean onEventPreview(Event event) 
-			{ 				
-				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
-					byte mode = Context.getCurrentMode();
-
-					if(mode == Context.MODE_QUESTION_PROPERTIES || mode == Context.MODE_XFORMS_SOURCE)
-						return formDesignerListener.handleKeyBoardEvent(event);
-				}
-
-				return true;
-			}
-		});
-	}
+//
+//	// This method should get nuked as soon as it's verified that it
+//	// doesn't actually do anything.
+//	@SuppressWarnings("deprecation")
+//	private void previewEvents(){
+//
+//		DOM.addEventPreview(new EventPreview() { 
+//			public boolean onEventPreview(Event event) 
+//			{ 				
+//				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
+//					byte mode = Context.getCurrentMode();
+//
+//					if(mode == Context.MODE_QUESTION_PROPERTIES || mode == Context.MODE_XFORMS_SOURCE)
+//						return formDesignerListener.handleKeyBoardEvent(event);
+//				}
+//
+//				return true;
+//			}
+//		});
+//	}
 
 
 	/**

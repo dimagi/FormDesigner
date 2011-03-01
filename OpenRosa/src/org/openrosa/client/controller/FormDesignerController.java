@@ -108,6 +108,13 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewQuestion()
 	 */
 	public void addNewQuestion(int dataType){
+		//HERE IS WHERE A NEW QUESTION SHOULD BE CREATED
+		// - Create Question
+		// - Add to FormDef
+		// - Add to FormsTreeView
+		
+		
+		
 		leftPanel.addNewQuestion(dataType);
 	}
 	
@@ -275,12 +282,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormDesignerController#saveForm()
 	 */
 	public void saveForm(){
-		if(isOfflineMode())
 			saveTheForm();
-		else{
-			currentAction = CA_SAVE_FORM;
-			FormUtil.isAuthenticated();
-		}
 	}
 
 	private void saveTheForm() {

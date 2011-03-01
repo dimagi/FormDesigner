@@ -1,6 +1,5 @@
 package org.openrosa.client.view;
 
-import java.util.List;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.controller.IDataTypeChangeListener;
@@ -9,7 +8,6 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
-import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.controller.IFormDesignerListener;
 import org.openrosa.client.controller.IFormSelectionListener;
 import org.openrosa.client.controller.ILocaleListChangeListener;
@@ -18,29 +16,19 @@ import com.extjs.gxt.ui.client.Style.ButtonArrowAlign;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.Style.IconAlign;
-import com.extjs.gxt.ui.client.data.BaseModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
-import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
-import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonGroup;
 import com.extjs.gxt.ui.client.widget.button.SplitButton;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.SeparatorMenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * This widget is the tool bar for the form designer.
@@ -103,7 +91,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private SplitButton menuBut;
 	private Button previewBut;
 	private Button openBut;
-	private Button openFileBut;
 	private Button saveFileBut;
 	private Button submitBut;
 	private Button submitButContinue;

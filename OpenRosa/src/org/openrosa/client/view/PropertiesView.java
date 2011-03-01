@@ -26,6 +26,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -327,14 +329,22 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		verticalPanel.setWidth("100%");
 		initWidget(verticalPanel);
 
-		setupEventListeners();
+//		setupEventListeners();
 
 		cbDataType.setSelectedIndex(-1);
 
-		enableQuestionOnlyProperties(false);
+//		enableQuestionOnlyProperties(false);
 		qtnID.setVisible(false);
 		lblQtnID.setVisible(false);
 		txtText.setVisible(false);
+		txtText.addFocusHandler(new FocusHandler() {
+			
+			@Override
+			public void onFocus(FocusEvent event) {
+				GWT.log("Focused on txtText!");
+				
+			}
+		});
 		lblText.setVisible(false);
 		//txtDescTemplate.setVisible(false);
 		//btnDescTemplate.setVisible(false);
@@ -356,8 +366,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultValue.setTitle(LocaleText.get("defaultValDesc"));
 		cbDataType.setTitle(LocaleText.get("questionTypeDesc"));
 
-		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
-		
+//		DOM.sinkEvents(getElement(), Event.ONKEYDOWN | DOM.getEventsSunk(getElement()));
+
 		cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setVisible(4, 0, false);
 		cellFormatter.setVisible(4, 1, false);
@@ -719,6 +729,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Updates the selected object with the new help text as typed by the user.
 	 */
 	private void updateHelpText(){
+		GWT.log("updateHelpText! propertiesObj null?"+(propertiesObj == null));
 		if(propertiesObj == null)
 			return;
 
@@ -1038,7 +1049,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private void enableQuestionOnlyProperties(boolean enabled){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
 		boolean enable2 = enabled;
-		GWT.log("enableQuestionOnlyProperties("+enabled+")");
 
 		cbDataType.setVisible(enable2);
 		chkVisible.setVisible(enable2);
@@ -1161,6 +1171,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
 	public void onFormItemSelected(Object formItem) {
+		GWT.log("onFormItemSelected!");
 		propertiesObj = formItem;
 
 		clearProperties();

@@ -61,11 +61,6 @@ public class Context {
 	
 	private static boolean offlineMode = true;
 	
-	/** List of those interested in being notified whenever the locale list changes. */
-	private static List<ILocaleListChangeListener> localeListListeners = new ArrayList<ILocaleListChangeListener>();
-	
-	private static List<ILocaleSelectionListener> localeSelectionListeners = new ArrayList<ILocaleSelectionListener>(); 
-	
 	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
 	 * key and text, where locale key is the value map key and text is the value map value.
 	 */
@@ -176,13 +171,13 @@ public class Context {
 		return eventBus;
 	}
 	
-	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
-		return languageText;
-	}
-
-	public static boolean inLocalizationMode() {
-		// TODO Auto-generated method stub
-		return true;
-	}
+//	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
+//		return languageText;
+//	}
+//
+//	public static boolean inLocalizationMode() {
+//		// TODO Auto-generated method stub
+//		return true;
+//	}
 	
 }

@@ -17,6 +17,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 
 
@@ -43,10 +44,10 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	 * Widget used on the left hand side of the form designer to display a list
 	 * of forms and their pages, questions, etc.
 	 */
-	private LeftPanel leftPanel = new LeftPanel(FormDesignerWidget.images,centerPanel);
+	private FormsTreeView formsTreeView = new FormsTreeView(centerPanel);
 
 	/** The coordinator for execution of commands between the menu and tool bar, left and center panel. */
-	private FormDesignerController controller = new FormDesignerController(centerPanel,leftPanel);
+	private FormDesignerController controller = new FormDesignerController(centerPanel,formsTreeView);
 
 	/** The splitter between the left and center panel. */
 
@@ -58,16 +59,16 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	private List<IFormSelectionListener> formSelectionListeners = new ArrayList<IFormSelectionListener>();
 	
 	public DesignTabWidget(IFileListener fileListener){
-		leftPanel.showFormAsRoot();
+		formsTreeView.showFormAsRoot(true);
 
-		leftPanel.setFormDesignerListener(controller);
-		leftPanel.addFormSelectionListener(this);
-		leftPanel.addFormSelectionListener(centerPanel.getFormSelectionListener());
+		formsTreeView.setFormDesignerListener(controller);
+		formsTreeView.addFormSelectionListener(this);
+		formsTreeView.addFormSelectionListener(centerPanel.getFormSelectionListener());
 		
-		centerPanel.setFormActionListener(leftPanel.getFormActionListener());
+		centerPanel.setFormActionListener(formsTreeView);
 		
 		initDesigner(fileListener);  
-		centerPanel.setFormChangeListener(leftPanel.getFormChangeListener());
+		centerPanel.setFormChangeListener(formsTreeView);
 	}
 
 
@@ -82,7 +83,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    panel.setLayout(layout); 
 	    panel.setBorders(false);
 	    
-		Toolbar toolbar = new Toolbar(FormDesignerWidget.images,controller,fileListener,this);
+		Toolbar toolbar = new Toolbar(controller,fileListener,this);
 		//Context.addLocaleListChangeListener(toolbar);
 		panel.setTopComponent(toolbar.getToolBar());
 	    
@@ -91,8 +92,15 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    leftData.setCollapsible(true);  
 	    leftData.setMargins(new Margins(0,5,10,0));
 	    //panel.setScrollMode(Scroll.AUTOY);
+	    ContentPanel cp = new ContentPanel();
+	    cp.setHeading("Form Tree View");
+		cp.add(formsTreeView);
+		FlowPanel stackPanel = new FlowPanel();
+		stackPanel.add(cp);
+		stackPanel.addStyleName("myFormTreeView");
+		FormUtil.maximizeWidget(stackPanel);
 	    ScrollPanel scrollPanel = new ScrollPanel();
-	    scrollPanel.setWidget(leftPanel);
+	    scrollPanel.setWidget(stackPanel);
 	    panel.add(scrollPanel,leftData);
 	    
 	    
@@ -100,7 +108,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER,300);  
 	    centerData.setMargins(new Margins(0,0,10,0));  
 	    centerData.setSplit(true); 
-	    ContentPanel cp = new ContentPanel();
+	    cp = new ContentPanel();
 	    
 	    cp.expand();
 	    cp.setHeading("Properties View");
@@ -148,7 +156,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
 	 */
 	public void onWindowResized(int width, int height){		
-		int shortcutHeight = height - leftPanel.getAbsoluteTop() - 5;//8;
+		int shortcutHeight = height - formsTreeView.getAbsoluteTop() - 5;//8;
 		if (shortcutHeight < 1) 
 			shortcutHeight = 1;
 
@@ -178,15 +186,15 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 //	}
 	
 	public void loadForm(FormDef formDef){
-		leftPanel.loadForm(formDef);
+		formsTreeView.loadForm(formDef, true, false);
 	}
 	
 	public void refreshForm(FormDef formDef){
-		leftPanel.refresh(formDef);
+		formsTreeView.refreshForm(formDef);
 	}
 	
 	public void addNewForm(){
-		leftPanel.addNewForm();
+		formsTreeView.addNewForm();
 	}
 	
 	public void commitChanges(){

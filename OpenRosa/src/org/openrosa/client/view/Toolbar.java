@@ -25,6 +25,7 @@ import com.extjs.gxt.ui.client.widget.button.SplitButton;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.SeparatorMenuItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -113,7 +114,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 
 
 	/** The images for the tool bar icons. */
-	public static Images images;
+	public static Images images = GWT.create(Images.class);
 
 	/** Listener to the tool bar button click events. */
 	private IFormDesignerListener controller;
@@ -135,8 +136,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	 * @param images the images for tool bar icons.
 	 * @param controller listener to the tool bar button click events.
 	 */
-	public Toolbar(Images images,IFormDesignerListener controller,IFileListener fileListener,DesignTabWidget dtab){
-		Toolbar.images = images;
+	public Toolbar(IFormDesignerListener controller,IFileListener fileListener,DesignTabWidget dtab){
 		this.dtabWidget = dtab;
 		this.controller = controller;
 		setupToolbar(fileListener);

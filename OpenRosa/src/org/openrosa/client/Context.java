@@ -175,9 +175,9 @@ public class Context {
 //		return languageText;
 //	}
 //
-//	public static boolean inLocalizationMode() {
-//		// TODO Auto-generated method stub
-//		return true;
-//	}
+	public static boolean inLocalizationMode() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 	
 }

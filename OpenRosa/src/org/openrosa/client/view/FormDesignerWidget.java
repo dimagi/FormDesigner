@@ -12,6 +12,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
@@ -42,13 +44,16 @@ public class FormDesignerWidget extends Composite{
 	 * Instantiate an application-level image bundle. This object will provide
 	 * programatic access to all the images needed by widgets.
 	 */
-	public static final Images images = (Images) GWT.create(Images.class);
+	public static Images images;
 
 	/**
 	 * An aggragate image bundle that pulls together all the images for this
 	 * application into a single bundle.
 	 */
-	public interface Images extends LeftPanel.Images {}
+	public interface Images extends ClientBundle{
+		ImageResource tasksgroup();
+		ImageResource filtersgroup();
+	}
 
 	private DockPanel dockPanel;
 	
@@ -59,6 +64,7 @@ public class FormDesignerWidget extends Composite{
 
 
 	public FormDesignerWidget(boolean showToolbar,boolean showFormAsRoot){
+		images = (Images) GWT.create(Images.class);
 		initDesigner();  
 	}
 

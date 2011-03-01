@@ -8,7 +8,6 @@ import org.openrosa.client.Context;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.CenterPanel;
-import org.openrosa.client.view.LeftPanel;
 import org.openrosa.client.view.SaveFileDialog;
 import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.xforms.XformParser;
@@ -53,7 +52,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	private CenterPanel centerPanel;
 
 	/** The panel on the left hand side of the form designer. */
-	private LeftPanel leftPanel;
+	private FormsTreeView formsTreeView;
 
 	/**
 	 * The identifier of the loaded or opened form.
@@ -82,8 +81,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param centerPanel the right hand side panel.
 	 * @param leftPanel the left hand side panel.
 	 */
-	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
-		this.leftPanel = leftPanel;
+	public FormDesignerController(CenterPanel centerPanel, FormsTreeView treeView){
+		this.formsTreeView = treeView;
 		this.centerPanel = centerPanel;
 
 		this.centerPanel.setFormDesignerListener(this);
@@ -94,14 +93,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem() {
-		leftPanel.addNewItem();
+		formsTreeView.addNewItem();
 	}
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem() {
-		leftPanel.addNewChildItem();
+		formsTreeView.addNewChildItem();
 	}
 
 	/**
@@ -115,7 +114,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		
 		
 		
-		leftPanel.addNewQuestion(dataType);
+		formsTreeView.addNewQuestion(dataType);
 	}
 	
 	
@@ -156,7 +155,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void deleteSelectedItem() {
 		if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-			leftPanel.deleteSelectedItem();	
+			formsTreeView.deleteSelectedItem();	
 		else
 			centerPanel.deleteSelectedItem();
 	}
@@ -165,14 +164,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown() {
-		leftPanel.moveItemDown();
+		formsTreeView.moveItemDown();
 	}
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
-		leftPanel.moveItemUp();
+		formsTreeView.moveItemUp();
 	}
 
 	/**
@@ -180,7 +179,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void newForm() {
 		if(isOfflineMode())
-			leftPanel.addNewForm();
+			formsTreeView.addNewForm();
 	}
 
 
@@ -286,7 +285,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	private void saveTheForm() {
-		final FormDef obj = leftPanel.getSelectedForm();
+		final FormDef obj = formsTreeView.getSelectedForm();
 		if(obj.isReadOnly())
 			;//return; //TODO I think we should allow saving of form text and layout
 
@@ -295,7 +294,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			return;
 		}
 		
-		if(!leftPanel.isValidForm())
+		if(!formsTreeView.isValidForm())
 			return;
 
 		if(Context.inLocalizationMode()){
@@ -363,7 +362,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void saveFormAs() {
 		if(isOfflineMode()){
-			final Object obj = leftPanel.getSelectedForm();
+			final Object obj = formsTreeView.getSelectedForm();
 			if(obj == null){
 				Window.alert(LocaleText.get("selectSaveItem"));
 				return;
@@ -490,7 +489,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void copyItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.copyItem();
+				formsTreeView.copyItem();
 			else
 				centerPanel.copyItem();
 		}
@@ -502,7 +501,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void cutItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.cutItem();
+				formsTreeView.cutItem();
 			else
 				centerPanel.cutItem();
 		}
@@ -514,7 +513,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public void pasteItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.pasteItem();
+				formsTreeView.pasteItem();
 			else
 				centerPanel.pasteItem();
 		}
@@ -525,7 +524,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	public void refreshItem(){
 		if(!Context.isStructureReadOnly())
-			leftPanel.refreshItem();
+			formsTreeView.refreshItem();
 	}
 
 	/**
@@ -704,7 +703,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 						formDef.setLayoutXml(oldFormDef.getLayoutXml());
 						formDef.setLanguageXml(oldFormDef.getLanguageXml());
 
-						leftPanel.refresh(formDef);
+						formsTreeView.refreshForm(formDef);
 						centerPanel.refresh();
 					}
 					FormUtil.dlg.hide();
@@ -730,28 +729,28 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormActionListener#moveUp()
 	 */
 	public void moveUp(){
-		leftPanel.getFormActionListener().moveUp();
+		formsTreeView.moveUp();
 	}
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#moveDown()
 	 */
 	public void moveDown(){
-		leftPanel.getFormActionListener().moveUp();
+		formsTreeView.moveUp();
 	}
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#moveToParent()
 	 */
 	public void moveToParent(){
-		leftPanel.getFormActionListener().moveToParent();
+		formsTreeView.moveToParent();
 	}
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#moveToChild()
 	 */
 	public void moveToChild(){
-		leftPanel.getFormActionListener().moveToChild();
+		formsTreeView.moveToChild();
 	}
 
 
@@ -761,7 +760,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			if(data == null || data.trim().length() == 0)
 				return;
 
-			FormDef formDef = leftPanel.getSelectedForm();
+			FormDef formDef = formsTreeView.getSelectedForm();
 			String fileName = "filename";
 			if(formDef != null)
 				fileName = formDef.getName();
@@ -787,11 +786,11 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			public void execute() {
 				try{
 					int selFormId = -1; String xml = null; 
-					FormDef formDef = leftPanel.getSelectedForm();
+					FormDef formDef = formsTreeView.getSelectedForm();
 					if(formDef != null)
 						selFormId = formDef.getId();
 
-					List<FormDef> forms = leftPanel.getForms();
+					List<FormDef> forms = formsTreeView.getForms();
 					if(forms != null && forms.size() > 0){
 						List<FormDef> newForms = new ArrayList<FormDef>();
 						for(FormDef form : forms){
@@ -814,7 +813,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							}
 						}
 
-						leftPanel.loadForms(newForms, formDef.getId());
+						formsTreeView.loadForms(newForms, formDef.getId());
 					}
 
 					FormUtil.dlg.hide();
@@ -998,7 +997,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		if(!isOfflineMode())
 			return;
 
-		final Object obj = leftPanel.getSelectedForm();
+		final Object obj = formsTreeView.getSelectedForm();
 		if(obj == null){
 			Window.alert(LocaleText.get("selectSaveItem"));
 			return;

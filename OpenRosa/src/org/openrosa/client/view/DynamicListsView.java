@@ -484,17 +484,17 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		txtBinding.setEnabled(!Context.isStructureReadOnly());
 
-		PushButton button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.delete()));
+		PushButton button = new PushButton(FormUtil.createImage(Toolbar.images.delete()));
 		button.setTitle(LocaleText.get("deleteItem"));
 		button.addClickHandler(this);
 		table.setWidget(row, 2,button);
 
-		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.moveup()));
+		button = new PushButton(FormUtil.createImage(Toolbar.images.moveup()));
 		button.setTitle(LocaleText.get("moveUp"));
 		button.addClickHandler(this);
 		table.setWidget(row, 3,button);
 
-		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.movedown()));
+		button = new PushButton(FormUtil.createImage(Toolbar.images.movedown()));
 		button.setTitle(LocaleText.get("moveDown"));
 		button.addClickHandler(this);
 		table.setWidget(row, 4,button);

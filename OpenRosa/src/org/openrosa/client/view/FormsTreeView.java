@@ -33,6 +33,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -116,9 +117,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @param images the tree images.
 	 * @param formSelectionListener the form item selection events listener.
 	 */
-	public FormsTreeView(Images images,IFormSelectionListener formSelectionListener) {
+	public FormsTreeView(IFormSelectionListener formSelectionListener) {
 
-		this.images = images;
+		this.images = GWT.create(Images.class);
 		this.formSelectionListeners.add(formSelectionListener);
 
 

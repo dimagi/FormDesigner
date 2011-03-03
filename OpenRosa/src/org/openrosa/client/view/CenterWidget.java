@@ -19,6 +19,7 @@ import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -176,7 +177,6 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			return false;
 		}
 
-		itextWidget.save(); //calls onSaveItext() below
 		designWidget.commitChanges();
 
 		Document doc = formDef.getDoc();
@@ -188,7 +188,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			formDef.setDoc(doc);
 			formDef.setXformsNode(doc.getDocumentElement());
 		}
-
+		ItextParser.updateItextBlock(formDef);
+		itextWidget.save(); //calls onSaveItext() below
 		doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 		doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/2002/xforms");
 
@@ -223,13 +224,16 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		String xml = null;
 
 		ItextParser.updateItextBlock(formDef);
+		GWT.log("CenterWidget:227 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
-
+		GWT.log("CenterWidget:229 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		//update form outline with the itext changes
-		formDef = XformParser.getFormDef(ItextParser.parse(xml));
+//		formDef = XformParser.getFormDef(ItextParser.parse(xml));
+		GWT.log("CenterWidget:232 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		designWidget.refreshForm(formDef);
-	
+		GWT.log("CenterWidget:234 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		formDef.setXformXml(xml);
+		GWT.log("CenterWidget:236 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		xformsWidget.setXform(xml);
 	}
 

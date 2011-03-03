@@ -40,7 +40,9 @@ public class ItextLocale {
 	public ArrayList<String> getAvailableForms(String textID){
 		ArrayList<String> keys = new ArrayList<String>();
 		for (String key: getValues().keySet()){
-			keys.add(key);
+			if(key.contains(";")){
+				keys.add(key.split(";")[1]);
+			}
 		}
 		return keys;
 	}

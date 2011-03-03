@@ -7,6 +7,8 @@ import org.openrosa.client.model.ItextModel;
 import org.openrosa.client.xforms.XmlUtil;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -32,8 +34,8 @@ public class ItextParser {
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
 	public static Document parse(String xml){
+		System.out.println(xml);
 		Itext.clearLocales();
-		
 		Document doc = XmlUtil.getDocument(xml);
 		
 		//Check if we have an itext block in this xform.
@@ -89,8 +91,9 @@ public class ItextParser {
 	 * @param list the gxt grid itext model.
 	 */
 	public static void updateItextBlock(FormDef formDef){
-		
-		Element modelNode = XmlUtil.getNode(formDef.getDoc().getDocumentElement(),"model");
+		GWT.log("ItextParser:94 Itext.getItextRows().len="+Itext.getItextRows().getCount());
+		Document doc = formDef.getDoc();
+		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
 		assert(modelNode != null); //we must have a model in an xform.
 
 		Element itextNode = XmlUtil.getNode(modelNode,"itext");
@@ -106,6 +109,9 @@ public class ItextParser {
 		
 		for(ItextLocale locale : locales)
 			createTextValueNodes(formDef,locale,itextNode);
+		
+		
+		GWT.log("ItextParser:112 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 	}
 
 	
@@ -121,15 +127,14 @@ public class ItextParser {
 		translationNode.setAttribute("lang", locale.getName());
 		ListStore<ItextModel> itextRows = Itext.getItextRows();
 		
-		
 		//Check for default
 		if(locale.isDefault()){
 			translationNode.setAttribute("default", "");
 		}
 		itextNode.appendChild(translationNode);
-		
 		for(ItextModel row : itextRows.getModels()){ //we use the itextRows as an index as it's easier than getting a easy to use index from the ItextLocales
-			
+			GWT.log("ItextParser:134 in row loop");
+			GWT.log("ItextParser:135 rowkeys="+getRowKeys(row));
 			String fullID = row.get("id");
 			String ID = null;
 			String form = null;
@@ -147,22 +152,36 @@ public class ItextParser {
 			Element textNode = doc.createElement("text");
 			Element valueNode = doc.createElement("value");
 			
-			//link nodes up
-			translationNode.appendChild(textNode);
-			textNode.appendChild(valueNode);
+
 			
 			//set values
 			textNode.setAttribute("id", ID);
 			if(form != null){
 				valueNode.setAttribute("form", form);
-				valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
-			}else{
-				valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
 			}
+			valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
 			
-			
+			//link nodes up
+			textNode.appendChild(valueNode);
+			translationNode.appendChild(textNode);
+
+
 		}
+		System.out.println(doc.toString());
+		formDef.setDoc(doc);
+		GWT.log("ItextParser:167 Itext.getItextRows().len="+Itext.getItextRows().getCount());
+		
 	}
+	
+	
+public static String getRowKeys(ItextModel row){
+	String k = "";
+	for(String key: row.getPropertyNames()){
+		k += key+",";
+	}
+	
+	return k;
+}
 		
 //		////////============================
 //		

@@ -337,14 +337,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		qtnID.setVisible(false);
 		lblQtnID.setVisible(false);
 		txtText.setVisible(false);
-		txtText.addFocusHandler(new FocusHandler() {
-			
-			@Override
-			public void onFocus(FocusEvent event) {
-				GWT.log("Focused on txtText!");
-				
-			}
-		});
 		lblText.setVisible(false);
 		//txtDescTemplate.setVisible(false);
 		//btnDescTemplate.setVisible(false);
@@ -729,7 +721,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Updates the selected object with the new help text as typed by the user.
 	 */
 	private void updateHelpText(){
-		GWT.log("updateHelpText! propertiesObj null?"+(propertiesObj == null));
 		if(propertiesObj == null)
 			return;
 
@@ -938,7 +929,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		//We do not just wanna show this but rather want to enable them.
 		skipRulesView.setEnabled(enable2);
 		validationRulesView.setEnabled(enable2);
-		itextView.setEnabled(enable2);
 
 		lblType.setVisible(enable2);
 		lblVisible.setVisible(enable2);
@@ -1011,11 +1001,13 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				
 				if(propertiesObj instanceof QuestionDef){
 					validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
-					itextView.setQuestionDef((QuestionDef)propertiesObj);
 				}
 				else{
 					validationRulesView.setQuestionDef(null);
-					itextView.setQuestionDef(null);
+				}
+				
+				if(propertiesObj instanceof IFormElement){
+					itextView.setItemID(((IFormElement)propertiesObj).getItextId());
 				}
 			}
 		});
@@ -1171,14 +1163,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
 	public void onFormItemSelected(Object formItem) {
-		GWT.log("onFormItemSelected!");
 		propertiesObj = formItem;
 
 		clearProperties();
 
 		//For now these may be options for boolean question types (Yes & No)
 		if(formItem == null){
-			GWT.log("FormItem is null");
 			enableQuestionOnlyProperties(false);
 			txtText.setVisible(false);
 			lblText.setVisible(false);

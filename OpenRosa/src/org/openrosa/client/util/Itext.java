@@ -7,6 +7,7 @@ import java.util.List;
 import org.openrosa.client.model.ItextModel;
 
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.google.gwt.core.client.GWT;
 
 /**
  * This static objects holds *all* itext data, and is the only
@@ -72,10 +73,11 @@ public class Itext {
 		if(row == null){
 			row = new ItextModel();
 			row.set("id", ID);
+			itextRows.add(row);
 		}
 		
 		row.set(language, value);
-		itextRows.add(row);
+
 		
 	}
 	
@@ -176,6 +178,7 @@ public class Itext {
 	/**
 	 * Add a new locale to the internal model (as well as the ListStore (for the GUI)) and
 	 * return it
+	 * Does nothing if the locale already exists!
 	 * @param name - The name of the new language to be added.
 	 * @return
 	 */
@@ -256,6 +259,7 @@ public class Itext {
 	 * @param rows
 	 */
 	public static void updateModel(ListStore<ItextModel> rows){
+		GWT.log("Itext:260 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		//for the ListStore
 		//actually we'll just switch the pointer to point to this new ListStore, it's
 		//computationally less expensive and achieves the same goal
@@ -267,16 +271,17 @@ public class Itext {
 			String id = (String)row.get("id");
 			if(id == null){
 				itextRows.remove(row);
+				GWT.log("Removing row from Itextrows as it does not have an ID(?)");
 				continue; //Don't really want to store something against a null key
 			}
 			for (ItextLocale locale : locales){
 			//then by column
-				if(locale.hasID(id)){
-					locale.setTranslation(id,(String)row.get(locale.name));
-				}
+				locale.setTranslation(id,(String)row.get(locale.name));
 			}
 		}
 		
+		
+		GWT.log("Itext:282 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		
 	}
 	

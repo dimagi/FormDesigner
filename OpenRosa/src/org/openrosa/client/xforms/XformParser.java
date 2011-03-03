@@ -198,7 +198,6 @@ public class XformParser {
 	 * @return the form definition object.
 	 */
 	public static FormDef getFormDef(Document doc){
-		GWT.log("'getting' FormDef");
 		Element rootNode = doc.getDocumentElement();
 		FormDef formDef = new FormDef();
 		formDef.setDoc(doc);

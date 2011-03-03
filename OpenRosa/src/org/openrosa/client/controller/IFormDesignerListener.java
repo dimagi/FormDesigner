@@ -20,10 +20,10 @@ public interface IFormDesignerListener extends IFormActionListener{
 	 */
 	public void openForm();
 	
-	/**
-	 * Opens a new XForm.
-	 */
-	public void newForm();
+//	/**
+//	 * Opens a new XForm.
+//	 */
+//	public void newForm();
 	
 	/**
 	 * Saves the form as an xforms document.

@@ -385,17 +385,19 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	public void save(){
 		grid.getStore().commitChanges();
 		hideWindow();
-		
+		GWT.log("TextTabWidget:388 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		FormUtil.dlg.setText("Saving Itext...");
 		FormUtil.dlg.show();
 
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				try{
-					listener.onSaveItext(grid.getStore());
+					listener.onSaveItext(Itext.getItextRows());
+					GWT.log("TextTabWidget:396 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 					grid.reconfigure(Itext.getItextRows(), createColumnModel()); //refresh everything
 					FormUtil.dlg.hide();
 					showWindow();
+					GWT.log("TextTabWidget:400 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 				}
 				catch(Exception ex){
 					FormUtil.displayException(ex);

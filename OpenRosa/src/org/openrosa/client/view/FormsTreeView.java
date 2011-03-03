@@ -205,7 +205,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			}
 		});*/
 
-		initContextMenu();
+//		initContextMenu();
 	}
 
 
@@ -241,51 +241,51 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		this.showFormAsRoot = showFormAsRoot;
 	}
 
-	/**
-	 * Prepares the tree item context menu.
-	 */
-	private void initContextMenu(){
-		popup = new PopupPanel(true,true);
-
-		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("addNew")),true, new Command(){
-			public void execute() {popup.hide(); addNewItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("addNewChild")),true, new Command(){
-			public void execute() {popup.hide(); addNewChildItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true,new Command(){
-			public void execute() {popup.hide(); deleteSelectedItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),LocaleText.get("moveUp")),true, new Command(){
-			public void execute() {popup.hide(); moveItemUp();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),LocaleText.get("moveDown")),true, new Command(){
-			public void execute() {popup.hide(); moveItemDown();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
-			public void execute() {popup.hide(); cutItem();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
-			public void execute() {popup.hide(); copyItem();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
-			public void execute() {popup.hide(); pasteItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true,new Command(){
-			public void execute() {popup.hide(); saveItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true,new Command(){
-			public void execute() {popup.hide(); refreshItem();}});
-
-		popup.setWidget(menuBar);
-	}
+//	/**
+//	 * Prepares the tree item context menu.
+//	 */
+//	private void initContextMenu(){
+//		popup = new PopupPanel(true,true);
+//
+//		MenuBar menuBar = new MenuBar(true);
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("addNew")),true, new Command(){
+//			public void execute() {popup.hide(); addNewItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("addNewChild")),true, new Command(){
+//			public void execute() {popup.hide(); addNewChildItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true,new Command(){
+//			public void execute() {popup.hide(); deleteSelectedItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),LocaleText.get("moveUp")),true, new Command(){
+//			public void execute() {popup.hide(); moveItemUp();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),LocaleText.get("moveDown")),true, new Command(){
+//			public void execute() {popup.hide(); moveItemDown();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
+//			public void execute() {popup.hide(); cutItem();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
+//			public void execute() {popup.hide(); copyItem();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
+//			public void execute() {popup.hide(); pasteItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true,new Command(){
+//			public void execute() {popup.hide(); saveItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true,new Command(){
+//			public void execute() {popup.hide(); refreshItem();}});
+//
+//		popup.setWidget(menuBar);
+//	}
 
 
 	/**
@@ -1368,22 +1368,20 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Window.alert(message);
 	}
 
-	/**
-	 * @see org.openrosa.client.controller.IFormDesignerListener#refresh(Object)
-	 */
-	public void refreshItem(){
-		if(inReadOnlyMode())
-			return;
 
-		formDesignerListener.refresh(this);
-	}
+//	public void refreshItem(){
+//		if(inReadOnlyMode())
+//			return;
+//
+//		formDesignerListener.refresh(this);
+//	}
 
-	/**
-	 * @see org.openrosa.client.controller.IFormDesignerListener#saveForm()
-	 */
-	public void saveItem(){
-		formDesignerListener.saveForm();
-	}
+//	/**
+//	 * @see org.openrosa.client.controller.IFormDesignerListener#saveForm()
+//	 */
+//	public void saveItem(){
+//		formDesignerListener.saveForm();
+//	}
 
 	/**
 	 * Gets the selected form.
@@ -1429,39 +1427,39 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		treePanel.getStore().removeAll();
 	}
 
-	/**
-	 * Checks if the selected form is valid for saving.
-	 * 
-	 * @return true if valid, else false.
-	 */
-	public boolean isValidForm(){
-		TreeModelItem  parent = getSelectedItemRoot((TreeModelItem)treePanel.getSelectionModel().getSelectedItem());
-		if(parent == null)
-			return true;
-
-		Map<String,String> pageNos = new HashMap<String,String>();
-		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
-		int count = parent.getChildCount();
-		for(int index = 0; index < count; index++){
-			/*TreeModelItem child = (TreeModelItem)parent.getChild(index);
-			GroupDef pageDef = (GroupDef)child.getUserObject();
-			String pageNo = String.valueOf(pageDef.getPageNo());
-			if(pageNos.containsKey(pageNo)){
-				//tree.setSelectedItem(child);
-				//tree.ensureSelectedItemVisible();
-				treePanel.getSelectionModel().select(child, false);
-				Window.alert(LocaleText.get("selectedPage") + pageDef.getName() +LocaleText.get("shouldNotSharePageBinding") + pageNos.get(pageNo)+ "]");
-				return false;
-			}
-			else
-				pageNos.put(pageNo, pageDef.getName());
-
-			if(!isValidQuestionList(child,bindings))
-				return false;*/
-		}
-
-		return true;
-	}
+//	/**
+//	 * Checks if the selected form is valid for saving.
+//	 * 
+//	 * @return true if valid, else false.
+//	 */
+//	public boolean isValidForm(){
+//		TreeModelItem  parent = getSelectedItemRoot((TreeModelItem)treePanel.getSelectionModel().getSelectedItem());
+//		if(parent == null)
+//			return true;
+//
+//		Map<String,String> pageNos = new HashMap<String,String>();
+//		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
+//		int count = parent.getChildCount();
+//		for(int index = 0; index < count; index++){
+//			/*TreeModelItem child = (TreeModelItem)parent.getChild(index);
+//			GroupDef pageDef = (GroupDef)child.getUserObject();
+//			String pageNo = String.valueOf(pageDef.getPageNo());
+//			if(pageNos.containsKey(pageNo)){
+//				//tree.setSelectedItem(child);
+//				//tree.ensureSelectedItemVisible();
+//				treePanel.getSelectionModel().select(child, false);
+//				Window.alert(LocaleText.get("selectedPage") + pageDef.getName() +LocaleText.get("shouldNotSharePageBinding") + pageNos.get(pageNo)+ "]");
+//				return false;
+//			}
+//			else
+//				pageNos.put(pageNo, pageDef.getName());
+//
+//			if(!isValidQuestionList(child,bindings))
+//				return false;*/
+//		}
+//
+//		return true;
+//	}
 
 	private boolean isValidQuestionList(TreeModelItem  parent,Map<String,QuestionDef> bindings){
 		int count = parent.getChildCount();
@@ -1738,5 +1736,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			imageResource = images.drafts();
 		
 		return AbstractImagePrototype.create(imageResource);
+	}
+
+
+	@Override
+	public void refreshItem() {
+		// TODO Auto-generated method stub
+		
 	}
 }

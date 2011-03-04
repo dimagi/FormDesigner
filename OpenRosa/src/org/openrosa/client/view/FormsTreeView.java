@@ -13,6 +13,7 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.TreeModelItem;
+import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFormActionListener;
 import org.openrosa.client.controller.IFormChangeListener;
 import org.openrosa.client.controller.IFormDesignerListener;
@@ -339,8 +340,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @param formItem the selected form item.
 	 */
 	private void fireFormItemSelected(Object formItem){
-		for(int i=0; i<formSelectionListeners.size(); i++)
-			formSelectionListeners.get(i).onFormItemSelected(formItem);
+//		for(int i=0; i<formSelectionListeners.size(); i++)
+//			formSelectionListeners.get(i).onFormItemSelected(formItem);
+		
+		FormDesignerController.getFormDesignerController().changePropertiesViewSelection((IFormElement)formItem);
 	}
 
 	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){

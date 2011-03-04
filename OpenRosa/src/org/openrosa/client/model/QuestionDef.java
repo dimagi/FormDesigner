@@ -425,6 +425,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 	}
 
+	/**
+	 * I have no idea what this is, except that it seems to be very important.
+	 * Unclear whether "variableName" is supposed to be the tag name for the data node,
+	 * the actual nodeset path or the xpath (relative to the document) (path to what? The bind? That data node? The control node?).
+	 */
 	public String getBinding() {
 		return variableName;
 	}
@@ -446,6 +451,19 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setParent(IFormElement parent) {
 		this.parent = parent;
+	}
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		if(getParent() == null){
+			return "/"+getBinding();
+		}else{
+			return getParent().getDataNodesetPath() + "/"+getBinding();
+		}
+		
 	}
 
 	/**

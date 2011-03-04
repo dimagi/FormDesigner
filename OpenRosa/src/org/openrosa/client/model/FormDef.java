@@ -1480,4 +1480,42 @@ public class FormDef implements IFormElement, Serializable{
 	public String getDefaultValue(){
 		return null;
 	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setLocked(boolean locked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setRequired(boolean required) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		if(getParent() == null){
+			return "/"+getBinding();
+		}else{
+			return getParent().getDataNodesetPath() + "/"+getBinding();
+		}
+		
+	}
 }

@@ -269,18 +269,18 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	/**
 	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
-	public void onFormItemSelected(Object formItem) {
-		propertiesView.onFormItemSelected(formItem);
-			propertiesView.setFocus();
-
-		FormDef form = FormDef.getFormDef((IFormElement)formItem);
-
-		if(this.formDef != form){
-			setFormDef(form);
-
-			updateScrollPos();
-		}
-	}
+//	public void onFormItemSelected(Object formItem) {
+//		propertiesView.onFormItemSelected(formItem);
+//			propertiesView.setFocus();
+//
+//		FormDef form = FormDef.getFormDef((IFormElement)formItem);
+//
+//		if(this.formDef != form){
+//			setFormDef(form);
+//
+//			updateScrollPos();
+//		}
+//	}
 
 	/**
 	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
@@ -558,7 +558,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * Modifies the FormDef object to reflect any changes made by the user.
 	 */
 	public void commitChanges(){
-		propertiesView.commitChanges();
+//		propertiesView.commitChanges();
 	}
 
 	/**
@@ -860,5 +860,15 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	
 	public IFormSelectionListener getFormSelectionListener(){
 		return propertiesView;
+	}
+	
+	public PropertiesView getPropertiesView(){
+		return propertiesView;
+	}
+
+	@Override
+	public void onFormItemSelected(Object formItem) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -212,7 +212,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	}
 	
 	public void onFormItemSelected(Object formItem){
-		for(int i=0; i<formSelectionListeners.size(); i++)
-			formSelectionListeners.get(i).onFormItemSelected(formItem);
+//		for(int i=0; i<formSelectionListeners.size(); i++)
+//			formSelectionListeners.get(i).onFormItemSelected(formItem);
 	}
 }

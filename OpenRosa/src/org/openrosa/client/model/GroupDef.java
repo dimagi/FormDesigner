@@ -58,6 +58,8 @@ public class GroupDef implements IFormElement, Serializable{
 	private String itextId;
 
 	private int dataType = QuestionDef.QTN_TYPE_GROUP;
+	
+	private boolean required,enabled,visible;
 
 
 	public GroupDef(){
@@ -71,6 +73,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(IFormElement parent) {
 		this.parent = parent;
+		required = false;
+		enabled = true;
+		visible = true;
 	}
 
 	/**
@@ -84,6 +89,7 @@ public class GroupDef implements IFormElement, Serializable{
 		setName(pageDef.getName());
 		setChildren(pageDef.getChildren());
 		setItextId(pageDef.getItextId());
+		setItextId(getName());
 	}
 
 	/**
@@ -97,6 +103,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this(parent);
 		setName(name);
 		setChildren(children);
+		setItextId(name);
 	}
 
 	/**
@@ -111,6 +118,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this(parent);
 		setName(name);
 		setChildren(children);
+		setItextId(name);
 	}
 
 	public String getName() {
@@ -1008,24 +1016,58 @@ public class GroupDef implements IFormElement, Serializable{
 
 		return element.getFormDef();
 	}
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		if(getParent() == null){
+			return "/"+getBinding();
+		}else{
+			return getParent().getDataNodesetPath() + "/"+getBinding();
+		}
+		
+	}
 
 	public boolean isLocked(){
 		return false;
 	}
 
 	public boolean isRequired(){
-		return false;
+		return required;
 	}
 
 	public boolean isEnabled(){
-		return true;
+		return enabled;
 	}
 
 	public boolean isVisible(){
-		return true;
+		return visible;
 	}
 
 	public String getDefaultValue(){
 		return null;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		
+	}
+
+	@Override
+	public void setLocked(boolean locked) {
+		return;
+	}
+
+	@Override
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }

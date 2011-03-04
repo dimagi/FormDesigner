@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.CenterPanel;
 import org.openrosa.client.view.SaveFileDialog;
@@ -49,7 +50,7 @@ import com.google.gwt.xml.client.XMLParser;
 public class FormDesignerController implements IFormDesignerListener, OpenFileDialogEventListener{
 
 	/** The panel on the right hand side of the form designer. */
-	private CenterPanel centerPanel;
+	private static CenterPanel centerPanel;
 
 	/** The panel on the left hand side of the form designer. */
 	private FormsTreeView formsTreeView;
@@ -73,6 +74,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	public static byte currentAction = 0;
 	/** The object that is being refreshed. */
 	private Object refreshObject;
+	
+	private static FormDesignerController fdc;
 
 
 	/**
@@ -86,9 +89,19 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		this.centerPanel = centerPanel;
 
 		this.centerPanel.setFormDesignerListener(this);
+		fdc = this;
 
 	}
 
+	public void changePropertiesViewSelection(IFormElement objectDef){
+		centerPanel.getPropertiesView().changeSelectedObject(objectDef);
+	}
+	
+	public static FormDesignerController getFormDesignerController(){
+		return fdc;
+	}
+	
+	
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */

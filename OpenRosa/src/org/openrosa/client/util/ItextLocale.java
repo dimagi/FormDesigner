@@ -2,6 +2,9 @@ package org.openrosa.client.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This object represents an itext locale (or language).  Stores the name of the language, plus a hashmap containing the itextID:value pairs.
@@ -41,6 +44,7 @@ public class ItextLocale {
 		ArrayList<String> keys = new ArrayList<String>();
 		for (String key: getValues().keySet()){
 			if(key.contains(";")){
+				if(!key.split(";")[0].equals(textID))continue;
 				keys.add(key.split(";")[1]);
 			}
 		}
@@ -99,7 +103,10 @@ public class ItextLocale {
 	 * @param form - null allowed
 	 * @return
 	 */
-	private String getTranslation(String ID, String form){
+	public String getTranslation(String ID, String form){
+		if(form == null){
+			return getTranslation(ID);
+		}
 		return getTranslation(ID+";"+form);
 	}
 	
@@ -109,7 +116,7 @@ public class ItextLocale {
 	 * @param ID
 	 */
 	public String getDefaultTranslation(String ID){
-		return getTranslation(ID,null);
+		return getTranslation(ID);
 	}
 	
 	/**
@@ -146,6 +153,23 @@ public class ItextLocale {
 	 */
 	public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
+	}
+	
+	/**
+	 * Returns a list of all the unique ItextIDs contained in this locale (sans special TextForms)
+	 * @return
+	 */
+	public HashSet<String> getAvailableItextIDs(){
+		HashSet<String> keys = new HashSet<String>();
+		for(String k : values.keySet()){
+			if(k.contains(";")){
+				keys.add(k.split(";")[0]);
+			}else{
+				keys.add(k);
+			}
+		}
+		
+		return keys;
 	}
 
 }

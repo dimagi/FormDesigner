@@ -1,5 +1,6 @@
 package org.openrosa.client.util;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.openrosa.client.model.FormDef;
@@ -91,7 +92,6 @@ public class ItextParser {
 	 * @param list the gxt grid itext model.
 	 */
 	public static void updateItextBlock(FormDef formDef){
-		GWT.log("ItextParser:94 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		Document doc = formDef.getDoc();
 		Element modelNode = XmlUtil.getNode(doc.getDocumentElement(),"model");
 		assert(modelNode != null); //we must have a model in an xform.
@@ -111,7 +111,6 @@ public class ItextParser {
 			createTextValueNodes(formDef,locale,itextNode);
 		
 		
-		GWT.log("ItextParser:112 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 	}
 
 	
@@ -132,45 +131,66 @@ public class ItextParser {
 			translationNode.setAttribute("default", "");
 		}
 		itextNode.appendChild(translationNode);
-		for(ItextModel row : itextRows.getModels()){ //we use the itextRows as an index as it's easier than getting a easy to use index from the ItextLocales
-			GWT.log("ItextParser:134 in row loop");
-			GWT.log("ItextParser:135 rowkeys="+getRowKeys(row));
-			String fullID = row.get("id");
-			String ID = null;
-			String form = null;
-			if(fullID.contains(";")){
-				ID = fullID.split(";")[0];
-				form = fullID.split(";")[1];
-			}else{
-				ID = fullID;
-			}
+		for(String ItextID : locale.getAvailableItextIDs()){
+			String defaultText = locale.getDefaultTranslation(ItextID);
 			
-			
-			String language_name = locale.getName();
+	
 			
 			//create nodes
 			Element textNode = doc.createElement("text");
-			Element valueNode = doc.createElement("value");
+			Element valueNode;
 			
-
-			
-			//set values
-			textNode.setAttribute("id", ID);
-			if(form != null){
-				valueNode.setAttribute("form", form);
+			//set default value itext value if it exists
+			textNode.setAttribute("id", ItextID);
+			if(defaultText != null){
+				valueNode = doc.createElement("value");
+				valueNode.appendChild(doc.createTextNode(defaultText));
+				textNode.appendChild(valueNode);
 			}
-			valueNode.appendChild(doc.createTextNode(locale.getTranslation(fullID)));
 			
+			//set/add special form values if they exist
+			for(String form : locale.getAvailableForms(ItextID)){
+				if(locale.getTranslation(ItextID,form)!= null){
+					
+					//interrupt for hint special case.
+					if(form.toLowerCase().equals("hint")){
+						makeHintTextNode(translationNode, ItextID, locale.getTranslation(ItextID,form));
+						continue;
+					}
+					
+					valueNode = doc.createElement("value");
+					valueNode.setAttribute("form", form);
+					valueNode.appendChild(doc.createTextNode(locale.getTranslation(ItextID,form)));
+					textNode.appendChild(valueNode);
+				}
+				
+			}
 			//link nodes up
-			textNode.appendChild(valueNode);
 			translationNode.appendChild(textNode);
 
-
 		}
-		System.out.println(doc.toString());
 		formDef.setDoc(doc);
-		GWT.log("ItextParser:167 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		
+	}
+	
+	/**
+	 * automatically creates a hint text node (for question hints)
+	 * The hint itext id becomes "itextID_hint" where itextID is specified as an
+	 * argument.
+	 * 
+	 * Hint value is the actual text of the hint.
+	 * @param translation
+	 * @param itextID
+	 * @param hintValue
+	 */
+	private static void makeHintTextNode(Element translation,String itextID, String hintValue){
+		Document doc = translation.getOwnerDocument();
+		Element textNode = doc.createElement("text");
+		textNode.setAttribute("id", itextID+"_hint");
+		Element valNode = doc.createElement("value");
+		valNode.appendChild(doc.createTextNode(hintValue));
+		textNode.appendChild(valNode);
+		translation.appendChild(textNode);
 	}
 	
 	

@@ -92,7 +92,9 @@ public class QuestionItextView extends Composite {
 	
 	private void refreshRows(){
 		widgetTable.clear(); //clear the row and re-add everything so that widgets are added in the right order
+		widgetTable.clear(true);
 		clearTableOfSeperatorStyle();
+		widgetTable.removeAllRows();
 		rowLocations = new HashMap<String, Integer>();
 		   //assumes that all changes were handled correctly/saved by the textbox listeners.
 		int rowIndex = 0;
@@ -243,7 +245,6 @@ public class QuestionItextView extends Composite {
 		
 		
 		rowLocations.put(fullText, rowNumber); //in case we need to reference back at this.
-		
 	}
 	
 	/**

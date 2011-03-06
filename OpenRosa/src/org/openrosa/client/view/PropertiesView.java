@@ -358,7 +358,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		else if (objectDef instanceof GroupDef) setGroupProperties((GroupDef) objectDef);
 		else if (objectDef instanceof QuestionDef) setQuestionProperties((QuestionDef) objectDef);
 		else if (objectDef instanceof OptionDef) setOptionDefProperties(objectDef);
-		txtBinding.setText(objectDef.getBinding());
+		itextView.setItemID(objectDef.getItextId());
 	}
 	
 
@@ -541,7 +541,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		qtnID.setVisible(true);
 
 		txtDefaultLabel.setText(formDef.getName());
-		txtBinding.setText(formDef.getVariableName());
+		txtBinding.setText(formDef.getDataNodesetPath());
 		txtFormKey.setText(formDef.getFormKey());
 		qtnID.setText(formDef.getItextId());
 		//skipRulesView.setFormDef(formDef);

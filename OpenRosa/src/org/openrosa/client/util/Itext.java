@@ -2,6 +2,7 @@ package org.openrosa.client.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.openrosa.client.model.ItextModel;
@@ -95,9 +96,11 @@ public class Itext {
 			
 			//find entry in each locale corresponding to this id
 			//and remove it
-			for(ItextLocale locale : locales){
+			Iterator<ItextLocale> iter = locales.iterator();
+			while(iter.hasNext()){
+				ItextLocale locale = iter.next();
 				if(locale.hasID(id)){
-					locales.remove(locale);
+					iter.remove();
 				}
 			}
 			

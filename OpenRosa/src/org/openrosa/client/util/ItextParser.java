@@ -35,7 +35,7 @@ public class ItextParser {
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
 	public static Document parse(String xml){
-		System.out.println(xml);
+//		System.out.println(xml);
 		Itext.clearLocales();
 		Document doc = XmlUtil.getDocument(xml);
 		
@@ -66,14 +66,17 @@ public class ItextParser {
 				if(id == null) continue; //invalid javarosa xform xml at this point
 				NodeList forms = text.getElementsByTagName("value");
 				for(int k=0; k<forms.getLength(); k++){
+					String fullID = id;
 					Node valNode = forms.item(k);
-					if(!((Element)valNode).getTagName().toLowerCase().equals("value")) continue; //means invalid xml
+					boolean tagNameEqualsValue = ((Element)valNode).getTagName().toLowerCase().equals("value");
+					if(!tagNameEqualsValue) 
+						continue; //means invalid xml
 					String textform = ((Element)valNode).getAttribute("form");
 					if(textform != null){
-						id = id + ";" + textform;
-						language.setTranslation(id, XmlUtil.getTextValue(valNode)); //some textform value
+						fullID = id + ";" + textform;
+						language.setTranslation(fullID, XmlUtil.getTextValue(valNode)); //some textform value
 					}else{
-						language.setTranslation(id, XmlUtil.getTextValue(valNode));  //this is obviously the default value
+						language.setTranslation(fullID, XmlUtil.getTextValue(valNode));  //this is obviously the default value
 					}
 				}
 				
@@ -124,7 +127,6 @@ public class ItextParser {
 		Document doc = formDef.getDoc();
 		Element translationNode = doc.createElement("translation");
 		translationNode.setAttribute("lang", locale.getName());
-		ListStore<ItextModel> itextRows = Itext.getItextRows();
 		
 		//Check for default
 		if(locale.isDefault()){

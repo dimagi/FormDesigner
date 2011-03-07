@@ -1,5 +1,7 @@
 package org.openrosa.client.xforms;
 
+import org.openrosa.client.model.OptionDef;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -135,6 +137,14 @@ public class XformUtil {
 		}
 	}
 	
+	/**
+	 * Gets a meaningful label to display to the user to identify this option
+	 * @param od
+	 * @return
+	 */
+	public static String getOptionDefIdentifierString(OptionDef od){
+		return od.getBinding().isEmpty() ? od.getItextId() : od.getBinding();
+	}
 	
 	/**
 	 * Gets the node that has the text value which is the answer, in a given

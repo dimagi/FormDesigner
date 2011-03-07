@@ -308,7 +308,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	 */
 	public void loadItext(){
 		cm = createColumnModel();
-		grid.reconfigure(Itext.getItextRows(), cm);
+		ListStore<ItextModel> rows = Itext.getItextRows();
+		grid.reconfigure(rows, cm);
 	}
 
 

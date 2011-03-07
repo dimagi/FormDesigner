@@ -18,10 +18,12 @@ import org.openrosa.client.controller.IFormActionListener;
 import org.openrosa.client.controller.IFormChangeListener;
 import org.openrosa.client.controller.IFormDesignerListener;
 import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.jr.xforms.util.XFormUtils;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
@@ -508,15 +510,16 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem loadQuestion(QuestionDef questionDef,TreeModelItem root){
 		//TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
-		TreeModelItem questionRoot = addImageItem(root, questionDef.getDisplayText(), questionDef);
-
+		TreeModelItem questionRoot = addImageItem(root, questionDef.getBinding(), questionDef);
+		GWT.log("Loading Question in FormsTreeView, Name="+questionDef.getBinding()+", type="+questionDef.getDataType());
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			List options = questionDef.getOptions();
 			for(int currentOptionNo=0; currentOptionNo < options.size(); currentOptionNo++){
+				GWT.log("FormsTreeView adding select option...");
 				OptionDef optionDef = (OptionDef)options.get(currentOptionNo);
 				//addImageItem(questionRoot, optionDef.getText(), images.markRead(),optionDef,null);
-				addImageItem(questionRoot, optionDef.getText(), optionDef);
+				addImageItem(questionRoot, XformUtil.getOptionDefIdentifierString(optionDef), optionDef);
 			}
 		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -533,6 +536,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		return questionRoot;
 	}
+	
+
 
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItem()

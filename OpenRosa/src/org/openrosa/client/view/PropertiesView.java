@@ -254,6 +254,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.getElement().getStyle().setBorderWidth(0, Unit.PX);
 		table.getElement().getStyle().setPadding(0, Unit.PX);
 
+//		cbDataType.addItem("");
 		cbDataType.addItem(LocaleText.get("qtnTypeText"));
 		cbDataType.addItem(LocaleText.get("qtnTypeNumber"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDecimal"));
@@ -528,6 +529,74 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 	
 	/**
+	 * @param qtn
+	 * @return the selection index for the Question Data Type combo box shown on the properties view.
+	 */
+	private static int getCBIndexFromQtnDataType(QuestionDef qtn){
+		int qdt = qtn.getDataType();
+		int retIndex = -1;
+
+		switch(qdt){
+		case QuestionDef.QTN_TYPE_TEXT:
+			retIndex = DT_INDEX_TEXT;
+			break;
+		case QuestionDef.QTN_TYPE_NUMERIC:
+			retIndex = DT_INDEX_NUMBER;
+			break;
+		case QuestionDef.QTN_TYPE_DECIMAL:
+			retIndex = DT_INDEX_DECIMAL;
+			break;
+		case QuestionDef.QTN_TYPE_DATE:
+			retIndex = DT_INDEX_DATE;
+			break;
+		case QuestionDef.QTN_TYPE_TIME:
+			retIndex = DT_INDEX_TIME;
+			break;
+		case QuestionDef.QTN_TYPE_DATE_TIME:
+			retIndex = DT_INDEX_DATE_TIME;
+			break;
+		case QuestionDef.QTN_TYPE_BOOLEAN:
+			retIndex = DT_INDEX_BOOLEAN;
+			break;
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
+			retIndex = DT_INDEX_SINGLE_SELECT;
+			break;
+		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
+			retIndex = DT_INDEX_MULTIPLE_SELECT;
+			break;
+		case QuestionDef.QTN_TYPE_REPEAT:
+			retIndex = DT_INDEX_REPEAT;
+			break;
+		case QuestionDef.QTN_TYPE_IMAGE:
+			retIndex = DT_INDEX_IMAGE;
+			break;
+		case QuestionDef.QTN_TYPE_VIDEO:
+			retIndex = DT_INDEX_VIDEO;
+			break;
+		case QuestionDef.QTN_TYPE_AUDIO:
+			retIndex = DT_INDEX_AUDIO;
+			break;
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
+			retIndex = DT_INDEX_SINGLE_SELECT_DYNAMIC;
+			break;
+		case QuestionDef.QTN_TYPE_GPS:
+			retIndex = DT_INDEX_GPS;
+			break;
+		case QuestionDef.QTN_TYPE_BARCODE:
+			retIndex = DT_INDEX_BARCODE;
+			break;
+		case QuestionDef.QTN_TYPE_LABEL:
+			retIndex = DT_INDEX_LABEL;
+			break;
+		case QuestionDef.QTN_TYPE_GROUP:
+			retIndex = DT_INDEX_GROUP;
+			break;
+		}
+		
+		return retIndex;
+	}
+	
+	/**
 	 * Sets values for widgets which deal with form definition properties.
 	 * 
 	 * @param formDef the form definition object.
@@ -543,7 +612,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultLabel.setText(formDef.getName());
 		txtBinding.setText(formDef.getDataNodesetPath());
 		txtFormKey.setText(formDef.getFormKey());
-		qtnID.setText(formDef.getItextId());
+		qtnID.setText(formDef.getBinding());
 		//skipRulesView.setFormDef(formDef);
 
 	}
@@ -574,7 +643,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.setVisible(true);
 
 		//set initial values
-		qtnID.setText(groupObj.getName());
+		qtnID.setText(groupObj.getBinding());
 		txtDefaultLabel.setText(groupObj.getText());
 		txtHelpText.setText(groupObj.getHelpText());
 		cbDataType.setSelectedIndex(DT_INDEX_GROUP);
@@ -614,7 +683,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		
 		tabs.setVisible(true);
 		
-		qtnID.setText(questionDef.getItextId());
+		qtnID.setText(questionDef.getBinding());
 		txtDefaultLabel.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getDataNodesetPath());
 		txtHelpText.setText(questionDef.getHelpText());
@@ -623,8 +692,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.setValue(questionDef.isVisible());
 		chkLocked.setValue(questionDef.isLocked());
 		chkRequired.setValue(questionDef.isRequired());
-
-		setQuestionDataType(questionDef);
+		
+		
+		cbDataType.setSelectedIndex(getCBIndexFromQtnDataType(questionDef));
+		
+//		setQuestionDataType(questionDef);
 
 //		String calculationExpression = null;
 //		Calculation calculation = Context.getFormDef().getCalculation(questionDef);
@@ -654,7 +726,48 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	
 	private void setOptionDefProperties(IFormElement optionDef){
 		changeEverythingVisible(false);
+
+		
+		lblQtnID.setVisible(true);
+		qtnID.setVisible(true);
+		lblDefaultLabel.setVisible(true);
+		txtDefaultLabel.setVisible(true);
+		lblDefaultValue.setVisible(true);
+		txtDefaultValue.setVisible(true);
+		
+		lblType.setVisible(true);
+		cbDataType.setVisible(true);
+		
+		lblBinding.setVisible(true);
+		txtBinding.setVisible(true);
+		
+		tabs.setVisible(true);
+		
+		qtnID.setText(optionDef.getItextId());
+		txtDefaultLabel.setText(optionDef.getText());
+		txtBinding.setText(optionDef.getDataNodesetPath());
+		txtDefaultValue.setText(optionDef.getDefaultValue());
+
+		
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				skipRulesView.setQuestionDef((IFormElement)propertiesObj);
+				
+				if(propertiesObj instanceof QuestionDef){
+					validationRulesView.setQuestionDef((QuestionDef)propertiesObj);
+				}
+				else{
+					validationRulesView.setQuestionDef(null);
+				}
+				
+				if(propertiesObj instanceof IFormElement){
+					itextView.setItemID(((IFormElement)propertiesObj).getItextId());
+				}
+			}
+		});
 	}
+	
+	
 	
 	/**
 	 * Sets whether to enable question property widgets.

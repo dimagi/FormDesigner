@@ -250,7 +250,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			public void execute() {
 
 				try{
-					saveFile(false);
+//					saveFile(false);
 					FormDef formDef = Context.getFormDef();
 					//String xml = null;
 

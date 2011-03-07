@@ -70,16 +70,17 @@ public class Itext {
 	public static void addText(String language, String ID, String value){
 		ItextLocale lang = Itext.getLocale(language);
 		lang.setTranslation(ID, value);
+		itextRowsAddText(language,ID,value);
+	}
+	
+	private static void itextRowsAddText(String language, String ID, String value){
 		ItextModel row = itextRows.findModel("id", ID); //gets the first one that matches, but there *should* only ever be one if coder abides by contract of this method
 		if(row == null){
 			row = new ItextModel();
 			row.set("id", ID);
 			itextRows.add(row);
 		}
-		
 		row.set(language, value);
-
-		
 	}
 	
 	/**
@@ -104,8 +105,6 @@ public class Itext {
 				}
 			}
 			
-			
-			
 			return true;
 		}else{
 			return false;
@@ -119,13 +118,23 @@ public class Itext {
 	 * @return
 	 */
 	public static ItextLocale getLocale(String name){
+		ItextLocale locale = getLocaleNoAdd(name);
+		return (locale == null) ? addLocale(name) : locale;
+	}
+	
+	/**
+	 * Does the same thing as getLocale(String name)
+	 * but without automatically adding a locale if it
+	 * doesn't exist.
+	 * @param name
+	 * @return
+	 */
+	private static ItextLocale getLocaleNoAdd(String name){
 		for(ItextLocale language : locales){
 			if(language.getName().equals(name))
 				return language;
 		}
-		
-		//If we get here, then obviously the language doesn't exist, so create it
-		return addLocale(name);
+		return null;
 	}
 	
 	/**
@@ -164,11 +173,13 @@ public class Itext {
 			if(language.getName().equals(oldName))
 				lang = language;
 		}
+		
 		if(lang != null){
 			lang.setName(newName);
 		}else{
 			return false; //something is wrong.
 		}
+		
 		//loop through all itextrows and remove specified language key-value pair.
 		for(ItextModel row: itextRows.getModels()){
 			row.set(newName, row.remove(oldName));
@@ -186,21 +197,38 @@ public class Itext {
 	 * @return
 	 */
 	public static ItextLocale addLocale(String name){
-		ItextLocale language = new ItextLocale(name);
-		locales.add(language);
+		if(!localeExists(name)){
+			ItextLocale language = new ItextLocale(name);
+			locales.add(language);	
 		
-		//update each row to have a new key-value pair for the language. Init with null value
-		for(ItextModel row: itextRows.getModels()){ 
-			row.set(name, null);
+			//update each row to have a new key-value pair for the language. Init with null value
+			//assumes ItextRows and Locales are in sync, otherwise we're wiping out existing data.
+			for(ItextModel row: itextRows.getModels()){ 
+				boolean languageAlreadyInRow = row.getPropertyNames().contains(name);
+				if(!languageAlreadyInRow)
+					row.set(name, null);
+			}
+			return language;
+		}else{
+			return Itext.getLocaleNoAdd(name); //should always return a locale (as opposed to null)
 		}
-		
-		return language;
 	}
 	
-
+	/**
+	 * Checks to see if the locale by the given name already exists in the model.
+	 * (CASE INSENSITIVE)
+	 * @param name
+	 * @return true if exists, false if not
+	 */
+	private static boolean localeExists(String name){
+		for(ItextLocale locale: locales){
+			if(locale.getName().toLowerCase().equals(name)) return true; //already exists so do nothing.
+		}
+		return false;
+	}
 	
 	/**
-	 * THIS METHOD REMOVES ALL LOCALES (where all the language data is stored)
+	 * THIS METHOD REMOVES ALL LOCALES and ITEXTROWS
 	 */
 	public static void clearLocales(){
 		locales = new ArrayList<ItextLocale>();
@@ -218,6 +246,7 @@ public class Itext {
 	 * @return the structure of the ListStore<ItextModel> for use in the GUI
 	 */
 	public static ListStore<ItextModel> getItextRows(){
+		syncItextRowsToLocale();
 		return itextRows;
 	}
 	
@@ -232,10 +261,9 @@ public class Itext {
 			locale.setDefault(false);
 		}
 		
-		// then mark only the one specified as default
+		// then mark only the one specified as default...
 		getLocale(localeName).setDefault(true);
-		
-		// to ensure that we only ever have one default locale
+		// ...to ensure that we only ever have one default locale
 	}
 	
 	
@@ -262,7 +290,6 @@ public class Itext {
 	 * @param rows
 	 */
 	public static void updateModel(ListStore<ItextModel> rows){
-		GWT.log("Itext:260 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		//for the ListStore
 		//actually we'll just switch the pointer to point to this new ListStore, it's
 		//computationally less expensive and achieves the same goal
@@ -282,10 +309,18 @@ public class Itext {
 				locale.setTranslation(id,(String)row.get(locale.name));
 			}
 		}
-		
-		
-		GWT.log("Itext:282 Itext.getItextRows().len="+Itext.getItextRows().getCount());
-		
+	}
+	
+	/**
+	 * Causes the ItextRows to have the same data as 
+	 * that stored in the Locales list.
+	 */
+	private static void syncItextRowsToLocale(){
+		for(ItextLocale locale : locales){
+			for(String id: locale.getAllFULLIds()){
+				itextRowsAddText(locale.getName(),id,locale.getTranslation(id));
+			}
+		}
 	}
 	
 	/**
@@ -311,12 +346,14 @@ public class Itext {
 	/** 
 	 * Adds the given locale to the internal itext model.
 	 * NB: if a locale by that name already exists in the model it will be overwritten!
+	 * 
+	 * Updates the itextRows as well.
 	 * @param locale
 	 */
 	public static void addLocale(ItextLocale locale){
 		int oldLocaleIndex = -1;
 		for(int i=0;i<locales.size();i++){
-			if(locales.get(i).name == locale.name){
+			if(locales.get(i).name.toLowerCase().equals(locale.name.toLowerCase())){
 				oldLocaleIndex = i;
 			}
 		}

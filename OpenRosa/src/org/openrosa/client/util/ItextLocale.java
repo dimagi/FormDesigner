@@ -171,6 +171,10 @@ public class ItextLocale {
 		
 		return keys;
 	}
+	
+	public Set<String> getAllFULLIds(){
+		return values.keySet();
+	}
 
 }
 

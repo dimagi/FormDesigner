@@ -105,7 +105,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut;
 	private Button newBut;
 	private SplitButton splitItem;
-	private Button bdelete,bcut,bcopy,bpaste;
+	private Button bdelete;
 	private Button editLocale;
 
 	private IFileListener fileListener;
@@ -360,28 +360,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		///////////////////////////////////////////////////////////////////
 
 
-		//////////////////////THIRD GROUP/////////////////////////////////
-		group = new ButtonGroup(3);
-		group.setHeading("Clipboard");
-		bcut = new Button("Cut", AbstractImagePrototype.create(images.cut()));
-		bcut.setScale(ButtonScale.LARGE);
-		bcut.setIconAlign(IconAlign.TOP);
-		bcopy = new Button("Copy", AbstractImagePrototype.create(images.copy()));
-		bcopy.setScale(ButtonScale.LARGE);
-		bcopy.setIconAlign(IconAlign.TOP);
-		bpaste = new Button("Paste", AbstractImagePrototype.create(images.paste()));
-		bpaste.setScale(ButtonScale.LARGE);
-		bpaste.setIconAlign(IconAlign.TOP);
-		bpaste.disable(); //feature not ready yet
-		group.addButton(bcut);
-		group.addButton(bcopy);
-		group.addButton(bpaste);
-		group.setHeight(95);
-		toolBar.add(group);
-
-		///////////////////////////////////////////////////////////////////
-
-
 		//////////////////////FOURTH GROUP/////////////////////////////////
 		group = new ButtonGroup(3);
 		group.setHeading("Localization");
@@ -397,9 +375,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		group.addButton(editLocale);
 
 		group.setButtonAlign(HorizontalAlignment.CENTER);
-		Text lang = new Text();
-		lang.setText("Language : ");
-		group.add(lang);
+		group.setWidth(150);
 
 //		localesComboBox.addChangeHandler(new ChangeHandler(){
 //			public void onChange(ChangeEvent event){
@@ -459,27 +435,6 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		});
 
 
-		//		addSelect.addListener(Events., listener)
-
-
-
-		bcut.addSelectionListener(new SelectionListener<ButtonEvent>() {
-			public void componentSelected(ButtonEvent ce) {
-				controller.cutItem();
-				bpaste.enable();
-			}
-		});
-		bcopy.addSelectionListener(new SelectionListener<ButtonEvent>() {
-			public void componentSelected(ButtonEvent ce) {
-				controller.copyItem();
-				bpaste.enable();
-			}
-		});
-		bpaste.addSelectionListener(new SelectionListener<ButtonEvent>() {
-			public void componentSelected(ButtonEvent ce) {
-				controller.pasteItem();
-			}
-		});
 		txtBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
 				controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);

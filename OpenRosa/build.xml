@@ -23,8 +23,8 @@
     <pathelement location="war/WEB-INF/classes"/>
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
-  	<fileset dir="../SharedLib/lib" includes="gwt-datepicker-r29.jar"/>
- 	<fileset dir="../FormDesigner/lib" includes="gwt-dnd-3.0.1.jar"/>
+  	<fileset dir="../OpenRosa/lib" includes="gwt-datepicker-r29.jar"/>
+ 	<fileset dir="../OpenRosa/lib" includes="gwt-dnd-3.0.1.jar"/>
   	<fileset dir="../OpenRosa/lib" includes="gxt.jar"/>
 
 
@@ -42,8 +42,6 @@
   <target name="gwtc" description="GWT compile to JavaScript">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
-      	<pathelement location="../SharedLib/src"/>
-      	<pathelement location="../FormDesigner/src"/>
         <pathelement location="src"/>
         <path refid="project.class.path"/>
       </classpath>

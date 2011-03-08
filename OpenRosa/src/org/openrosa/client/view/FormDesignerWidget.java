@@ -3,7 +3,7 @@ package org.openrosa.client.view;
 import java.util.Iterator;
 
 import org.openrosa.client.FormDesigner;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Header;
@@ -12,6 +12,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
@@ -42,23 +44,27 @@ public class FormDesignerWidget extends Composite{
 	 * Instantiate an application-level image bundle. This object will provide
 	 * programatic access to all the images needed by widgets.
 	 */
-	public static final Images images = (Images) GWT.create(Images.class);
+	public static Images images;
 
 	/**
 	 * An aggragate image bundle that pulls together all the images for this
 	 * application into a single bundle.
 	 */
-	public interface Images extends LeftPanel.Images {}
+	public interface Images extends ClientBundle{
+		ImageResource tasksgroup();
+		ImageResource filtersgroup();
+	}
 
 	private DockPanel dockPanel;
 	
-	private CenterWidget centerWidget = new CenterWidget();
+	private CenterWidget centerWidget;
 	
 	private String returnXml;    
 	private int returnErrorCode;
 
 
 	public FormDesignerWidget(boolean showToolbar,boolean showFormAsRoot){
+		images = (Images) GWT.create(Images.class);
 		initDesigner();  
 	}
 
@@ -69,20 +75,25 @@ public class FormDesignerWidget extends Composite{
 	 * @param showToolbar set to true to show the tool bar.
 	 */
 	private void initDesigner(){
-		dockPanel = new DockPanel();
-
-		VerticalPanel panel = new VerticalPanel();
-
-//		panel.add(new FileToolbar(centerWidget));
-		panel.add(centerWidget);
+//		dockPanel = new DockPanel();
+//
+//		VerticalPanel panel = new VerticalPanel();
+//
+////		panel.add(new FileToolbar(centerWidget));
+//		panel.add(centerWidget);
+//		
+//		panel.setWidth("100%");
+//
+//		dockPanel.add(panel, DockPanel.CENTER);
+//
+//		FormUtil.maximizeWidget(dockPanel);
+//
+//		initWidget(dockPanel);
+		centerWidget = new CenterWidget();
+		centerWidget.setWidth("100%");
+		FormUtil.maximizeWidget(centerWidget);
+		initWidget(centerWidget);
 		
-		panel.setWidth("100%");
-
-		dockPanel.add(panel, DockPanel.CENTER);
-
-		FormUtil.maximizeWidget(dockPanel);
-
-		initWidget(dockPanel);
 
 		DOM.sinkEvents(getElement(),DOM.getEventsSunk(getElement()) | Event.MOUSEEVENTS);
 		

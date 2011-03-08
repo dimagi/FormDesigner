@@ -1,8 +1,8 @@
 package org.openrosa.client.view;
 
 import org.openrosa.client.controller.IFileListener;
-import org.openrosa.client.view.FormDesignerWidget.Images;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.view.Toolbar.Images;
+import org.openrosa.client.util.FormUtil;
 
 import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -32,7 +32,7 @@ public class XformsTabWidget extends Composite {
 	Images images;
 	
 	public XformsTabWidget(IFileListener fileListenerr){
-		this.images = FormDesignerWidget.images;
+		this.images = Toolbar.images;
 		this.fileListener = fileListenerr;
 		window.setMaximizable(true);  
 		window.setHeading("Xform Source");  

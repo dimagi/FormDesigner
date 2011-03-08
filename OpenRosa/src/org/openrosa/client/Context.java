@@ -7,11 +7,8 @@ import java.util.Vector;
 
 import org.openrosa.client.controller.ILocaleSelectionListener;
 import org.openrosa.client.model.FormDef;
-import org.openrosa.client.model.ItextModel;
-import org.purc.purcforms.client.controller.ILocaleListChangeListener;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.widget.DesignWidgetWrapper;
+import org.openrosa.client.controller.ILocaleListChangeListener;
+import org.openrosa.client.util.FormUtil;
 
 
 /**
@@ -42,14 +39,7 @@ public class Context {
 	/** State when displaying the xforms source. */
 	public static final byte MODE_XFORMS_SOURCE = 4;
 	
-	/** The default locale key. */
-	private static Locale defaultLocale = new Locale("en","en");
-	
-	/** The current locale. */
-	private static Locale locale = defaultLocale;
-	
-	/** A list of supported locales. */
-	private static List<Locale> locales = new ArrayList<Locale>();
+
 	
 	/**Determines if we should allow changing of question bindings.
 	 * This is useful for cases where users are not allowed to change the question binding
@@ -66,15 +56,10 @@ public class Context {
 	/** Flag telling whether widgets and locked and hence allow no movement. */
 	private static boolean lockWidgets = false;
 	
-	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
-	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
+//	/** A list of widgets that have been cut or copied to the clipboard and ready for pasting. */
+//	public static List<DesignWidgetWrapper> clipBoardWidgets = new Vector<DesignWidgetWrapper>();
 	
 	private static boolean offlineMode = true;
-	
-	/** List of those interested in being notified whenever the locale list changes. */
-	private static List<ILocaleListChangeListener> localeListListeners = new ArrayList<ILocaleListChangeListener>();
-	
-	private static List<ILocaleSelectionListener> localeSelectionListeners = new ArrayList<ILocaleSelectionListener>(); 
 	
 	/** A mapping for form locale text. The key is the formId while the value is a map of locale 
 	 * key and text, where locale key is the value map key and text is the value map value.
@@ -83,48 +68,6 @@ public class Context {
 
 	private static EventBus eventBus = new EventBus();
 	
-	/** Mapping of ItextModel objects to their ids as they are in the id column of the grid. */
-	private static HashMap<String,ItextModel> itextMap = new HashMap<String,ItextModel>();
-	
-	
-	/**
-	 * Sets the default locale.
-	 * 
-	 * @param locale the default locale key.
-	 */
-	public static void setDefaultLocale(Locale locale){
-		Context.defaultLocale = locale;
-	}
-	
-	/**
-	 * Gets the default locale.
-	 * 
-	 * @return the default locale key.
-	 */
-	public static Locale getDefaultLocale(){
-		return defaultLocale;
-	}
-	
-	/**
-	 * Sets the current locale.
-	 * 
-	 * @param locale the locale.
-	 */
-	public static void setLocale(Locale locale){
-		Context.locale = locale;
-		
-		for(ILocaleSelectionListener localeSelectionListener : localeSelectionListeners)
-			localeSelectionListener.onLocaleSelected(locale);
-	}
-	
-	/**
-	 * Gets the current locale.
-	 * 
-	 * @return the locale.
-	 */
-	public static Locale getLocale(){
-		return locale;
-	}
 	
 	/**
 	 * Gets the form that has focus.
@@ -144,48 +87,8 @@ public class Context {
 		Context.formDef = formDef;
 	}
 
-	/**
-	 * Checks if the form designer is in text locale or language translation mode.
-	 * 
-	 * @return true if in localization mode, else false.
-	 */
-	public static boolean inLocalizationMode(){
-		return !defaultLocale.getKey().equalsIgnoreCase(locale.getKey());
-	}
+
 	
-	/**
-	 * Gets the list of supported locales.
-	 * 
-	 * @return the locale list
-	 */
-	public static List<Locale> getLocales(){
-		return locales;
-	}
-	
-	/**
-	 * Sets the list of supported locales.
-	 * 
-	 * @param locales the locale list.
-	 */
-	public static void setLocales(List<Locale> locales){
-		Context.locales = locales;
-		
-		for(ILocaleListChangeListener listener : localeListListeners)
-			listener.onLocaleListChanged();
-	}
-	
-	/**
-	 * Adds a listener to locale list change event.
-	 * 
-	 * @param listener the listener.
-	 */
-	public static void addLocaleListChangeListener(ILocaleListChangeListener listener){
-		localeListListeners.add(listener);
-	}
-	
-	public static void addLocaleSelectionListener(ILocaleSelectionListener listener){
-		localeSelectionListeners.add(listener);
-	}
 	
 	/**
 	 * Check if the current form allows changes for both structure and text.
@@ -202,7 +105,7 @@ public class Context {
 	 * @return true if readonly else false.
 	 */
 	public static boolean isStructureReadOnly(){
-		if((formDef != null && formDef.isReadOnly()) || Context.inLocalizationMode())
+		if((formDef != null && formDef.isReadOnly()))
 			return true;
 		return false;
 	}
@@ -268,11 +171,13 @@ public class Context {
 		return eventBus;
 	}
 	
-	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
-		return languageText;
+//	public static HashMap<Integer,HashMap<String,String>> getLanguageText(){
+//		return languageText;
+//	}
+//
+	public static boolean inLocalizationMode() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 	
-	public static HashMap<String,ItextModel> getItextMap(){
-		return itextMap;
-	}
 }

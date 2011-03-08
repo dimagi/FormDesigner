@@ -58,8 +58,12 @@ public interface IFormElement {
 	
 	String getDisplayText();
 	
+	/**
+	 * The Itext ID is always == the Item ID (which should always be unique throughout the form)
+	 * @return
+	 */
 	String getItextId();
-	void setItextId(String id);
+	void setItextId(String ID);
 	
 	boolean removeChild(IFormElement element);
 	
@@ -68,8 +72,22 @@ public interface IFormElement {
 	public FormDef getFormDef();
 	
 	boolean isLocked();
+	void setLocked(boolean locked);
 	boolean isRequired();
+	void setRequired(boolean required);
 	boolean isEnabled();
+	void setEnabled(boolean enabled);
 	boolean isVisible();
+	void setVisible(boolean visible);
 	String getDefaultValue();
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath();
+	
+	public void setHasUINode(boolean hasUINode);
+	
+	public boolean hasUINode();
 }

@@ -6,9 +6,9 @@ import java.util.List;
 import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -331,5 +331,51 @@ public class OptionDef implements IFormElement, Serializable {
 	
 	public String getDefaultValue(){
 		return null;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setLocked(boolean locked) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setRequired(boolean required) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		//Not Valid for an OptionDef
+		return "No Nodeset Path for Option elements!";
+		
+	}
+
+	@Override
+	public boolean hasUINode() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void setHasUINode(boolean hasUINode) {
+		return; //OptionDef should always have a UINode.
+		
 	}
 }

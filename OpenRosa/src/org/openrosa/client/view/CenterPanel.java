@@ -5,27 +5,22 @@ import org.openrosa.client.controller.ICenterPanel;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.view.FormDesignerWidget.Images;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.controller.LayoutChangeListener;
-import org.purc.purcforms.client.controller.SubmitListener;
-import org.purc.purcforms.client.controller.WidgetPropertyChangeListener;
-import org.purc.purcforms.client.controller.WidgetSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.LanguageUtil;
-import org.purc.purcforms.client.view.DesignSurfaceView;
-import org.purc.purcforms.client.view.PreviewView;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.controller.LayoutChangeListener;
+import org.openrosa.client.controller.SubmitListener;
+import org.openrosa.client.controller.WidgetPropertyChangeListener;
+import org.openrosa.client.controller.WidgetSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.LanguageUtil;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.Window;
@@ -33,15 +28,10 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.xml.client.Document;
-import com.google.gwt.xml.client.Element;
 
 
 /**
  * Panel containing the contents on the form being designed.
- * 
- * @author daniel
- *
  */
 public class CenterPanel extends Composite implements SelectionHandler<Integer>, IFormSelectionListener, SubmitListener, LayoutChangeListener, ICenterPanel{
 
@@ -91,10 +81,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 */
 	private PropertiesView propertiesView = new PropertiesView();
 
-	/**
-	 * View onto which user drags and drops ui controls in a WUSIWUG manner.
-	 */
-	private DesignSurfaceView designSurfaceView;
+
 	
 	/** The text area which contains javascript source. */
 	private TextArea txtJavaScriptSource = new TextArea();
@@ -108,16 +95,10 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	/** The text area which contains locale or language xml. */
 	private TextArea txtLanguageXml = new TextArea();
 
-	/**
-	 * View used to display a form as it will look when the user is entering data in non-design mode.
-	 */
-	private PreviewView previewView;
 
 	/** The form defintion object thats is currently being edited. */
 	private FormDef formDef;
 
-	/** The index of the selected tab. */
-	private int selectedTabIndex = 0;	
 
 	/** Scroll panel for the design surface. */
 	private ScrollPanel scrollPanelDesign = new ScrollPanel();
@@ -135,19 +116,6 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @param images
 	 */
 	public CenterPanel(Images images) {
-		//designSurfaceView = new DesignSurfaceView();
-		//designSurfaceView = new DesignSurfaceView(images);
-		//previewView = new PreviewView((PreviewView.Images)images);
-
-		//initProperties();
-		/*initXformsSource();
-		initDesignSurface();
-		initJavaScriptSource();
-		initLayoutXml();
-		initLanguageXml();
-		initPreview();
-		initModelXml();*/
-		
 		
 		propertiesView.addStyleName("myPropsStyle");
 		FormUtil.maximizeWidget(tabs);
@@ -160,33 +128,29 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 
 		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
 
-		previewEvents();
+//		previewEvents();
 	}
 
-
-	/**
-	 * @see com.google.gwt.user.client.DOM#addEventPreview(EventPreview)
-	 */
-	private void previewEvents(){
-
-		DOM.addEventPreview(new EventPreview() { 
-			public boolean onEventPreview(Event event) 
-			{ 				
-				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
-					byte mode = Context.getCurrentMode();
-
-					if(mode == Context.MODE_DESIGN)
-						return designSurfaceView.handleKeyBoardEvent(event);
-					else if(mode == Context.MODE_PREVIEW)
-						return previewView.handleKeyBoardEvent(event);
-					else if(mode == Context.MODE_QUESTION_PROPERTIES || mode == Context.MODE_XFORMS_SOURCE)
-						return formDesignerListener.handleKeyBoardEvent(event);
-				}
-
-				return true;
-			}
-		});
-	}
+//
+//	// This method should get nuked as soon as it's verified that it
+//	// doesn't actually do anything.
+//	@SuppressWarnings("deprecation")
+//	private void previewEvents(){
+//
+//		DOM.addEventPreview(new EventPreview() { 
+//			public boolean onEventPreview(Event event) 
+//			{ 				
+//				if (DOM.eventGetType(event) == Event.ONKEYDOWN) {
+//					byte mode = Context.getCurrentMode();
+//
+//					if(mode == Context.MODE_QUESTION_PROPERTIES || mode == Context.MODE_XFORMS_SOURCE)
+//						return formDesignerListener.handleKeyBoardEvent(event);
+//				}
+//
+//				return true;
+//			}
+//		});
+//	}
 
 
 	/**
@@ -198,95 +162,33 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 		propertiesView.setFormChangeListener(formChangeListener);
 	}
 
-	/**
-	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
-	 */
+
 	public void onSelection(SelectionEvent<Integer> event){
-		selectedTabIndex = event.getSelectedItem();
-
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			Context.setCurrentMode(Context.MODE_DESIGN);
-		else if(selectedTabIndex == SELECTED_INDEX_PREVIEW){
-			if(formDef != null && formDef.getQuestionCount() > 0 && !designSurfaceView.hasWidgets()){
-				tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
-				
-				DeferredCommand.addCommand(new Command(){
-					public void execute() {
-						tabs.selectTab(SELECTED_INDEX_PREVIEW);
-					}
-				});
-				return;
-			}
-			
-			Context.setCurrentMode(Context.MODE_PREVIEW);
-		}
-		else if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
-			Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
-		else if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)
-			Context.setCurrentMode(Context.MODE_XFORMS_SOURCE);
-		else
-			Context.setCurrentMode(Context.MODE_NONE);
-
-		if(selectedTabIndex == SELECTED_INDEX_PREVIEW ){
-			if(formDef != null){
-				if(!previewView.isPreviewing()){
-					;//loadPreview();
-				}
-				else
-					previewView.moveToFirstWidget();
-			}
-		}
-		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE){
-			if(!designSurfaceView.hasWidgets())
-				designSurfaceView.refresh();
-		}
+		Context.setCurrentMode(Context.MODE_QUESTION_PROPERTIES);
 
 
-		//else if(selectedTabIndex == SELECTED_INDEX_LAYOUT_XML)
-		//	txtLayoutXml.setText(designSurfaceView.getLayoutXml());
 	}
 
-	/*private void loadPreview(){
-		FormUtil.dlg.setText(LocaleText.get("loadingPreview"));
-		FormUtil.dlg.center();
 
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					commitChanges();
-					
-					List<RuntimeWidgetWrapper> externalSourceWidgets = new ArrayList<RuntimeWidgetWrapper>();
-					if(Context.isOfflineMode())
-						;//externalSourceWidgets = null;
-
-					previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),externalSourceWidgets,true);
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}
-			}
-		});
-	}*/
 
 	/**
 	 * Sets up the design surface.
 	 */
 	private void initDesignSurface(){
-		tabs.add(scrollPanelDesign, LocaleText.get("designSurface"));
-
-		int height = Window.getClientHeight();
-		int width = Window.getClientWidth();
-		designSurfaceView.setWidth(width+PurcConstants.UNITS); //100% //1015"+PurcConstants.UNITS
-		designSurfaceView.setHeight(height+PurcConstants.UNITS); //707"+PurcConstants.UNITS
-		designSurfaceView.setLayoutChangeListener(this);
-
-		scrollPanelDesign.setWidget(designSurfaceView);
-
-		tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
-
-		updateScrollPos();
+//		tabs.add(scrollPanelDesign, LocaleText.get("designSurface"));
+//
+//		int height = Window.getClientHeight();
+//		int width = Window.getClientWidth();
+//		designSurfaceView.setWidth(width+PurcConstants.UNITS); //100% //1015"+PurcConstants.UNITS
+//		designSurfaceView.setHeight(height+PurcConstants.UNITS); //707"+PurcConstants.UNITS
+//		designSurfaceView.setLayoutChangeListener(this);
+//
+//		scrollPanelDesign.setWidget(designSurfaceView);
+//
+//		tabs.selectTab(SELECTED_INDEX_DESIGN_SURFACE);
+//
+//		updateScrollPos();
+		return;
 	}
 
 	/**
@@ -325,14 +227,15 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * Sets up the preview surface tab.
 	 */
 	private void initPreview(){
-		tabs.add(scrollPanelPreview, LocaleText.get("preview"));
-		previewView.setWidth("100%"); //1015"+PurcConstants.UNITS
-		previewView.setHeight("700"+PurcConstants.UNITS); //707"+PurcConstants.UNITS
-		previewView.setSubmitListener(this);
-		previewView.setDesignSurface(designSurfaceView);
-		;//previewView.setCenterPanel(this);
-
-		scrollPanelPreview.setWidget(previewView);
+//		tabs.add(scrollPanelPreview, LocaleText.get("preview"));
+//		previewView.setWidth("100%"); //1015"+PurcConstants.UNITS
+//		previewView.setHeight("700"+PurcConstants.UNITS); //707"+PurcConstants.UNITS
+//		previewView.setSubmitListener(this);
+//		previewView.setDesignSurface(designSurfaceView);
+//		;//previewView.setCenterPanel(this);
+//
+//		scrollPanelPreview.setWidget(previewView);
+		return ;
 	}
 
 	/**
@@ -364,30 +267,20 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
+	 * @see org.openrosa.client.controller.IFormSelectionListener#onFormItemSelected(java.lang.Object)
 	 */
-	public void onFormItemSelected(Object formItem) {
-		propertiesView.onFormItemSelected(formItem);
-
-		if(selectedTabIndex == SELECTED_INDEX_PROPERTIES)
-			propertiesView.setFocus();
-
-		FormDef form = FormDef.getFormDef((IFormElement)formItem);
-
-		if(this.formDef != form){
-			setFormDef(form);
-
-			//designSurfaceView.setFormDef(formDef);
-			//previewView.setFormDef(formDef);
-
-			if(selectedTabIndex == SELECTED_INDEX_PREVIEW && formDef != null)
-				;//previewView.loadForm(formDef,designSurfaceView.getLayoutXml(),getJavaScriptSource(),null,true);
-
-			//This is necessary for those running in a non GWT mode to update the 
-			//scroll bars on loading the form.
-			updateScrollPos();
-		}
-	}
+//	public void onFormItemSelected(Object formItem) {
+//		propertiesView.onFormItemSelected(formItem);
+//			propertiesView.setFocus();
+//
+//		FormDef form = FormDef.getFormDef((IFormElement)formItem);
+//
+//		if(this.formDef != form){
+//			setFormDef(form);
+//
+//			updateScrollPos();
+//		}
+//	}
 
 	/**
 	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
@@ -430,17 +323,6 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 */
 	public void loadForm(FormDef formDef, String layoutXml){
 		setFormDef(formDef);
-
-		//previewView.loadForm(formDef,designSurfaceView.getLayoutXml());
-		if(layoutXml == null || layoutXml.trim().length() == 0){
-			//This line is commented out because automatic widget formatting does not work well
-			//when originating from this method call for opening an xforms document.
-			;//designSurfaceView.setLayout(formDef);
-		}
-		else
-			;//designSurfaceView.setLayoutXml(layoutXml,formDef);
-
-		previewView.clearPreview();
 		tabs.selectTab(SELECTED_INDEX_PROPERTIES);
 	}
 
@@ -500,7 +382,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @return the html.
 	 */
 	public String getFormInnerHtml(){
-		return designSurfaceView.getSelectedPageHtml();
+//		return designSurfaceView.getSelectedPageHtml();
+		return "";
 	}
 
 	/** 
@@ -540,39 +423,37 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * Builds the widget layout xml and puts it in the layout xml tab.
 	 */
 	public void buildLayoutXml(){
-		String layout = designSurfaceView.getLayoutXml();
 
-		if(layout != null)
-			this.formDef.setLayoutXml(layout);
-		else
-			layout = formDef.getLayoutXml(); //TODO Needs testing coz its new
-
-		txtLayoutXml.setText(layout);
+		
+		
+		//...I wonder what layout xml is.
+		
+		
 	}
 
-	/**
-	 * Builds the language xml and puts it in the language xml tab.
-	 */
-	public void buildLanguageXml(){
-		Document doc = LanguageUtil.createNewLanguageDoc();
-		Element rootNode = doc.getDocumentElement();
-
-		Element node = null;
-		if(formDef != null){
-			node = formDef.getLanguageNode();
-			if(node != null)
-				rootNode.appendChild(node);
-		}
-
-		node = designSurfaceView.getLanguageNode();
-		if(node != null)
-			rootNode.appendChild(node);
-
-		txtLanguageXml.setText(FormDesignerUtil.formatXml(doc.toString()));
-
-		if(formDef != null)
-			formDef.setLanguageXml(txtLanguageXml.getText());
-	}
+//	/**
+//	 * Builds the language xml and puts it in the language xml tab.
+//	 */
+//	public void buildLanguageXml(){
+//		Document doc = LanguageUtil.createNewLanguageDoc();
+//		Element rootNode = doc.getDocumentElement();
+//
+//		Element node = null;
+//		if(formDef != null){
+//			node = formDef.getLanguageNode();
+//			if(node != null)
+//				rootNode.appendChild(node);
+//		}
+//
+//		node = designSurfaceView.getLanguageNode();
+//		if(node != null)
+//			rootNode.appendChild(node);
+//
+//		txtLanguageXml.setText(FormDesignerUtil.formatXml(doc.toString()));
+//
+//		if(formDef != null)
+//			formDef.setLanguageXml(txtLanguageXml.getText());
+//	}
 
 	/**
 	 * Loads layout xml and builds the widgets represented on the design surface tab. 
@@ -591,8 +472,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			//designSurfaceView.setLayoutXml(layoutXml,Context.inLocalizationMode() ? formDef : null); //TODO This passed null formdef in localization mode
 
 			FormDef frmDef = null;
-			if(Context.inLocalizationMode())
-				frmDef = formDef;
+//			if(Context.inLocalizationMode())
+//				frmDef = formDef;
 			;//designSurfaceView.setLayoutXml(layoutXml,frmDef); //TODO This passed null formdef in localization mode
 
 			updateScrollPos();
@@ -650,25 +531,16 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 			selectLanguageTab();
 	}
 
-	public void saveFormLayout(){
-		txtLayoutXml.setText(designSurfaceView.getLayoutXml());
-		
-		if(showLayoutXml)
-			tabs.selectTab(SELECTED_INDEX_LAYOUT_XML);
 
-		if(formDef != null)
-			formDef.setLayoutXml(txtLayoutXml.getText());
-	}
-
-	public void saveLanguageText(boolean selectTab){
-		buildLanguageXml();
-
-		if(selectTab)
-			selectLanguageTab();
-
-		if(formDef != null)
-			formDef.setLanguageXml(txtLanguageXml.getText());
-	}
+//	public void saveLanguageText(boolean selectTab){
+//		buildLanguageXml();
+//
+//		if(selectTab)
+//			selectLanguageTab();
+//
+//		if(formDef != null)
+//			formDef.setLanguageXml(txtLanguageXml.getText());
+//	}
 	
 	public void saveJavaScriptSource(){
 		if(formDef != null)
@@ -676,26 +548,17 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#format()()
+	 * @see org.openrosa.client.controller.IFormDesignerListener#format()()
 	 */
 	public void format(){
-		if(selectedTabIndex == SELECTED_INDEX_XFORMS_SOURCE)
-			txtXformsSource.setText(FormDesignerUtil.formatXml(txtXformsSource.getText()));
-		else if(selectedTabIndex == SELECTED_INDEX_LAYOUT_XML)
-			txtLayoutXml.setText(FormDesignerUtil.formatXml(txtLayoutXml.getText()));
-		else if(selectedTabIndex == SELECTED_INDEX_MODEL_XML)
-			txtModelXml.setText(FormDesignerUtil.formatXml(txtModelXml.getText()));
-		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.format();
-		else if(selectedTabIndex == SELECTED_INDEX_LANGUAGE_XML)
-			txtLanguageXml.setText(FormDesignerUtil.formatXml(txtLanguageXml.getText()));
+		return;
 	}
 
 	/**
 	 * Modifies the FormDef object to reflect any changes made by the user.
 	 */
 	public void commitChanges(){
-		propertiesView.commitChanges();
+//		propertiesView.commitChanges();
 	}
 
 	/**
@@ -704,43 +567,43 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @param widgetSelectionListener the listener.
 	 */
 	public void setWidgetSelectionListener(WidgetSelectionListener  widgetSelectionListener){
-		designSurfaceView.setWidgetSelectionListener(widgetSelectionListener);
+//		designSurfaceView.setWidgetSelectionListener(widgetSelectionListener);
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.deleteSelectedItem();	
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.deleteSelectedItem();	
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.copyItem();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.copyItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.cutItem();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.cutItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.pasteItem();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.pasteItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.SubmitListener#onSubmit(String)()
+	 * @see org.openrosa.client.controller.SubmitListener#onSubmit(String)()
 	 */
 	public void onSubmit(String xml) {
 		this.txtModelXml.setText(xml);
@@ -752,76 +615,76 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.SubmitListener#onCancel()()
+	 * @see org.openrosa.client.controller.SubmitListener#onCancel()()
 	 */
 	public void onCancel(){
 
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void alignLeft() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.alignLeft();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.alignLeft();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignRight()
 	 */
 	public void alignRight() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.alignRight();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.alignRight();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.alignTop();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.alignTop();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.alignBottom();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.alignBottom();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameHeight()
 	 */
 	public void makeSameHeight() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.makeSameHeight();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.makeSameHeight();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameSize()
 	 */
 	public void makeSameSize() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.makeSameSize();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.makeSameSize();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameWidth()
 	 */
 	public void makeSameWidth() {
-		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.makeSameWidth();
+//		if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.makeSameWidth();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#refresh()
+	 * @see org.openrosa.client.controller.IFormDesignerController#refresh()
 	 */
 	public void refresh(){
-		if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
-			previewView.refresh(); //loadForm(formDef,designSurfaceView.getLayoutXml(),null);
-		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
-			designSurfaceView.refresh();
+//		if(selectedTabIndex == SELECTED_INDEX_PREVIEW)
+//			previewView.refresh(); //loadForm(formDef,designSurfaceView.getLayoutXml(),null);
+//		else if(selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE)
+//			designSurfaceView.refresh();
 	}
 
 	/**
@@ -864,8 +727,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @param offset the offset pixels.
 	 */
 	public void setEmbeddedHeightOffset(int offset){
-		designSurfaceView.setEmbeddedHeightOffset(offset);
-		previewView.setEmbeddedHeightOffset(offset);
+//		designSurfaceView.setEmbeddedHeightOffset(offset);
+//		previewView.setEmbeddedHeightOffset(offset);
 	}
 
 	/**
@@ -887,7 +750,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.LayoutChangeListener#onLayoutChanged(String)
+	 * @see org.openrosa.client.controller.LayoutChangeListener#onLayoutChanged(String)
 	 */
 	public void onLayoutChanged(String xml){
 		txtLayoutXml.setText(xml);
@@ -918,7 +781,8 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * @return true if it allows, else false.
 	 */
 	public boolean allowsRefresh(){
-		return selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE || selectedTabIndex == SELECTED_INDEX_PREVIEW;
+//		return selectedTabIndex == SELECTED_INDEX_DESIGN_SURFACE || selectedTabIndex == SELECTED_INDEX_PREVIEW;
+		return false;
 	}
 
 
@@ -990,10 +854,21 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	
 	
 	public WidgetPropertyChangeListener getWidgetPropertyChangeListener(){
-		return designSurfaceView;
+//		return designSurfaceView;
+		return null;
 	}
 	
 	public IFormSelectionListener getFormSelectionListener(){
 		return propertiesView;
+	}
+	
+	public PropertiesView getPropertiesView(){
+		return propertiesView;
+	}
+
+	@Override
+	public void onFormItemSelected(Object formItem) {
+		// TODO Auto-generated method stub
+		
 	}
 }

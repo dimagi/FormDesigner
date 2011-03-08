@@ -11,14 +11,14 @@ import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.controller.QuestionChangeListener;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformBuilderUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
-import org.purc.purcforms.client.xpath.XPathExpression;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformBuilderUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
+import org.openrosa.client.xpath.XPathExpression;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.xml.client.Document;
@@ -189,6 +189,12 @@ public class QuestionDef implements IFormElement, Serializable{
 	private IFormElement parent;
 
 	private String itextId;
+	
+	/**
+	 * Flag used to determine if this QuestionDef should have a 
+	 * Control node (input, 1select, etc) generated upon XML output.
+	 */
+	private boolean hasUINode;
 
 
 	/** This constructor is used mainly during deserialization. */
@@ -425,6 +431,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 	}
 
+	/**
+	 * I have no idea what this is, except that it seems to be very important.
+	 * Unclear whether "variableName" is supposed to be the tag name for the data node,
+	 * the actual nodeset path or the xpath (relative to the document) (path to what? The bind? That data node? The control node?).
+	 */
 	public String getBinding() {
 		return variableName;
 	}
@@ -446,6 +457,19 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setParent(IFormElement parent) {
 		this.parent = parent;
+	}
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		if(getParent() == null){
+			return "/"+getBinding();
+		}else{
+			return getParent().getDataNodesetPath() + "/"+getBinding();
+		}
+		
 	}
 
 	/**
@@ -712,7 +736,7 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
 		boolean isNew = controlNode == null;
-		if(controlNode == null) //Must be new question.
+		if(controlNode == null && hasUINode) //Must be new question.
 			UiElementBuilder.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
 		else
 			updateControlNodeName();
@@ -721,12 +745,11 @@ public class QuestionDef implements IFormElement, Serializable{
 			XmlUtil.setTextNodeValue(labelNode,text);
 
 		Element node = bindNode;
-		if(node == null){
+		if(node == null && hasUINode){
 			//We are using a ref instead of bind
 			node = controlNode;
 			appendParentBinding = false;
 		}
-
 		if(node != null){
 			String binding = variableName;
 			if(!binding.startsWith("/"+ formDef.getVariableName()+"/") && appendParentBinding){
@@ -779,12 +802,13 @@ public class QuestionDef implements IFormElement, Serializable{
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
 			}
 			
-			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
-					dataType == QuestionDef.QTN_TYPE_VIDEO))
-				controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
-			else
-				UiElementBuilder.setMediaType(controlNode, dataType);
-
+			if(hasUINode){
+				if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
+						dataType == QuestionDef.QTN_TYPE_VIDEO))
+					controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
+				else
+					UiElementBuilder.setMediaType(controlNode, dataType);
+			}
 
 			if(dataNode != null)
 				updateDataNode(doc,formDef,orgFormVarName);
@@ -1076,6 +1100,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	private void updateControlNodeName(){
 		//TODO How about cases where the prefix is not xf?
+	
+		if(!hasUINode) return;//check to see if 
 		String name = controlNode.getNodeName();
 		Element parent = (Element)controlNode.getParentNode();
 		String xml = controlNode.toString();
@@ -1588,6 +1614,14 @@ public class QuestionDef implements IFormElement, Serializable{
 			return (FormDef)element;
 		
 		return element.getFormDef();
+	}
+
+	public boolean hasUINode() {
+		return hasUINode;
+	}
+
+	public void setHasUINode(boolean hasUINode) {
+		this.hasUINode = hasUINode;
 	}
 }
 

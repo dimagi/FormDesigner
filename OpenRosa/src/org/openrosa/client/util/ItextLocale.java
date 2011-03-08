@@ -1,6 +1,10 @@
 package org.openrosa.client.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This object represents an itext locale (or language).  Stores the name of the language, plus a hashmap containing the itextID:value pairs.
@@ -29,6 +33,22 @@ public class ItextLocale {
 
 	private HashMap<String, String> getValues() {
 		return values;
+	}
+	
+	/**
+	 * Returns the available itext forms for the specified textID
+	 * @param textID
+	 * @return
+	 */
+	public ArrayList<String> getAvailableForms(String textID){
+		ArrayList<String> keys = new ArrayList<String>();
+		for (String key: getValues().keySet()){
+			if(key.contains(";")){
+				if(!key.split(";")[0].equals(textID))continue;
+				keys.add(key.split(";")[1]);
+			}
+		}
+		return keys;
 	}
 	
 	/**
@@ -62,7 +82,7 @@ public class ItextLocale {
 	 * @param form - can be null
 	 * @param value
 	 */
-	public void setTranslation(String ID, String form, String value){
+	private void setTranslation(String ID, String form, String value){
 		if(form!=null)
 			setTranslation(ID+";"+form, value);
 		else
@@ -73,6 +93,10 @@ public class ItextLocale {
 		return values.get(fullID);
 	}
 	
+	public boolean hasID(String fullID){
+		return values.get(fullID)!=null;
+	}
+	
 	/**
 	 * Gets a translation. If no form is present, use null
 	 * @param ID
@@ -80,6 +104,9 @@ public class ItextLocale {
 	 * @return
 	 */
 	public String getTranslation(String ID, String form){
+		if(form == null){
+			return getTranslation(ID);
+		}
 		return getTranslation(ID+";"+form);
 	}
 	
@@ -89,7 +116,7 @@ public class ItextLocale {
 	 * @param ID
 	 */
 	public String getDefaultTranslation(String ID){
-		return getTranslation(ID,null);
+		return getTranslation(ID);
 	}
 	
 	/**
@@ -110,12 +137,43 @@ public class ItextLocale {
 		return getTranslation(ID,"short");
 	}
 
+	/**
+	 * Determines if this locale has been set to be the 
+	 * default locale
+	 * @return
+	 */
 	public boolean isDefault() {
 		return isDefault;
 	}
 
+	/**
+	 * Set whether this locale should be the 'default'
+	 * locale
+	 * @param isDefault
+	 */
 	public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
+	}
+	
+	/**
+	 * Returns a list of all the unique ItextIDs contained in this locale (sans special TextForms)
+	 * @return
+	 */
+	public HashSet<String> getAvailableItextIDs(){
+		HashSet<String> keys = new HashSet<String>();
+		for(String k : values.keySet()){
+			if(k.contains(";")){
+				keys.add(k.split(";")[0]);
+			}else{
+				keys.add(k);
+			}
+		}
+		
+		return keys;
+	}
+	
+	public Set<String> getAllFULLIds(){
+		return values.keySet();
 	}
 
 }

@@ -13,14 +13,17 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.TreeModelItem;
-import org.purc.purcforms.client.controller.IFormActionListener;
-import org.purc.purcforms.client.controller.IFormChangeListener;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.controller.FormDesignerController;
+import org.openrosa.client.controller.IFormActionListener;
+import org.openrosa.client.controller.IFormChangeListener;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSelectionListener;
+import org.openrosa.client.jr.xforms.util.XFormUtils;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
@@ -33,6 +36,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -116,9 +120,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @param images the tree images.
 	 * @param formSelectionListener the form item selection events listener.
 	 */
-	public FormsTreeView(Images images,IFormSelectionListener formSelectionListener) {
+	public FormsTreeView(IFormSelectionListener formSelectionListener) {
 
-		this.images = images;
+		this.images = GWT.create(Images.class);
 		this.formSelectionListeners.add(formSelectionListener);
 
 
@@ -204,7 +208,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			}
 		});*/
 
-		initContextMenu();
+//		initContextMenu();
 	}
 
 
@@ -240,51 +244,51 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		this.showFormAsRoot = showFormAsRoot;
 	}
 
-	/**
-	 * Prepares the tree item context menu.
-	 */
-	private void initContextMenu(){
-		popup = new PopupPanel(true,true);
-
-		MenuBar menuBar = new MenuBar(true);
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("addNew")),true, new Command(){
-			public void execute() {popup.hide(); addNewItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("addNewChild")),true, new Command(){
-			public void execute() {popup.hide(); addNewChildItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true,new Command(){
-			public void execute() {popup.hide(); deleteSelectedItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),LocaleText.get("moveUp")),true, new Command(){
-			public void execute() {popup.hide(); moveItemUp();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),LocaleText.get("moveDown")),true, new Command(){
-			public void execute() {popup.hide(); moveItemDown();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
-			public void execute() {popup.hide(); cutItem();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
-			public void execute() {popup.hide(); copyItem();}});
-
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
-			public void execute() {popup.hide(); pasteItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true,new Command(){
-			public void execute() {popup.hide(); saveItem();}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true,new Command(){
-			public void execute() {popup.hide(); refreshItem();}});
-
-		popup.setWidget(menuBar);
-	}
+//	/**
+//	 * Prepares the tree item context menu.
+//	 */
+//	private void initContextMenu(){
+//		popup = new PopupPanel(true,true);
+//
+//		MenuBar menuBar = new MenuBar(true);
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.add(),LocaleText.get("addNew")),true, new Command(){
+//			public void execute() {popup.hide(); addNewItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.addchild(),LocaleText.get("addNewChild")),true, new Command(){
+//			public void execute() {popup.hide(); addNewChildItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.delete(),LocaleText.get("deleteItem")),true,new Command(){
+//			public void execute() {popup.hide(); deleteSelectedItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.moveup(),LocaleText.get("moveUp")),true, new Command(){
+//			public void execute() {popup.hide(); moveItemUp();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.movedown(),LocaleText.get("moveDown")),true, new Command(){
+//			public void execute() {popup.hide(); moveItemDown();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.cut(),LocaleText.get("cut")),true,new Command(){
+//			public void execute() {popup.hide(); cutItem();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.copy(),LocaleText.get("copy")),true,new Command(){
+//			public void execute() {popup.hide(); copyItem();}});
+//
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.paste(),LocaleText.get("paste")),true,new Command(){
+//			public void execute() {popup.hide(); pasteItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.save(),LocaleText.get("save")),true,new Command(){
+//			public void execute() {popup.hide(); saveItem();}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(FormDesignerUtil.createHeaderHTML(images.refresh(),LocaleText.get("refresh")),true,new Command(){
+//			public void execute() {popup.hide(); refreshItem();}});
+//
+//		popup.setWidget(menuBar);
+//	}
 
 
 	/**
@@ -338,8 +342,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @param formItem the selected form item.
 	 */
 	private void fireFormItemSelected(Object formItem){
-		for(int i=0; i<formSelectionListeners.size(); i++)
-			formSelectionListeners.get(i).onFormItemSelected(formItem);
+//		for(int i=0; i<formSelectionListeners.size(); i++)
+//			formSelectionListeners.get(i).onFormItemSelected(formItem);
+		
+		FormDesignerController.getFormDesignerController().changePropertiesViewSelection((IFormElement)formItem);
 	}
 
 	public void loadForm(FormDef formDef,boolean select, boolean langRefresh){
@@ -497,6 +503,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem addImageItem(TreeModelItem root,String text, Object userObject){
 		TreeModelItem item = new TreeModelItem(text,userObject,root);
+		if(userObject instanceof IFormElement){
+			((FormDesignerController)formDesignerListener).alertToolbarQuestionAdded((IFormElement)userObject);
+		}
 		treePanel.getStore().add(root,item, true);
 		return item;
 	}
@@ -504,15 +513,16 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem loadQuestion(QuestionDef questionDef,TreeModelItem root){
 		//TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
-		TreeModelItem questionRoot = addImageItem(root, questionDef.getDisplayText(), questionDef);
-
+		TreeModelItem questionRoot = addImageItem(root, questionDef.getBinding(), questionDef);
+		GWT.log("Loading Question in FormsTreeView, Name="+questionDef.getBinding()+", type="+questionDef.getDataType());
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			List options = questionDef.getOptions();
 			for(int currentOptionNo=0; currentOptionNo < options.size(); currentOptionNo++){
+				GWT.log("FormsTreeView adding select option...");
 				OptionDef optionDef = (OptionDef)options.get(currentOptionNo);
 				//addImageItem(questionRoot, optionDef.getText(), images.markRead(),optionDef,null);
-				addImageItem(questionRoot, optionDef.getText(), optionDef);
+				addImageItem(questionRoot, XformUtil.getOptionDefIdentifierString(optionDef), optionDef);
 			}
 		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -529,9 +539,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 		return questionRoot;
 	}
+	
+
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItem()
 	 */
 	public void deleteSelectedItem(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -663,7 +675,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem(){
 		if(inReadOnlyMode())
@@ -762,6 +774,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				else{
 					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					questionDef.setDataType(dataType);
+					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
 					questionDef.setItextId(questionDef.getBinding());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 					item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
@@ -912,7 +925,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem(){
 		addNewChildItem(true);
@@ -972,7 +985,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
 		if(inReadOnlyMode())
@@ -1063,7 +1076,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown(){
 		if(inReadOnlyMode())
@@ -1128,7 +1141,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
+	 * @see org.openrosa.client.controller.IFormChangeListener#onFormItemChanged(java.lang.Object)
 	 */
 	public Object onFormItemChanged(Object formItem) {
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1224,7 +1237,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormChangeListener#onDeleteChildren(Object)
+	 * @see org.openrosa.client.controller.IFormChangeListener#onDeleteChildren(Object)
 	 */
 	public void onDeleteChildren(Object formItem){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1238,7 +1251,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem(){
 		if(inReadOnlyMode())
@@ -1256,7 +1269,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1267,7 +1280,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem(){
 		if(inReadOnlyMode())
@@ -1367,22 +1380,20 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Window.alert(message);
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#refresh(Object)
-	 */
-	public void refreshItem(){
-		if(inReadOnlyMode())
-			return;
 
-		formDesignerListener.refresh(this);
-	}
+//	public void refreshItem(){
+//		if(inReadOnlyMode())
+//			return;
+//
+//		formDesignerListener.refresh(this);
+//	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#saveForm()
-	 */
-	public void saveItem(){
-		formDesignerListener.saveForm();
-	}
+//	/**
+//	 * @see org.openrosa.client.controller.IFormDesignerListener#saveForm()
+//	 */
+//	public void saveItem(){
+//		formDesignerListener.saveForm();
+//	}
 
 	/**
 	 * Gets the selected form.
@@ -1428,39 +1439,39 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		treePanel.getStore().removeAll();
 	}
 
-	/**
-	 * Checks if the selected form is valid for saving.
-	 * 
-	 * @return true if valid, else false.
-	 */
-	public boolean isValidForm(){
-		TreeModelItem  parent = getSelectedItemRoot((TreeModelItem)treePanel.getSelectionModel().getSelectedItem());
-		if(parent == null)
-			return true;
-
-		Map<String,String> pageNos = new HashMap<String,String>();
-		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
-		int count = parent.getChildCount();
-		for(int index = 0; index < count; index++){
-			/*TreeModelItem child = (TreeModelItem)parent.getChild(index);
-			GroupDef pageDef = (GroupDef)child.getUserObject();
-			String pageNo = String.valueOf(pageDef.getPageNo());
-			if(pageNos.containsKey(pageNo)){
-				//tree.setSelectedItem(child);
-				//tree.ensureSelectedItemVisible();
-				treePanel.getSelectionModel().select(child, false);
-				Window.alert(LocaleText.get("selectedPage") + pageDef.getName() +LocaleText.get("shouldNotSharePageBinding") + pageNos.get(pageNo)+ "]");
-				return false;
-			}
-			else
-				pageNos.put(pageNo, pageDef.getName());
-
-			if(!isValidQuestionList(child,bindings))
-				return false;*/
-		}
-
-		return true;
-	}
+//	/**
+//	 * Checks if the selected form is valid for saving.
+//	 * 
+//	 * @return true if valid, else false.
+//	 */
+//	public boolean isValidForm(){
+//		TreeModelItem  parent = getSelectedItemRoot((TreeModelItem)treePanel.getSelectionModel().getSelectedItem());
+//		if(parent == null)
+//			return true;
+//
+//		Map<String,String> pageNos = new HashMap<String,String>();
+//		Map<String,QuestionDef> bindings = new HashMap<String,QuestionDef>();
+//		int count = parent.getChildCount();
+//		for(int index = 0; index < count; index++){
+//			/*TreeModelItem child = (TreeModelItem)parent.getChild(index);
+//			GroupDef pageDef = (GroupDef)child.getUserObject();
+//			String pageNo = String.valueOf(pageDef.getPageNo());
+//			if(pageNos.containsKey(pageNo)){
+//				//tree.setSelectedItem(child);
+//				//tree.ensureSelectedItemVisible();
+//				treePanel.getSelectionModel().select(child, false);
+//				Window.alert(LocaleText.get("selectedPage") + pageDef.getName() +LocaleText.get("shouldNotSharePageBinding") + pageNos.get(pageNo)+ "]");
+//				return false;
+//			}
+//			else
+//				pageNos.put(pageNo, pageDef.getName());
+//
+//			if(!isValidQuestionList(child,bindings))
+//				return false;*/
+//		}
+//
+//		return true;
+//	}
 
 	private boolean isValidQuestionList(TreeModelItem  parent,Map<String,QuestionDef> bindings){
 		int count = parent.getChildCount();
@@ -1514,7 +1525,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveUp()
 	 */
 	public void moveUp(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1540,7 +1551,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveDown()
 	 */
 	public void moveDown(){
 		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
@@ -1737,5 +1748,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			imageResource = images.drafts();
 		
 		return AbstractImagePrototype.create(imageResource);
+	}
+
+
+	@Override
+	public void refreshItem() {
+		// TODO Auto-generated method stub
+		
 	}
 }

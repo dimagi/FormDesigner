@@ -4,8 +4,8 @@ import java.util.Vector;
 
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;

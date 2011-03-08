@@ -11,11 +11,11 @@ import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.widget.skiprule.FieldWidget;
-import org.purc.purcforms.client.Context;
-import org.purc.purcforms.client.FormDesignerWidget;
-import org.purc.purcforms.client.controller.ItemSelectionListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.Context;
+import org.openrosa.client.view.FormDesignerWidget;
+import org.openrosa.client.controller.ItemSelectionListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -260,7 +260,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onItemSelected(Object, Object)
 	 */
 	public void onItemSelected(Object sender, Object item) {
 		//This is only useful for us when a new parent question has been selected.
@@ -339,7 +339,7 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.ItemSelectionListener#onStartItemSelection(Object)
+	 * @see org.openrosa.client.controller.ItemSelectionListener#onStartItemSelection(Object)
 	 */
 	public void onStartItemSelection(Object sender){
 
@@ -484,17 +484,17 @@ public class DynamicListsView extends Composite implements ItemSelectionListener
 
 		txtBinding.setEnabled(!Context.isStructureReadOnly());
 
-		PushButton button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.delete()));
+		PushButton button = new PushButton(FormUtil.createImage(Toolbar.images.delete()));
 		button.setTitle(LocaleText.get("deleteItem"));
 		button.addClickHandler(this);
 		table.setWidget(row, 2,button);
 
-		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.moveup()));
+		button = new PushButton(FormUtil.createImage(Toolbar.images.moveup()));
 		button.setTitle(LocaleText.get("moveUp"));
 		button.addClickHandler(this);
 		table.setWidget(row, 3,button);
 
-		button = new PushButton(FormUtil.createImage(FormDesignerWidget.images.movedown()));
+		button = new PushButton(FormUtil.createImage(Toolbar.images.movedown()));
 		button.setTitle(LocaleText.get("moveDown"));
 		button.addClickHandler(this);
 		table.setWidget(row, 4,button);

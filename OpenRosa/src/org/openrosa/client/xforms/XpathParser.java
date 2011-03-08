@@ -2,7 +2,7 @@ package org.openrosa.client.xforms;
 
 import java.util.Vector;
 
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformConstants;
 
 
 /**

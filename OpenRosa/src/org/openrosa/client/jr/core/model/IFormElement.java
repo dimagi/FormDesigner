@@ -116,4 +116,5 @@ public interface IFormElement extends Localizable, Externalizable {
 	public String getAppearanceAttr();
 	
 	public void setAppearanceAttr (String appearanceAttr);
+	
 }

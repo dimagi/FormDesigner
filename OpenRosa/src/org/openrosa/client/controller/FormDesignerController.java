@@ -6,30 +6,27 @@ import java.util.List;
 
 import org.openrosa.client.Context;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
+import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.CenterPanel;
-import org.openrosa.client.view.LeftPanel;
+import org.openrosa.client.view.SaveFileDialog;
+import org.openrosa.client.view.Toolbar;
 import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
-import org.purc.purcforms.client.AboutDialog;
-import org.purc.purcforms.client.PurcConstants;
-import org.purc.purcforms.client.controller.IFormDesignerListener;
-import org.purc.purcforms.client.controller.IFormSaveListener;
-import org.purc.purcforms.client.controller.OpenFileDialogEventListener;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.Locale;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormDesignerUtil;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.util.LanguageUtil;
-import org.purc.purcforms.client.view.FormsTreeView;
-import org.purc.purcforms.client.view.LocalesDialog;
-import org.purc.purcforms.client.view.LoginDialog;
-import org.purc.purcforms.client.view.OpenFileDialog;
-import org.purc.purcforms.client.view.SaveFileDialog;
-import org.purc.purcforms.client.xforms.PurcFormBuilder;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.PurcConstants;
+import org.openrosa.client.controller.IFormDesignerListener;
+import org.openrosa.client.controller.IFormSaveListener;
+import org.openrosa.client.controller.OpenFileDialogEventListener;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.Itext;
+import org.openrosa.client.util.LanguageUtil;
+import org.openrosa.client.view.FormsTreeView;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -49,16 +46,17 @@ import com.google.gwt.xml.client.XMLParser;
 * Controls the interactions between the menu, tool bar and 
 * various views (eg Left and Center panels) for the form designer.
 * 
-* @author daniel
 *
 */
 public class FormDesignerController implements IFormDesignerListener, OpenFileDialogEventListener{
 
 	/** The panel on the right hand side of the form designer. */
-	private CenterPanel centerPanel;
+	private static CenterPanel centerPanel;
 
 	/** The panel on the left hand side of the form designer. */
-	private LeftPanel leftPanel;
+	private FormsTreeView formsTreeView;
+	
+	private Toolbar toolbar;
 
 	/**
 	 * The identifier of the loaded or opened form.
@@ -70,38 +68,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 */
 	private IFormSaveListener formSaveListener;
 
-	//These are constants to remember the current action during the login call back
-	//such that we know which action to execute.
-	/** No current action. */
-	private static final byte CA_NONE = 0;
-
-	/** Action for loading a form definition. */
-	private static final byte CA_LOAD_FORM = 1;
-
 	/** Action for saving form. */
 	private static final byte CA_SAVE_FORM = 2;
 
 	/** Action for refreshing a form. */
 	private static final byte CA_REFRESH_FORM = 3;
 
-	/** Action for setting file contents. */
-	private static final byte CA_SET_FILE_CONTENTS = 4;
-
-	/** The current action by the time to try to authenticate the user at the server. */
-	private static byte currentAction = CA_NONE;
-
-	/**
-	 * The dialog box used to log on the server when the user's session expires on the server.
-	 */
-	private static LoginDialog loginDlg = new LoginDialog();
-
-	/** Static self reference such that the static login call back can have
-	 *  a reference to proceed with the current action.
-	 */
-	private static FormDesignerController controller;
-
+	public static byte currentAction = 0;
 	/** The object that is being refreshed. */
 	private Object refreshObject;
+	
+	private static FormDesignerController fdc;
 
 
 	/**
@@ -110,39 +87,63 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param centerPanel the right hand side panel.
 	 * @param leftPanel the left hand side panel.
 	 */
-	public FormDesignerController(CenterPanel centerPanel, LeftPanel leftPanel){
-		this.leftPanel = leftPanel;
+	public FormDesignerController(CenterPanel centerPanel, FormsTreeView treeView){
+		this.formsTreeView = treeView;
 		this.centerPanel = centerPanel;
 
 		this.centerPanel.setFormDesignerListener(this);
+		fdc = this;
 
-		controller = this;
+	}
+	
+	public void setToolbar(Toolbar toolbar){
+		this.toolbar = toolbar;
+	}
+	
+	public void alertToolbarQuestionAdded(IFormElement question){
+		toolbar.checkEnableAddSelect(question);
 	}
 
+	public void changePropertiesViewSelection(IFormElement objectDef){
+		centerPanel.getPropertiesView().changeSelectedObject(objectDef);
+	}
+	
+	public static FormDesignerController getFormDesignerController(){
+		return fdc;
+	}
+	
+	
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewItem()
 	 */
 	public void addNewItem() {
-		leftPanel.addNewItem();
+		formsTreeView.addNewItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewChildItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */
 	public void addNewChildItem() {
-		leftPanel.addNewChildItem();
+		formsTreeView.addNewChildItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#addNewQuestion()
+	 * @see org.openrosa.client.controller.IFormActionListener#addNewQuestion()
 	 */
 	public void addNewQuestion(int dataType){
-		leftPanel.addNewQuestion(dataType);
+		//HERE IS WHERE A NEW QUESTION SHOULD BE CREATED
+		// - Create Question
+		// - Add to FormDef
+		// - Add to FormsTreeView
+		
+		
+		
+		formsTreeView.addNewQuestion(dataType);
 	}
 	
 	
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#printForm()
+	 * @see org.openrosa.client.controller.IFormDesignerController#printForm()
 	 */
 	public void printForm(){
 		FormDef formDef = centerPanel.getFormDef();
@@ -165,7 +166,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}-*/;
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#closeForm()
+	 * @see org.openrosa.client.controller.IFormDesignerController#closeForm()
 	 */
 	public void closeForm() {
 		String url = FormUtil.getCloseUrl();
@@ -174,134 +175,97 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	} 
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#deleteSelectedItems()
+	 * @see org.openrosa.client.controller.IFormActionListener#deleteSelectedItems()
 	 */
 	public void deleteSelectedItem() {
 		if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-			leftPanel.deleteSelectedItem();	
+			formsTreeView.deleteSelectedItem();	
 		else
 			centerPanel.deleteSelectedItem();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemDown()
 	 */
 	public void moveItemDown() {
-		leftPanel.moveItemDown();
+		formsTreeView.moveItemDown();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveItemUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
-		leftPanel.moveItemUp();
+		formsTreeView.moveItemUp();
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#newForm()
-	 */
-	public void newForm() {
-		if(isOfflineMode())
-			leftPanel.addNewForm();
-	}
+//	/**
+//	 * @see org.openrosa.client.controller.IFormActionListener#newForm()
+//	 */
+//	public void newForm() {
+//		if(isOfflineMode())
+//			formsTreeView.addNewForm();
+//	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#showAboutInfo()
-	 */
-	public void openForm() {
-		//if(isOfflineMode()){
-			String xml = centerPanel.getXformsSource();
 
-			//Only load layout if in layout mode and no xforms source is supplied.
-			if(centerPanel.isInLayoutMode() && (xml == null || xml.trim().length() == 0)){
-				xml = centerPanel.getLayoutXml();
-				if(xml == null || xml.trim().length() == 0){
-					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
-					dlg.center();
-				}
-			}
-			else{
-				//Whether in layout mode or not, as long as xforms source is supplied, we load it.
-				if(xml != null && xml.trim().length() > 0){
-					FormDef formDef = leftPanel.getSelectedForm();
-					if(formDef != null)
-						refreshFormDeffered();
-					else
-						openFormDeffered(isOfflineMode() ? ModelConstants.NULL_ID : formId,false);
-				}
-				else{
-					OpenFileDialog dlg = new OpenFileDialog(this,FormUtil.getFileOpenUrl());
-					dlg.center();
-				}
-			}
-		//}
-	}
+//	/**
+//	 * Loads a form from the Xforms Source tab, in a deferred command.
+//	 * 
+//	 * @param id the form identifier.
+//	 * @param readonly set to true to load the form in read only mode.
+//	 */
+//	public void openFormDeffered(int id, boolean readonly) {
+//		final int tempFormId = id;
+//		final boolean tempReadonly = readonly;
+//
+//		FormUtil.dlg.setText(LocaleText.get("openingForm"));
+//		FormUtil.dlg.center();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//				try{
+//					String xml = centerPanel.getXformsSource().trim();
+//					if(xml.length() > 0){
+//						FormDef formDef = XformParser.fromXform2FormDef(xml,Context.getLanguageText());
+//						formDef.setReadOnly(tempReadonly);
+//
+//						if(tempFormId != ModelConstants.NULL_ID)
+//							formDef.setId(tempFormId);
+//
+//						if(formDef.getLayoutXml() != null)
+//							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
+//						else{
+//							//Could be from form runner which puts these contents in center panel
+//							//because it does not yet have a formdef by the time it has this data.
+//							formDef.setXformXml(centerPanel.getXformsSource());
+//							formDef.setLayoutXml(centerPanel.getLayoutXml());
+//						}
+//						
+//						if(formDef.getJavaScriptSource() != null)
+//							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
+//						else
+//							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
+//
+//						//TODO May also need to refresh UI if form was not stored in default lang.
+//						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
+//						if(locales != null){
+//							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
+//							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
+//						}
+//
+//						leftPanel.loadForm(formDef);
+//						centerPanel.loadForm(formDef,formDef.getLayoutXml());
+//						centerPanel.format();
+//					}
+//					FormUtil.dlg.hide();
+//				}
+//				catch(Exception ex){
+//					FormUtil.dlg.hide();
+//					FormUtil.displayException(ex);
+//				}	
+//			}
+//		});
+//	}
 
-	/**
-	 * Loads a form from the Xforms Source tab, in a deferred command.
-	 * 
-	 * @param id the form identifier.
-	 * @param readonly set to true to load the form in read only mode.
-	 */
-	public void openFormDeffered(int id, boolean readonly) {
-		final int tempFormId = id;
-		final boolean tempReadonly = readonly;
-
-		FormUtil.dlg.setText(LocaleText.get("openingForm"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					String xml = centerPanel.getXformsSource().trim();
-					if(xml.length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml,Context.getLanguageText());
-						formDef.setReadOnly(tempReadonly);
-
-						if(tempFormId != ModelConstants.NULL_ID)
-							formDef.setId(tempFormId);
-
-						if(formDef.getLayoutXml() != null)
-							centerPanel.setLayoutXml(formDef.getLayoutXml(), false);
-						else{
-							//Could be from form runner which puts these contents in center panel
-							//because it does not yet have a formdef by the time it has this data.
-							formDef.setXformXml(centerPanel.getXformsSource());
-							formDef.setLayoutXml(centerPanel.getLayoutXml());
-						}
-						
-						if(formDef.getJavaScriptSource() != null)
-							centerPanel.setJavaScriptSource(formDef.getJavaScriptSource());
-						else
-							formDef.setJavaScriptSource(centerPanel.getJavaScriptSource());
-
-						//TODO May also need to refresh UI if form was not stored in default lang.
-						HashMap<String,String> locales = Context.getLanguageText().get(formDef.getId());
-						if(locales != null){
-							formDef.setLanguageXml(FormUtil.formatXml(locales.get(Context.getLocale())));
-							centerPanel.setLanguageXml(formDef.getLanguageXml(), false);
-						}
-
-						leftPanel.loadForm(formDef);
-						centerPanel.loadForm(formDef,formDef.getLayoutXml());
-						centerPanel.format();
-					}
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
-			}
-		});
-	}
-
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#openFormLayout()
-	 */
-	public void openFormLayout() {
-		openFormLayout(true);
-	}
 
 	/**
 	 * Loads the form widget layout in the Layout Xml tab.
@@ -337,157 +301,123 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		});
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveForm()
-	 */
-	public void saveForm(){
-		if(isOfflineMode())
-			saveTheForm();
-		else{
-			currentAction = CA_SAVE_FORM;
-			FormUtil.isAuthenticated();
-		}
-	}
+//	/**
+//	 * @see org.openrosa.client.controller.IFormDesignerController#saveForm()
+//	 */
+//	public void saveForm(){
+//			saveTheForm();
+//	}
 
-	private void saveTheForm() {
-		final FormDef obj = leftPanel.getSelectedForm();
-		if(obj.isReadOnly())
-			;//return; //TODO I think we should allow saving of form text and layout
+//	private void saveTheForm() {
+//		final FormDef obj = formsTreeView.getSelectedForm();
+//
+//		if(obj == null){
+//			Window.alert(LocaleText.get("selectSaveItem"));
+//			return;
+//		}
+//
+//		if(Context.inLocalizationMode()){
+//			saveLanguageText();
+//			return;
+//		}
+//
+//		FormUtil.dlg.setText(LocaleText.get("savingForm"));
+//		FormUtil.dlg.center();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//				try{
+//					centerPanel.commitChanges();
+//
+//					//TODO Need to preserve user's model and any others.
+//					String xml = null;
+//					FormDef formDef = obj;
+//					if(formDef.getDoc() == null)
+//						xml = XformBuilder.fromFormDef2Xform(formDef);
+//					else{
+//						formDef.updateDoc(false);
+//						xml = XmlUtil.fromDoc2String(formDef.getDoc());
+//					}
+//
+//					xml = XformUtil.normalizeNameSpace(formDef.getDoc(), xml);
+//
+//					xml = FormDesignerUtil.formatXml(xml);
+//
+//					formDef.setXformXml(xml);
+//					/*centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+//					centerPanel.buildLayoutXml();
+//					formDef.setLayout(centerPanel.getLayoutXml());
+//
+//					centerPanel.saveLanguageText(false);
+//					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
+//
+//					centerPanel.saveJavaScriptSource();
+//					
+//					if(!isOfflineMode() && formSaveListener == null)
+//						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
+//
+//					boolean saveLocaleText = false;
+//					if(formSaveListener != null)
+//						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());*/
+//
+//					if(isOfflineMode() || formSaveListener != null)
+//						FormUtil.dlg.hide();
+//
+//					//Save text for the current language
+//					//if(saveLocaleText)
+//					//	saveTheLanguageText(false,false);
+//				}
+//				catch(Exception ex){
+//					FormUtil.dlg.hide();
+//					FormUtil.displayException(ex);
+//					return;
+//				}	
+//			}
+//		});
+//	}
 
-		if(obj == null){
-			Window.alert(LocaleText.get("selectSaveItem"));
-			return;
-		}
-		
-		if(!leftPanel.isValidForm())
-			return;
 
-		if(Context.inLocalizationMode()){
-			saveLanguageText(formSaveListener == null && isOfflineMode());
-			return;
-		}
+//	public void saveFormAs() {
+//		if(isOfflineMode()){
+//			final Object obj = formsTreeView.getSelectedForm();
+//			if(obj == null){
+//				Window.alert(LocaleText.get("selectSaveItem"));
+//				return;
+//			}
+//
+//			FormUtil.dlg.setText(LocaleText.get("savingForm"));
+//			FormUtil.dlg.center();
+//
+//			DeferredCommand.addCommand(new Command(){
+//				public void execute() {
+//					try{
+//						String xml = null;
+//						xml = XformBuilder.fromFormDef2Xform((FormDef)obj);
+//						xml = FormDesignerUtil.formatXml(xml);
+//						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+//						FormUtil.dlg.hide();
+//					}
+//					catch(Exception ex){
+//						FormUtil.dlg.hide();
+//						FormUtil.displayException(ex);
+//					}	
+//				}
+//			});
+//		}
+//		else
+//			saveAs();
+//	}
 
-		FormUtil.dlg.setText(LocaleText.get("savingForm"));
-		FormUtil.dlg.center();
 
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					centerPanel.commitChanges();
 
-					//TODO Need to preserve user's model and any others.
-					String xml = null;
-					FormDef formDef = obj;
-					if(formDef.getDoc() == null)
-						xml = XformBuilder.fromFormDef2Xform(formDef);
-					else{
-						formDef.updateDoc(false);
-						xml = XmlUtil.fromDoc2String(formDef.getDoc());
-					}
-
-					xml = XformUtil.normalizeNameSpace(formDef.getDoc(), xml);
-
-					xml = FormDesignerUtil.formatXml(xml);
-
-					formDef.setXformXml(xml);
-					/*centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
-					centerPanel.buildLayoutXml();
-					formDef.setLayout(centerPanel.getLayoutXml());
-
-					centerPanel.saveLanguageText(false);
-					setLocaleText(formDef.getId(),Context.getLocale(), centerPanel.getLanguageXml());
-
-					centerPanel.saveJavaScriptSource();
-					
-					if(!isOfflineMode() && formSaveListener == null)
-						saveForm(xml,centerPanel.getLayoutXml(),PurcFormBuilder.getCombinedLanguageText(languageText.get(formDef.getId())),centerPanel.getJavaScriptSource());
-
-					boolean saveLocaleText = false;
-					if(formSaveListener != null)
-						saveLocaleText = formSaveListener.onSaveForm(formDef.getId(), xml, centerPanel.getLayoutXml());*/
-
-					if(isOfflineMode() || formSaveListener != null)
-						FormUtil.dlg.hide();
-
-					//Save text for the current language
-					//if(saveLocaleText)
-					//	saveTheLanguageText(false,false);
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-					return;
-				}	
-			}
-		});
-	}
-
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveFormAs()
-	 */
-	public void saveFormAs() {
-		if(isOfflineMode()){
-			final Object obj = leftPanel.getSelectedForm();
-			if(obj == null){
-				Window.alert(LocaleText.get("selectSaveItem"));
-				return;
-			}
-
-			FormUtil.dlg.setText(LocaleText.get("savingForm"));
-			FormUtil.dlg.center();
-
-			DeferredCommand.addCommand(new Command(){
-				public void execute() {
-					try{
-						String xml = null;
-						xml = XformBuilder.fromFormDef2Xform((FormDef)obj);
-						xml = FormDesignerUtil.formatXml(xml);
-						centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
-						FormUtil.dlg.hide();
-					}
-					catch(Exception ex){
-						FormUtil.dlg.hide();
-						FormUtil.displayException(ex);
-					}	
-				}
-			});
-		}
-		else
-			saveAs();
-	}
-
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#saveFormLayout()
-	 */
-	public void saveFormLayout() {
-		FormUtil.dlg.setText(LocaleText.get("savingFormLayout"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					centerPanel.saveFormLayout();
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
-			}
-		});
-	}
-
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showAboutInfo()
-	 */
 	public void showAboutInfo() {
-		AboutDialog dlg = new AboutDialog();
-		dlg.setAnimationEnabled(true);
-		dlg.center();
+//		AboutDialog dlg = new AboutDialog();
+//		dlg.setAnimationEnabled(true);
+//		dlg.center();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void showHelpContents() {
 		// TODO Auto-generated method stub
@@ -495,15 +425,18 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showLanguages()
+	 * @see org.openrosa.client.controller.IFormDesignerController#showLanguages()
 	 */
 	public void showLanguages() {
-		LocalesDialog dlg = new LocalesDialog();
-		dlg.center();
+//		LocalesDialog dlg = new LocalesDialog();
+//		dlg.center();
+		
+		
+		//Appears unused
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#showOptions()
+	 * @see org.openrosa.client.controller.IFormDesignerController#showOptions()
 	 */
 	public void showOptions() {
 		// TODO Auto-generated method stub
@@ -511,7 +444,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#viewToolbar()
+	 * @see org.openrosa.client.controller.IFormDesignerController#viewToolbar()
 	 */
 	public void viewToolbar() {
 		// TODO Auto-generated method stub
@@ -519,244 +452,140 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignLeft()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignLeft()
 	 */
 	public void alignLeft() {
 		centerPanel.alignLeft();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignRight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignRight()
 	 */
 	public void alignRight() {
 		centerPanel.alignRight();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignTop()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignTop()
 	 */
 	public void alignTop() {
 		centerPanel.alignTop();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#alignBottom()
+	 * @see org.openrosa.client.controller.IFormDesignerController#alignBottom()
 	 */
 	public void alignBottom() {
 		centerPanel.alignBottom();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameHeight()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameHeight()
 	 */
 	public void makeSameHeight() {
 		centerPanel.makeSameHeight();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameSize()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameSize()
 	 */
 	public void makeSameSize() {
 		centerPanel.makeSameSize();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#makeSameWidth()
+	 * @see org.openrosa.client.controller.IFormDesignerController#makeSameWidth()
 	 */
 	public void makeSameWidth() {
 		centerPanel.makeSameWidth();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#copyItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#copyItem()
 	 */
 	public void copyItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.copyItem();
+				formsTreeView.copyItem();
 			else
 				centerPanel.copyItem();
 		}
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#cutItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#cutItem()
 	 */
 	public void cutItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.cutItem();
+				formsTreeView.cutItem();
 			else
 				centerPanel.cutItem();
 		}
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#pasteItem()
+	 * @see org.openrosa.client.controller.IFormActionListener#pasteItem()
 	 */
 	public void pasteItem() {
 		if(!Context.isStructureReadOnly()){
 			if(Context.getCurrentMode() == Context.MODE_QUESTION_PROPERTIES)
-				leftPanel.pasteItem();
+				formsTreeView.pasteItem();
 			else
 				centerPanel.pasteItem();
 		}
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#refreshItem()
-	 */
-	public void refreshItem(){
-		if(!Context.isStructureReadOnly())
-			leftPanel.refreshItem();
-	}
+//	/**
+//	 * @see org.openrosa.client.controller.IFormActionListener#refreshItem()
+//	 */
+//	public void refreshItem(){
+//		if(!Context.isStructureReadOnly())
+//			formsTreeView.refreshItem();
+//	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerController#format()
+	 * @see org.openrosa.client.controller.IFormDesignerController#format()
 	 */
 	public void format() {
 		centerPanel.format();
 	}
 
-	private void refreshObject() {
+//	private void refreshObject() {
+//
+//		//If the center panel's current mode does not allow refreshes 
+//		//or the forms tree view is the one which has requested a refresh.
+//		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView ||
+//				Context.getCurrentMode() == Context.MODE_XFORMS_SOURCE){ //TODO This controller should not know about LeftPanel implementation details.
+//
+//			if(formId != null){
+//				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
+//				FormUtil.dlg.center();
+//
+//				DeferredCommand.addCommand(new Command(){
+//					public void execute() {
+//						refreshForm();
+//						FormUtil.dlg.hide();	
+//					}
+//				});
+//			}
+//			else
+//				refreshFormDeffered();
+//		}
+//		else
+//			centerPanel.refresh();
+//	}
 
-		//If the center panel's current mode does not allow refreshes 
-		//or the forms tree view is the one which has requested a refresh.
-		if(!centerPanel.allowsRefresh() || refreshObject instanceof FormsTreeView ||
-				Context.getCurrentMode() == Context.MODE_XFORMS_SOURCE){ //TODO This controller should not know about LeftPanel implementation details.
-
-			if(formId != null){
-				FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
-				FormUtil.dlg.center();
-
-				DeferredCommand.addCommand(new Command(){
-					public void execute() {
-						refreshForm();
-						FormUtil.dlg.hide();	
-					}
-				});
-			}
-			else
-				refreshFormDeffered();
-		}
-		else
-			centerPanel.refresh();
-	}
-
-	public void refresh(Object sender) {
-		refreshObject = sender;
-
-		if(isOfflineMode())
-			refreshObject();
-		else{
-			currentAction = CA_REFRESH_FORM;
-			FormUtil.isAuthenticated();
-		}
-	}
-
-	/**
-	 * Loads a form from the server.
-	 */
-	private void loadForm(){
-		FormUtil.dlg.setText(LocaleText.get("openingForm"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-
-				String url = FormUtil.getHostPageBaseURL();
-				url += FormUtil.getFormDefDownloadUrlSuffix();
-				url += FormUtil.getFormIdName()+"="+formId;
-
-				RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
-
-				try{
-					builder.sendRequest(null, new RequestCallback(){
-						public void onResponseReceived(Request request, Response response){
-							String xml = response.getText();
-							if(xml == null || xml.length() == 0){
-								FormUtil.dlg.hide();
-								Window.alert(LocaleText.get("noDataFound"));
-								return;
-							}
-
-							String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null;
-
-							/*int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
-							if(pos > 0){
-								xformXml = xml.substring(0,pos);
-								layoutXml = FormUtil.formatXml(xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), xml.length()));
-							}
-							else
-								xformXml = xml;*/
-
-							int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
-							int pos2 = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
-							int pos3 = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
-							if(pos > 0){
-								xformXml = xml.substring(0,pos);
-								layoutXml = FormUtil.formatXml(xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length()))));
-
-								if(pos2 > 0)
-									localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
-							
-								if(pos3 > 0)
-									javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-							}
-							else if(pos2 > 0){
-								xformXml = xml.substring(0,pos2);
-								localeXml = FormUtil.formatXml(xml.substring(pos2+PurcConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length()));
-								
-								if(pos3 > 0)
-									javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-							}
-							else if(pos3 > 0){
-								xformXml = xml.substring(0,pos3);
-								javaScriptSrc = xml.substring(pos3+PurcConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-							}
-							else
-								xformXml = xml;
-
-							LanguageUtil.loadLanguageText(formId, localeXml, Context.getLanguageText());
-
-							centerPanel.setXformsSource(FormUtil.formatXml(xformXml),false);
-							centerPanel.setLayoutXml(layoutXml,false);
-							centerPanel.setJavaScriptSource(javaScriptSrc);
-
-							openFormDeffered(formId,false);
-
-							//FormUtil.dlg.hide(); //openFormDeffered above will close it
-						}
-
-						public void onError(Request request, Throwable exception){
-							FormUtil.dlg.hide();
-							FormUtil.displayException(exception);
-						}
-					});
-				}
-				catch(RequestException ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}
-			}
-		});
-	}
-
-	/**
-	 * Loads or opens a form with a given id.
-	 * 
-	 * @param frmId the form id.
-	 */
-	public void loadForm(int frmId){
-		this.formId = frmId;
-
-		if(isOfflineMode())
-			loadForm();
-		else{
-			currentAction = CA_LOAD_FORM;
-			FormUtil.isAuthenticated();
-		}
-	}
+//	public void refresh(Object sender) {
+//		refreshObject = sender;
+//
+//		if(isOfflineMode())
+//			refreshObject();
+//		else{
+//			currentAction = CA_REFRESH_FORM;
+//			FormUtil.isAuthenticated();
+//		}
+//	}
 
 	public void saveForm(String xformXml, String layoutXml, String languageXml, String javaScriptSrc){
 		String url = FormUtil.getHostPageBaseURL();
@@ -821,88 +650,88 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		}
 	}
 
-	/**
-	 * Checks if the form designer is in offline mode.
-	 * 
-	 * @return true if in offline mode, else false.
-	 */
-	public boolean isOfflineMode(){
-		return formId == null;
-	}
+//	/**
+//	 * Checks if the form designer is in offline mode.
+//	 * 
+//	 * @return true if in offline mode, else false.
+//	 */
+//	public boolean isOfflineMode(){
+//		return formId == null;
+//	}
 
-	private void refreshForm(){
-		String url = FormUtil.getHostPageBaseURL();
-		url += FormUtil.getFormDefRefreshUrlSuffix();
-		url += FormUtil.getFormIdName()+"="+this.formId;
+//	private void refreshForm(){
+//		String url = FormUtil.getHostPageBaseURL();
+//		url += FormUtil.getFormDefRefreshUrlSuffix();
+//		url += FormUtil.getFormIdName()+"="+this.formId;
+//
+//		//url += "&uname=Guyzb&pw=daniel123";
+//
+//		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
+//
+//		try{
+//			builder.sendRequest(null, new RequestCallback(){
+//				public void onResponseReceived(Request request, Response response){
+//					String xml = response.getText();
+//					if(xml == null || xml.length() == 0){
+//						Window.alert(LocaleText.get("noDataFound"));
+//						return;
+//					}
+//
+//					centerPanel.setXformsSource(xml,false);
+//					refreshFormDeffered();
+//				}
+//
+//				public void onError(Request request, Throwable exception){
+//					FormUtil.displayException(exception);
+//				}
+//			});
+//		}
+//		catch(RequestException ex){
+//			FormUtil.displayException(ex);
+//		}
+//	}
 
-		//url += "&uname=Guyzb&pw=daniel123";
-
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,URL.encode(url));
-
-		try{
-			builder.sendRequest(null, new RequestCallback(){
-				public void onResponseReceived(Request request, Response response){
-					String xml = response.getText();
-					if(xml == null || xml.length() == 0){
-						Window.alert(LocaleText.get("noDataFound"));
-						return;
-					}
-
-					centerPanel.setXformsSource(xml,false);
-					refreshFormDeffered();
-				}
-
-				public void onError(Request request, Throwable exception){
-					FormUtil.displayException(exception);
-				}
-			});
-		}
-		catch(RequestException ex){
-			FormUtil.displayException(ex);
-		}
-	}
-
-	/**
-	 * Refreshes the selected from in a deferred command.
-	 */
-	private void refreshFormDeffered(){
-		FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					String xml = centerPanel.getXformsSource();
-					if(xml != null && xml.trim().length() > 0){
-						FormDef formDef = XformParser.fromXform2FormDef(xml);
-
-						FormDef oldFormDef = centerPanel.getFormDef();
-
-						//If we are in offline mode, we completely overwrite the form 
-						//with the contents of the xforms source tab.
-						if(!isOfflineMode())
-							formDef.refresh(oldFormDef);
-
-						formDef.updateDoc(false);
-						xml = formDef.getDoc().toString();
-
-						formDef.setXformXml(FormUtil.formatXml(xml));
-
-						formDef.setLayoutXml(oldFormDef.getLayoutXml());
-						formDef.setLanguageXml(oldFormDef.getLanguageXml());
-
-						leftPanel.refresh(formDef);
-						centerPanel.refresh();
-					}
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}
-			}
-		});
-	}
+//	/**
+//	 * Refreshes the selected from in a deferred command.
+//	 */
+//	private void refreshFormDeffered(){
+//		FormUtil.dlg.setText(LocaleText.get("refreshingForm"));
+//		FormUtil.dlg.center();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//				try{
+//					String xml = centerPanel.getXformsSource();
+//					if(xml != null && xml.trim().length() > 0){
+//						FormDef formDef = XformParser.fromXform2FormDef(xml);
+//
+//						FormDef oldFormDef = centerPanel.getFormDef();
+//
+//						//If we are in offline mode, we completely overwrite the form 
+//						//with the contents of the xforms source tab.
+//						if(!isOfflineMode())
+//							formDef.refresh(oldFormDef);
+//
+//						formDef.updateDoc(false);
+//						xml = formDef.getDoc().toString();
+//
+//						formDef.setXformXml(FormUtil.formatXml(xml));
+//
+//						formDef.setLayoutXml(oldFormDef.getLayoutXml());
+//						formDef.setLanguageXml(oldFormDef.getLanguageXml());
+//
+//						formsTreeView.refreshForm(formDef);
+//						centerPanel.refresh();
+//					}
+//					FormUtil.dlg.hide();
+//				}
+//				catch(Exception ex){
+//					FormUtil.dlg.hide();
+//					FormUtil.displayException(ex);
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Sets the listener to form save events.
@@ -914,72 +743,33 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveUp()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveUp()
 	 */
 	public void moveUp(){
-		leftPanel.getFormActionListener().moveUp();
+		formsTreeView.moveUp();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveDown()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveDown()
 	 */
 	public void moveDown(){
-		leftPanel.getFormActionListener().moveUp();
+		formsTreeView.moveUp();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveToParent()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveToParent()
 	 */
 	public void moveToParent(){
-		leftPanel.getFormActionListener().moveToParent();
+		formsTreeView.moveToParent();
 	}
 
 	/**
-	 * @see org.purc.purcforms.client.controller.IFormActionListener#moveToChild()
+	 * @see org.openrosa.client.controller.IFormActionListener#moveToChild()
 	 */
 	public void moveToChild(){
-		leftPanel.getFormActionListener().moveToChild();
+		formsTreeView.moveToChild();
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.OpenFileDialogEventListener#onSetFileContents()
-	 */
-	public void onSetFileContents(String contents) {
-		if(isOfflineMode())
-			setFileContents();
-		else{
-			currentAction = CA_SET_FILE_CONTENTS;
-			FormUtil.isAuthenticated();
-		}
-	}
-
-	private void setFileContents() {
-
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET,FormUtil.getFileOpenUrl());
-
-		try{
-			builder.sendRequest(null, new RequestCallback(){
-				public void onResponseReceived(Request request, Response response){
-					String contents = response.getText();
-					if(contents != null && contents.trim().length() > 0){
-						if(centerPanel.isInLayoutMode())
-							centerPanel.setLayoutXml(contents, false);
-						else{
-							centerPanel.setXformsSource(contents, true);
-							openForm();
-						}
-					}
-				}
-
-				public void onError(Request request, Throwable exception){
-					FormUtil.displayException(exception);
-				}
-			});
-		}
-		catch(RequestException ex){
-			FormUtil.displayException(ex);
-		}
-	}
 
 	public void saveAs(){
 		try{
@@ -987,7 +777,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			if(data == null || data.trim().length() == 0)
 				return;
 
-			FormDef formDef = leftPanel.getSelectedForm();
+			FormDef formDef = formsTreeView.getSelectedForm();
 			String fileName = "filename";
 			if(formDef != null)
 				fileName = formDef.getName();
@@ -1003,9 +793,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		}
 	}
 
-	/**
-	 * @see org.purc.purcforms.client.controller.IFormDesignerListener#openLanguageText()
-	 */
+
 	public void openLanguageText(){
 
 		FormUtil.dlg.setText(LocaleText.get("translatingFormLanguage"));
@@ -1015,15 +803,15 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			public void execute() {
 				try{
 					int selFormId = -1; String xml = null; 
-					FormDef formDef = leftPanel.getSelectedForm();
+					FormDef formDef = formsTreeView.getSelectedForm();
 					if(formDef != null)
 						selFormId = formDef.getId();
 
-					List<FormDef> forms = leftPanel.getForms();
+					List<FormDef> forms = formsTreeView.getForms();
 					if(forms != null && forms.size() > 0){
 						List<FormDef> newForms = new ArrayList<FormDef>();
 						for(FormDef form : forms){
-							xml = getFormLocaleText(form.getId(),Context.getLocale().getKey());
+							xml = null;//getFormLocaleText(form.getId(),Itext.currentLocale.getName());
 							if(xml != null){
 								String xform = FormUtil.formatXml(LanguageUtil.translate(form.getDoc(), xml, true));
 								FormDef newFormDef = XformParser.fromXform2FormDef(xform);
@@ -1042,7 +830,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 							}
 						}
 
-						leftPanel.loadForms(newForms, formDef.getId());
+						formsTreeView.loadForms(newForms, formDef.getId());
 					}
 
 					FormUtil.dlg.hide();
@@ -1060,35 +848,17 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	}
 
 	/**
-	 * Saves locale text for the selected form.
-	 * 
-	 * @param selectTab set to true to select the language tab.
-	 */
-	public void saveLanguageText(boolean selectTab){
-		saveLanguageTextDeffered(selectTab);
-	}
-
-	/**
-	 * Saves locale text for the selected form.
-	 */
-	public void saveLanguageText(){
-		saveLanguageTextDeffered(true);
-	}
-
-	/**
 	 * Saves locale text for the selected form, in a deferred command.
 	 * 
 	 * @param selectTab set to true to select the language tab.
 	 */
-	public void saveLanguageTextDeffered(boolean selectTab){
-		final boolean selTab = selectTab;
-
+	public void saveLanguageText(){
 		FormUtil.dlg.setText(LocaleText.get("savingLanguageText"));
 		FormUtil.dlg.center();
 
 		DeferredCommand.addCommand(new Command(){
 			public void execute() {
-				saveTheLanguageText(selTab,true);
+				saveTheLanguageText();
 			}
 		});
 	}
@@ -1100,256 +870,246 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @param selectTab set to true to select the language tab.
 	 * @param rebuild set to true to rebuild the language xml.
 	 */
-	public void saveTheLanguageText(boolean selTab, boolean rebuild){
-		try{
-			FormDef formDef = centerPanel.getFormDef();
-
-			if(rebuild){
-				centerPanel.saveLanguageText(selTab);
-				setLocaleText(formDef.getId(),Context.getLocale().getKey(), centerPanel.getLanguageXml());
-			}
-
-			String langXml = formDef.getLanguageXml();
-
-			if(isOfflineMode()){
-				if(formSaveListener != null){
-					if(langXml != null && langXml.trim().length() > 0){
-						Document doc = XMLParser.parse(langXml);
-						formSaveListener.onSaveLocaleText(formDef.getId(), LanguageUtil.getXformsLocaleText(doc), LanguageUtil.getLayoutLocaleText(doc));
-					}
-				}
-
-				FormUtil.dlg.hide();
-			}
-			else
-				saveLocaleText(PurcFormBuilder.getCombinedLanguageText(Context.getLanguageText().get(formDef.getId())));
-		}
-		catch(Exception ex){
-			FormUtil.dlg.hide();
-			FormUtil.displayException(ex);
-		}	
+	public void saveTheLanguageText(){
+//			throw new Exception("Implement me!!");
+//			FormUtil.displayException(ex);
+			
 	}
 
 
-	/**
-	 * Reloads forms in a given locale.
-	 * 
-	 * @param locale the locale.
-	 */
-	public boolean changeLocale(final Locale locale){
+//	/**
+//	 * Reloads forms in a given locale.
+//	 * 
+//	 * @param locale the locale.
+//	 */
+//	public boolean changeLocale(final ItextLocale locale){
+//
+//		final FormDef formDef = centerPanel.getFormDef();
+//		if(formDef == null)
+//			return false;
+//
+//		//We need to have saved a form in order to translate it.
+//		if(formDef.getDoc() == null)
+//			saveForm();
+//		else if(!Window.confirm(LocaleText.get("localeChangePrompt")))
+//			return false;
+//
+//		//We need to do the translation in a differed command such that it happens after form saving,
+//		//just in case form hadn't yet been saved.
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//
+//				//Store the new locale.
+//				Itext.setCurrentLocale(locale);
+//
+//				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
+//
+//				String xml = null;
+//				//Get text for this locale, if we have it. 
+//				if(map != null)
+//					xml = map.get(locale.getName());
+//
+//				//If we don't, then get text for the default locale.
+//				if(xml == null && map != null)
+//					xml = map.get(Itext.getDefaultLocale().getName());
+//
+//				//Now reload the forms in this selected locale.
+//				centerPanel.setLanguageXml(xml, false);
+//				openLanguageText();
+//			}
+//		});
+//
+//		return true;
+//	}
 
-		final FormDef formDef = centerPanel.getFormDef();
-		if(formDef == null)
-			return false;
+//	/**
+//	 * Sets locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale the locale key.
+//	 * @param text the form locale text.
+//	 */
+//	private void setLocaleText(Integer formId, String locale, String text){
+//		HashMap<String,String> map = Context.getLanguageText().get(formId);
+//		if(map == null){
+//			map = new HashMap<String,String>();
+//			Context.getLanguageText().put(formId, map);
+//		}
+//
+//		map.put(locale, text);
+//	}
 
-		//We need to have saved a form in order to translate it.
-		if(formDef.getDoc() == null)
-			saveForm();
-		else if(!Window.confirm(LocaleText.get("localeChangePrompt")))
-			return false;
+//	/**
+//	 * Gets locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale  the locale key.
+//	 * @return the form locale text.
+//	 */
+//	private String getFormLocaleText(int formId, String locale){
+//		HashMap<String,String> map = Context.getLanguageText().get(formId);
+//		if(map != null)
+//			return map.get(locale);
+//		return null;
+//	}
+//
+//	/**
+//	 * Sets xforms and layout locale text for a given form.
+//	 * 
+//	 * @param formId the form identifier.
+//	 * @param locale the locale key.
+//	 * @param xform the xforms locale text.
+//	 * @param layout the layout locale text.
+//	 */
+//	public void setLocaleText(Integer formId, String locale, String xform, String layout){
+//		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
+//	}
 
-		//We need to do the translation in a differed command such that it happens after form saving,
-		//just in case form hadn't yet been saved.
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
+//	/**
+//	 * Embeds the selected xform into xhtml.
+//	 */
+//	public void saveAsXhtml(){
+//		if(!isOfflineMode())
+//			return;
+//
+//		final Object obj = formsTreeView.getSelectedForm();
+//		if(obj == null){
+//			Window.alert(LocaleText.get("selectSaveItem"));
+//			return;
+//		}
+//
+//		FormUtil.dlg.setText(LocaleText.get("savingForm"));
+//		FormUtil.dlg.center();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//				try{
+//					FormDef formDef = new FormDef((FormDef)obj);
+//					formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
+//					String xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);
+//					xml = FormDesignerUtil.formatXml(xml);
+//					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+//					FormUtil.dlg.hide();
+//				}
+//				catch(Exception ex){
+//					FormUtil.dlg.hide();
+//					FormUtil.displayException(ex);
+//				}	
+//			}
+//		});
+//	}
 
-				//Store the new locale.
-				Context.setLocale(locale);
 
-				HashMap<String,String> map = Context.getLanguageText().get(formDef.getId());
+//	public void saveAsPurcForm(){
+//		//if(!isOfflineMode())
+//		//	return;
+//
+//		/*if(isOfflineMode())
+//			saveTheForm();
+//
+//		DeferredCommand.addCommand(new Command(){
+//			public void execute() {
+//
+//				FormUtil.dlg.setText(LocaleText.get("savingForm"));
+//				FormUtil.dlg.center();
+//
+//				DeferredCommand.addCommand(new Command(){
+//					public void execute() {
+//						try{
+//							FormDef formDef = leftPanel.getSelectedForm();
+//							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
+//							xml = FormDesignerUtil.formatXml(xml);
+//
+//							FormUtil.dlg.hide();
+//
+//							if(isOfflineMode())
+//								centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
+//							else{
+//								SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(),xml,formDef.getName());
+//								dlg.center();
+//							}
+//						}
+//						catch(Exception ex){
+//							FormUtil.dlg.hide();
+//							FormUtil.displayException(ex);
+//						}	
+//					}
+//				});
+//
+//			}
+//		});*/
+//	}
 
-				String xml = null;
-				//Get text for this locale, if we have it. 
-				if(map != null)
-					xml = map.get(locale.getName());
 
-				//If we don't, then get text for the default locale.
-				if(xml == null && map != null)
-					xml = map.get(Context.getDefaultLocale().getName());
-
-				//Now reload the forms in this selected locale.
-				centerPanel.setLanguageXml(xml, false);
-				openLanguageText();
-			}
-		});
-
-		return true;
+	@Override
+	public boolean handleKeyBoardEvent(Event event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-	/**
-	 * Sets locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale the locale key.
-	 * @param text the form locale text.
-	 */
-	private void setLocaleText(Integer formId, String locale, String text){
-		HashMap<String,String> map = Context.getLanguageText().get(formId);
-		if(map == null){
-			map = new HashMap<String,String>();
-			Context.getLanguageText().put(formId, map);
-		}
-
-		map.put(locale, text);
+	@Override
+	public void openFormLayout() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Gets locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale  the locale key.
-	 * @return the form locale text.
-	 */
-	private String getFormLocaleText(int formId, String locale){
-		HashMap<String,String> map = Context.getLanguageText().get(formId);
-		if(map != null)
-			return map.get(locale);
-		return null;
+	@Override
+	public void onSetFileContents(String contents) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Sets xforms and layout locale text for a given form.
-	 * 
-	 * @param formId the form identifier.
-	 * @param locale the locale key.
-	 * @param xform the xforms locale text.
-	 * @param layout the layout locale text.
-	 */
-	public void setLocaleText(Integer formId, String locale, String xform, String layout){
-		setLocaleText(formId,locale, LanguageUtil.getLocaleText(xform, layout));
+	@Override
+	public void openForm() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Sets the default locale used by the form designer.
-	 * 
-	 * @param locale the locale.
-	 */
-	public void setDefaultLocale(Locale locale){
-		Context.setDefaultLocale(locale);
+	@Override
+	public void saveFormLayout() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Embeds the selected xform into xhtml.
-	 */
-	public void saveAsXhtml(){
-		if(!isOfflineMode())
-			return;
-
-		final Object obj = leftPanel.getSelectedForm();
-		if(obj == null){
-			Window.alert(LocaleText.get("selectSaveItem"));
-			return;
-		}
-
-		FormUtil.dlg.setText(LocaleText.get("savingForm"));
-		FormUtil.dlg.center();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-				try{
-					FormDef formDef = new FormDef((FormDef)obj);
-					formDef.setDoc(((FormDef)obj).getDoc()); //We want to copy the model xml
-					String xml = XhtmlBuilder.fromFormDef2Xhtml(formDef);
-					xml = FormDesignerUtil.formatXml(xml);
-					centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
-					FormUtil.dlg.hide();
-				}
-				catch(Exception ex){
-					FormUtil.dlg.hide();
-					FormUtil.displayException(ex);
-				}	
-			}
-		});
+	@Override
+	public boolean changeLocale(ItextLocale locale) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
-
-	public void saveAsPurcForm(){
-		//if(!isOfflineMode())
-		//	return;
-
-		/*if(isOfflineMode())
-			saveTheForm();
-
-		DeferredCommand.addCommand(new Command(){
-			public void execute() {
-
-				FormUtil.dlg.setText(LocaleText.get("savingForm"));
-				FormUtil.dlg.center();
-
-				DeferredCommand.addCommand(new Command(){
-					public void execute() {
-						try{
-							FormDef formDef = leftPanel.getSelectedForm();
-							String xml = PurcFormBuilder.build(formDef, languageText.get(formDef.getId()));
-							xml = FormDesignerUtil.formatXml(xml);
-
-							FormUtil.dlg.hide();
-
-							if(isOfflineMode())
-								centerPanel.setXformsSource(xml,formSaveListener == null && isOfflineMode());
-							else{
-								SaveFileDialog dlg = new SaveFileDialog(FormUtil.getFileSaveUrl(),xml,formDef.getName());
-								dlg.center();
-							}
-						}
-						catch(Exception ex){
-							FormUtil.dlg.hide();
-							FormUtil.displayException(ex);
-						}	
-					}
-				});
-
-			}
-		});*/
+	@Override
+	public void refresh(Object sender) {
+		// TODO Auto-generated method stub
+		
 	}
 
-
-	/**
-	 * This is called from the server after an attempt to authenticate the current
-	 * user before they can submit form data.
-	 * 
-	 * @param authenticated has a value of true if the server has successfully authenticated the user, else false.
-	 */
-	private static void authenticationCallback(boolean authenticated) {	
-
-		//If user has passed authentication, just go on with whatever they wanted to do
-		//else just redisplay the login dialog and let them enter correct
-		//user name and password.
-		if(authenticated){	
-			loginDlg.hide();
-
-			if(currentAction == CA_REFRESH_FORM)
-				controller.refreshObject();
-			else if(currentAction == CA_LOAD_FORM)
-				controller.loadForm();
-			else if(currentAction == CA_SAVE_FORM)
-				controller.saveTheForm();
-			else if(currentAction == CA_SET_FILE_CONTENTS)
-				controller.setFileContents();
-
-			currentAction = CA_NONE;
-		}
-		else
-			loginDlg.center();
+	@Override
+	public void saveAsPurcForm() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * Called to handle form designer global keyboard short cuts.
-	 */
-	public boolean handleKeyBoardEvent(Event event){
-		if(event.getCtrlKey()){
+	@Override
+	public void saveAsXhtml() {
+		// TODO Auto-generated method stub
+		
+	}
 
-			if(event.getKeyCode() == 'S'){
-				saveForm();
-				//Returning false such that firefox does not try to save the page.
-				return false;
-			}
-			else if(event.getKeyCode() == 'O'){
-				openForm();
-				return false;
-			}
-		}
+	@Override
+	public void saveForm() {
+		// TODO Auto-generated method stub
+		
+	}
 
-		return true;
+	@Override
+	public void saveFormAs() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refreshItem() {
+		// TODO Auto-generated method stub
+		
 	}
 }

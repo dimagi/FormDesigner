@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.openrosa.client.xforms.ItemsetBuilder;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.ItemsetUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.ItemsetUtil;
+import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.xml.client.Element;
 
@@ -221,11 +221,11 @@ public class DynamicOptionDef  implements Serializable{
 			if(nodeset == null)
 				return;
 			
-			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null)
+			if(nodeset.trim().length() == 0 && questionDef.getFirstOptionNode() != null) //this should probably be removed.
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, "instance('"+ questionDef.getBinding()+"')/item[@parent=instance('"+formDef.getVariableName()+"')/"+parentQuestionDef.getBinding()+"]");
 
 			
-			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);
+			String instanceId = ItemsetUtil.getChildInstanceId(nodeset);  //this should probably be removed
 			if(!(instanceId == null || instanceId.equals(questionDef.getBinding()))){
 				nodeset = nodeset.replace("'"+instanceId+"'", "'"+questionDef.getBinding()+"'");
 				questionDef.getFirstOptionNode().setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);

@@ -19,4 +19,8 @@ FormDesigner/.project/*
 purcforms/.settings/*
 com.google.gdt.eclipse.core.prefs
 purcforms/.settings/com.google.gdt.eclipse.core.prefs
+*.old
+*.old2
+panels.txt
+purcforms/.settings/com.google.gdt.eclipse.core.prefs
 OpenRosa/build.properties

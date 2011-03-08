@@ -9,7 +9,7 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
-import org.purc.purcforms.client.model.ModelConstants;
+import org.openrosa.client.model.ModelConstants;
 
 
 /**

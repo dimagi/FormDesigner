@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 import org.openrosa.client.xforms.RelevantBuilder;
-import org.purc.purcforms.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformConstants;
 
 
 /**

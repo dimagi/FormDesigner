@@ -1,6 +1,6 @@
 package org.openrosa.client.controller;
 
-import org.purc.purcforms.client.model.Locale;
+import org.openrosa.client.util.ItextLocale;
 
 
 /**
@@ -9,5 +9,5 @@ import org.purc.purcforms.client.model.Locale;
  *
  */
 public interface ILocaleSelectionListener {
-	void onLocaleSelected(Locale locale);
+	void onLocaleSelected(ItextLocale locale);
 }

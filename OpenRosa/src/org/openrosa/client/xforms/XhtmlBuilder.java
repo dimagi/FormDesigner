@@ -1,9 +1,9 @@
 package org.openrosa.client.xforms;
 
 import org.openrosa.client.model.FormDef;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;

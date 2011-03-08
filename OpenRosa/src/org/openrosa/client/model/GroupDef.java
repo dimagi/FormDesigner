@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformBuilder;
-import org.purc.purcforms.client.locale.LocaleText;
-import org.purc.purcforms.client.model.ModelConstants;
-import org.purc.purcforms.client.util.FormUtil;
-import org.purc.purcforms.client.xforms.XformConstants;
-import org.purc.purcforms.client.xforms.XformUtil;
-import org.purc.purcforms.client.xforms.XmlUtil;
+import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XformUtil;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
@@ -58,6 +58,14 @@ public class GroupDef implements IFormElement, Serializable{
 	private String itextId;
 
 	private int dataType = QuestionDef.QTN_TYPE_GROUP;
+	
+	private boolean required,enabled,visible;
+	
+	/**
+	 * Flag used to determine if this QuestionDef should have a 
+	 * Control node (input, 1select, etc) generated upon XML output.
+	 */
+	private boolean hasUINode = true; //groups always have some kind of UI node.
 
 
 	public GroupDef(){
@@ -71,6 +79,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(IFormElement parent) {
 		this.parent = parent;
+		required = false;
+		enabled = true;
+		visible = true;
 	}
 
 	/**
@@ -84,6 +95,7 @@ public class GroupDef implements IFormElement, Serializable{
 		setName(pageDef.getName());
 		setChildren(pageDef.getChildren());
 		setItextId(pageDef.getItextId());
+		setItextId(getName());
 	}
 
 	/**
@@ -97,6 +109,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this(parent);
 		setName(name);
 		setChildren(children);
+		setItextId(name);
 	}
 
 	/**
@@ -111,6 +124,7 @@ public class GroupDef implements IFormElement, Serializable{
 		this(parent);
 		setName(name);
 		setChildren(children);
+		setItextId(name);
 	}
 
 	public String getName() {
@@ -1008,24 +1022,66 @@ public class GroupDef implements IFormElement, Serializable{
 
 		return element.getFormDef();
 	}
+	
+	/**
+	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
+	 * @return
+	 */
+	public String getDataNodesetPath(){
+		if(getParent() == null){
+			return "/"+getName();
+		}else{
+			return getParent().getDataNodesetPath() + "/"+getName();
+		}
+		
+	}
 
 	public boolean isLocked(){
 		return false;
 	}
 
 	public boolean isRequired(){
-		return false;
+		return required;
 	}
 
 	public boolean isEnabled(){
-		return true;
+		return enabled;
 	}
 
 	public boolean isVisible(){
-		return true;
+		return visible;
 	}
 
 	public String getDefaultValue(){
 		return null;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		
+	}
+
+	@Override
+	public void setLocked(boolean locked) {
+		return;
+	}
+
+	@Override
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	public boolean hasUINode() {
+		return hasUINode;
+	}
+
+	public void setHasUINode(boolean hasUINode) {
+		return; //groups always have some kind of UI node. If it doesn't, you've screwed up.
 	}
 }

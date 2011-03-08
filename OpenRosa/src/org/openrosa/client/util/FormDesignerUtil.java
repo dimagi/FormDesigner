@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
-import org.purc.purcforms.client.util.FormUtil;
+import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;

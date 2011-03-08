@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.openrosa.client.model.ItextModel;
 
+import com.extjs.gxt.ui.client.store.ListStore;
+
 public interface ITextListener {
 	
-	void onSaveItext(List<ItextModel> itext);
+	void onSaveItext(ListStore<ItextModel> itextrows);
 }

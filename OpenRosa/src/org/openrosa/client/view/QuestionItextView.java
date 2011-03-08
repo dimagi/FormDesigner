@@ -10,6 +10,7 @@ import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextLocale;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -85,17 +86,23 @@ public class QuestionItextView extends Composite {
 		
 	}
 	
-	public void setItemID(String id){	
-		if(id == null) return;
+	public void setItemID(String id){
+		GWT.log("setting ItemID id="+id+" QuestionItextView:90");
+		if(id == null){
+			clearRows();
+			return;
+		}
 		init(id);
 	}
-	
-	private void refreshRows(){
+	private void clearRows(){
 		widgetTable.clear(); //clear the row and re-add everything so that widgets are added in the right order
 		widgetTable.clear(true);
 		clearTableOfSeperatorStyle();
 		widgetTable.removeAllRows();
 		rowLocations = new HashMap<String, Integer>();
+	}
+	private void refreshRows(){
+		clearRows();
 		   //assumes that all changes were handled correctly/saved by the textbox listeners.
 		int rowIndex = 0;
 		for(String lang:languages){
@@ -203,6 +210,7 @@ public class QuestionItextView extends Composite {
 	}
 	
 	private void addRow(String language, String ID, String Form, int rowNumber){
+		GWT.log("adding textRow:QuestionItextView:207, ID="+ID+"; form="+Form);
 		final String lang = language;
 		final String id = ID;
 		final String form = Form; //this final business is to use the anon inner class below
@@ -214,7 +222,11 @@ public class QuestionItextView extends Composite {
 		Label labelWidget = new Label(fullText);
 		
 		//set the default val for the textbox
-		textBoxWidget.setText(Itext.getLocale(language).getTranslation(((form == null) ? id : (id + ";" + form)))); 
+		String itextValue = Itext.getLocale(language).getTranslation(((form == null) ? id : (id + ";" + form)));
+		if(itextValue == null){
+			itextValue = "";
+		}
+		textBoxWidget.setText(itextValue); 
 		
 		textBoxWidget.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){ 

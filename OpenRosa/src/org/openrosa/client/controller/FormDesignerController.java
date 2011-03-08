@@ -10,6 +10,7 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.view.CenterPanel;
 import org.openrosa.client.view.SaveFileDialog;
+import org.openrosa.client.view.Toolbar;
 import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.xforms.XformParser;
 import org.openrosa.client.xforms.XhtmlBuilder;
@@ -54,6 +55,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	/** The panel on the left hand side of the form designer. */
 	private FormsTreeView formsTreeView;
+	
+	private Toolbar toolbar;
 
 	/**
 	 * The identifier of the loaded or opened form.
@@ -91,6 +94,14 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		this.centerPanel.setFormDesignerListener(this);
 		fdc = this;
 
+	}
+	
+	public void setToolbar(Toolbar toolbar){
+		this.toolbar = toolbar;
+	}
+	
+	public void alertToolbarQuestionAdded(IFormElement question){
+		toolbar.checkEnableAddSelect(question);
 	}
 
 	public void changePropertiesViewSelection(IFormElement objectDef){

@@ -366,4 +366,16 @@ public class OptionDef implements IFormElement, Serializable {
 		return "No Nodeset Path for Option elements!";
 		
 	}
+
+	@Override
+	public boolean hasUINode() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void setHasUINode(boolean hasUINode) {
+		return; //OptionDef should always have a UINode.
+		
+	}
 }

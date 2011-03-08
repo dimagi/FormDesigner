@@ -86,4 +86,8 @@ public interface IFormElement {
 	 * @return
 	 */
 	public String getDataNodesetPath();
+	
+	public void setHasUINode(boolean hasUINode);
+	
+	public boolean hasUINode();
 }

@@ -503,6 +503,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem addImageItem(TreeModelItem root,String text, Object userObject){
 		TreeModelItem item = new TreeModelItem(text,userObject,root);
+		if(userObject instanceof IFormElement){
+			((FormDesignerController)formDesignerListener).alertToolbarQuestionAdded((IFormElement)userObject);
+		}
 		treePanel.getStore().add(root,item, true);
 		return item;
 	}
@@ -771,6 +774,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				else{
 					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					questionDef.setDataType(dataType);
+					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
 					questionDef.setItextId(questionDef.getBinding());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 					item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);

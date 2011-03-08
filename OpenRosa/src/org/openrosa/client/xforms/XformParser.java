@@ -319,7 +319,7 @@ public class XformParser {
 			//else if (tagname.equals(NODE_NAME_BIND)||tagname.equals(NODE_NAME_BIND_MINUS_PREFIX) /*|| tagname.equals(ATTRIBUTE_NAME_REF)*/) {
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_BIND_MINUS_PREFIX)){
 				QuestionDef qtn = parseBindElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
-
+				qtn.setHasUINode(false);
 				if(qtn.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 					questionDef = qtn;
 			} 
@@ -332,7 +332,7 @@ public class XformParser {
 
 				NodeContext nodeContext = new NodeContext(label, hint, value, labelNode, hintNode, valueNode);
 				questionDef = parseUiElement(formDef, child,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns,nodeContext);
-
+				questionDef.setHasUINode(true);
 				label = nodeContext.getLabel();
 				hint = nodeContext.getHint();
 				value = nodeContext.getValue();
@@ -829,7 +829,13 @@ public class XformParser {
 			questionDef = qtn;
 			parseElement(formDef, child, id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 		}
-
+		
+		//For the children being oredered in the correct way (by appearance of the Control node in the xml doc).
+		IFormElement parent = questionDef.getParent();
+		parent.removeChild(questionDef);
+		parent.addChild(questionDef);
+		
+		
 		return questionDef;
 	}
 

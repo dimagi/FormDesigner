@@ -60,6 +60,12 @@ public class GroupDef implements IFormElement, Serializable{
 	private int dataType = QuestionDef.QTN_TYPE_GROUP;
 	
 	private boolean required,enabled,visible;
+	
+	/**
+	 * Flag used to determine if this QuestionDef should have a 
+	 * Control node (input, 1select, etc) generated upon XML output.
+	 */
+	private boolean hasUINode = true; //groups always have some kind of UI node.
 
 
 	public GroupDef(){
@@ -1069,5 +1075,13 @@ public class GroupDef implements IFormElement, Serializable{
 	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	public boolean hasUINode() {
+		return hasUINode;
+	}
+
+	public void setHasUINode(boolean hasUINode) {
+		return; //groups always have some kind of UI node. If it doesn't, you've screwed up.
 	}
 }

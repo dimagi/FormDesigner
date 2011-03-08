@@ -103,6 +103,12 @@ public class FormDef implements IFormElement, Serializable{
 
 
 	List<IFormElement> children;
+	
+	/**
+	 * Flag used to determine if this QuestionDef should have a 
+	 * Control node (input, 1select, etc) generated upon XML output.
+	 */
+	private boolean hasUINode;
 
 
 	/** Constructs a form definition object. */
@@ -1517,5 +1523,13 @@ public class FormDef implements IFormElement, Serializable{
 			return getParent().getDataNodesetPath() + "/"+getBinding();
 		}
 		
+	}
+
+	public boolean hasUINode() {
+		return hasUINode;
+	}
+
+	public void setHasUINode(boolean hasUINode) {
+		this.hasUINode = hasUINode;
 	}
 }

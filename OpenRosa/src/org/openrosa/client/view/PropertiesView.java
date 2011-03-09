@@ -1,5 +1,7 @@
 package org.openrosa.client.view;
 
+import java.util.ArrayList;
+
 import org.openrosa.client.Context;
 import org.openrosa.client.controller.ILocaleSelectionListener;
 import org.openrosa.client.model.Calculation;
@@ -175,6 +177,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
 
 	private QuestionItextView itextView = new QuestionItextView();
+	
+	private AdvancedLogicView advancedLogicView = new AdvancedLogicView();
 
 	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
@@ -307,6 +311,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(itextView, "Itext");
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
+		tabs.add(advancedLogicView, "Advanced Logic");
 		tabs.selectTab(0);
 		
 		table.setWidget(12, 0, tabs);
@@ -365,6 +370,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		else if (objectDef instanceof GroupDef) setGroupProperties((GroupDef) objectDef);
 		else if (objectDef instanceof QuestionDef) setQuestionProperties((QuestionDef) objectDef);
 		else if (objectDef instanceof OptionDef) setOptionDefProperties(objectDef);
+		
+		advancedLogicView.onItemSelected(this, objectDef);
 	}
 	
 

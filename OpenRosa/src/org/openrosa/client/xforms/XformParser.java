@@ -823,18 +823,23 @@ public class XformParser {
 				XformParserUtil.replaceConstraintQtn(constraints,(QuestionDef)qtn);
 			}
 
-			if(XmlUtil.nodeNameEquals(child.getNodeName(),XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX))
+			if(XmlUtil.nodeNameEquals(child.getNodeName(),XformConstants.NODE_NAME_TRIGGER_MINUS_PREFIX)){
 				qtn.setDataType(QuestionDef.QTN_TYPE_LABEL);
-
+			}
 			questionDef = qtn;
 			parseElement(formDef, child, id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
 		}
 		
 		//For the children being oredered in the correct way (by appearance of the Control node in the xml doc).
 		IFormElement parent = questionDef.getParent();
-		parent.removeChild(questionDef);
-		parent.addChild(questionDef);
-		
+		if(parent instanceof FormDef || parent instanceof GroupDef){
+			int numChildren = parent.getChildCount();
+			try{
+				parent.moveChildToIndex(questionDef, numChildren-1); //moves item to end of list.
+			}catch(Exception e){
+				FormUtil.displayException(e);
+			}
+		}
 		
 		return questionDef;
 	}

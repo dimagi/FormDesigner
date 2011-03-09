@@ -61,11 +61,6 @@ public class GroupDef implements IFormElement, Serializable{
 	
 	private boolean required,enabled,visible;
 	
-	/**
-	 * Flag used to determine if this QuestionDef should have a 
-	 * Control node (input, 1select, etc) generated upon XML output.
-	 */
-	private boolean hasUINode = true; //groups always have some kind of UI node.
 
 
 	public GroupDef(){
@@ -1078,10 +1073,20 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public boolean hasUINode() {
-		return hasUINode;
+		return true;
 	}
 
 	public void setHasUINode(boolean hasUINode) {
 		return; //groups always have some kind of UI node. If it doesn't, you've screwed up.
+	}
+	
+	public void moveChildToIndex(IFormElement child, int index) throws Exception{
+		if(!children.contains(child)){
+			throw new Exception("Child not in Children list!");
+		}
+		
+		children.remove(child);
+		children.add(index, child);
+		
 	}
 }

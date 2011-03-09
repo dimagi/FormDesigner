@@ -378,4 +378,11 @@ public class OptionDef implements IFormElement, Serializable {
 		return; //OptionDef should always have a UINode.
 		
 	}
+
+	@Override
+	public void moveChildToIndex(IFormElement child, int index)
+			throws Exception {
+		throw new Exception("OptionDefs cannot have children!");
+		
+	}
 }

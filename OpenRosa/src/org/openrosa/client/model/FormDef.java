@@ -103,13 +103,6 @@ public class FormDef implements IFormElement, Serializable{
 
 
 	List<IFormElement> children;
-	
-	/**
-	 * Flag used to determine if this QuestionDef should have a 
-	 * Control node (input, 1select, etc) generated upon XML output.
-	 */
-	private boolean hasUINode;
-
 
 	/** Constructs a form definition object. */
 	public FormDef() {
@@ -1511,6 +1504,23 @@ public class FormDef implements IFormElement, Serializable{
 		
 	}
 	
+	/**
+	 * Moves a given child (of this node) to
+	 * a given index
+	 * @param child
+	 * @param index
+	 * @throws Exception 
+	 */
+	public void moveChildToIndex(IFormElement child, int index) throws Exception{
+		if(!children.contains(child)){
+			throw new Exception("Child not in Children list!");
+		}
+		
+		children.remove(child);
+		children.add(index, child);
+		
+	}
+	
 	
 	/**
 	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.
@@ -1526,10 +1536,10 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	public boolean hasUINode() {
-		return hasUINode;
+		return true;
 	}
 
 	public void setHasUINode(boolean hasUINode) {
-		this.hasUINode = hasUINode;
+		return;
 	}
 }

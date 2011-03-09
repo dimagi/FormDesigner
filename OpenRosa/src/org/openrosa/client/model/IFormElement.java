@@ -90,4 +90,14 @@ public interface IFormElement {
 	public void setHasUINode(boolean hasUINode);
 	
 	public boolean hasUINode();
+	
+	/**
+	 * Moves the given child to a new position in the children list.
+	 * Operation does not affect/manipulate the DOM links
+	 * of stored XML nodes in the IFormElement
+	 * @param child
+	 * @param index
+	 * @throws Exception
+	 */
+	public void moveChildToIndex(IFormElement child, int index) throws Exception;
 }

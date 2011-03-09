@@ -44,8 +44,9 @@ public class UiElementBuilder {
 	 * @param groupNode the xforms group node to which the question belongs.
 	 */
 	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
-		if(qtn.getParent() != null && qtn.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		if(qtn.getParent() != null && qtn.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			formNode = qtn.getParent().getDataNode();
+		}
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
@@ -82,11 +83,11 @@ public class UiElementBuilder {
 		}	
 
 		Element uiNode =  getXformUIElement(doc,qtn,bindAttributeName,false);
-		if(groupNode != null) //Some forms may not be in groups
+		if(groupNode != null){ //Some forms may not be in groups
 			groupNode.appendChild(uiNode);
-		else
+		}else{
 			xformsNode.appendChild(uiNode);
-
+		}
 		qtn.setControlNode(uiNode);
 
 		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);

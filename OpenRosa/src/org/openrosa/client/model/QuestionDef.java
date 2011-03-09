@@ -735,17 +735,18 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
-		boolean isNew = controlNode == null;
-		if(controlNode == null && hasUINode) //Must be new question.
+		boolean isNew = (controlNode == null);
+		if(isNew && hasUINode()){ //Must be new question.
 			UiElementBuilder.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
-		else
+		}
+		else{
 			updateControlNodeName();
-
-		if(labelNode != null) //How can this happen
+		}
+		if(labelNode != null){ //How can this happen
 			XmlUtil.setTextNodeValue(labelNode,text);
-
+		}
 		Element node = bindNode;
-		if(node == null && hasUINode){
+		if(node == null && hasUINode()){
 			//We are using a ref instead of bind
 			node = controlNode;
 			appendParentBinding = false;
@@ -802,7 +803,7 @@ public class QuestionDef implements IFormElement, Serializable{
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
 			}
 			
-			if(hasUINode){
+			if(hasUINode()){
 				if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
 						dataType == QuestionDef.QTN_TYPE_VIDEO))
 					controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
@@ -1101,7 +1102,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	private void updateControlNodeName(){
 		//TODO How about cases where the prefix is not xf?
 	
-		if(!hasUINode) return;//check to see if 
+		if(!hasUINode()){
+			return;
+		}
 		String name = controlNode.getNodeName();
 		Element parent = (Element)controlNode.getParentNode();
 		String xml = controlNode.toString();
@@ -1623,5 +1626,11 @@ public class QuestionDef implements IFormElement, Serializable{
 	public void setHasUINode(boolean hasUINode) {
 		this.hasUINode = hasUINode;
 	}
+	
+	public void moveChildToIndex(IFormElement child, int index) throws Exception{
+		throw new Exception("QuestionDefs should not have children, therefore cannot move them!");
+		
+	}
+
 }
 

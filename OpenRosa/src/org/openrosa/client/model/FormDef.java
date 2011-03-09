@@ -1517,8 +1517,13 @@ public class FormDef implements IFormElement, Serializable{
 		}
 		
 		children.remove(child);
-		children.add(index, child);
 		
+		int i = (index > children.size()) ? children.size() : index;
+		try{
+			children.add(i, child);
+		}catch(Exception e){
+			FormUtil.displayException(e);
+		}
 	}
 	
 	

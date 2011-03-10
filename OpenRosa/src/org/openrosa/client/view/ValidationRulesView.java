@@ -15,10 +15,17 @@ import org.openrosa.client.util.FormUtil;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,7 +43,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private static final int HORIZONTAL_SPACING = 5;
 
 	/** The widget vertical spacing in vertical panels. */
-	private static final int VERTICAL_SPACING = 0;
+	private static final int VERTICAL_SPACING = 5;
 
 	/** The main or root widget. */
 	private VerticalPanel verticalPanel = new VerticalPanel();
@@ -64,8 +71,13 @@ public class ValidationRulesView extends Composite implements IConditionControll
 
 	/** Widget for Label "Question: ". */
 	private Label lblAction = new Label(LocaleText.get("question")+": " /*"Question: "*/);
+	
+	private HorizontalPanel regularPanel1,regularPanel2;
+	private FlexTable advancedPanel;
 
-
+	private TextArea advtxtconstraint;
+	private Label advlblconstraint;
+	private CheckBox chkUseAdvanced;
 	/**
 	 * Creates a new instance of the validation rule widget.
 	 */
@@ -78,10 +90,42 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	 * Sets up the widgets.
 	 */
 	private void setupWidgets(){
+		advancedPanel = new FlexTable();
+		advtxtconstraint = new TextArea();
+		advtxtconstraint.setText("Not Implemented Yet!");
+		advlblconstraint = new Label("Advanced Validation Text");
+		chkUseAdvanced = new CheckBox("Use Advanced Validation Logic");
+		verticalPanel.add(chkUseAdvanced);
+		verticalPanel.setSpacing(5);
+		advancedPanel.setWidget(0, 0, advlblconstraint);
+		advancedPanel.setWidget(0, 1, advtxtconstraint);
+		verticalPanel.add(chkUseAdvanced);
+		verticalPanel.add(advancedPanel);
+		advancedPanel.setVisible(false);
+		
+		chkUseAdvanced.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				setAdvancedMode(chkUseAdvanced.getValue());
+//				questionDef.setHasAdvancedConstraint(chkUseAdvanced.getValue());
+				
+			}
+		});
+		
+		advtxtconstraint.addKeyPressHandler(new KeyPressHandler() {
+			public void onKeyPress(KeyPressEvent event) {
+//				questionDef.setAdvancedText(advtxtconstraint.getText());
+			}
+		});
+		
+		
+		
+		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		regularPanel1 = horizontalPanel;
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
 
 		HorizontalPanel actionPanel = new HorizontalPanel();
+		regularPanel2 = actionPanel;
 		actionPanel.setWidth("100%");
 		FormUtil.maximizeWidget(txtErrorMessage);
 		actionPanel.add(new Label(LocaleText.get("errorMessage")));
@@ -108,6 +152,14 @@ public class ValidationRulesView extends Composite implements IConditionControll
 
 		verticalPanel.setSpacing(VERTICAL_SPACING);
 		initWidget(verticalPanel);
+	}
+	
+	private void setAdvancedMode(boolean enabled){
+		advancedPanel.setVisible(enabled);
+		addConditionLink.setVisible(!enabled);
+		lblAction.setVisible(!enabled);
+		regularPanel1.setVisible(!enabled);
+		regularPanel2.setVisible(!enabled);
 	}
 
 
@@ -246,6 +298,9 @@ public class ValidationRulesView extends Composite implements IConditionControll
 				}
 
 				verticalPanel.add(addConditionLink);
+				
+//				chkUseAdvanced.setValue(questionDef.hasAdvancedDConstraint());
+//				advtxtconstraint.setText(questionDef.advancedConstraintText());
 			}
 		}
 	}

@@ -23,7 +23,7 @@ public class SkipRule implements Serializable{
 	private int id = ModelConstants.NULL_ID;
 	
 	/** A list of conditions (Condition object) to be tested for a rule. 
-	 * E.g. If sex is Male. If age is greatern than 4. etc
+	 * E.g. If sex is Male. If age is greater than 4. etc
 	 */
 	private Vector conditions;
 	

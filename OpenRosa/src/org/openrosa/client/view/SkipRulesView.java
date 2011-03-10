@@ -7,6 +7,7 @@ import org.openrosa.client.controller.IConditionController;
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
+import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
@@ -15,14 +16,23 @@ import org.openrosa.client.controller.QuestionSelectionListener;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -72,11 +82,22 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 
 	/** Widget for Label "and". */
 	private Label lblAnd = new Label(LocaleText.get("and"));
+	
+	private Label lblrelevant;
+	
+	private TextArea txtrelevant;
+	
+	private CheckBox chkUseAdvancedRelevant;
 
-
+	private IFormElement selectedObj;
+	
+	private boolean advancedMode;
 	/**
 	 * Creates a new instance of the skip logic widget.
 	 */
+	
+	private HorizontalPanel p1, p2;
+	private FlexTable p3;
 	public SkipRulesView(){
 		setupWidgets();
 	}
@@ -85,9 +106,29 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * Sets up the widgets.
 	 */
 	private void setupWidgets(){
+		
+		FlexTable advanced = new FlexTable();
+		lblrelevant=new Label("Relevant:");
+		txtrelevant = new TextArea();
+		txtrelevant.setEnabled(false);
+		chkUseAdvancedRelevant = new CheckBox("Use Advanced Skip Logic Text");
+		txtrelevant.setText("Not Supported yet! Does Not Work.");
+		
+		advanced.setWidget(0,0,new Label(""));
+		advanced.setWidget(1, 0, chkUseAdvancedRelevant);
+		advanced.getFlexCellFormatter().setColSpan(1, 0, 2);
+		advanced.setWidget(2, 0, lblrelevant);
+		advanced.setWidget(2, 1, txtrelevant);
+		p3 = advanced;
+		
+		advanced.setCellPadding(5);
+		verticalPanel.add(advanced);
+		verticalPanel.setSpacing(VERTICAL_SPACING);
+		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		p1 = horizontalPanel;
 		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
-
+		
 
 		Hyperlink hyperlink = new Hyperlink(LocaleText.get("clickForOtherQuestions"),"");
 		hyperlink.addClickHandler(new ClickHandler(){
@@ -97,13 +138,13 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		});
 
 		HorizontalPanel horzPanel = new HorizontalPanel();
+		p2 = horzPanel;
 		horzPanel.setSpacing(10);
 		horzPanel.add(lblAction);
 		horzPanel.add(lblAnd);
 		horzPanel.add(hyperlink);
 
 		verticalPanel.add(horzPanel);
-
 		horizontalPanel.add(new Label(LocaleText.get("when")));
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
@@ -118,7 +159,29 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		});
 
 		verticalPanel.setSpacing(VERTICAL_SPACING);
+		
+
+		
+		chkUseAdvancedRelevant.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+//				selectedObj.setHasAdvancedRelevant(event.getValue());
+				txtrelevant.setEnabled(event.getValue());
+				setAdvancedMode(chkUseAdvancedRelevant.getValue());
+			}
+		});
+		
+		txtrelevant.addChangeHandler(new ChangeHandler() {
+			
+			@Override
+			public void onChange(ChangeEvent event) {
+//				selectedObj.setAdvancedConstraint(txtrelevant.getText());
+			}
+		});
+		
 		initWidget(verticalPanel);
+		setAdvancedMode(false);
 	}
 
 
@@ -167,6 +230,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * Sets or updates the values of the skip rule object from the user's widget selections.
 	 */
 	public void updateSkipRule(){
+		GWT.log("Updating skip rule (SkipRulesView.java)");
 		if(questionDef == null){
 			skipRule = null;
 			return;
@@ -320,6 +384,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * Shows a list of other questions that are targets of the current skip rule.
 	 */
 	private void showOtherQuestions(){
+		GWT.log("ShowOtherQuestion() enabled="+enabled);
 		if(enabled){
 			SkipQtnsDialog dialog = new SkipQtnsDialog(this);
 			dialog.setData(formDef,questionDef,skipRule);
@@ -365,4 +430,59 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 				skipRule.addActionTarget(qtnDef.getId());
 		}
 	}
+	
+	/**
+	 * This entire class should not support selecting multiple questions
+	 * @param senderWidget
+	 * @param item
+	 */
+	public void onItemSelected(Object senderWidget, Object item){
+		this.selectedObj = (IFormElement)item; //should always be an IFormElement or we're in trouble.
+		
+		//select the checkboxes according to the flags set in the selected items.
+		//unless they're of the type that can't have any kind of bind logic
+		if(selectedObj instanceof FormDef || selectedObj instanceof OptionDef){
+			chkUseAdvancedRelevant.setEnabled(false);
+			chkUseAdvancedRelevant.setValue(false);
+			this.setAdvancedMode(false);
+			this.setEnabled(false);
+		}else{
+			chkUseAdvancedRelevant.setEnabled(true);
+//			chkUseAdvancedRelevant.setValue(selectedObj.getHasAdvancedRelevant());
+			if(chkUseAdvancedRelevant.getValue()){
+				groupHyperlink.setEnabled(false);
+				chkMakeRequired.setEnabled(false);
+				txtrelevant.setEnabled(true);
+				this.setEnabled(false);
+//				txtrelevant.setText(selectedObj.getAdvancedRelevantText());
+			}else{
+				groupHyperlink.setEnabled(true);
+				chkMakeRequired.setEnabled(true);
+				txtrelevant.setEnabled(false);
+				this.setEnabled(true);
+			}
+			
+			setAdvancedMode(chkUseAdvancedRelevant.getValue());
+		
+		}
+		
+	}
+	
+	
+	public void setAdvancedMode(boolean enabled){
+		this.advancedMode = enabled;
+		groupHyperlink.setEnabled(!enabled);
+		p1.setVisible(!enabled);
+		p2.setVisible(!enabled);
+		lblrelevant.setVisible(enabled);
+		txtrelevant.setVisible(enabled);
+		this.setEnabled(!enabled);
+		addConditionLink.setVisible(!enabled);
+		
+	}
+	
+	public boolean isAdvancedMode(){
+		return advancedMode;
+	}
+
 }

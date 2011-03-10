@@ -93,50 +93,50 @@ public class XformParser {
 		return fromXform2FormDef(XformUtil.normalizeNameSpace(formDef.getDoc(),XmlUtil.fromDoc2String(formDef.getDoc())));*/
 	}
 
-	/**
-	 * Converts an xml document to a form definition object.
-	 * 
-	 * @param xml the document xml.
-	 * @return the form definition object.
-	 */
-	public static FormDef fromXform2FormDef(String xml, HashMap<Integer,HashMap<String,String>> languageText){
-		Document doc = XmlUtil.getDocument(xml);
-
-		String layoutXml = null, javaScriptSrc = null; NodeList nodes = null;
-		Element root = doc.getDocumentElement();
-		if(root.getNodeName().equals("PurcForm")){
-			nodes = root.getElementsByTagName("Xform");
-			assert(nodes.getLength() > 0);
-			xml = XmlUtil.getChildElement(nodes.item(0)).toString();
-			doc = XmlUtil.getDocument(xml);
-
-			nodes = root.getElementsByTagName("Layout");
-			if(nodes.getLength() > 0)
-				layoutXml = FormUtil.formatXml(XmlUtil.getChildElement(nodes.item(0)).toString());
-
-			nodes = root.getElementsByTagName("JavaScript");
-			if(nodes.getLength() > 0)
-				javaScriptSrc = XmlUtil.getChildCDATA(nodes.item(0)).getNodeValue();
-
-			nodes = root.getElementsByTagName("LanguageText"); 
-			assert(nodes.getLength() > 0);
-		}
-
-		FormDef formDef = getFormDef(doc);
-
-		if(layoutXml != null)
-			formDef.setLayoutXml(FormUtil.formatXml(layoutXml));
-
-		if(javaScriptSrc != null)
-			formDef.setJavaScriptSource(javaScriptSrc);
-
-		if(nodes != null){
-			loadLanguageText(formDef.getId(),nodes,languageText);
-			formDef.setXformXml(FormUtil.formatXml(xml));
-		}
-
-		return formDef;
-	}
+//	/**
+//	 * Converts an xml document to a form definition object.
+//	 * 
+//	 * @param xml the document xml.
+//	 * @return the form definition object.
+//	 */
+//	public static FormDef fromXform2FormDef(String xml, HashMap<Integer,HashMap<String,String>> languageText){
+//		Document doc = XmlUtil.getDocument(xml);
+//
+//		String layoutXml = null, javaScriptSrc = null; NodeList nodes = null;
+//		Element root = doc.getDocumentElement();
+//		if(root.getNodeName().equals("PurcForm")){
+//			nodes = root.getElementsByTagName("Xform");
+//			assert(nodes.getLength() > 0);
+//			xml = XmlUtil.getChildElement(nodes.item(0)).toString();
+//			doc = XmlUtil.getDocument(xml);
+//
+//			nodes = root.getElementsByTagName("Layout");
+//			if(nodes.getLength() > 0)
+//				layoutXml = FormUtil.formatXml(XmlUtil.getChildElement(nodes.item(0)).toString());
+//
+//			nodes = root.getElementsByTagName("JavaScript");
+//			if(nodes.getLength() > 0)
+//				javaScriptSrc = XmlUtil.getChildCDATA(nodes.item(0)).getNodeValue();
+//
+//			nodes = root.getElementsByTagName("LanguageText"); 
+//			assert(nodes.getLength() > 0);
+//		}
+//
+//		FormDef formDef = getFormDef(doc);
+//
+//		if(layoutXml != null)
+//			formDef.setLayoutXml(FormUtil.formatXml(layoutXml));
+//
+//		if(javaScriptSrc != null)
+//			formDef.setJavaScriptSource(javaScriptSrc);
+//
+//		if(nodes != null){
+//			loadLanguageText(formDef.getId(),nodes,languageText);
+//			formDef.setXformXml(FormUtil.formatXml(xml));
+//		}
+//
+//		return formDef;
+//	}
 
 
 	public static void loadLanguageText(Integer formId, NodeList nodes, HashMap<Integer,HashMap<String,String>> languageText){

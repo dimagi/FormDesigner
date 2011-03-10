@@ -38,6 +38,8 @@ import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
@@ -205,7 +207,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Creates a new instance of the properties view widget.
 	 */
 	public PropertiesView(){
-
+		
 
 		/*Label lblText = new Label(LocaleText.get("text"));
 		Label lblHelpText = new Label(LocaleText.get("helpText"));
@@ -217,6 +219,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		Label lblRequired = new Label(LocaleText.get("required"));
 		Label lblDefault = new Label(LocaleText.get("defaultValue"));
 		Label lblCalculate = new Label(LocaleText.get("calculation"));*/
+		
+		
 
 		table.setWidget(0, 0, lblQtnID);
 		table.setWidget(1, 0, lblDefaultLabel);
@@ -313,6 +317,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
 		tabs.add(advancedLogicView, "Advanced Logic");
 		tabs.selectTab(0);
+
+//		tabs.getTabBar().setTabEnabled(3, false);
 		
 		table.setWidget(12, 0, tabs);
 		table.getFlexCellFormatter().setColSpan(12, 0, 2);
@@ -365,6 +371,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	
 	public void changeSelectedObject(IFormElement objectDef){
+		commitChanges();
 		propertiesObj = objectDef;
 		if(objectDef instanceof FormDef) setFormProperties((FormDef)objectDef);
 		else if (objectDef instanceof GroupDef) setGroupProperties((GroupDef) objectDef);
@@ -374,9 +381,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		advancedLogicView.onItemSelected(this, objectDef);
 	}
 	
+	
 
 	
 	private void createHandlers(){
+		
+		tabs.addSelectionHandler(new SelectionHandler<Integer>() {
+			
+			@Override
+			public void onSelection(SelectionEvent<Integer> event) {
+				commitChanges();
+			}
+		});
 		//Create listener/event handlers for each widget
 		qtnID.addChangeHandler(new ChangeHandler() {
 			@Override
@@ -737,6 +753,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				
 			}
 		});
+	}
+	
+	/**
+	 * Retrieves changes from all widgets and updates the selected object.
+	 */
+	public void commitChanges(){
+		skipRulesView.updateSkipRule();
+		validationRulesView.updateValidationRule();
+		itextView.update();
 	}
 	
 	private void setOptionDefProperties(IFormElement optionDef){

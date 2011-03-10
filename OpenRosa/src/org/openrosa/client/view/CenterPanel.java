@@ -558,7 +558,7 @@ public class CenterPanel extends Composite implements SelectionHandler<Integer>,
 	 * Modifies the FormDef object to reflect any changes made by the user.
 	 */
 	public void commitChanges(){
-//		propertiesView.commitChanges();
+		propertiesView.commitChanges();
 	}
 
 	/**

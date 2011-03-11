@@ -10,7 +10,22 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public interface IFormElement {
-
+	
+	public boolean hasAdvancedConstraint();
+	public void setHasAdvancedConstraint(boolean enabled);
+	public String getAdvancedConstraint();
+	public void setAdvancedConstraint(String constValue);
+	
+	public boolean hasAdvancedRelevant();
+	public void setHasAdvancedRelevant(boolean enabled);
+	public String getAdvancedRelevant();
+	public void setAdvancedRelevant(String releValue);
+	
+	public boolean hasAdvancedCalculate();
+	public void setHasAdvancedCalculate(boolean enabled);
+	public String getAdvancedCalculate();
+	public void setAdvancedCalculate(String calcValue);
+	
 	int getId();
 	void setId(int id);
 	

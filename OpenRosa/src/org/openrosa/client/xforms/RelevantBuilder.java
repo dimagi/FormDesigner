@@ -29,7 +29,54 @@ public class RelevantBuilder {
 
 	}
 	
+	/**
+	 * Takes in a SkipRule and returns the completed Relevant
+	 * attribute value
+	 * @param rule
+	 * @param formDef - the underlying formdef for this mess.
+	 * @return - The reconstructed relevant attribute.
+	 */
+	public static String fromSkipRule2String(SkipRule rule, FormDef formDef){
+		String relevant = "";
+		Vector conditions  = rule.getConditions();
+		for(int i=0; i<conditions.size(); i++){
+			if(relevant.length() > 0){
+				relevant += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
+			}
+			relevant += fromSkipCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
+		}
+		return relevant;
+	}
 	
+	/**
+	 * A slightly higher level function that figures out
+	 * if the question associated with this rule has
+	 * an 'advanced' relevant or if it should be extracted
+	 * out of the SkipRule in the traditional way (for less
+	 * complex relevants)
+	 * @param rule The SkipRule associated with the specified skip rule.
+	 * @param qID The internal ID for the question for which the relevant will be generated
+	 * @param formDef
+	 * @return
+	 */
+	public static String getRelevantFromRule(SkipRule rule, int qID, FormDef formDef){
+		QuestionDef questionDef = formDef.getQuestion(qID);
+		if(questionDef.hasAdvancedRelevant()){
+			return questionDef.getAdvancedRelevant();
+		}
+		
+		String relevant = "";
+		Vector conditions  = rule.getConditions();
+		for(int i=0; i<conditions.size(); i++){
+			if(relevant.length() > 0){
+				relevant += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
+			}
+			relevant += fromSkipCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
+		}
+		
+		
+		return relevant;
+	}
 	/**
 	 * Converts a skip rule definition object to xforms.
 	 * 
@@ -37,14 +84,6 @@ public class RelevantBuilder {
 	 * @param formDef the form definition.
 	 */
 	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
-		String relevant = "";
-		Vector conditions  = rule.getConditions();
-		for(int i=0; i<conditions.size(); i++){
-			if(relevant.length() > 0)
-				relevant += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
-			relevant += fromSkipCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
-		}
-
 		Vector actionTargets =  rule.getActionTargets();
 		for(int i=0; i<actionTargets.size(); i++){
 			int id = ((Integer)actionTargets.elementAt(i)).intValue();
@@ -53,9 +92,11 @@ public class RelevantBuilder {
 				continue;
 
 			Element node = questionDef.getBindNode();
-			if(node == null)
+			if(node == null){
 				node = questionDef.getControlNode();
-
+			}
+			
+			String relevant = getRelevantFromRule(rule, id, formDef);
 			if(relevant.trim().length() == 0){
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
@@ -99,13 +140,15 @@ public class RelevantBuilder {
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef != null){
 			relevant = questionDef.getBinding();
-			if(!relevant.contains(formDef.getVariableName()))
+			if(!relevant.contains(formDef.getVariableName())){
 				relevant = "/" + formDef.getVariableName() + "/" + questionDef.getBinding();
-
+			}
+			
 			String value = " '" + condition.getValue() + "'";
-			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC)
+			if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL || questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC){
 				value = " " + condition.getValue();
-
+			}
+			
 			relevant += " " + XformBuilderUtil.getXpathOperator(condition.getOperator(),action)+value;
 		}
 		return relevant;

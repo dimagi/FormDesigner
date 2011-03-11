@@ -166,8 +166,8 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				selectedObj.setHasAdvancedRelevant(event.getValue());
-				txtrelevant.setEnabled(event.getValue());
+				selectedObj.setHasAdvancedRelevant(chkUseAdvancedRelevant.getValue());
+				txtrelevant.setEnabled(chkUseAdvancedRelevant.getValue());
 				setAdvancedMode(chkUseAdvancedRelevant.getValue());
 			}
 		});
@@ -176,7 +176,9 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-//				selectedObj.setAdvancedConstraint(txtrelevant.getText());
+				selectedObj.setAdvancedRelevant(txtrelevant.getText());
+				//and if we've done that the hasAdvanced() should definitely return true so:
+				selectedObj.setHasAdvancedRelevant(true);
 			}
 		});
 		
@@ -262,7 +264,12 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			if(!skipRule.containsActionTarget(questionDef.getId()))
 				skipRule.addActionTarget(questionDef.getId());
 		}
-
+		
+		if(chkUseAdvancedRelevant.getValue()){
+			//this means that we're using advanced mode!
+			skipRule = new SkipRule(questionDef.getId(),new Vector(),ModelConstants.ACTION_NONE, new Vector()); 
+			skipRule.addActionTarget(questionDef.getId());
+		}
 		if(skipRule != null && !formDef.containsSkipRule(skipRule))
 			formDef.addSkipRule(skipRule);
 	}
@@ -319,7 +326,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			Vector lostConditions = new Vector();
 			for(int i=0; i<conditions.size(); i++){
 				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
-				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))
+				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)) && !questionDef.hasAdvancedRelevant())
 					verticalPanel.add(conditionWidget);
 				else
 					lostConditions.add((Condition)conditions.elementAt(i));
@@ -448,18 +455,20 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			this.setEnabled(false);
 		}else{
 			chkUseAdvancedRelevant.setEnabled(true);
-//			chkUseAdvancedRelevant.setValue(selectedObj.getHasAdvancedRelevant());
+			chkUseAdvancedRelevant.setValue(selectedObj.hasAdvancedRelevant());
 			if(chkUseAdvancedRelevant.getValue()){
 				groupHyperlink.setEnabled(false);
 				chkMakeRequired.setEnabled(false);
 				txtrelevant.setEnabled(true);
 				this.setEnabled(false);
-//				txtrelevant.setText(selectedObj.getAdvancedRelevantText());
+				txtrelevant.setText(selectedObj.getAdvancedRelevant());
+				setAdvancedMode(true);
 			}else{
 				groupHyperlink.setEnabled(true);
 				chkMakeRequired.setEnabled(true);
 				txtrelevant.setEnabled(false);
 				this.setEnabled(true);
+				setAdvancedMode(false);
 			}
 			
 			setAdvancedMode(chkUseAdvancedRelevant.getValue());

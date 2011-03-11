@@ -30,6 +30,27 @@ public class XformUtil {
 
 	}
 	
+	/**
+	 * Removes extraneous whitespace between words
+	 * (ie "            mary     had a   little         lamb  "
+	 * becomes "mary had a little lamb")
+	 * @param s
+	 * @return cleansed String
+	 */
+	public static String ripOutWhitespace(String s){
+		String[] arr = s.split(" ");
+		String newS = "";
+		for(int i=0;i<arr.length;i++){
+			if(!arr[i].isEmpty()){
+				newS+=" "+arr[i];
+			}
+		}
+		
+		newS = newS.trim();
+		
+		return newS;
+	}
+	
 	
 	/**
 	 * Creates a node from an xml fragment.

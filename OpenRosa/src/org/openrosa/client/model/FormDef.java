@@ -103,7 +103,8 @@ public class FormDef implements IFormElement, Serializable{
 
 
 	List<IFormElement> children;
-
+	
+	
 	/** Constructs a form definition object. */
 	public FormDef() {
 
@@ -1545,6 +1546,66 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	public void setHasUINode(boolean hasUINode) {
+		return;
+	}
+
+	/** Not Applicable **/
+	public boolean hasAdvancedCalculate() {
+		return false;
+	}
+
+	/** Not Applicable **/
+	public boolean hasAdvancedConstraint() {
+		return false;
+	}
+
+	/** Not Applicable **/
+	public boolean hasAdvancedRelevant() {
+		return false;
+	}
+
+	/** Not Applicable **/
+	public void setHasAdvancedCalculate(boolean enabled) {
+		return;
+	}
+	
+	/** Not Applicable **/
+	public void setHasAdvancedConstraint(boolean enabled) {
+		return;
+	}
+
+	/** Not Applicable **/
+	public void setHasAdvancedRelevant(boolean enabled) {
+		return;
+	}
+
+	/** Not Applicable **/
+	public String getAdvancedCalculate() {
+		return null;
+	}
+
+	/** Not Applicable **/
+	public String getAdvancedConstraint() {
+		return null;
+	}
+
+	/** Not Applicable **/
+	public String getAdvancedRelevant() {
+		return null;
+	}
+
+	/** Not Applicable **/
+	public void setAdvancedCalculate(String calcValue) {
+		return; 
+	}
+
+	/** Not Applicable **/
+	public void setAdvancedConstraint(String constValue) {
+		return;
+	}
+
+	/** Not Applicable **/
+	public void setAdvancedRelevant(String releValue) {
 		return;
 	}
 }

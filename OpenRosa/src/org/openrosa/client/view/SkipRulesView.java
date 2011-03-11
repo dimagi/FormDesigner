@@ -308,6 +308,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	public void setQuestionDef(IFormElement questionDef){
 		clearConditions();
 
+		
 		formDef = questionDef.getFormDef();
 
 		if(questionDef != null)

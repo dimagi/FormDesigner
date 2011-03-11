@@ -61,6 +61,10 @@ public class GroupDef implements IFormElement, Serializable{
 	
 	private boolean required,enabled,visible;
 	
+	private boolean hasAdvancedCalculate, hasAdvancedConstraint, hasAdvancedRelevant;
+	
+	private String advancedCalculate, advancedConstraint, advancedRelevant;
+	
 
 
 	public GroupDef(){
@@ -1093,5 +1097,53 @@ public class GroupDef implements IFormElement, Serializable{
 		}catch(Exception e){
 			FormUtil.displayException(e);
 		}
+	}
+	
+	public boolean hasAdvancedCalculate() {
+		return hasAdvancedCalculate;
+	}
+
+	public boolean hasAdvancedConstraint() {
+		return hasAdvancedConstraint;
+	}
+
+	public boolean hasAdvancedRelevant() {
+		return hasAdvancedRelevant;
+	}
+
+	public void setHasAdvancedCalculate(boolean enabled) {
+		hasAdvancedCalculate = enabled;
+	}
+
+	public void setHasAdvancedConstraint(boolean enabled) {
+		hasAdvancedConstraint = enabled;
+	}
+
+	public void setHasAdvancedRelevant(boolean enabled) {
+		hasAdvancedRelevant = enabled;
+	}
+
+	public String getAdvancedCalculate() {
+		return advancedCalculate;
+	}
+
+	public String getAdvancedConstraint() {
+		return advancedConstraint;
+	}
+
+	public String getAdvancedRelevant() {
+		return advancedRelevant;
+	}
+
+	public void setAdvancedCalculate(String calcValue) {
+		advancedCalculate = calcValue;
+	}
+
+	public void setAdvancedConstraint(String constValue) {
+		advancedConstraint = constValue;
+	}
+
+	public void setAdvancedRelevant(String releValue) {
+		advancedRelevant = releValue;
 	}
 }

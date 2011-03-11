@@ -195,6 +195,10 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * Control node (input, 1select, etc) generated upon XML output.
 	 */
 	private boolean hasUINode;
+	
+	private boolean hasAdvancedCalculate, hasAdvancedConstraint, hasAdvancedRelevant;
+	
+	private String advancedCalculate, advancedConstraint, advancedRelevant;
 
 
 	/** This constructor is used mainly during deserialization. */
@@ -1630,6 +1634,54 @@ public class QuestionDef implements IFormElement, Serializable{
 	public void moveChildToIndex(IFormElement child, int index) throws Exception{
 		throw new Exception("QuestionDefs should not have children, therefore cannot move them!");
 		
+	}
+	
+	public boolean hasAdvancedCalculate() {
+		return hasAdvancedCalculate;
+	}
+
+	public boolean hasAdvancedConstraint() {
+		return hasAdvancedConstraint;
+	}
+
+	public boolean hasAdvancedRelevant() {
+		return hasAdvancedRelevant;
+	}
+
+	public void setHasAdvancedCalculate(boolean enabled) {
+		hasAdvancedCalculate = enabled;
+	}
+
+	public void setHasAdvancedConstraint(boolean enabled) {
+		hasAdvancedConstraint = enabled;
+	}
+
+	public void setHasAdvancedRelevant(boolean enabled) {
+		hasAdvancedRelevant = enabled;
+	}
+
+	public String getAdvancedCalculate() {
+		return advancedCalculate;
+	}
+
+	public String getAdvancedConstraint() {
+		return advancedConstraint;
+	}
+
+	public String getAdvancedRelevant() {
+		return advancedRelevant;
+	}
+
+	public void setAdvancedCalculate(String calcValue) {
+		advancedCalculate = calcValue;
+	}
+
+	public void setAdvancedConstraint(String constValue) {
+		advancedConstraint = constValue;
+	}
+
+	public void setAdvancedRelevant(String releValue) {
+		advancedRelevant = releValue;
 	}
 
 }

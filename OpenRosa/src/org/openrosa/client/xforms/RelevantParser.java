@@ -52,30 +52,27 @@ public class RelevantParser {
 			//rule instead of creating a new skip rule.
 			SkipRule skipRule = skipRulesMap.get(relevant);
 			
-			boolean hasRelevant = relevant != null && !relevant.isEmpty();
+			boolean hasRelevant = (relevant != null && !relevant.isEmpty());
 			
-			if(skipRule != null){
-				boolean similar = isRelevantsEquivalent(relevant, skipRule, formDef);
-				if(similar){
-					qtn.setHasAdvancedRelevant(false);
-					skipRule.addActionTarget(qtn.getId());
-				}else{
-					qtn.setHasAdvancedRelevant(true);
-					qtn.setAdvancedRelevant(relevant);
-					skipRule.addActionTarget(qtn.getId());
-				}
-			}else{
+			if(skipRule == null){
 				skipRule = buildSkipRule(formDef, qtn.getId(),relevant,++id,XformParserUtil.getAction(qtn));
 				if(skipRule != null){
-					boolean similar = isRelevantsEquivalent(relevant, skipRule, formDef);
-					if(similar){
-						qtn.setHasAdvancedRelevant(false);
-					}else{
-						qtn.setHasAdvancedRelevant(true);
-						qtn.setAdvancedRelevant(relevant);
-					}
 					rules.add(skipRule);
 					skipRulesMap.put(relevant, skipRule);
+				}
+			
+			}else{
+				skipRule.addActionTarget(qtn.getId());
+			}
+			
+			boolean similar = isRelevantsEquivalent(relevant, skipRule, formDef);
+			if(similar){
+				qtn.setHasAdvancedRelevant(false);
+				
+			}else{
+				qtn.setHasAdvancedRelevant(true);
+				if(hasRelevant){
+					qtn.setAdvancedRelevant(relevant);
 				}
 			}
 		}
@@ -127,18 +124,7 @@ public class RelevantParser {
 	 * @return true if args are equivalent (for loose values of equivalent), else false.
 	 */
 	public static boolean isRelevantsEquivalent(String origRel, SkipRule skipRule, FormDef formDef){
-		if(origRel.toLowerCase().contains("and") && origRel.toLowerCase().contains("or")){
-			//if the statement has BOTH AND and OR operators, we know we need advanced
-			//mode right away since this parser doesn't deal with that kind of complexity.
-			return false;
-		}
-		
-		//we strip out parens, as their presence usually indicates nested logic,
-		//for which we want to be in advanced mode anyway. (Unless they're just on the
-		//outside and don't actually nest anything anyway.
-		String oldString = origRel.replace(")", "");
-		oldString = oldString.replace("(","");
-		oldString = oldString.trim();
+		String oldString = origRel.trim();
 		oldString = XformUtil.ripOutWhitespace(oldString);
 		String newString = RelevantBuilder.fromSkipRule2String(skipRule, formDef);
 		newString = XformUtil.ripOutWhitespace(newString);

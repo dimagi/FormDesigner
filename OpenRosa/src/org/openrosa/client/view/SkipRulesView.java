@@ -143,8 +143,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		horzPanel.add(lblAction);
 		horzPanel.add(lblAnd);
 		horzPanel.add(hyperlink);
+		
 
 		verticalPanel.add(horzPanel);
+		horizontalPanel.add(new Label("These questions will appear ONLY "));
 		horizontalPanel.add(new Label(LocaleText.get("when")));
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
@@ -281,7 +283,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 */
 	private int getAction(){
 		int action = 0;
-
+		action |= ModelConstants.ACTION_ENABLE;
 		if(chkMakeRequired.getValue() == true)
 			action |= ModelConstants.ACTION_MAKE_MANDATORY;
 		else

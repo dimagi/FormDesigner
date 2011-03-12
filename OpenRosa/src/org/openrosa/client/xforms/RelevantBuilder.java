@@ -38,6 +38,9 @@ public class RelevantBuilder {
 	 */
 	public static String fromSkipRule2String(SkipRule rule, FormDef formDef){
 		String relevant = "";
+		if(rule == null){
+			return relevant;
+		}
 		Vector conditions  = rule.getConditions();
 		for(int i=0; i<conditions.size(); i++){
 			if(relevant.length() > 0){

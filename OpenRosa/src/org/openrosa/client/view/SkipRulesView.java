@@ -12,7 +12,11 @@ import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
 import org.openrosa.client.widget.skiprule.GroupHyperlink;
+import org.openrosa.client.xforms.RelevantBuilder;
+import org.openrosa.client.xforms.RelevantParser;
+import org.openrosa.client.xforms.XformParserUtil;
 import org.openrosa.client.controller.QuestionSelectionListener;
+import org.openrosa.client.jr.xforms.parse.XFormParser;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 
@@ -89,7 +93,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	
 	private CheckBox chkUseAdvancedRelevant;
 
-	private IFormElement selectedObj;
+//	private IFormElement selectedObj;
 	
 	private boolean advancedMode;
 	/**
@@ -110,9 +114,9 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		FlexTable advanced = new FlexTable();
 		lblrelevant=new Label("Relevant:");
 		txtrelevant = new TextArea();
-		txtrelevant.setEnabled(false);
+		txtrelevant.setEnabled(true);
 		chkUseAdvancedRelevant = new CheckBox("Use Advanced Skip Logic Text");
-		txtrelevant.setText("Not Supported yet! Does Not Work.");
+		txtrelevant.setText("");
 		
 		advanced.setWidget(0,0,new Label(""));
 		advanced.setWidget(1, 0, chkUseAdvancedRelevant);
@@ -146,7 +150,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		
 
 		verticalPanel.add(horzPanel);
-		horizontalPanel.add(new Label("These questions will appear ONLY "));
+		horizontalPanel.add(new Label("will appear ONLY "));
 		horizontalPanel.add(new Label(LocaleText.get("when")));
 		horizontalPanel.add(groupHyperlink);
 		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
@@ -168,9 +172,13 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				selectedObj.setHasAdvancedRelevant(chkUseAdvancedRelevant.getValue());
-				txtrelevant.setEnabled(chkUseAdvancedRelevant.getValue());
 				setAdvancedMode(chkUseAdvancedRelevant.getValue());
+				if(event.getValue()){
+					fromSimpleToAdvancedRelevant();
+				}else{
+					fromAdvancedToSimpleRelevant();
+				}
+				setQuestionDef(questionDef);
 			}
 		});
 		
@@ -178,9 +186,9 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			
 			@Override
 			public void onChange(ChangeEvent event) {
-				selectedObj.setAdvancedRelevant(txtrelevant.getText());
+				questionDef.setAdvancedRelevant(txtrelevant.getText());
 				//and if we've done that the hasAdvanced() should definitely return true so:
-				selectedObj.setHasAdvancedRelevant(true);
+				questionDef.setHasAdvancedRelevant(true);
 			}
 		});
 		
@@ -188,6 +196,96 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		setAdvancedMode(false);
 	}
 
+	
+	/**
+	 * Converts a simple relevant (that uses SkipRules)
+	 * and converts to Advanced relevant (if possible).
+	 * 
+	 * Returns false if unsuccesful
+	 * Returns true if the succesful.
+	 * 
+	 * Leaves the old skipRules intact
+	 * 
+	 * If no SkipRules are present, will use
+	 * data stored in AdvancedRelevant in the QuestionDef
+	 * (if possible).
+	 * 
+	 * Will OVERWRITE any existing advanced relevant data
+	 * if SkipRules are present
+	 * @return
+	 */
+	public boolean fromSimpleToAdvancedRelevant(){
+		SkipRule currentRule = formDef.getSkipRule(questionDef);
+		String currentAdvRel = questionDef.getAdvancedRelevant();
+		questionDef.setHasAdvancedRelevant(true);
+		boolean currentAdvRelExists = (currentAdvRel != null && !currentAdvRel.isEmpty());
+		
+		if(currentRule == null){
+			//start from scratch, use existing AdvRel (if it exists).
+			currentRule = createNewSkipForQtn(questionDef);
+			formDef.addSkipRule(currentRule);
+			return true;
+		}
+		
+		//if we get here, it implies we already have a skip rule pointing to this question
+		//in the FormDef, so no need to worry about it.
+		String newAdvRel = RelevantBuilder.fromSkipRule2String(currentRule, formDef);
+		boolean newAdvRelExists = (newAdvRel != null && !newAdvRel.isEmpty());
+		if(!newAdvRelExists){
+			
+			if(currentAdvRelExists){
+				//we already have advanced text that isn't empty, so stick with that and return false to indicate something went wrong with conversion.
+				return false;
+			}else{
+				questionDef.setAdvancedRelevant(""); //we've converted nothing and had nothing, so everything went well.
+				return true;
+			}
+		}else{
+			questionDef.setAdvancedRelevant(newAdvRel);
+			return true; //great success.
+		}
+	}
+	
+	public SkipRule createNewSkipForQtn(IFormElement qtn){
+		SkipRule sr = new SkipRule(formDef.getNextSkipRuleId(), new Vector(), ModelConstants.ACTION_ENABLE, new Vector());
+		sr.addActionTarget(qtn.getId());
+		return sr;
+	}
+	
+	/**
+	 * Converts from and advanced to simple relevant
+	 * (simple uses SkipRules).
+	 * Returns false if not successfully converted
+	 * Returns true if succesful.
+	 * 
+	 * Will keep data in advanced if succesful.
+	 * Will always overwrite existing SkipRules
+	 * if they exist.  On return false, will
+	 * blank out existing SkipRules
+	 * @return
+	 */
+	public boolean fromAdvancedToSimpleRelevant(){
+		questionDef.setHasAdvancedRelevant(false);
+		
+		String currentAdvRel = questionDef.getAdvancedRelevant();
+		boolean hasAdv = (currentAdvRel != null && !currentAdvRel.isEmpty());
+		SkipRule currentSkip = formDef.getSkipRule(questionDef);
+		formDef.removeSkipRule(currentSkip);
+		
+		if(!hasAdv){
+			return true; //the 'conversion' was a success, because there was nothing to convert.
+		}else{
+			//do the conversion using the existing SR parser.
+			currentSkip = RelevantParser.buildSkipRule(formDef, questionDef.getId(), currentAdvRel, formDef.getNextSkipRuleId(), ModelConstants.ACTION_ENABLE);
+			if(currentSkip != null){
+				formDef.addSkipRule(currentSkip);
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+	}
 
 
 	/**
@@ -269,8 +367,12 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		
 		if(chkUseAdvancedRelevant.getValue()){
 			//this means that we're using advanced mode!
-			skipRule = new SkipRule(questionDef.getId(),new Vector(),ModelConstants.ACTION_NONE, new Vector()); 
-			skipRule.addActionTarget(questionDef.getId());
+			if(skipRule == null){
+				skipRule = new SkipRule(questionDef.getId(),new Vector(),ModelConstants.ACTION_NONE, new Vector()); 
+			}
+			if(!skipRule.containsActionTarget(questionDef.getId())){
+				skipRule.addActionTarget(questionDef.getId());
+			}
 		}
 		if(skipRule != null && !formDef.containsSkipRule(skipRule))
 			formDef.addSkipRule(skipRule);
@@ -314,12 +416,20 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		formDef = questionDef.getFormDef();
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getDisplayText());
+			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getBinding());
 		else
 			lblAction.setText(LocaleText.get("forQuestion"));
 
 		this.questionDef = questionDef;
+		if(questionDef.hasAdvancedRelevant()){
+			txtrelevant.setText(questionDef.getAdvancedRelevant());
+		}else{
+			buildConditionsWidgets();
+		}
 
+	}
+	
+	private void buildConditionsWidgets(){
 		skipRule = formDef.getSkipRule(questionDef);
 		if(skipRule != null){
 			groupHyperlink.setCondionsOperator(skipRule.getConditionsOperator());
@@ -329,7 +439,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			Vector lostConditions = new Vector();
 			for(int i=0; i<conditions.size(); i++){
 				ConditionWidget conditionWidget = new ConditionWidget(formDef,this,true,questionDef);
-				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)) && !questionDef.hasAdvancedRelevant())
+				if(conditionWidget.setCondition((Condition)conditions.elementAt(i)))
 					verticalPanel.add(conditionWidget);
 				else
 					lostConditions.add((Condition)conditions.elementAt(i));
@@ -361,10 +471,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * Removes all skip rule conditions.
 	 */
 	private void clearConditions(){
-		if(questionDef != null)
-			updateSkipRule();
+//		if(questionDef != null)
+//			updateSkipRule();
 
-		questionDef = null;
+//		questionDef = null;
 		lblAction.setText(LocaleText.get("forQuestion"));
 
 		while(verticalPanel.getWidgetCount() > 4)
@@ -447,34 +557,33 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * @param item
 	 */
 	public void onItemSelected(Object senderWidget, Object item){
-		this.selectedObj = (IFormElement)item; //should always be an IFormElement or we're in trouble.
-		
+		this.questionDef = (IFormElement)item; //should always be an IFormElement or we're in trouble.
+		setQuestionDef(questionDef);
 		//select the checkboxes according to the flags set in the selected items.
 		//unless they're of the type that can't have any kind of bind logic
-		if(selectedObj instanceof FormDef || selectedObj instanceof OptionDef){
+		if(questionDef instanceof FormDef || questionDef instanceof OptionDef){
 			chkUseAdvancedRelevant.setEnabled(false);
 			chkUseAdvancedRelevant.setValue(false);
 			this.setAdvancedMode(false);
 			this.setEnabled(false);
 		}else{
 			chkUseAdvancedRelevant.setEnabled(true);
-			chkUseAdvancedRelevant.setValue(selectedObj.hasAdvancedRelevant());
+			chkUseAdvancedRelevant.setValue(questionDef.hasAdvancedRelevant());
 			if(chkUseAdvancedRelevant.getValue()){
 				groupHyperlink.setEnabled(false);
 				chkMakeRequired.setEnabled(false);
-				txtrelevant.setEnabled(true);
 				this.setEnabled(false);
-				txtrelevant.setText(selectedObj.getAdvancedRelevant());
+				txtrelevant.setText(questionDef.getAdvancedRelevant());
 				setAdvancedMode(true);
 			}else{
 				groupHyperlink.setEnabled(true);
 				chkMakeRequired.setEnabled(true);
-				txtrelevant.setEnabled(false);
 				this.setEnabled(true);
 				setAdvancedMode(false);
 			}
 			
 			setAdvancedMode(chkUseAdvancedRelevant.getValue());
+			
 		
 		}
 		

@@ -91,7 +91,7 @@ public class RelevantParser {
 	 * @param action the skip rule action to apply to the above target question.
 	 * @return the skip rule object.
 	 */
-	private static SkipRule buildSkipRule(FormDef formDef, int questionId, String relevant, int id, int action){
+	public static SkipRule buildSkipRule(FormDef formDef, int questionId, String relevant, int id, int action){
 
 		SkipRule skipRule = new SkipRule();
 		skipRule.setId(id);

@@ -325,7 +325,9 @@ public class FormDef implements IFormElement, Serializable{
 			SkipRule rule = (SkipRule)skipRules.elementAt(i);
 			Vector targets = rule.getActionTargets();
 			for(int j=0; j<targets.size(); j++){
-				if(((Integer)targets.elementAt(j)).intValue() == questionDef.getId())
+				if(((Integer)targets.elementAt(j))
+						.intValue() == 
+							questionDef.getId())
 					return rule;
 			}
 		}
@@ -1607,5 +1609,24 @@ public class FormDef implements IFormElement, Serializable{
 	/** Not Applicable **/
 	public void setAdvancedRelevant(String releValue) {
 		return;
+	}
+	
+	/**
+	 * Walks through the skipRule list,
+	 * finds the max id, and returns max+1
+	 * @return
+	 */
+	public int getNextSkipRuleId(){
+		int max = 0;
+		for(Object sr: getSkipRules()){
+			int cur = ((SkipRule)sr).getId();
+			if(cur > max){
+				max = cur;
+			}else{
+				continue;
+			}
+		}
+		
+		return max+1;
 	}
 }

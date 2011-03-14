@@ -175,6 +175,23 @@ public class ItextLocale {
 	public Set<String> getAllFULLIds(){
 		return values.keySet();
 	}
+	
+	/**
+	 * Used to rename and textID in this locale (including those that have special forms)
+	 * @param oldID - This is the BASE text ID (do /not/ include special forms!)
+	 * @param newID - This is the BASE text ID (do /not/ include special forms!)
+	 */
+	public void renameID(String oldID,String newID){
+		for(String fullID : values.keySet()){
+			if(Itext.hasID(fullID, oldID)){ //the extra ";" is to ensure that we don't go renaming keys that are similar but not in fact the same
+				String textVal = values.remove(fullID);
+				String newFullID = fullID.replace(oldID, newID);
+				values.put(newFullID, textVal);
+			}
+		}
+	}
+	
+
 
 }
 

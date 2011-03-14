@@ -73,6 +73,37 @@ public class Itext {
 		itextRowsAddText(language,ID,value);
 	}
 	
+	/**
+	 * renames a specific Itext ID (including those with special
+	 * forms)
+	 * @param oldID - BASE ID ONLY. DO NOT INCLUDE SPECIAL FORM
+	 * @param newID - BASE ID ONLY. DO NOT INCLUDE SPECIAL FORM
+	 */
+	public static void renameID(String oldID, String newID){
+		for(ItextLocale locale : locales){
+			locale.renameID(oldID, newID);
+		}
+		
+		renameIdInItextRows(oldID, newID);
+	}
+	
+	private static void renameIdInItextRows(String oldID, String newID){
+		for(ItextModel row: getItextRows().getModels()){
+			if(hasID((String)row.get("id"), oldID)){
+				String id = row.remove("id");
+				id = id.replace(oldID, newID);
+				row.set("id",id);
+			}
+		}
+	}
+	
+	static boolean hasID(String key, String testVal){
+		boolean hasID = key.contains(testVal + ";") ||
+						key.equals(testVal);
+		
+		return hasID;
+	}
+	
 	private static void itextRowsAddText(String language, String ID, String value){
 		ItextModel row = itextRows.findModel("id", ID); //gets the first one that matches, but there *should* only ever be one if coder abides by contract of this method
 		if(row == null){

@@ -14,6 +14,7 @@ import org.openrosa.client.util.FormDesignerUtil;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextLocale;
 import org.openrosa.client.widget.DescTemplateWidget;
+import org.openrosa.client.xforms.XmlUtil;
 import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFormActionListener;
 import org.openrosa.client.controller.IFormChangeListener;
@@ -59,6 +60,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.xml.client.Element;
 
 
 /**
@@ -413,11 +415,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				propertiesObj.setText(txtDefaultLabel.getText());
 			}});
 		
-		//this one should only apply to QuestionDefs!
 		txtDefaultValue.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
+				if(propertiesObj instanceof QuestionDef || propertiesObj instanceof GroupDef){
+					((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
+				}else if(propertiesObj instanceof OptionDef){
+					((OptionDef) propertiesObj).setBinding(txtDefaultValue.getText());
+				}
 			}});
 		
 		//Combo boxes

@@ -80,7 +80,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	
 	private static FormDesignerController fdc;
 
-
+	
 	/**
 	 * Constructs a new instance of the form designer controller.
 	 * 
@@ -120,6 +120,10 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		formsTreeView.addNewItem();
 	}
 
+	public void refreshTreeView(){
+		formsTreeView.refreshForm(Context.getFormDef());
+	}
+	
 	/**
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewChildItem()
 	 */

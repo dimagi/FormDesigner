@@ -84,7 +84,7 @@ public class Itext {
 			locale.renameID(oldID, newID);
 		}
 		
-		renameIdInItextRows(oldID, newID);
+		syncItextRowsToLocale();
 	}
 	
 	private static void renameIdInItextRows(String oldID, String newID){
@@ -347,6 +347,7 @@ public class Itext {
 	 * that stored in the Locales list.
 	 */
 	private static void syncItextRowsToLocale(){
+		setItextRows(new ListStore<ItextModel>());
 		for(ItextLocale locale : locales){
 			for(String id: locale.getAllFULLIds()){
 				itextRowsAddText(locale.getName(),id,locale.getTranslation(id));

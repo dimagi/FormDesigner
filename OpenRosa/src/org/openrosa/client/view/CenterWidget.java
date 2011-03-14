@@ -239,7 +239,10 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 	}
 
 
-
+	public void refreshForm(){
+		FormDef formDef = Context.getFormDef();
+		designWidget.refreshForm(formDef);
+	}
 
 	
 	public void showItext(){
@@ -252,11 +255,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 
 				try{
 //					saveFile(false);
-					FormDef formDef = Context.getFormDef();
-					//String xml = null;
-
-					if(formDef == null || formDef.getDoc() == null || (formDef.getText() == null) || formDef.getText().isEmpty())
-						return;
+//					FormDef formDef = Context.getFormDef();
+//					//String xml = null;
+//
+//					if(formDef == null || formDef.getDoc() == null || (formDef.getText() == null) || formDef.getText().isEmpty())
+//						return;
 					
 
 					//This line is called in the this.saveFile(false) above.

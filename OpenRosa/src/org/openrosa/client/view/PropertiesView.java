@@ -170,6 +170,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private IFormElement propertiesObj;
+	private String currentObjQtnID = "";
 
 	/** Listener to form change events. */
 	private IFormChangeListener formChangeListener;
@@ -401,6 +402,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			@Override
 			public void onChange(ChangeEvent event) {
 				propertiesObj.setItextId(qtnID.getText());
+				propertiesObj.setBinding(qtnID.getText());
+				Itext.renameID(currentObjQtnID, qtnID.getText());
+				currentObjQtnID = qtnID.getText();
+				((FormsTreeView)formActionListener).refreshForm(Context.getFormDef());
 			}});
 		
 		txtHelpText.addChangeHandler(new ChangeHandler() {
@@ -666,6 +671,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setText(formDef.getDataNodesetPath());
 		txtFormKey.setText(formDef.getFormKey());
 		qtnID.setText(formDef.getBinding());
+		currentObjQtnID = propertiesObj.getBinding();
 		//skipRulesView.setFormDef(formDef);
 
 	}
@@ -697,6 +703,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 		//set initial values
 		qtnID.setText(groupObj.getBinding());
+		currentObjQtnID = propertiesObj.getBinding();
 		txtDefaultLabel.setText(groupObj.getText());
 		txtHelpText.setText(groupObj.getHelpText());
 		cbDataType.setSelectedIndex(DT_INDEX_GROUP);
@@ -738,6 +745,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.setVisible(true);
 		
 		qtnID.setText(questionDef.getBinding());
+		currentObjQtnID = propertiesObj.getBinding();
 		txtDefaultLabel.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getDataNodesetPath());
 		txtHelpText.setText(questionDef.getHelpText());
@@ -790,6 +798,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.setVisible(true);
 		
 		qtnID.setText(optionDef.getItextId());
+		currentObjQtnID = propertiesObj.getItextId();
 		txtDefaultLabel.setText(optionDef.getText());
 		txtBinding.setText(optionDef.getDataNodesetPath());
 		txtDefaultValue.setText(optionDef.getDefaultValue());

@@ -3,6 +3,7 @@ package org.openrosa.client.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -182,12 +183,22 @@ public class ItextLocale {
 	 * @param newID - This is the BASE text ID (do /not/ include special forms!)
 	 */
 	public void renameID(String oldID,String newID){
-		for(String fullID : values.keySet()){
-			if(Itext.hasID(fullID, oldID)){ //the extra ";" is to ensure that we don't go renaming keys that are similar but not in fact the same
-				String textVal = values.remove(fullID);
-				String newFullID = fullID.replace(oldID, newID);
-				values.put(newFullID, textVal);
+		Iterator<String> valuesIterator = getAllFULLIds().iterator();
+		HashMap<String,String> newKeys = new HashMap<String, String>();
+		
+		while(valuesIterator.hasNext()){
+			String fullID = valuesIterator.next();
+			if(Itext.hasID(fullID, oldID)){
+				String textVal = values.get(fullID); //get the value before removing
+				valuesIterator.remove();
+				String newFullID = fullID.replaceFirst(oldID, newID);
+				newKeys.put(newFullID, textVal);
 			}
+		}
+		
+		//populate our store with the modified key-val pairs.
+		for(String k: newKeys.keySet()){
+			values.put(k, newKeys.get(k));
 		}
 	}
 	

@@ -42,7 +42,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 	 */
 	public static String XEP_POST_FORM_URL = "/xep/save/"; //these are initial default values
 	
-	public static HandlerRegistration closeHandler;
+	private static HandlerRegistration closeHandler;
 
 	public static native void alert(String msg)
 	/*-{
@@ -65,11 +65,7 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		FormUtil.dlg.setText(LocaleText.get("loading"));
 		FormUtil.dlg.center();
 		
-		closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
-		      public void onWindowClosing(Window.ClosingEvent closingEvent) {
-		    	  closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
-		      }  
-		    });
+		enableCloseHandler(true);
 		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
@@ -78,6 +74,19 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		});		
 		
 	   
+	}
+	
+	public static void enableCloseHandler(boolean enabled){
+		
+		if(enabled){
+			closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
+			      public void onWindowClosing(Window.ClosingEvent closingEvent) {
+			    	  closingEvent.setMessage("Do you really want to leave the page?  Your changes will be lost if you have not saved.");
+			      }  
+			    });
+		}else{
+			closeHandler.removeHandler();
+		}
 	}
 
 	

@@ -28,6 +28,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
@@ -388,7 +389,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 							Window.alert("Successfully Saved! Please continue editing\n Status: "+xepResponse.getStatus());
 						}else{
 //							Window.alert("Successfully submitted.  Status: "+xepResponse.getStatus()+"\nRedirecting you back to HQ...");
-							FormDesigner.closeHandler.removeHandler();
+							FormDesigner.enableCloseHandler(false);
 							String redirectURL = xepResponse.getCallback();
 							Window.Location.assign(redirectURL);
 						}

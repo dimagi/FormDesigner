@@ -2,6 +2,7 @@ package org.openrosa.client.view;
 
 
 import org.openrosa.client.Context;
+import org.openrosa.client.FormDesigner;
 import org.openrosa.client.controller.IDataTypeChangeListener;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.model.GroupDef;
@@ -28,6 +29,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 
@@ -82,6 +84,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		ImageResource send();
 		ImageResource save_exit();
 		ImageResource save_file();
+		ImageResource exit();
 	}
 
 	/** Main widget for this tool bar. */
@@ -95,6 +98,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button saveFileBut;
 	private Button submitBut;
 	private Button submitButContinue;
+	private Button exitWithoutSave;
 	private Button locBut;
 	private Button addSelect;
 	private Button txtBut;
@@ -205,6 +209,12 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		submitButContinue.setScale(ButtonScale.LARGE);
 		submitButContinue.setIconAlign(IconAlign.LEFT);
 		submitButContinue.addStyleName("myMenuButton");
+		
+		exitWithoutSave = new Button("Exit without Saving");
+		exitWithoutSave.setIcon(AbstractImagePrototype.create(images.exit()));
+		exitWithoutSave.setScale(ButtonScale.LARGE);
+		exitWithoutSave.setIconAlign(IconAlign.LEFT);
+		exitWithoutSave.addStyleName("myMenuButton");
 
 		locBut = new Button(buttonLabels[11]);
 		locBut.setIcon(AbstractImagePrototype.create(images.localization()));
@@ -219,6 +229,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		menu.add(openBut);
 		menu.add(previewBut);
 		menu.add(saveFileBut);
+		menu.add(exitWithoutSave);
 
 
 		//menu.add(locBut);
@@ -652,6 +663,16 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				//fileListener.onSave(true);
 				menuBut.hideMenu();
 				fileListener.onSubmit(true);
+			}
+		});
+		
+		exitWithoutSave.addSelectionListener(new SelectionListener<ButtonEvent>() {
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				menuBut.hideMenu();
+				FormDesigner.enableCloseHandler(false);
+				History.back();
 			}
 		});
 		

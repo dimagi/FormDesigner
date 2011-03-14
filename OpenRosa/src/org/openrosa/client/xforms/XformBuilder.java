@@ -15,6 +15,7 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.UUID;
 import org.openrosa.client.xforms.XformConstants;
 import org.openrosa.client.xforms.XformUtil;
@@ -126,7 +127,7 @@ public class XformBuilder {
 		Vector rules = formDef.getSkipRules();
 		if(rules != null){
 			for(int i=0; i<rules.size(); i++)
-				RelevantBuilder.fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef);
+				RelevantBuilder.fromSkipRule2Xform((SkipRule)rules.elementAt(i),formDef, doc);
 		}
 
 		//Build constraints for the validation rules.
@@ -208,13 +209,19 @@ public class XformBuilder {
 			Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
 			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 			labelNode.appendChild(doc.createTextNode(pageDef.getName()));
+			if(Itext.hasItext()){
+				String labelRef = Itext.getDefaultLocale().getTranslation(pageDef.getBinding());
+				if(labelRef != null){
+					labelNode.setAttribute("ref", labelRef);
+				}
+			}
 			groupNode.appendChild(labelNode);
 			xformsNode.appendChild(groupNode);
 			pageDef.setLabelNode(labelNode);
 			pageDef.setGroupNode(groupNode);
 
 			//Set the identifier of the group node to be used for localisation.
-			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getText()+"");
+			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getBinding()+"");
 
 			//Check if we have any questions in this page.
 			List<IFormElement> questions = pageDef.getChildren();

@@ -194,7 +194,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * Flag used to determine if this QuestionDef should have a 
 	 * Control node (input, 1select, etc) generated upon XML output.
 	 */
-	private boolean hasUINode;
+	private boolean hasUINode = true;
 	
 	private boolean hasAdvancedCalculate, hasAdvancedConstraint, hasAdvancedRelevant;
 	
@@ -452,6 +452,24 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onBindingChanged(this,variableName);
+		}
+	}
+	
+	/**
+	 * Returns the element specified by varName.
+	 * if varName matches the parent node, return self,
+	 * else go through children elements and return a match
+	 * If no match is found, return null.
+	 * @param varName
+	 * @return the IFormElement that matches varName or null if no match.
+	 */
+	public IFormElement getElement(String varName){
+		if(varName == null)
+			return null;
+		if(getBinding().equals(varName)){
+			return this;
+		}else{
+			return null;
 		}
 	}
 

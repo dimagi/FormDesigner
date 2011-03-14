@@ -10,6 +10,10 @@ import com.google.gwt.xml.client.Element;
  *
  */
 public interface IFormElement {
+
+	//NOTE!! Advanced relevant/constriant/calculate implies respective attribute values
+	//that the simple parsers can not deal with. These advanced modes are stored as strings
+	//and just dumped out on XHTML generation.
 	
 	public boolean hasAdvancedConstraint();
 	public void setHasAdvancedConstraint(boolean enabled);
@@ -74,6 +78,16 @@ public interface IFormElement {
 	String getDisplayText();
 	
 	/**
+	 * Returns the element specified by varName.
+	 * if varName matches the parent node, return self,
+	 * else go through children elements and return a match
+	 * If no match is found, return null.
+	 * @param varName
+	 * @return
+	 */
+	IFormElement getElement(String varName);
+	
+	/**
 	 * The Itext ID is always == the Item ID (which should always be unique throughout the form)
 	 * @return
 	 */
@@ -95,6 +109,8 @@ public interface IFormElement {
 	boolean isVisible();
 	void setVisible(boolean visible);
 	String getDefaultValue();
+	
+	FormDef getParentFormDef();
 	
 	/**
 	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.

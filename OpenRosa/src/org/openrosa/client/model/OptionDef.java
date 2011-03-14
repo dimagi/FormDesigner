@@ -125,6 +125,22 @@ public class OptionDef implements IFormElement, Serializable {
 	public Element getLabelNode() {
 		return labelNode;
 	}
+	
+	/**
+	 * Gets the form to which this question belongs.
+	 * 
+	 * @return the form.
+	 */
+	public FormDef getParentFormDef(){
+		return (FormDef)getParentFormDef(this);
+	}
+
+	private IFormElement getParentFormDef(IFormElement questionDef){
+		IFormElement parent = questionDef.getParent();
+		if(parent instanceof FormDef)
+			return parent;
+		return getParentFormDef(parent);
+	}
 
 	/**
 	 * @param labelNode the labelNode to set
@@ -221,6 +237,11 @@ public class OptionDef implements IFormElement, Serializable {
     
     public int getDataType(){
     	return QuestionDef.QTN_TYPE_NULL;
+    }
+    
+    public IFormElement getElement(String varName){
+    	//Method does not apply to Options.
+    	return null;
     }
     
     public void setDataType(int dataType){

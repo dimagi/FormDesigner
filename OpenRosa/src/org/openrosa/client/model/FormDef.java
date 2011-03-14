@@ -354,7 +354,7 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param questionDef the question.
 	 * @return the validation rule.
 	 */
-	public ValidationRule getValidationRule(QuestionDef questionDef){
+	public ValidationRule getValidationRule(IFormElement questionDef){
 		if(validationRules == null)
 			return null;
 
@@ -365,6 +365,10 @@ public class FormDef implements IFormElement, Serializable{
 		}
 
 		return null;
+	}
+	
+	public FormDef getParentFormDef(){
+		return this;
 	}
 
 	/**
@@ -404,7 +408,7 @@ public class FormDef implements IFormElement, Serializable{
 		if(skipRules != null){
 			for(int i=0; i<skipRules.size(); i++){
 				SkipRule skipRule = (SkipRule)skipRules.elementAt(i);
-				skipRule.updateDoc(this);
+				skipRule.updateDoc(this, this.getDoc());
 			}
 		}
 
@@ -473,6 +477,29 @@ public class FormDef implements IFormElement, Serializable{
 			}
 		}
 
+		return null;
+	}
+	
+	/**
+	 * Returns the element specified by varName.
+	 * if varName matches the parent node, return self,
+	 * else go through children elements and return a match
+	 * If no match is found, return null.
+	 * @param varName
+	 * @return the IFormElement that matches varName or null if no match.
+	 */
+	public IFormElement getElement2(String varName){
+		if(varName == null || children == null)
+			return null;
+		IFormElement retElement;
+		for(int i=0;i<children.size();i++){
+			IFormElement def = children.get(i);
+			retElement = def.getElement(varName);
+			if(retElement != null){
+				return retElement; //there should only ever be one match.
+			}
+		}
+		
 		return null;
 	}
 	
@@ -1039,9 +1066,9 @@ public class FormDef implements IFormElement, Serializable{
 		boolean ret = skipRules.remove(skipRule);
 		if(dataNode != null){
 			for(int index = 0; index < skipRule.getActionTargetCount(); index++){
-				QuestionDef questionDef = (QuestionDef)getElement(skipRule.getActionTargetAt(index));
-				if(questionDef != null){
-					Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+				IFormElement elementDef = getElement(skipRule.getActionTargetAt(index));
+				if(elementDef != null){
+					Element node = elementDef.getBindNode() != null ? elementDef.getBindNode() : elementDef.getControlNode();
 					if(node != null){
 						node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
 						node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
@@ -1618,8 +1645,12 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public int getNextSkipRuleId(){
 		int max = 0;
-		for(Object sr: getSkipRules()){
-			int cur = ((SkipRule)sr).getId();
+		int cur = 0;
+		Vector skipRules = getSkipRules();
+		if(skipRules == null){ skipRules = new Vector(); }
+		
+		for(Object sr: skipRules){
+			cur = ((SkipRule)sr).getId();
 			if(cur > max){
 				max = cur;
 			}else{

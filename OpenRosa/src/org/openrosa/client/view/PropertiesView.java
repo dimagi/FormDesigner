@@ -710,6 +710,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.setValue(groupObj.isVisible());
 		chkRequired.setValue(groupObj.isRequired());
 		txtBinding.setText(groupObj.getDataNodesetPath());
+		
+		final IFormElement qd = (IFormElement)groupObj;
+		DeferredCommand.addCommand(new Command(){
+			public void execute() {
+				skipRulesView.setQuestionDef(qd);
+				validationRulesView.setQuestionDef(qd);
+				itextView.setItemID(qd.getBinding());
+				
+			}
+		});
 	}
 
 	/**

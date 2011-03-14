@@ -136,8 +136,8 @@ public class XformBuilderUtil {
 
 		Element dataNode = null;
 		if(nodes.size() == 0){
-			if(name.contains("/"))
-				name = name.substring(name.lastIndexOf('/')+1);
+			String[] tokens = name.split("/");
+			name = tokens[tokens.length-1];
 			dataNode = doc.createElement(name);
 			formNode.appendChild(dataNode);
 		}

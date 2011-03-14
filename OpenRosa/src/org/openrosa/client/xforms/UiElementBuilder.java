@@ -82,7 +82,7 @@ public class UiElementBuilder {
 			bindAttributeName = XformConstants.ATTRIBUTE_NAME_BIND;
 		}	
 
-		Element uiNode =  getXformUIElement(doc,qtn,bindAttributeName,false);
+		Element uiNode =  buildXformUIElement(doc,qtn,bindAttributeName,false);
 		if(groupNode != null){ //Some forms may not be in groups
 			groupNode.appendChild(uiNode);
 		}else{
@@ -147,7 +147,7 @@ public class UiElementBuilder {
 		parentDataNode.appendChild(dataNode);
 		qtnDef.setDataNode(dataNode);
 
-		Element inputNode =  getXformUIElement(doc,qtnDef,XformConstants.ATTRIBUTE_NAME_REF,true);
+		Element inputNode =  buildXformUIElement(doc,qtnDef,XformConstants.ATTRIBUTE_NAME_REF,true);
 		inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtnDef.getDataType(),inputNode));
 		if(qtnDef.isRequired())
 			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
@@ -192,7 +192,7 @@ public class UiElementBuilder {
 	 * @param isRepeatKid set to true if this question is a child of another repeat question type.
 	 * @return the xforms ui node.
 	 */
-	private static Element getXformUIElement(Document doc, IFormElement qtnDef, String bindAttributeName, boolean isRepeatKid){
+	private static Element buildXformUIElement(Document doc, IFormElement qtnDef, String bindAttributeName, boolean isRepeatKid){
 
 		String name = XformConstants.NODE_NAME_INPUT;
 

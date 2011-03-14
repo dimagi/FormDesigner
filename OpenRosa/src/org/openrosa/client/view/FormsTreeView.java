@@ -764,7 +764,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(userObj instanceof QuestionDef){
 				int id = ++nextQuestionId;
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
-					GroupDef pageDef = new GroupDef("Group "+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
+					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
 					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
 					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
 

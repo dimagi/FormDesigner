@@ -4,12 +4,14 @@ import java.util.Vector;
 
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformBuilderUtil;
 import org.openrosa.client.xforms.XformConstants;
 
+import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 
 
@@ -63,12 +65,18 @@ public class RelevantBuilder {
 	 * @return
 	 */
 	public static String getRelevantFromRule(SkipRule rule, int qID, FormDef formDef){
-		QuestionDef questionDef = formDef.getQuestion(qID);
-		if(questionDef.hasAdvancedRelevant()){
-			return questionDef.getAdvancedRelevant();
+		IFormElement elementDef = formDef.getElement(qID);
+		String relevant = "";
+		if(elementDef.hasAdvancedRelevant()){
+			relevant = elementDef.getAdvancedRelevant();
+			if(relevant != null){
+				return relevant;
+			}else{
+				return "";
+			}
 		}
 		
-		String relevant = "";
+		
 		Vector conditions  = rule.getConditions();
 		for(int i=0; i<conditions.size(); i++){
 			if(relevant.length() > 0){
@@ -86,17 +94,17 @@ public class RelevantBuilder {
 	 * @param rule the skip rule definition object
 	 * @param formDef the form definition.
 	 */
-	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef){
+	public static void fromSkipRule2Xform(SkipRule rule, FormDef formDef, Document doc){
 		Vector actionTargets =  rule.getActionTargets();
 		for(int i=0; i<actionTargets.size(); i++){
 			int id = ((Integer)actionTargets.elementAt(i)).intValue();
-			QuestionDef questionDef = formDef.getQuestion(id);
-			if(questionDef == null)
+			IFormElement elementDef = formDef.getElement(id);
+			if(elementDef == null)
 				continue;
 
-			Element node = questionDef.getBindNode();
+			Element node = elementDef.getBindNode();
 			if(node == null){
-				node = questionDef.getControlNode();
+				node = createBindNodeAndAddToDoc(elementDef.getDataNodesetPath(), elementDef, formDef, doc);
 			}
 			
 			String relevant = getRelevantFromRule(rule, id, formDef);
@@ -126,6 +134,17 @@ public class RelevantBuilder {
 				//node.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, value);
 			}
 		}
+	}
+	
+	private static Element createBindNodeAndAddToDoc(String nodeSetVal,IFormElement elementDef, FormDef formDef, Document doc){
+		Element node = doc
+			.createElement("bind");
+		node.setAttribute("nodeset", nodeSetVal);
+		node.setAttribute("id",elementDef.getBinding());
+		elementDef.setBindNode(node);
+		formDef.getModelNode().appendChild(node);
+		
+		return node;
 	}
 	
 	

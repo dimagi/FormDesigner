@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformConstants;
@@ -181,8 +182,36 @@ public class XformParserUtil {
 	public static String getQuestionVariableName(Element bindNode, FormDef formDef){
 		String name = bindNode.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
 
-		if(name.startsWith("/"+formDef.getVariableName()+"/"))
-			name = name.replace("/"+formDef.getVariableName()+"/", "");
+//		if(name.startsWith("/"+formDef.getVariableName()+"/"))
+//			name = name.replace("/"+formDef.getVariableName()+"/", "");
+		
+		String[] tokens = name.split("/");
+		name = tokens[tokens.length-1];
+		
+		return name;
+	}
+	
+	/**
+	 * Gets the IFormElement variable name (i.e. question ID) without any prefixes ("/data/group1/otherGroup/")
+	 * 
+	 * checks for both 'nodeset' and 'ref' attributes. If neither exists, returns null.
+	 * 
+	 * @param bindNode the xforms bind node.
+	 * @param formDef the form to which the question belongs.
+	 * @return the question variable name or null if neither nodeset, nor ref exists
+	 */
+	public static String getVariableName(Element Node, FormDef formDef){
+		String name = Node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
+		if(name == null){
+			name = Node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
+		}
+		
+		if(name == null){
+			return null;
+		}
+		
+		String[] tokens = name.split("/");
+		name = tokens[tokens.length-1];
 		
 		return name;
 	}
@@ -195,7 +224,7 @@ public class XformParserUtil {
 	 * @param type the xml xsd type.
 	 * @param node the xforms node having the type attribute.
 	 */
-	public static void setQuestionType(QuestionDef def, String type, Element node){
+	public static void setQuestionType(IFormElement def, String type, Element node){
 		if(type != null){
 			if(type.equals(XformConstants.DATA_TYPE_TEXT) || type.indexOf("string") != -1 ){
 				String format = node.getAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);

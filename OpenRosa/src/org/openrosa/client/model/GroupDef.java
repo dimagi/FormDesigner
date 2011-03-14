@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.locale.LocaleText;
@@ -122,8 +123,25 @@ public class GroupDef implements IFormElement, Serializable{
 	public GroupDef(String name,List<IFormElement> children, IFormElement parent) {
 		this(parent);
 		setName(name);
+		setBinding(name);
 		setChildren(children);
 		setItextId(name);
+	}
+	
+	/**
+	 * Gets the form to which this question belongs.
+	 * 
+	 * @return the form.
+	 */
+	public FormDef getParentFormDef(){
+		return (FormDef)getParentFormDef(this);
+	}
+
+	private IFormElement getParentFormDef(IFormElement questionDef){
+		IFormElement parent = questionDef.getParent();
+		if(parent instanceof FormDef)
+			return parent;
+		return getParentFormDef(parent);
 	}
 
 	public String getName() {
@@ -220,38 +238,6 @@ public class GroupDef implements IFormElement, Serializable{
 			children = new ArrayList<IFormElement>();
 		children.add(child);
 		child.setParent(this);
-	}
-
-
-	/**
-	 * Gets a question with a given variable name.
-	 * 
-	 * @param varName the question variable name.
-	 * @return the question.
-	 */
-	public IFormElement getElement(String varName){
-		if(children == null)
-			return null;
-
-		for(int i=0; i<children.size(); i++){
-			IFormElement def = children.get(i);
-			if(varName.equals(def.getBinding()))
-				return def;
-
-			//Without this, then we have not validation and skip rules in repeat questions.
-			if(def instanceof GroupDef){
-				IFormElement elem = ((GroupDef)def).getElement(varName);
-				if(elem != null)
-					return elem;
-			}
-			/*if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT && def.getRepeatQtnsDef() != null){
-				def = def.getRepeatQtnsDef().getElement(varName);
-				if(def != null)
-					return def;
-			}*/
-		}
-
-		return null;
 	}
 
 	public QuestionDef getQuestion(String varName){
@@ -656,9 +642,23 @@ public class GroupDef implements IFormElement, Serializable{
 				groupNode =  child;
 			}
 		}
-
-		if(labelNode != null)
+		
+		
+		if(labelNode != null){
 			XmlUtil.setTextNodeValue(labelNode,name);
+		}else{
+			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
+			labelNode.appendChild(doc.createTextNode(getText()));
+			groupNode.appendChild(labelNode);
+			this.labelNode = labelNode;
+		}
+		
+		if(Itext.hasItext()){
+			String labelRef = Itext.getDefaultLocale().getTranslation(this.getBinding());
+			if(labelRef != null){
+				labelNode.setAttribute("ref", labelRef);
+			}
+		}
 
 		//if(groupNode != null)
 		//	groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
@@ -834,6 +834,33 @@ public class GroupDef implements IFormElement, Serializable{
 
 	}
 
+	/**
+	 * Returns the element specified by varName.
+	 * if varName matches the parent node, return self,
+	 * else go through children elements and return a match
+	 * If no match is found, return null.
+	 * @param varName
+	 * @return the IFormElement that matches varName or null if no match.
+	 */
+	public IFormElement getElement(String varName){
+		if(varName == null || children == null)
+			return null;
+		
+		if(getBinding().equals(varName)){
+			return this;
+		}
+		
+		IFormElement retElement;
+		for(int i=0;i<children.size();i++){
+			IFormElement def = children.get(i);
+			retElement = def.getElement(varName);
+			if(retElement != null){
+				return retElement; //there should only ever be one match.
+			}
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Updates the xforms instance data nodes referenced by this page's questions.

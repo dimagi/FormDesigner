@@ -6,6 +6,8 @@ import java.util.Vector;
 import org.openrosa.client.xforms.RelevantBuilder;
 import org.openrosa.client.xforms.XformConstants;
 
+import com.google.gwt.xml.client.Document;
+
 
 /**
  * A definition for skipping or branching rules. 
@@ -277,8 +279,8 @@ public class SkipRule implements Serializable{
 			this.actionTargets.addElement(new Integer(((Integer)actionTargets.elementAt(i)).intValue()));
 	}
 	
-	public void updateDoc(FormDef formDef){
-		RelevantBuilder.fromSkipRule2Xform(this,formDef);
+	public void updateDoc(FormDef formDef, Document doc){
+		RelevantBuilder.fromSkipRule2Xform(this,formDef, doc);
 	}
 	
 	public void refresh(FormDef dstFormDef, FormDef srcFormDef){

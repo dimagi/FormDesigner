@@ -36,6 +36,16 @@ public class Itext {
 		itextRows = new ListStore<ItextModel>();
 		locales = new ArrayList<ItextLocale>();
 	}
+	
+	/**
+	 * Used to determine if there is /any/ itextData
+	 * @return true if any itext data is preset, false if no itext data exists.
+	 */
+	public static boolean hasItext(){
+		return locales != null && locales.size() > 0;
+	}
+	
+	
 	/**
 	 * Returns a row of ONLY the itext values (for all languages) specified by
 	 * the FULL id (ie, in the style of 'id;form' or 'id_hint' where id=textID of the element).

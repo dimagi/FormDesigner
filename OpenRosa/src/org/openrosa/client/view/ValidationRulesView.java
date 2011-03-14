@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.openrosa.client.controller.IConditionController;
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
@@ -58,7 +59,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private FormDef formDef;
 
 	/** The question definition object which is the target of the validation rule. */
-	private QuestionDef questionDef;
+	private IFormElement questionDef;
 
 	/** The validation rule definition object. */
 	private ValidationRule validationRule;
@@ -255,7 +256,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	 * 
 	 * @param questionDef the question definition object.
 	 */
-	public void setQuestionDef(QuestionDef questionDef){
+	public void setQuestionDef(IFormElement questionDef){
 		clearConditions();
 
 		if(questionDef != null)

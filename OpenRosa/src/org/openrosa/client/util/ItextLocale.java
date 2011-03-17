@@ -202,7 +202,12 @@ public class ItextLocale {
 		}
 	}
 	
-
-
+	/**
+	 * Checks to see if there are any itext keys/values stored in this locale.
+	 * @return true if any keys exist, false if it is empty.
+	 */
+	public boolean hasItext(){
+		return (values.size() > 0);
+	}
 }
 

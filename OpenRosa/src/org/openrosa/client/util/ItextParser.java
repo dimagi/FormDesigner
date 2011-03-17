@@ -103,9 +103,13 @@ public class ItextParser {
 		if(itextNode != null)
 			itextNode.getParentNode().removeChild(itextNode);
 		
+		if(!Itext.hasItext()){
+			return;
+		}
+		
 		List<ItextLocale> locales = Itext.locales;
 		if(locales == null)
-			return; //Houston we have a problem
+			return; //Houston we have a problem. Itext hasn't been intialized properly (or at all).
 
 		itextNode = formDef.getDoc().createElement("itext");
 		modelNode.appendChild(itextNode);

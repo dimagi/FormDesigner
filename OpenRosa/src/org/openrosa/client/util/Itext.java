@@ -46,7 +46,12 @@ public class Itext {
 	 * @return true if any itext data is preset, false if no itext data exists.
 	 */
 	public static boolean hasItext(){
-		return locales != null && locales.size() > 0;
+		for(ItextLocale locale : locales){
+			if(locale.hasItext()){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	

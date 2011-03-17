@@ -226,16 +226,11 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		String xml = null;
 
 		ItextParser.updateItextBlock(formDef);
-		GWT.log("CenterWidget:227 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		xml = FormUtil.formatXml(XmlUtil.fromDoc2String(formDef.getDoc()));
-		GWT.log("CenterWidget:229 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		//update form outline with the itext changes
 //		formDef = XformParser.getFormDef(ItextParser.parse(xml));
-		GWT.log("CenterWidget:232 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		designWidget.refreshForm(formDef);
-		GWT.log("CenterWidget:234 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		formDef.setXformXml(xml);
-		GWT.log("CenterWidget:236 Itext.getItextRows().len="+Itext.getItextRows().getCount());
 		xformsWidget.setXform(xml);
 	}
 

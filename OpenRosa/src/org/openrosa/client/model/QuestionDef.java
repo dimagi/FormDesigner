@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.controller.QuestionChangeListener;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
 import org.openrosa.client.locale.LocaleText;
@@ -20,6 +21,7 @@ import org.openrosa.client.xforms.XformUtil;
 import org.openrosa.client.xforms.XmlUtil;
 import org.openrosa.client.xpath.XPathExpression;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -764,8 +766,9 @@ public class QuestionDef implements IFormElement, Serializable{
 		else{
 			updateControlNodeName();
 		}
-		if(labelNode != null){ //How can this happen
+		if(labelNode != null){
 			XmlUtil.setTextNodeValue(labelNode,text);
+			UiElementBuilder.addItextRefs(labelNode, this);
 		}
 		Element node = bindNode;
 		if(node == null && hasUINode()){
@@ -882,17 +885,35 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 
 		//Put after options because it depends on the firstOptionNode
-		if(hintNode != null){
-			if(helpText.trim().length() > 0)
-				XmlUtil.setTextNodeValue(hintNode,helpText);
-			else{
-				controlNode.removeChild(hintNode);
-				hintNode = null;
+//		if(hintNode != null){
+//			if(helpText.trim().length() > 0)
+//				XmlUtil.setTextNodeValue(hintNode,helpText);
+//			else{
+//				controlNode.removeChild(hintNode);
+//				hintNode = null;
+//			}
+//		}else if(hintNode == null && helpText.trim().length() > 0){
+//			UiElementBuilder.addHelpTextNode(this, doc, controlNode, firstOptionNode);
+//		}
+		if(FormUtil.shouldHaveHintDOMNode(this)){
+			if(hintNode == null){
+				hintNode = doc.createElement("hint");
 			}
+			boolean hasDefaultHelpText = (helpText != null && !helpText.isEmpty());
+			
+			if(hasDefaultHelpText){
+				hintNode.appendChild(doc.createTextNode(helpText));
+			}
+			
+			boolean hasHelpItext = Itext.getDefaultLocale().hasID(itextId+";hint");
+			if(hasHelpItext){
+				hintNode.setAttribute("ref", "jr:itext('"+getItextId()+"_hint')");
+			}
+			
+			getControlNode().appendChild(hintNode);
+			
 		}
-		else if(hintNode == null && helpText.trim().length() > 0)
-			UiElementBuilder.addHelpTextNode(this, doc, controlNode, firstOptionNode);
-
+		
 		if(withData)
 			updateNodeValue(doc,formNode,(answer != null) ? answer : defaultValue,withData);
 		else
@@ -900,6 +921,8 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		return isNew;
 	}
+	
+
 
 	private boolean areAllOptionsNew(){
 		if(options == null)
@@ -1613,7 +1636,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 	
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
-		
+		GWT.log("ENTERED INTO UNIMPLEMENTED AREA! THIS SHOULD NOT HAVE HAPPENED. QuestionDef.updateDoc(the, empty, one)");
+		throw new RuntimeException("Code entered into a bad state. See log. QuestionDef.java");
 	}
 	
 	public IFormElement copy(IFormElement parent){

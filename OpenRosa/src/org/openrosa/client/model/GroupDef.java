@@ -628,9 +628,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
-		if(labelNode == null && groupNode == null /*&& allQuestionsNew*/) //Must be new page{
+		if(labelNode == null && groupNode == null /*&& allQuestionsNew*/){ //Must be new page{
 			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
-
+		}
 		if(dataType != QuestionDef.QTN_TYPE_REPEAT){ //For repeats, the group node is named repeat
 			if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 				String nodeName = groupNode.getNodeName();

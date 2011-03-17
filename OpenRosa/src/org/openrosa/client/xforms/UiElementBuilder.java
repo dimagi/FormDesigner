@@ -6,6 +6,8 @@ import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.user.client.Window;
@@ -92,6 +94,7 @@ public class UiElementBuilder {
 
 		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 		labelNode.appendChild(doc.createTextNode(qtn.getText()));
+		addItextRefs(labelNode, qtn);
 		uiNode.appendChild(labelNode);
 		qtn.setLabelNode(labelNode);
 
@@ -122,6 +125,37 @@ public class UiElementBuilder {
 			for(int j=0; j<rptQtns.size(); j++)
 				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
 		}
+	}
+	
+	/**
+	 * Adds a ref="jr:itext('itext_id')" attribute
+	 * to the given node, if the itextID specified by
+	 * def exists in the Itext object.
+	 * 
+	 * Will not alter the DOM node if no itext for that itextID is present.
+	 * 
+	 * @param element - Element DOM that requires the itext reference
+	 * @param def - IFormElement object containing the ItextID
+	 * @return the (possibly altered) element passed in as an argument.
+	 */
+	public static Element addItextRefs(Element element, IFormElement def){
+		if(Itext.getDefaultLocale().hasID(def.getItextId())){
+			element.setAttribute("ref", "jr:itext('"+def.getItextId()+"')");
+		}
+		
+		return element;
+	}
+	
+	public static Element addHelpItextRefs(Element element, IFormElement def){
+		if(Itext.getDefaultLocale().hasID(def.getItextId()+";hint")){
+			element.setAttribute("ref", "jr:itext('"+def.getItextId()+"_hint')");
+		}
+		
+		if(def.getHelpText()!= null && !def.getHelpText().isEmpty()){
+			element.setNodeValue(def.getHelpText());
+		}
+		
+		return element;
 	}
 
 
@@ -293,6 +327,7 @@ public class UiElementBuilder {
 
 		Element node =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 		node.appendChild(doc.createTextNode(optionDef.getText()));
+		addItextRefs(node, optionDef);
 		itemNode.appendChild(node);
 		optionDef.setLabelNode(node);
 
@@ -317,9 +352,11 @@ public class UiElementBuilder {
 	 */
 	public static void addHelpTextNode(IFormElement qtn, Document doc, Element inputNode, Element firstOptionNode){
 		String helpText = qtn.getHelpText();
-		if(helpText != null && helpText.length() > 0){
+		if(FormUtil.shouldHaveHintDOMNode(qtn)){
 			Element hintNode =  doc.createElement(XformConstants.NODE_NAME_HINT);
 			hintNode.appendChild(doc.createTextNode(helpText));
+			addHelpItextRefs(hintNode, qtn);
+			qtn.setHintNode(hintNode);
 			if(firstOptionNode == null)
 				inputNode.appendChild(hintNode);
 			else

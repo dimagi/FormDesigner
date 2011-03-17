@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.openrosa.client.PurcConstants;
 import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.view.ErrorDialog;
 import org.openrosa.client.view.ProgressDialog;
@@ -690,6 +691,11 @@ public class FormUtil {
 		dialogBox.center();
 	}
 
+	public static boolean shouldHaveHintDOMNode(IFormElement def){
+		boolean hasDefaultHelpText = (def.getHelpText() != null && !def.getHelpText().isEmpty());
+		boolean hasHelpItext = Itext.getDefaultLocale().hasID(def.getItextId()+";hint");
+		return hasDefaultHelpText || hasHelpItext;
+	}
 	/**
 	 * Converts string dimension in say pixels to integer.
 	 * 

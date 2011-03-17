@@ -25,3 +25,4 @@ panels.txt
 purcforms/.settings/com.google.gdt.eclipse.core.prefs
 OpenRosa/build.properties
 OpenRosa/FormDesigner.war
+OpenRosa/war/hs_err_*.log

@@ -370,6 +370,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 //		Context.addLocaleSelectionListener(this);
 		
 		setHeight("100%");
+		
+		setEverythingVisible(false);
+		
 	}
 
 	
@@ -661,17 +664,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @param formDef the form definition object.
 	 */
 	private void setFormProperties(FormDef formDef){
-		changeEverythingVisible(false);
+		setEverythingVisible(false);
 
 		txtDefaultLabel.setVisible(true);
+		lblDefaultLabel.setText("Form Name");
 		lblDefaultLabel.setVisible(true);
-		lblQtnID.setVisible(true);
-		qtnID.setVisible(true);
 
 		txtDefaultLabel.setText(formDef.getName());
 		txtBinding.setText(formDef.getDataNodesetPath());
 		txtFormKey.setText(formDef.getFormKey());
-		qtnID.setText(formDef.getBinding());
 		currentObjQtnID = propertiesObj.getBinding();
 		//skipRulesView.setFormDef(formDef);
 
@@ -683,8 +684,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @param pageDef the page definition object.
 	 */
 	private void setGroupProperties(GroupDef groupObj){
-		changeEverythingVisible(false); //hide all
-		
+		setEverythingVisible(false); //hide all
+		lblDefaultLabel.setText("Default Label Text");
 		//make things visible
 		lblQtnID.setVisible(true);
 		qtnID.setVisible(true);
@@ -729,8 +730,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * @param questionDef the question definition object.
 	 */
 	private void setQuestionProperties(QuestionDef questionDef){
-		changeEverythingVisible(false);
-
+		setEverythingVisible(false);
+		lblDefaultLabel.setText("Default Label Text");
 		
 		lblQtnID.setVisible(true);
 		qtnID.setVisible(true);
@@ -790,8 +791,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 	
 	private void setOptionDefProperties(IFormElement optionDef){
-		changeEverythingVisible(false);
-
+		setEverythingVisible(false);
+		lblDefaultLabel.setText("Default Label Text");
 		
 		lblQtnID.setVisible(true);
 		qtnID.setVisible(true);
@@ -840,9 +841,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * 
 	 * @param visible - True for make visible, false for everything invisibles
 	 */
-	private void changeEverythingVisible(boolean visible){
+	private void setEverythingVisible(boolean visible){
 		//boolean enable = (enabled && !Context.isStructureReadOnly()) ? true : false;
-
+		qtnID.setVisible(visible);
+		lblQtnID.setVisible(visible);
+		txtBinding.setVisible(visible);
+		lblBinding.setVisible(visible);
 		cbDataType.setVisible(visible);
 		chkVisible.setVisible(visible);
 		chkLocked.setVisible(visible);

@@ -618,6 +618,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			Context.setFormDef(null);
 			formDef = null;
 			fireFormItemSelected(null);
+			
 
 			nextFormId = 1;
 			nextQuestionId = 0;

@@ -158,7 +158,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				try{
-					saveFile(showXMLWindowFlag);
+					boolean saved = saveFile(showXMLWindowFlag);
 					xformsWidget.showWindow();
 					FormUtil.dlg.hide();
 				}
@@ -174,7 +174,8 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 		String xml = null;
 		
 		if(formDef == null){
-			Window.alert("Nothing to save!");
+			xformsWidget.setXform("");
+			Window.alert("Form is empty! Nothing to save.");
 			return false;
 		}
 

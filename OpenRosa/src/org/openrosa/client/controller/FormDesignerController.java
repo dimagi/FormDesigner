@@ -106,6 +106,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 
 	public void changePropertiesViewSelection(IFormElement objectDef){
 		centerPanel.getPropertiesView().changeSelectedObject(objectDef);
+		toolbar.checkEnableAddSelect(objectDef);
 	}
 	
 	public static FormDesignerController getFormDesignerController(){

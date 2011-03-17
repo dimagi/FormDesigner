@@ -557,6 +557,10 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 	 * @param item
 	 */
 	public void onItemSelected(Object senderWidget, Object item){
+		if(item == null){
+			clearConditions();
+			return;
+		}
 		this.questionDef = (IFormElement)item; //should always be an IFormElement or we're in trouble.
 		setQuestionDef(questionDef);
 		//select the checkboxes according to the flags set in the selected items.

@@ -827,11 +827,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(userObj instanceof FormDef){
 				//addNewForm();
 
-				//If not yet got pages, just quit.
-				if(item.getChildCount() == 0)
-					return;
-
-				TreeModelItem parentItem = (TreeModelItem)item.getChild(0);
+				TreeModelItem parentItem;
+				if(item.getChildCount() == 0){
+					parentItem = item;
+				}else{
+					parentItem = (TreeModelItem)item.getChild(0);
+				}
 
 				int id = ++nextQuestionId;
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)parentItem.getUserObject());

@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.ItextModel;
+import org.openrosa.client.model.OptionDef;
+import org.openrosa.client.model.QuestionDef;
 
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.google.gwt.core.client.GWT;
@@ -409,4 +413,37 @@ public class Itext {
 		}
 	}
 	
+	public static String getDisplayText(IFormElement elementDef){
+		String displayText = "";
+		String defaultLabelText = elementDef.getDisplayText();
+		if(defaultLabelText != null && !defaultLabelText.isEmpty()){
+			return defaultLabelText;
+		}else{
+			displayText = getDefaultIText(elementDef.getItextId());
+			return displayText;
+		}
+	}
+	
+	private static String getDefaultIText(String ID){
+		ItextLocale defLocale = Itext.getDefaultLocale();
+		String dText = "";
+		if(defLocale != null){
+			dText = defLocale.getDefaultTranslation(ID);
+			if(dText == null || dText.isEmpty()){
+				dText = defLocale.getShortTranslation(ID);
+			}
+			if(dText == null || dText.isEmpty()){
+				dText = defLocale.getLongTranslation(ID);
+			}
+			if(dText == null || dText.isEmpty()){
+				//give up
+				dText = "";
+			}
+			
+		}
+		
+		return dText;
+	}
+	
 }
+

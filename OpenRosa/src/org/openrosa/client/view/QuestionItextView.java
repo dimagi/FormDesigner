@@ -38,6 +38,7 @@ public class QuestionItextView extends Composite {
 	private String itemItextID;
 	private List<String> languages;
 	private List<String> forms;
+	private PropertiesView propertiesView;
 	
 	/**
 	 * Gives the rownumber for the specified language/form row.
@@ -53,7 +54,8 @@ public class QuestionItextView extends Composite {
 	private HashMap<String, Integer> rowLocations;
 
 
-	public QuestionItextView(){
+	public QuestionItextView(PropertiesView propertiesView){
+		this.propertiesView = propertiesView;
 		initButtons();
 		
 		layoutTable.setWidget(0, 0, addLanguageButton);
@@ -83,7 +85,7 @@ public class QuestionItextView extends Composite {
 	}
 	
 	public void update(){
-		
+		propertiesView.update();
 	}
 	
 	public void setItemID(String id){
@@ -231,6 +233,7 @@ public class QuestionItextView extends Composite {
 		textBoxWidget.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){ 
 				Itext.addText(lang, ((form == null) ? id : (id + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
+				update();
 			}
 		});
 		

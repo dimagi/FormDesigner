@@ -22,6 +22,7 @@ import org.openrosa.client.jr.xforms.util.XFormUtils;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.xforms.XformConstants;
 import org.openrosa.client.xforms.XformUtil;
 
@@ -483,7 +484,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private TreeModelItem loadGroup(GroupDef pageDef,TreeModelItem formRoot){
 		//TreeItem pageRoot = addImageItem(formRoot, pageDef.getName(), images.drafts(),pageDef,null);
 
-		TreeModelItem pageRoot = addImageItem(formRoot, pageDef.getName(),pageDef);
+		TreeModelItem pageRoot = addImageItem(formRoot, Itext.getDisplayText(pageDef),pageDef);
 		loadQuestions(pageDef.getChildren(),pageRoot);
 		return pageRoot;
 	}
@@ -513,7 +514,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	private TreeModelItem loadQuestion(QuestionDef questionDef,TreeModelItem root){
 		//TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
-		TreeModelItem questionRoot = addImageItem(root, questionDef.getBinding(), questionDef);
+		TreeModelItem questionRoot = addImageItem(root, Itext.getDisplayText(questionDef), questionDef);
 		GWT.log("Loading Question in FormsTreeView, Name="+questionDef.getBinding()+", type="+questionDef.getDataType());
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
@@ -522,7 +523,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				GWT.log("FormsTreeView adding select option...");
 				OptionDef optionDef = (OptionDef)options.get(currentOptionNo);
 				//addImageItem(questionRoot, optionDef.getText(), images.markRead(),optionDef,null);
-				addImageItem(questionRoot, XformUtil.getOptionDefIdentifierString(optionDef), optionDef);
+				addImageItem(questionRoot, Itext.getDisplayText(optionDef), optionDef);
 			}
 		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_BOOLEAN){
@@ -765,7 +766,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				int id = ++nextQuestionId;
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
 					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)item.getParent()).getUserObject());
-					item = addImageItem((TreeModelItem)item.getParent(), pageDef.getText() ,pageDef);
+					item = addImageItem((TreeModelItem)item.getParent(), Itext.getDisplayText(pageDef) ,pageDef);
 					addFormDefItem(pageDef, (TreeModelItem)item.getParent());
 
 					//if(dataType == QuestionDef.QTN_TYPE_GROUP)
@@ -777,7 +778,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
 					questionDef.setItextId(questionDef.getBinding());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-					item = addImageItem((TreeModelItem)item.getParent(), questionDef.getText(), questionDef);
+					item = addImageItem((TreeModelItem)item.getParent(), Itext.getDisplayText(questionDef), questionDef);
 					addFormDefItem(questionDef,(TreeModelItem)item.getParent());
 
 					if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
@@ -795,7 +796,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
-				item = addImageItem((TreeModelItem)item.getParent().getParent(), questionDef.getText(), questionDef);
+				item = addImageItem((TreeModelItem)item.getParent().getParent(), Itext.getDisplayText(questionDef), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)item.getParent());
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
@@ -872,17 +873,19 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,questionDef);
 		optionDef.setItextId(optionDef.getBinding());
 		//addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
-		addImageItem(parentItem, optionDef.getText(),optionDef);
+		addImageItem(parentItem, Itext.getDisplayText(optionDef),optionDef);
 		addFormDefItem(optionDef,parentItem);
 	}
 
 	private void addFormDefItem(Object obj,TreeModelItem parentItem){
 		Object parentUserObj = parentItem.getUserObject();
 		if(parentUserObj instanceof QuestionDef){
-			if(obj instanceof OptionDef)
+			if(obj instanceof OptionDef){
 				((QuestionDef)parentUserObj).addOption((OptionDef)obj);
-			else
+			}else{
 				((IFormElement)parentUserObj).getParent().addChild((IFormElement)obj);
+//				((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
+			}
 			//((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
 		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
@@ -1163,14 +1166,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				formItem = newElement;
 			}
 
-			item.setText(element.getDisplayText());
+			item.setText(Itext.getDisplayText(element));
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof OptionDef){
 			OptionDef optionDef = (OptionDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.markRead(), optionDef.getText(),popup,this));
 
-			item.setText(optionDef.getText());
+			item.setText(Itext.getDisplayText(optionDef));
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof GroupDef){
@@ -1184,14 +1187,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				formItem = newElement;
 			}
 
-			item.setText(element.getText());
+			item.setText(Itext.getDisplayText(element));
 			treePanel.getStore().update(item);
 		}
 		else if(formItem instanceof FormDef){
 			FormDef formDef = (FormDef)formItem;
 			//item.setWidget(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 
-			item.setText(formDef.getName());
+			item.setText(Itext.getDisplayText(formDef));
 			treePanel.getStore().update(item);
 		}
 
@@ -1368,7 +1371,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			optionDef.setId(item.getChildCount()+1);
 			((QuestionDef)userObj).addOption(optionDef);
 			//item = addImageItem(item, optionDef.getText(), images.markRead(),optionDef,null);
-			item = addImageItem(item, optionDef.getText(),optionDef);
+			item = addImageItem(item, Itext.getDisplayText(optionDef),optionDef);
 
 			//tree.setSelectedItem(item);
 			treePanel.getSelectionModel().select(item, false);

@@ -124,9 +124,30 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private IFormDesignerListener controller;
 
 	//This should be localized in the same way everything else is, eventually.
-	String[] buttonLabels = {"Add Question","Text Question","Integer Question","Decimal Question","Date Question",
-			"MultiSelect Question","SingleSelect Question","Menu","Preview Form XML","Save To File...","Load Pasted Text...","Localization","Open From File...",
-			"New Xform","Time Question","Date+Time Question","Picture Question","Video Question","Audio Question","GPS Question","Group Question", "Barcode Question", "Label Question", "Repeat Question"};
+	String[] buttonLabels = {
+			"Add Question",	//0
+			"Text Question",	//1
+			"Integer Question",	//2
+			"Decimal Question",	//3
+			"Date Question",	//4
+			"MultiSelect Question",		//5
+			"SingleSelect Question",	//6
+			"Menu","Preview Form XML",	//7
+			"Save To File...",			//8
+			"Load Pasted Text...",		//9
+			"Localization",				//10
+			"Open From File...",		//11
+			"New Xform",				//12
+			"Time Question",			//13
+			"Date+Time Question",		//14
+			"Picture Question",			//15
+			"Video Question",			//16
+			"Audio Question",			//17
+			"GPS Question",				//18
+			"Group Question", 			//19
+			"Barcode Question", 		//20
+			"Label Question", 			//21
+			"Repeat Question"};			//22
 	
 //	/** Widget to display the list of languages or locales. */
 //	ListBox localesComboBox = new ListBox(false);
@@ -616,6 +637,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_BARCODE);
 				}else if(t.equals(buttonLabels[22])){
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_LABEL);
+				}else if(t.equals(buttonLabels[23])){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_REPEAT);
 				}else{
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}	

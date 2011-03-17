@@ -181,7 +181,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	/** Widget for defining validation rules. */
 	private ValidationRulesView validationRulesView = new ValidationRulesView();
 
-	private QuestionItextView itextView = new QuestionItextView();
+	private QuestionItextView itextView = new QuestionItextView(this);
 	
 	private AdvancedLogicView advancedLogicView = new AdvancedLogicView();
 
@@ -418,6 +418,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			@Override
 			public void onChange(ChangeEvent event) {
 				propertiesObj.setText(txtDefaultLabel.getText());
+				update();
 			}});
 		
 		txtDefaultValue.addChangeHandler(new ChangeHandler() {
@@ -890,6 +891,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtCalculation.setText(null);
 		txtFormKey.setText(null);
 		qtnID.setText(null);
+	}
+	
+	void update(){
+		formChangeListener.onFormItemChanged(propertiesObj);
 	}
 	
 	private FormDesignerController getFDC(){
@@ -1616,6 +1621,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 //		lblText.setText(LocaleText.get("text") + " (" + locale.getName() + ")");
 //		
 //	}
+	
+	
 	
 	
 	

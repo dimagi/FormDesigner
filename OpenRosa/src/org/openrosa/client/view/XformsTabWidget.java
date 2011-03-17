@@ -1,8 +1,10 @@
 package org.openrosa.client.view;
 
+import org.openrosa.client.FormDesigner;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.view.Toolbar.Images;
 import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.XEPResponse;
 
 import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -12,6 +14,13 @@ import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextArea;
@@ -28,8 +37,57 @@ public class XformsTabWidget extends Composite {
 	private TextArea txtXforms = new TextArea();
 	private Window window = new Window();
 	private final IFileListener fileListener;
-	
+	private final String VALIDATE_URL = "https://www.commcarehq.org/formtranslate/validate/";
 	Images images;
+	private static ValidationDialogue valDialog = new ValidationDialogue();
+	
+	private boolean validateXForm(String xml){
+		
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(VALIDATE_URL));
+		try{
+			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		
+			String data = "{\"xform\": "+xml+"}";
+			if(xml == null || xml.isEmpty()){
+				return false;
+			}else{
+				FormUtil.dlg.center("Validating Form...");
+				FormUtil.dlg.show();
+			}
+			GWT.log("sending form for validation...data = "+data);
+			GWT.log("sending form for validation...url = "+VALIDATE_URL);
+			builder.sendRequest(data, new RequestCallback(){
+				public void onResponseReceived(Request request, Response response){
+					GWT.log("Validation response received!");
+					int code = response.getStatusCode();
+					FormUtil.dlg.hide();
+					if(code == Response.SC_OK){
+						valDialog.center();
+						String output = response.getText();
+						valDialog.setReturnMessage(output);
+						valDialog.show();
+						return;
+					}else{
+						GWT.log("Reponse code (for validation)="+code);
+						GWT.log("Validation Service response headers="+response.getHeadersAsString());
+						com.google.gwt.user.client.Window.alert("Failed to validate form. Response code received: "+code);
+					}
+					
+				}
+
+				public void onError(Request request, Throwable exception){
+					com.google.gwt.user.client.Window.alert("sendRequest onError exception....");
+					FormUtil.displayException(exception);
+				}
+			});
+			
+			return true;
+		}
+		catch(RequestException ex){
+			FormUtil.displayException(ex);
+			return false;
+		}
+	}
 	
 	public XformsTabWidget(IFileListener fileListenerr){
 		this.images = Toolbar.images;
@@ -46,7 +104,12 @@ public class XformsTabWidget extends Composite {
 		validate = new Button("Validate Xform");
 		validate.setIcon(AbstractImagePrototype.create(images.validate()));
 		validate.setIconAlign(IconAlign.LEFT);
-		validate.disable(); //feature not ready yet
+		validate.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce){
+				validateXForm(txtXforms.getText());
+			}
+		});
+		validate.disable();
 		tb.add(validate);
 		
 		tb.add(new SeparatorToolItem());

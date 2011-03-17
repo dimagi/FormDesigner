@@ -96,6 +96,7 @@ public class DesignTabWidget extends Composite implements IFormSelectionListener
 	    ContentPanel cp = new ContentPanel();
 	    cp.setHeading("Form Tree View");
 		cp.add(formsTreeView);
+		cp.addStyleName("myFormTreeView");
 		FlowPanel stackPanel = new FlowPanel();
 		stackPanel.add(cp);
 		stackPanel.addStyleName("myFormTreeView");

@@ -187,7 +187,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** Listener to form action events. */
 	private IFormActionListener formActionListener;
-
+	
 	Label lblDefaultLabel = new Label("Default Label Text");
 	Label lblQtnID = new Label("ID");
 	Label lblHelpText = new Label("Default Help Text");
@@ -210,7 +210,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Creates a new instance of the properties view widget.
 	 */
 	public PropertiesView(){
-		
 
 		/*Label lblText = new Label(LocaleText.get("text"));
 		Label lblHelpText = new Label(LocaleText.get("helpText"));
@@ -435,10 +434,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}});
 		
 		//Combo boxes
-		cbDataType.addClickHandler(new ClickHandler(){
-			public void onClick(ClickEvent event){
-				updateDataType();
-			}});
+//		cbDataType.addClickHandler(new ClickHandler(){
+//			public void onClick(ClickEvent event){
+//				updateDataType();
+//			}});
 		
 		cbDataType.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
@@ -487,9 +486,15 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		boolean deleteKids = false;
 		int index = cbDataType.getSelectedIndex();
 		IFormElement questionDef = (IFormElement)propertiesObj;
-		if((questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
-				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
-				!(index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT)){
+		boolean qtnIsSelectType = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+		
+		boolean cbIsSelectType = (index == DT_INDEX_SINGLE_SELECT || index == DT_INDEX_MULTIPLE_SELECT);
+		
+		boolean qtnIsGroupOrRepeat = (questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT) || (questionDef instanceof GroupDef);
+		boolean cbIsGroupOrRepeatTyep = (index == DT_INDEX_REPEAT) || (index == DT_INDEX_GROUP);
+		
+		if((qtnIsSelectType && !cbIsSelectType) || (qtnIsGroupOrRepeat && !cbIsGroupOrRepeatTyep)){
 			if(questionDef.getChildCount() > 0 && !Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
 				index = (questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE) ? DT_INDEX_SINGLE_SELECT : DT_INDEX_MULTIPLE_SELECT;
 				cbDataType.setSelectedIndex(index);
@@ -497,25 +502,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			}
 			deleteKids = true;
 		}
-		else if((questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT) &&
-				!(index == DT_INDEX_REPEAT)){
-			if(!Window.confirm(LocaleText.get("changeWidgetTypePrompt"))){
-				index = DT_INDEX_REPEAT;
-				cbDataType.setSelectedIndex(index);
-				return;
-			}
-			deleteKids = true;
-		}
 
+		if(deleteKids){
+			formChangeListener.onDeleteChildren(propertiesObj);
+		}
 		int prevDataType = questionDef.getDataType();
 		
-		//cbDataType.setSelectedIndex(index);
+		cbDataType.setSelectedIndex(index);
 		setQuestionDataType((IFormElement)propertiesObj);
 		propertiesObj = (IFormElement)formChangeListener.onFormItemChanged((Object)propertiesObj);
-		if(deleteKids)
-			formChangeListener.onDeleteChildren(propertiesObj);
+
 		
 		Context.getEventBus().fireDataTypeChangeEvent(questionDef, prevDataType);
+		getFDC().alertToolbarQuestionAdded((IFormElement)propertiesObj);
 	}
 
 	/**
@@ -800,9 +799,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultLabel.setVisible(true);
 		lblDefaultValue.setVisible(true);
 		txtDefaultValue.setVisible(true);
-		
-		lblType.setVisible(true);
-		cbDataType.setVisible(true);
 		
 		lblBinding.setVisible(true);
 		txtBinding.setVisible(true);

@@ -437,11 +437,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 	}
 
-	/**
-	 * I have no idea what this is, except that it seems to be very important.
-	 * Unclear whether "variableName" is supposed to be the tag name for the data node,
-	 * the actual nodeset path or the xpath (relative to the document) (path to what? The bind? That data node? The control node?).
-	 */
 	public String getBinding() {
 		return variableName;
 	}

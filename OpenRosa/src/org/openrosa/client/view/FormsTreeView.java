@@ -1250,8 +1250,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			return; //How can this happen?
 
 		if(formItem instanceof QuestionDef){
-			while(item.getChildCount() > 0)
+			while(item.getChildCount() > 0){
 				deleteItem((TreeModelItem)item.getChild(0));
+			}
+		}else if (formItem instanceof GroupDef){
+			for(int i=0;i<((GroupDef)formItem).getChildCount();i++){
+				deleteItem((TreeModelItem)item.getChild(0));
+			}
+			treePanel.getSelectionModel().select(item, false);
 		}
 	}
 

@@ -424,19 +424,68 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public void setDataType(int dataType) {
-		boolean changed = this.dataType != dataType;
-
+		int oldDataType = this.dataType;
+		int newDataType = dataType;
+		boolean changed = oldDataType != newDataType;
 		this.dataType = dataType;
 
 		if(changed){
+			
 			//if(controlNode != null && (dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE))
 			//	options = new ArrayList();
-
+			boolean selectTransform = isAndWasASelect(oldDataType,newDataType);
+			boolean groupRepeatTransform = isAndWasAGroupOrRepeat(oldDataType, newDataType);
+			
+			if(!selectTransform){ //the options list has lost meaning so delete it
+				options = null;
+			}
+			
+			if(!groupRepeatTransform){ //the groups contained herein as children have no meaning, delete them.
+				options = null;
+			}
+			
+			
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onDataTypeChanged(this,dataType);
 		}
 	}
+	
+	/**
+	 * Checks to see that both dataTypes are some kind of a select
+	 * @param oldType - Previous Data Type
+	 * @param newType - New Data Type
+	 * @return True if both old and new are select and/or multiselect
+	 */
+	private static boolean isAndWasASelect(int oldType, int newType){
+		if(oldType!=QTN_TYPE_LIST_EXCLUSIVE && oldType != QTN_TYPE_LIST_MULTIPLE){
+			return false;
+		}
+		
+		if(newType!=QTN_TYPE_LIST_EXCLUSIVE && newType != QTN_TYPE_LIST_MULTIPLE){
+			return false;
+		}
+		
+		return true;
+	}
 
+	/**
+	 * Checks to see that both dataTypes are some kind of a repeat and/or group
+	 * @param oldType - Previous Data Type
+	 * @param newType - New Data Type
+	 * @return True if both old and new are repeat and/or group type
+	 */
+	private static boolean isAndWasAGroupOrRepeat(int oldType, int newType){
+		if(oldType!=QTN_TYPE_GROUP && oldType != QTN_TYPE_REPEAT){
+			return false;
+		}
+		
+		if(newType!=QTN_TYPE_GROUP && newType != QTN_TYPE_REPEAT){
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public String getBinding() {
 		return variableName;
 	}
@@ -612,12 +661,14 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public void addOption(OptionDef optionDef, boolean setAsParent){
-		if(options == null || !(options instanceof ArrayList))
+		if(options == null || !(options instanceof ArrayList)){
 			options = new ArrayList();
+		}
 		((List)options).add(optionDef);
 
-		if(setAsParent)
+		if(setAsParent){
 			optionDef.setParent(this);
+		}
 	}
 
 	public RepeatQtnsDef getRepeatQtnsDef(){
@@ -625,10 +676,11 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public void addRepeatQtnsDef(QuestionDef qtn){
-		if(options == null)
-			options = new RepeatQtnsDef(qtn);
+		if(options == null){
+			options = new RepeatQtnsDef(this);
+		}
 		((RepeatQtnsDef)options).addQuestion(qtn);
-		qtn.setParent(this);
+		qtn.setParent((RepeatQtnsDef)options);
 	}
 
 	public void setRepeatQtnsDef(RepeatQtnsDef repeatQtnsDef){

@@ -203,9 +203,9 @@ public class XformBuilder {
 	 */
 	public static void fromPageDef2Xform(GroupDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
 
-		if(pageDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-			UiElementBuilder.fromQuestionDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode,xformsNode);
-		else{
+//		if(pageDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+//			UiElementBuilder.fromQuestionDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode,xformsNode);
+//		else{
 			//Create a group node
 			Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
 			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
@@ -238,6 +238,6 @@ public class XformBuilder {
 					fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
 				}
 			}
-		}
+//		}
 	}
 }

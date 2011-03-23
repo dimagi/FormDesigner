@@ -58,6 +58,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	private int currentRowIndex = 0;
 
 	private ITextListener listener;
+	private static boolean showWindow = false;
 
 
 	/** The images for the tool bar icons. */
@@ -180,7 +181,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		btnSave.addListener(Events.Select, new Listener<ButtonEvent>(){
 			public void handleEvent(ButtonEvent be)
 			{
-				save();
+				save(true);
 			}
 		});
 
@@ -383,7 +384,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		grid.reconfigure(Itext.getItextRows(), cm);
 	}
 
-	public void save(){
+	public void save(boolean showWindow){
+		TextTabWidget.showWindow = showWindow;
 		grid.getStore().commitChanges();
 		hideWindow();
 		GWT.log("TextTabWidget:388 Itext.getItextRows().len="+Itext.getItextRows().getCount());
@@ -396,7 +398,9 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 					listener.onSaveItext(Itext.getItextRows());
 					grid.reconfigure(Itext.getItextRows(), createColumnModel()); //refresh everything
 					FormUtil.dlg.hide();
-					showWindow();
+					if(TextTabWidget.showWindow){
+						showWindow();
+					}
 				}
 				catch(Exception ex){
 					FormUtil.displayException(ex);

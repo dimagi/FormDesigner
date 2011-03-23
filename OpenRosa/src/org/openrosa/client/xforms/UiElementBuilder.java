@@ -121,7 +121,10 @@ public class UiElementBuilder {
 			uiNode.appendChild(repeatNode);
 			qtn.setControlNode(repeatNode);
 
-			List<IFormElement> rptQtns = qtn.getChildren();
+			List<IFormElement> rptQtns = ((QuestionDef)qtn).getRepeatQtnsDef().getChildren();
+			if(rptQtns == null){
+				return;
+			}
 			for(int j=0; j<rptQtns.size(); j++)
 				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
 		}

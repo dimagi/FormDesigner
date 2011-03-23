@@ -946,6 +946,7 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public void setDataType(int dataType){
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT) throw new RuntimeException(); //this should never happen.
 		this.dataType = dataType;
 	}
 

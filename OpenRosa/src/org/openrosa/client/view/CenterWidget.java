@@ -191,7 +191,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 			formDef.setXformsNode(doc.getDocumentElement());
 		}
 		ItextParser.updateItextBlock(formDef);
-		itextWidget.save(); //calls onSaveItext() below
+		itextWidget.save(false); //calls onSaveItext() below
 		doc.getDocumentElement().setAttribute("xmlns:jr", "http://openrosa.org/javarosa");
 		doc.getDocumentElement().setAttribute("xmlns", "http://www.w3.org/2002/xforms");
 

@@ -21,7 +21,7 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	private Vector questions;
 	
 	/** Reference to the parent question. */
-	private QuestionDef qtnDef;
+	private QuestionDef parentQtnDef;
 	
 	/** The maximum number of rows that this repeat questions definition can have. */
 	private byte maxRows = -1;
@@ -42,6 +42,7 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	}
 	
 	public RepeatQtnsDef(QuestionDef qtnDef) {
+		super(qtnDef);
 		setQtnDef(qtnDef);
 	}
 	
@@ -51,11 +52,11 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	}
 	
 	public QuestionDef getQtnDef() {
-		return qtnDef;
+		return parentQtnDef;
 	}
 
 	public void setQtnDef(QuestionDef qtnDef) {
-		this.qtnDef = qtnDef;
+		this.parentQtnDef = qtnDef;
 	}
 
 	public Vector getQuestions() {
@@ -95,8 +96,8 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	}
 	
 	public String getText(){
-		if(qtnDef != null)
-			return qtnDef.getText();
+		if(parentQtnDef != null)
+			return parentQtnDef.getText();
 		return null;
 	}
 	
@@ -129,7 +130,7 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 		
 		this.questions = new Vector();
 		for(int i=0; i<questions.size(); i++)
-			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),qtnDef));
+			this.questions.addElement(new QuestionDef((QuestionDef)questions.elementAt(i),parentQtnDef));
 	}
 	
 	/*public void moveQuestionUp(QuestionDef questionDef){		
@@ -146,7 +147,7 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 		
 		for(int i=0; i<questions.size(); i++){
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
-			questionDef.updateDoc(doc,xformsNode,formDef,qtnDef.getDataNode(),modelNode,qtnDef.getControlNode(),false,withData,orgFormVarName);
+			questionDef.updateDoc(doc,xformsNode,formDef,parentQtnDef.getDataNode(),modelNode,parentQtnDef.getControlNode(),false,withData,orgFormVarName);
 		}
 	}
 	
@@ -240,23 +241,23 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	}
 	
 	public void setId(int id){
-		qtnDef.setId(id);
+		parentQtnDef.setId(id);
 	}
 	
 	public int getId(){
-		return qtnDef.getId();
+		return parentQtnDef.getId();
 	}
 	
 	public void setText(String text){
-		qtnDef.setText(text);
+		parentQtnDef.setText(text);
 	}
 	
 	public String getBinding(){
-		return qtnDef.getBinding();
+		return parentQtnDef.getBinding();
 	}
 	
 	public void setBinding(String binding){
-		qtnDef.setVariableName(binding);
+		parentQtnDef.setVariableName(binding);
 	}
 	
 	public List<IFormElement> getChildren(){
@@ -265,5 +266,16 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	
 	public void setChildren(List<IFormElement> children){
 		this.questions = (Vector)children;
+	}
+	
+	public int getDataType(){
+		return QuestionDef.QTN_TYPE_REPEAT;
+	}
+
+	/**
+	 * Does Nothing.
+	 */
+	public void setDataType(int dataType){
+		return; //this Def's type should only *EVER* be Repeat.
 	}
 }

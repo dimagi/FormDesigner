@@ -144,6 +144,8 @@ public class UiElementBuilder {
 	public static Element addItextRefs(Element element, IFormElement def){
 		if(Itext.getDefaultLocale().hasID(def.getItextId())){
 			element.setAttribute("ref", "jr:itext('"+def.getItextId()+"')");
+		}else{
+			element.removeAttribute("ref");
 		}
 		
 		return element;

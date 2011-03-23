@@ -10,6 +10,7 @@ import org.openrosa.client.xforms.XformBuilder;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.xforms.UiElementBuilder;
 import org.openrosa.client.xforms.XformConstants;
 import org.openrosa.client.xforms.XformUtil;
 import org.openrosa.client.xforms.XmlUtil;
@@ -631,7 +632,7 @@ public class GroupDef implements IFormElement, Serializable{
 		if(labelNode == null && groupNode == null /*&& allQuestionsNew*/){ //Must be new page{
 			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 		}
-		if(dataType != QuestionDef.QTN_TYPE_REPEAT){ //For repeats, the group node is named repeat
+		if(dataType == QuestionDef.QTN_TYPE_GROUP){
 			if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 				String nodeName = groupNode.getNodeName();
 				String xml = groupNode.toString();
@@ -640,6 +641,7 @@ public class GroupDef implements IFormElement, Serializable{
 				child = (Element)groupNode.getOwnerDocument().importNode(child, true);
 				groupNode.getParentNode().replaceChild(child, groupNode);
 				groupNode =  child;
+				UiElementBuilder.addItextRefs(groupNode, this);
 			}
 		}
 		

@@ -191,17 +191,21 @@ public class OptionDef implements IFormElement, Serializable {
 	 * @param selectNode the select or select1 node that this option belongs to.
 	 */
     public void updateDoc(Document doc, Element selectNode){
-    	if(labelNode != null)
+    	if(labelNode != null){
     		XmlUtil.setTextNodeValue(labelNode,text);
+    		UiElementBuilder.addItextRefs(labelNode, this);
+    	}
     	
-    	if(valueNode != null)
+    	if(valueNode != null){
     		XmlUtil.setTextNodeValue(valueNode,binding);
+    	}
     	
-    	if(labelNode == null && valueNode == null) ////Must be new option.
+    	if(labelNode == null && valueNode == null){ ////Must be new option.
     		UiElementBuilder.fromOptionDef2Xform(this,doc,selectNode);
-    	
-    	if(controlNode != null)
+    	}
+    	if(controlNode != null){
     		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, binding);
+    	}
 	}
     
     /**
@@ -277,7 +281,7 @@ public class OptionDef implements IFormElement, Serializable {
 	}
 	
 	public void updateDoc(Document doc, Element xformsNode, IFormElement formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
-		
+		throw new RuntimeException("Error in OptionDef in updateDoc, unrecognized method!");
 	}
 	
 	public void updateDataNodes(Element parentDataNode){

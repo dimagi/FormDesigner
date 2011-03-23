@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
+import org.openrosa.client.xforms.UiElementBuilder;
+
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 
@@ -149,6 +151,7 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 			QuestionDef questionDef = (QuestionDef)questions.elementAt(i);
 			questionDef.updateDoc(doc,xformsNode,formDef,parentQtnDef.getDataNode(),modelNode,parentQtnDef.getControlNode(),false,withData,orgFormVarName);
 		}
+		
 	}
 	
 	/**

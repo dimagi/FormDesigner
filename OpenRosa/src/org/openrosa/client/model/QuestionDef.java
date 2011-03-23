@@ -817,6 +817,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			XmlUtil.setTextNodeValue(labelNode,text);
 			UiElementBuilder.addItextRefs(labelNode, this);
 		}
+		
 		Element node = bindNode;
 		if(node == null && hasUINode()){
 			//We are using a ref instead of bind
@@ -877,10 +878,11 @@ public class QuestionDef implements IFormElement, Serializable{
 			
 			if(hasUINode()){
 				if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
-						dataType == QuestionDef.QTN_TYPE_VIDEO))
+						dataType == QuestionDef.QTN_TYPE_VIDEO)){
 					controlNode.removeAttribute(XformConstants.ATTRIBUTE_NAME_MEDIATYPE);
-				else
+				}else{
 					UiElementBuilder.setMediaType(controlNode, dataType);
+				}
 			}
 
 			if(dataNode != null)
@@ -917,9 +919,9 @@ public class QuestionDef implements IFormElement, Serializable{
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData,orgFormVarName);
 
-			if(controlNode != null)
+			if(controlNode != null){
 				((Element)controlNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
-
+			}
 			if(!withData && dataNode != null){
 				//Remove all repeating data kids
 				Element parent = (Element)dataNode.getParentNode();
@@ -961,11 +963,13 @@ public class QuestionDef implements IFormElement, Serializable{
 			
 		}
 		
-		if(withData)
+		if(withData){
 			updateNodeValue(doc,formNode,(answer != null) ? answer : defaultValue,withData);
-		else
+		}else{
 			updateNodeValue(doc,formNode,defaultValue,withData);
-
+		}
+		
+		UiElementBuilder.addItextRefs(controlNode, this);
 		return isNew;
 	}
 	

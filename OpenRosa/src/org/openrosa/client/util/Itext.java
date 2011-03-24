@@ -319,6 +319,9 @@ public class Itext {
 	
 	public static ItextLocale getDefaultLocale(){
 		ItextLocale defLocale = null;
+		if(locales.size() == 0){
+			getLocale("en");
+		}
 		for (ItextLocale locale : locales){
 			if(locale.isDefault()) defLocale = locale;
 		}

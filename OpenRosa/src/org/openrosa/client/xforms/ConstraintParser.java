@@ -150,11 +150,13 @@ public class ConstraintParser {
 			condition.setValue(value);
 
 			//This is just for the designer
-			if(value.startsWith(formDef.getVariableName() + "/"))
+			if(value.startsWith(formDef.getVariableName() + "/")){
 				condition.setValueQtnDef((QuestionDef)formDef.getElement(value.substring(value.indexOf('/')+1)));
+			}
 
-			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)
+			if(condition.getOperator() == ModelConstants.OPERATOR_NULL){
 				return null; //no operator set hence making the condition invalid
+			}
 		}
 		else
 			condition.setOperator(ModelConstants.OPERATOR_IS_NULL);

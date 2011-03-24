@@ -455,30 +455,30 @@ public class FormDef implements IFormElement, Serializable{
 		return getName();
 	}
 
-	/**
-	 * Gets a question identified by a variable name.
-	 * 
-	 * @param varName - the string identifier of the question. 
-	 * @return the question reference.
-	 */
-	public IFormElement getElement(String varName){
-		if(varName == null || children == null)
-			return null;
-
-		for(int i=0; i<children.size(); i++){
-			IFormElement def = children.get(i);
-			if(varName.equals(def.getBinding()))
-				return def;
-			
-			if(def instanceof GroupDef){
-				def = ((GroupDef)def).getElement(varName);
-				if(def != null)
-					return def;
-			}
-		}
-
-		return null;
-	}
+//	/**
+//	 * Gets a question identified by a variable name.
+//	 * 
+//	 * @param varName - the string identifier of the question. 
+//	 * @return the question reference.
+//	 */
+//	public IFormElement getElement(String varName){
+//		if(varName == null || children == null)
+//			return null;
+//
+//		for(int i=0; i<children.size(); i++){
+//			IFormElement def = children.get(i);
+//			if(varName.equals(def.getBinding()))
+//				return def;
+//			
+//			if(def instanceof GroupDef){
+//				def = ((GroupDef)def).getElement(varName);
+//				if(def != null)
+//					return def;
+//			}
+//		}
+//
+//		return null;
+//	}
 	
 	/**
 	 * Returns the element specified by varName.
@@ -488,9 +488,10 @@ public class FormDef implements IFormElement, Serializable{
 	 * @param varName
 	 * @return the IFormElement that matches varName or null if no match.
 	 */
-	public IFormElement getElement2(String varName){
-		if(varName == null || children == null)
+	public IFormElement getElement(String varName){
+		if(varName == null || children == null){
 			return null;
+		}
 		IFormElement retElement;
 		for(int i=0;i<children.size();i++){
 			IFormElement def = children.get(i);

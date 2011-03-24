@@ -225,8 +225,9 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		if(getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 			copyQuestionOptions(questionDef.getOptions());
-		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT)
-			this.options = new RepeatQtnsDef(questionDef.getRepeatQtnsDef());
+		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			this.options = new RepeatQtnsDef(questionDef.getRepeatQtnsDef(),this);
+		}
 	}
 
 	public QuestionDef(int id,String text,  int type, String variableName, IFormElement parent) {
@@ -510,12 +511,18 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * @return the IFormElement that matches varName or null if no match.
 	 */
 	public IFormElement getElement(String varName){
-		if(varName == null)
+		if(varName == null){
 			return null;
+		}
 		if(getBinding().equals(varName)){
 			return this;
 		}else{
+			if(this.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+				return this.getRepeatQtnsDef().getElement(varName);
+			}
+			
 			return null;
+			
 		}
 	}
 
@@ -675,11 +682,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		return (RepeatQtnsDef)options;
 	}
 
-	public void addRepeatQtnsDef(QuestionDef qtn){
+	public void addRepeatChildDef(IFormElement qtn){
 		if(options == null){
 			options = new RepeatQtnsDef(this);
 		}
-		((RepeatQtnsDef)options).addQuestion(qtn);
+		((RepeatQtnsDef)options).addChild(qtn);
 		qtn.setParent((RepeatQtnsDef)options);
 	}
 
@@ -917,7 +924,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 		}
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
-			getRepeatQtnsDef().updateDoc(doc,xformsNode,formDef,formNode,modelNode,groupNode,withData,orgFormVarName);
+			getRepeatQtnsDef().updateDoc(doc, xformsNode, formDef, formNode, modelNode, withData, orgFormVarName);
 
 			if(controlNode != null){
 				((Element)controlNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
@@ -1633,9 +1640,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			node.setAttribute(OpenRosaConstants.ATTRIBUTE_NAME_UNIQUE_ID, "QuestionDefHint-"+id);
 		}
 
-		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
-			getRepeatQtnsDef().buildLanguageNodes(parentXpath,doc,parentXformNode,parentLangNode);
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT){
 
+		}
 		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			if(options != null){
 				List optionsList = (List)options;
@@ -1700,7 +1707,13 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 	
 	public boolean removeChild(IFormElement element){
-		return this.removeOption((OptionDef)element);
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+			return this.getRepeatQtnsDef().removeChild(element);
+		}else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) {
+			return this.removeOption((OptionDef)element);
+		}else{
+			throw new RuntimeException("Cannot 'removeChild' from this Question Type!");
+		}
 	}
 	
 	public int getChildCount(){

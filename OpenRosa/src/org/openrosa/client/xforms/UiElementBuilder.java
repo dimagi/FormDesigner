@@ -13,6 +13,7 @@ import org.openrosa.client.xforms.XformConstants;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
 
@@ -51,7 +52,9 @@ public class UiElementBuilder {
 		}
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
-			dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
+			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){
+				dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
+			}
 		}
 		qtn.setDataNode(dataNode);
 
@@ -60,22 +63,30 @@ public class UiElementBuilder {
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 
 		String nodeset = qtn.getBinding();
-		if(!nodeset.startsWith("/"))
+		if(!nodeset.startsWith("/")){
 			nodeset = "/" + nodeset;
-		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/"))
+		}
+		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/")){
 			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
+		}
+	
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
 
-		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
+		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode));	
-		if(qtn.isRequired())
+		}
+		if(qtn.isRequired()){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
-		if(!qtn.isEnabled())
+		}
+		if(!qtn.isEnabled()){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY, XformConstants.XPATH_VALUE_TRUE);
-		if(qtn.isLocked())
+		}
+		if(qtn.isLocked()){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
-		if(!qtn.isVisible())
+		}
+		if(!qtn.isVisible()){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
+		}
 
 		String bindAttributeName = XformConstants.ATTRIBUTE_NAME_REF;
 		if(!groupNode.getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
@@ -109,15 +120,16 @@ public class UiElementBuilder {
 					for(int j=0; j<options.size(); j++){
 						OptionDef optionDef = (OptionDef)options.get(j);
 						Element itemNode = fromOptionDef2Xform(optionDef,doc,uiNode);	
-						if(j == 0)
+						if(j == 0){
 							((QuestionDef)qtn).setFirstOptionNode(itemNode);
+						}
 					}
 				}
 			}
 		}
 		else{
 			Element repeatNode =  doc.createElement(XformConstants.NODE_NAME_REPEAT);
-			repeatNode.setAttribute(XformConstants.ATTRIBUTE_NAME_BIND, id);
+			repeatNode.setAttribute("nodeset", qtn.getDataNodesetPath());
 			uiNode.appendChild(repeatNode);
 			qtn.setControlNode(repeatNode);
 
@@ -125,8 +137,9 @@ public class UiElementBuilder {
 			if(rptQtns == null){
 				return;
 			}
-			for(int j=0; j<rptQtns.size(); j++)
+			for(int j=0; j<rptQtns.size(); j++){
 				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
+			}
 		}
 	}
 	
@@ -187,7 +200,7 @@ public class UiElementBuilder {
 		qtnDef.setDataNode(dataNode);
 
 		Element inputNode =  buildXformUIElement(doc,qtnDef,XformConstants.ATTRIBUTE_NAME_REF,true);
-		inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtnDef.getDataType(),inputNode));
+//		inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtnDef.getDataType(),inputNode));
 		if(qtnDef.isRequired())
 			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
 		if(!qtnDef.isEnabled())
@@ -236,24 +249,29 @@ public class UiElementBuilder {
 		String name = XformConstants.NODE_NAME_INPUT;
 
 		int type = qtnDef.getDataType();
-		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
+		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 			name = XformConstants.NODE_NAME_SELECT1;
-		else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+		}else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			name = XformConstants.NODE_NAME_SELECT;
-		else if(type == QuestionDef.QTN_TYPE_REPEAT)
+		}else if(type == QuestionDef.QTN_TYPE_REPEAT){
 			name = XformConstants.NODE_NAME_GROUP;
-		else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO)
+		}else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO){
 			name = XformConstants.NODE_NAME_UPLOAD;
-		else if(type == QuestionDef.QTN_TYPE_LABEL)
+		}else if(type == QuestionDef.QTN_TYPE_LABEL){
 			name = XformConstants.NODE_NAME_TRIGGER;
+		}
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = createElementNS(name,null,null);
-		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT)
+		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
 			node.setAttribute(bindAttributeName, id);
-		else
+		}else{
 			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getBinding());
-
+		}
+		
+		if(XmlUtil.nodeNameEquals(node.getNodeName(), "group")){
+			node.removeAttribute("id");
+		}
 		setMediaType(node, type);
 		
 		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
@@ -362,10 +380,11 @@ public class UiElementBuilder {
 			hintNode.appendChild(doc.createTextNode(helpText));
 			addHelpItextRefs(hintNode, qtn);
 			qtn.setHintNode(hintNode);
-			if(firstOptionNode == null)
+			if(firstOptionNode == null){
 				inputNode.appendChild(hintNode);
-			else
+			}else{
 				inputNode.insertBefore(hintNode, firstOptionNode);
+			}
 			qtn.setHintNode(hintNode);
 		}
 	}

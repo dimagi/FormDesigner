@@ -7,8 +7,10 @@ import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformConstants;
 
+
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 
 
 /**
@@ -139,21 +141,72 @@ public class XformBuilderUtil {
 			String[] tokens = name.split("/");
 			name = tokens[tokens.length-1];
 			dataNode = doc.createElement(name);
-			formNode.appendChild(dataNode);
+			if(!hasChildElementWithName(formNode,dataNode.getNodeName())){
+				formNode.appendChild(dataNode);
+			}
 		}
 		else{
+			//construct a tree of nodes as given by the path in variableName (e.g. foo/bar/bash/baz -> <foo><bar><bash><baz /></bash>....)
+			Element parentNode = null;
 			for(int i=0; i<nodes.size(); i++){
 				if(i==0){
 					dataNode = nodes.elementAt(i);
-					formNode.appendChild(dataNode);
+					if(!hasChildElementWithName(formNode,dataNode.getNodeName())){
+						formNode.appendChild(dataNode);
+					}
+					parentNode = dataNode;
 				}
-				else
-					dataNode.appendChild(nodes.elementAt(i));
+				else{
+					if(!hasChildElementWithName(parentNode,nodes.elementAt(i).getNodeName())){
+						parentNode.appendChild(nodes.elementAt(i));
+					}
+					
+					parentNode = nodes.elementAt(i);
+				}
 			}
 			dataNode = nodes.elementAt(nodes.size()-1);
 		}
 
 		return dataNode;
+	}
+	
+	/**
+	 * If the node has a text node that is empty, or no text nodes, this will return true.
+	 * If text nodes are present but they are non empty, returns false.
+	 * @param element
+	 * @return
+	 */
+	public static boolean nodeHasNoOrEmptyTextNodeChildren(Element element){
+		for(int i=0;i<element.getChildNodes().getLength();i++){
+			Node curNode = element.getChildNodes().item(i);
+			if(curNode.getNodeType() == Node.TEXT_NODE){
+				String s = curNode.getNodeValue();
+				if(s.trim().isEmpty()){ return true;}   //there's an edge case here, where if you run in Firefox and element.getNodeValue() has more than 4096 whitespaces this might not be correct. Don't do that.
+				else{ return false; }
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks to see if the Specified parent Element has a child (1st generation children only!)
+	 * with the name specified (where name is the tag name of the element).
+	 * @param parent
+	 * @param name - CASE SENSITIVE!
+	 * @return true if name found, false if not. False if no children are present.
+	 */
+	public static boolean hasChildElementWithName(Element parent, String name){
+		if(!parent.hasChildNodes()){ return false; }
+		for(int i=0;i<parent.getChildNodes().getLength();i++){
+			Element child = (Element)parent.getChildNodes().item(i);
+			if(child.getNodeName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+		
+		
+		
 	}
 	
 	

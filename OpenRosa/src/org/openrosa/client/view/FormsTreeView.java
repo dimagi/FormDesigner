@@ -665,10 +665,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		Object parentUserObj = parent.getUserObject();
 
 		if(userObj instanceof QuestionDef){
-			if(parentUserObj instanceof QuestionDef)
-				((QuestionDef)parentUserObj).getRepeatQtnsDef().removeQuestion((QuestionDef)userObj,formDef);
-			else
+			if(parentUserObj instanceof QuestionDef){
+				((QuestionDef)parentUserObj).removeChild((IFormElement)userObj);
+			}
+			else{
 				((IFormElement)parentUserObj).removeChild((IFormElement)userObj);			
+			}
 		}
 		else if(userObj instanceof OptionDef){
 			((QuestionDef)parentUserObj).removeOption((OptionDef)userObj);
@@ -893,7 +895,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(obj instanceof OptionDef){
 				((QuestionDef)parentUserObj).addOption((OptionDef)obj);
 			}else if(obj instanceof QuestionDef && ((IFormElement)parentUserObj).getDataType()==QuestionDef.QTN_TYPE_REPEAT){
-				((QuestionDef)parentUserObj).addRepeatQtnsDef((QuestionDef)obj);
+				((QuestionDef)parentUserObj).addRepeatChildDef((IFormElement)obj);
 			}
 			
 //			{

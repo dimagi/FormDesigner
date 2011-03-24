@@ -227,8 +227,9 @@ public class XformBuilder {
 
 			//Check if we have any questions in this page.
 			List<IFormElement> questions = pageDef.getChildren();
-			if(questions == null)
+			if(questions == null){
 				return;
+			}
 			//Create ui nodes for each question.
 			for(int i=0; i<questions.size(); i++){
 				IFormElement qtn = questions.get(i);

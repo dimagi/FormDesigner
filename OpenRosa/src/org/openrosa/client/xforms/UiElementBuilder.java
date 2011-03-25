@@ -91,11 +91,11 @@ public class UiElementBuilder {
 		}
 
 		String bindAttributeName = XformConstants.ATTRIBUTE_NAME_REF;
-		if(!groupNode.getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
+//		if(!groupNode.getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
 			modelNode.appendChild(bindNode);
 			qtn.setBindNode(bindNode);
 			bindAttributeName = XformConstants.ATTRIBUTE_NAME_BIND;
-		}	
+//		}	
 
 		Element uiNode =  buildXformUIElement(doc,qtn,bindAttributeName,false);
 		if(groupNode != null){ //Some forms may not be in groups
@@ -139,7 +139,8 @@ public class UiElementBuilder {
 				return;
 			}
 			for(int j=0; j<rptQtns.size(); j++){
-				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
+//				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
+				fromQuestionDef2Xform(rptQtns.get(j), doc, xformsNode, formDef, formNode, modelNode, qtn.getControlNode());
 			}
 		}
 	}

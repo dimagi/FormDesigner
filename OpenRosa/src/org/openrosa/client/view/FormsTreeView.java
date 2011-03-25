@@ -1167,8 +1167,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(item == null)
 			return formItem; //How can this happen?
 
-		if(item.getUserObject() != formItem)
+		if(item.getUserObject() != formItem){
+//			GWT.log("Passed Item: "+((IFormElement)formItem).getBinding() + ", Selected Item:" + ((IFormElement)item.getUserObject()).getBinding());
 			return formItem;
+		}
 
 		if(formItem instanceof QuestionDef){
 			IFormElement element = (IFormElement)formItem;

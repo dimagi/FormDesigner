@@ -26,6 +26,8 @@ import org.openrosa.client.util.FormUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -387,8 +389,71 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		skipRulesView.onItemSelected(this, objectDef);
 	}
 	
-	
 
+	
+	private void updateID(){
+		propertiesObj.setItextId(qtnID.getText());
+		propertiesObj.setBinding(qtnID.getText());
+		Itext.renameID(currentObjQtnID, qtnID.getText());
+		currentObjQtnID = qtnID.getText();
+		update();
+	}
+	
+	private void updateHelpText(){
+		propertiesObj.setHelpText(txtHelpText.getText());
+	}
+	
+	private void updateQuestionDefaultLabel(){
+		propertiesObj.setText(txtDefaultLabel.getText());
+		update();
+	}
+	
+	private void updateQuestionDefaultValue(){
+		if(propertiesObj instanceof QuestionDef || propertiesObj instanceof GroupDef){
+			((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
+		}else if(propertiesObj instanceof OptionDef){
+			((OptionDef) propertiesObj).setBinding(txtDefaultValue.getText());
+		}
+	}
+	
+	private void updateQuestionVisible(){
+		propertiesObj.setVisible(chkVisible.getValue());
+	}
+	
+	private void updateQuestionHasUINode(){
+		if(chkHasUINode.getValue()){
+			((QuestionDef)propertiesObj).setHasUINode(true);
+		}else{
+			boolean sure = Window.confirm("Are you sure you want to delete the UI Node? This could lead to loss of certain information");
+			if(sure){
+				//assuming this is a QuestionDef
+				QuestionDef q = (QuestionDef)propertiesObj;
+				q.setHasUINode(false);
+				q.setControlNode(null);
+				q.setFirstOptionNode(null);
+				q.setOptionList(null);
+				q.setOptions(null);
+			}
+		}
+	}
+	
+	private void updateQuestionRequired(){
+		propertiesObj.setRequired(chkRequired.getValue());
+	}
+	
+	/**
+	 * Convenience method to trigger update across all properties widgets.
+	 */
+	private void commitPropertiesChanges(){
+		//must be careful about visible widgets!
+		if(qtnID.isVisible()){ updateID(); }
+		if(txtHelpText.isVisible()){ updateHelpText(); }
+		if(txtDefaultLabel.isVisible()){ updateQuestionDefaultLabel(); }
+		if(txtDefaultValue.isVisible()){ updateQuestionDefaultValue(); }
+		if(chkVisible.isVisible()){ updateQuestionVisible(); }
+		if(chkHasUINode.isVisible()){ updateQuestionHasUINode(); }
+		if(chkRequired.isVisible()){ updateQuestionRequired(); }
+	}
 	
 	private void createHandlers(){
 		
@@ -403,34 +468,38 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		qtnID.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				propertiesObj.setItextId(qtnID.getText());
-				propertiesObj.setBinding(qtnID.getText());
-				Itext.renameID(currentObjQtnID, qtnID.getText());
-				currentObjQtnID = qtnID.getText();
-				((FormsTreeView)formActionListener).refreshForm(Context.getFormDef());
+				updateID();
 			}});
+		
+		qtnID.addBlurHandler(new BlurHandler() {
+			
+			@Override
+			public void onBlur(BlurEvent event) {
+				updateID();
+			}
+		});
 		
 		txtHelpText.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				propertiesObj.setHelpText(txtHelpText.getText());
+				updateHelpText();
 			}});
 		
 		txtDefaultLabel.addChangeHandler(new ChangeHandler() {
-			@Override
 			public void onChange(ChangeEvent event) {
-				propertiesObj.setText(txtDefaultLabel.getText());
-				update();
+				updateQuestionDefaultLabel();
 			}});
+		
+		txtDefaultLabel.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				updateQuestionDefaultLabel();
+			}
+		});
 		
 		txtDefaultValue.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				if(propertiesObj instanceof QuestionDef || propertiesObj instanceof GroupDef){
-					((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
-				}else if(propertiesObj instanceof OptionDef){
-					((OptionDef) propertiesObj).setBinding(txtDefaultValue.getText());
-				}
+				updateQuestionDefaultValue();
 			}});
 		
 		//Combo boxes
@@ -447,32 +516,19 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				propertiesObj.setVisible(event.getValue());
+				updateQuestionVisible();
 			}});
 		
 		chkHasUINode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event){
-				if(event.getValue()){
-					((QuestionDef)propertiesObj).setHasUINode(true);
-				}else{
-					boolean sure = Window.confirm("Are you sure you want to delete the UI Node? This could lead to loss of certain information");
-					if(sure){
-						//assuming this is a QuestionDef
-						QuestionDef q = (QuestionDef)propertiesObj;
-						q.setHasUINode(false);
-						q.setControlNode(null);
-						q.setFirstOptionNode(null);
-						q.setOptionList(null);
-						q.setOptions(null);
-					}
-				}
+				updateQuestionHasUINode();
 			}
 		});
 		
 		chkRequired.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				propertiesObj.setRequired(event.getValue());
+				updateQuestionRequired();
 			}});
 	}
 	
@@ -784,6 +840,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 * Retrieves changes from all widgets and updates the selected object.
 	 */
 	public void commitChanges(){
+		commitPropertiesChanges();
 		skipRulesView.updateSkipRule();
 		validationRulesView.updateValidationRule();
 		itextView.update();

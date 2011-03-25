@@ -1,9 +1,12 @@
 package org.openrosa.client.view;
 
+import java.util.HashMap;
+
 import org.openrosa.client.FormDesigner;
 import org.openrosa.client.controller.IFileListener;
 import org.openrosa.client.view.Toolbar.Images;
 import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.QueryAndFormData;
 import org.openrosa.client.util.XEPResponse;
 
 import com.extjs.gxt.ui.client.Style.IconAlign;
@@ -15,10 +18,12 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -37,17 +42,28 @@ public class XformsTabWidget extends Composite {
 	private TextArea txtXforms = new TextArea();
 	private Window window = new Window();
 	private final IFileListener fileListener;
-	private final String VALIDATE_URL = "https://www.commcarehq.org/formtranslate/validate/";
+	private final String VALIDATE_URL = "http://127.0.0.1:8000/formvalidate/validate/";
 	Images images;
 	private static ValidationDialogue valDialog = new ValidationDialogue();
 	
+//	protected static class JSONXForm extends JavaScriptObject {
+//	    public final native String getXForm() /*-{ 
+//	        return this.xform;
+//	    }-*/;
+//	    public final native void setXForm(String value) /*-{
+//	        this.xform = value;
+//	    }-*/;
+//
+//	}
+	
 	private boolean validateXForm(String xml){
 		
-		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,URL.encode(VALIDATE_URL));
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST,VALIDATE_URL);
 		try{
-			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
-		
-			String data = "{\"xform\": "+xml+"}";
+//			builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+			HashMap<String, String> requestParams = new HashMap<String, String>();
+			requestParams.put("xform", xml);
+			String data = QueryAndFormData.buildQueryString(requestParams);	
 			if(xml == null || xml.isEmpty()){
 				return false;
 			}else{
@@ -56,7 +72,8 @@ public class XformsTabWidget extends Composite {
 			}
 			GWT.log("sending form for validation...data = "+data);
 			GWT.log("sending form for validation...url = "+VALIDATE_URL);
-			builder.sendRequest(data, new RequestCallback(){
+			builder.setTimeoutMillis(5000);
+			Request reponse = builder.sendRequest(data, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					GWT.log("Validation response received!");
 					int code = response.getStatusCode();
@@ -70,6 +87,7 @@ public class XformsTabWidget extends Composite {
 					}else{
 						GWT.log("Reponse code (for validation)="+code);
 						GWT.log("Validation Service response headers="+response.getHeadersAsString());
+						GWT.log(response.getStatusText()+"|||||"+response.getText()+"|||||"+response);
 						com.google.gwt.user.client.Window.alert("Failed to validate form. Response code received: "+code);
 					}
 					
@@ -78,6 +96,10 @@ public class XformsTabWidget extends Composite {
 				public void onError(Request request, Throwable exception){
 					com.google.gwt.user.client.Window.alert("sendRequest onError exception....");
 					FormUtil.displayException(exception);
+					if (exception instanceof RequestTimeoutException) {
+					       GWT.log("Request timed out!");
+					} 
+				
 				}
 			});
 			
@@ -109,7 +131,7 @@ public class XformsTabWidget extends Composite {
 				validateXForm(txtXforms.getText());
 			}
 		});
-		validate.disable();
+//		validate.disable();
 		tb.add(validate);
 		
 		tb.add(new SeparatorToolItem());
@@ -155,6 +177,9 @@ public class XformsTabWidget extends Composite {
 		FormUtil.maximizeWidget(this);
 	}
 	
+//	public static final native JSONXForm buildJSONXform(String xform) /*-{
+//    	return eval("({'xform'," + xform + "})");
+//	}-*/;
 	
 	public void adjustHeight(String height){
 		txtXforms.setHeight(height);

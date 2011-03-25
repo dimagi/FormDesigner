@@ -10,6 +10,7 @@ import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.xforms.XformConstants;
 
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -63,6 +64,7 @@ public class UiElementBuilder {
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 
 		String nodeset = qtn.getBinding();
+		
 		if(!nodeset.startsWith("/")){
 			nodeset = "/" + nodeset;
 		}

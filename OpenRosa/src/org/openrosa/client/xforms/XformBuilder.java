@@ -219,9 +219,13 @@ public class XformBuilder {
 			UiElementBuilder.addItextRefs(labelNode, pageDef);
 			groupNode.appendChild(labelNode);
 			xformsNode.appendChild(groupNode);
-			pageDef.setLabelNode(labelNode);
-			pageDef.setGroupNode(groupNode);
-
+			if(pageDef.getDataType() == QuestionDef.QTN_TYPE_GROUP){
+				pageDef.setLabelNode(labelNode);
+				pageDef.setGroupNode(groupNode);
+			}else{
+				pageDef.getParent().setLabelNode(labelNode);
+				pageDef.getParent().setControlNode(groupNode);
+			}
 			//Set the identifier of the group node to be used for localisation.
 			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getBinding()+"");
 

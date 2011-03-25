@@ -445,6 +445,10 @@ public class QuestionDef implements IFormElement, Serializable{
 				options = null;
 			}
 			
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT && options == null){
+				options = new RepeatQtnsDef(this);
+			}
+			
 			
 			for(int index = 0; index < changeListeners.size(); index++)
 				changeListeners.get(index).onDataTypeChanged(this,dataType);
@@ -843,38 +847,58 @@ public class QuestionDef implements IFormElement, Serializable{
 				}
 			}
 
-			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
-				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
-			if(node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET) != null)
+			if(dataType != QuestionDef.QTN_TYPE_REPEAT){
+//				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
+			}
+			boolean hasRefAttr = (node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF) != null);
+			boolean hasNodeSetAttr =(node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET) != null);
+			if(hasNodeSetAttr){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET,binding);
-			if(node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF) != null)
+			}
+			if(hasRefAttr){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,binding);
+			}
+			
+			boolean hasRefOrNode = hasRefAttr || hasNodeSetAttr;
+			if(getParent()!= null && getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+				if(!hasRefOrNode){
+					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,variableName);
+				}else if(hasRefAttr){
+					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,variableName);
+				}else if(hasNodeSetAttr){
+					node.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET,getDataNodesetPath());
+				}
+			}
 
-			if(required)
+			if(required){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED,XformConstants.XPATH_VALUE_TRUE);
-			else
+			}else{
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED);
+			}
 
-			if(!enabled)
+			if(!enabled){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY,XformConstants.XPATH_VALUE_TRUE);
-			else
+			}
+			else{
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_READONLY);
+			}
 
 			/*if(locked)
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED,XformConstants.XPATH_VALUE_TRUE);
 			else
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);*/
 
-			if(!visible)
+			if(!visible){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE,XformConstants.XPATH_VALUE_FALSE);
-			else
+			}else{
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE);
+			}
 
 
 			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
-					dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_GPS))
+					dataType == QuestionDef.QTN_TYPE_VIDEO || dataType == QuestionDef.QTN_TYPE_GPS)){
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_FORMAT);
-			else{
+			}else{
 				if(dataType == QuestionDef.QTN_TYPE_GPS)
 					node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE,"geopoint");
 				else
@@ -892,8 +916,9 @@ public class QuestionDef implements IFormElement, Serializable{
 				}
 			}
 
-			if(dataNode != null)
+			if(dataNode != null){
 				updateDataNode(doc,formDef,orgFormVarName);
+			}
 		}
 
 		if((getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
@@ -905,29 +930,32 @@ public class QuestionDef implements IFormElement, Serializable{
 			for(int i=0; i<optns.size(); i++){
 				OptionDef optionDef = (OptionDef)optns.get(i);
 
-				if(!allOptionsNew && optionDef.getControlNode() == null)
+				if(!allOptionsNew && optionDef.getControlNode() == null){
 					newOptns.add(optionDef);
+				}
 
 				optionDef.updateDoc(doc,controlNode);
-				if(i == 0)
+				if(i == 0){
 					firstOptionNode = optionDef.getControlNode();
+				}
 			}
 
 			for(int k = 0; k < newOptns.size(); k++){
 				OptionDef optionDef = (OptionDef)newOptns.get(k);
 				int proposedIndex = optns.size() - (newOptns.size() - k);
 				int currentIndex = optns.indexOf(optionDef);
-				if(currentIndex == proposedIndex)
-					continue;
+				if(currentIndex == proposedIndex){	continue; }
 
 				moveOptionNodesUp(optionDef,getRefOption(optns,newOptns,currentIndex /*currentIndex+1*/));
 			}
 		}
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
-			getRepeatQtnsDef().updateDoc(doc, xformsNode, formDef, formNode, modelNode, withData, orgFormVarName);
+			getRepeatQtnsDef().updateDoc(doc, groupNode, formDef, formNode, modelNode, withData, orgFormVarName);
 
 			if(controlNode != null){
-				((Element)controlNode.getParentNode()).setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
+				((Element)controlNode.
+						getParentNode()).
+						setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 			}
 			if(!withData && dataNode != null){
 				//Remove all repeating data kids

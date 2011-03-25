@@ -777,9 +777,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					//	addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}
 				else{
-					QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+					QuestionDef questionDef = new QuestionDef(id,
+															  LocaleText.get("question")+id,
+															  QuestionDef.QTN_TYPE_TEXT,"question"+id,
+															  (IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+									
 					questionDef.setDataType(dataType);
-					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
+//					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
 					questionDef.setItextId(questionDef.getBinding());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 					selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), Itext.getDisplayText(questionDef), questionDef);
@@ -791,8 +795,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					
 					if(dataType == QuestionDef.QTN_TYPE_REPEAT){
 						treePanel.getSelectionModel().select(selectedItem, false);
-						QuestionDef newChildQtn = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
-						addFormDefItem(newChildQtn, selectedItem);
+//						QuestionDef newChildQtn = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+//						addFormDefItem(newChildQtn, selectedItem);
+						addNewChildItem(true, QuestionDef.QTN_TYPE_TEXT);
 					}
 				}
 
@@ -852,10 +857,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				selectedItem = addImageItem(selectedItem, questionDef.getText(), questionDef);
 				addFormDefItem(questionDef, (TreeModelItem)selectedItem.getParent());
 
-				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 					addNewOptionDef(questionDef, selectedItem);
-				else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+				}else if(dataType == QuestionDef.QTN_TYPE_GROUP){
 					addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+				}
 
 				treePanel.getSelectionModel().select(selectedItem, false);
 			}
@@ -869,10 +875,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			questionDef.setDataType(dataType);
 			questionDef.setItextId(questionDef.getBinding());
 
-			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
+			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 				addNewOptionDef((QuestionDef)questionDef, selectedItem);
-			else if(dataType == QuestionDef.QTN_TYPE_GROUP)
+			}else if(dataType == QuestionDef.QTN_TYPE_GROUP){
 				;//addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
+			}
 
 			treePanel.getSelectionModel().select(selectedItem, false);
 		}

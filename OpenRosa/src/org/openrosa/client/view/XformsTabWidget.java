@@ -42,7 +42,7 @@ public class XformsTabWidget extends Composite {
 	private TextArea txtXforms = new TextArea();
 	private Window window = new Window();
 	private final IFileListener fileListener;
-	private final String VALIDATE_URL = "http://127.0.0.1:8000/formvalidate/validate/";
+	private final String VALIDATE_URL = "https://www.commcarehq.org/formtranslate/validate/";
 	Images images;
 	private static ValidationDialogue valDialog = new ValidationDialogue();
 	

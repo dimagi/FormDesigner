@@ -54,7 +54,7 @@ public class UiElementBuilder {
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){
-				dataNode.appendChild(doc.createTextNode(qtn.getDefaultValue()));
+				XmlUtil.setTextNodeValue(dataNode,qtn.getDefaultValue());
 			}
 		}
 		qtn.setDataNode(dataNode);
@@ -106,7 +106,7 @@ public class UiElementBuilder {
 		qtn.setControlNode(uiNode);
 
 		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
-		labelNode.appendChild(doc.createTextNode(qtn.getText()));
+		XmlUtil.setTextNodeValue(labelNode,qtn.getText());
 		addItextRefs(labelNode, qtn);
 		uiNode.appendChild(labelNode);
 		qtn.setLabelNode(labelNode);
@@ -128,8 +128,7 @@ public class UiElementBuilder {
 					}
 				}
 			}
-		}
-		else{
+		}else{
 			Element repeatNode =  doc.createElement(XformConstants.NODE_NAME_REPEAT);
 			repeatNode.setAttribute("nodeset", qtn.getDataNodesetPath());
 			uiNode.appendChild(repeatNode);
@@ -159,8 +158,6 @@ public class UiElementBuilder {
 	public static Element addItextRefs(Element element, IFormElement def){
 		if(Itext.getDefaultLocale().hasID(def.getItextId())){
 			element.setAttribute("ref", "jr:itext('"+def.getItextId()+"')");
-		}else{
-			element.removeAttribute("ref");
 		}
 		
 		return element;
@@ -253,14 +250,19 @@ public class UiElementBuilder {
 		int type = qtnDef.getDataType();
 		if(type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || type == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
 			name = XformConstants.NODE_NAME_SELECT1;
+			
 		}else if(type == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			name = XformConstants.NODE_NAME_SELECT;
+			
 		}else if(type == QuestionDef.QTN_TYPE_REPEAT){
 			name = XformConstants.NODE_NAME_GROUP;
+			
 		}else if(type == QuestionDef.QTN_TYPE_IMAGE || type == QuestionDef.QTN_TYPE_AUDIO || type == QuestionDef.QTN_TYPE_VIDEO){
 			name = XformConstants.NODE_NAME_UPLOAD;
+			
 		}else if(type == QuestionDef.QTN_TYPE_LABEL){
 			name = XformConstants.NODE_NAME_TRIGGER;
+			
 		}
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);

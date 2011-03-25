@@ -174,8 +174,8 @@ public class GroupDef implements IFormElement, Serializable{
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
 
-		if(itextId == null)
-			setItextId(XmlUtil.getItextId(labelNode));
+//		if(itextId == null)
+//			setItextId(XmlUtil.getItextId(labelNode));
 	}
 
 	/**
@@ -629,10 +629,18 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
 		boolean allQuestionsNew = areAllQuestionsNew();
-		if(labelNode == null && groupNode == null /*&& allQuestionsNew*/){ //Must be new page{
+		boolean needsDOMNodes = false;
+		Element groupNode = (this.getDataType() == QuestionDef.QTN_TYPE_GROUP ? getGroupNode() : getParent().getControlNode());
+		Element labelNode = getLabelNode();
+		if(this.getDataType() == QuestionDef.QTN_TYPE_GROUP){
+			needsDOMNodes = (getLabelNode() == null && groupNode == null);
+		}else if(this.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			needsDOMNodes = (getParent().getControlNode() == null && getParent().getLabelNode() == null);
+		}
+		if(needsDOMNodes){ //Must be new page{
 			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 		}
-		if(dataType == QuestionDef.QTN_TYPE_GROUP){
+		if(getDataType() == QuestionDef.QTN_TYPE_GROUP){
 			if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 				String nodeName = groupNode.getNodeName();
 				String xml = groupNode.toString();
@@ -647,18 +655,18 @@ public class GroupDef implements IFormElement, Serializable{
 		
 		
 		if(labelNode != null){
-			XmlUtil.setTextNodeValue(labelNode,name);
+			XmlUtil.setTextNodeValue(getLabelNode(),getName());
 		}else{
-			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
-			labelNode.appendChild(doc.createTextNode(getText()));
-			groupNode.appendChild(labelNode);
-			this.labelNode = labelNode;
+			Element label =  doc.createElement(XformConstants.NODE_NAME_LABEL);
+			label.appendChild(doc.createTextNode(getText()));
+			groupNode.appendChild(label);
+			this.setLabelNode(label);
 		}
 		
 		if(Itext.hasItext()){
 			String labelRef = Itext.getDefaultLocale().getTranslation(this.getBinding());
 			if(labelRef != null){
-				labelNode.setAttribute("ref", labelRef);
+				getLabelNode().setAttribute("ref", labelRef);
 			}
 		}
 
@@ -732,8 +740,9 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement questionDef = children.get(i);
-			if(questionDef.getControlNode() != null)
+			if(questionDef.getControlNode() != null){
 				return false;
+			}
 		}
 		return true;
 	}

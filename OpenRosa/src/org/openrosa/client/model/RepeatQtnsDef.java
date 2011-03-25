@@ -6,8 +6,12 @@ import java.util.Vector;
 
 import org.openrosa.client.xforms.UiElementBuilder;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Node;
+
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.NodeList;
 
 
 /**
@@ -59,7 +63,62 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 	public void setDataNode(Element element){
 		parentQtnDef.setDataNode(element);
 	}
-
+	
+	public String getDataNodesetPath(){
+		//this def is invisible to the outside world, so should skip over the recursive call
+		if(getParent() == null){
+			return null;
+		}else{
+			return getParent().getDataNodesetPath();
+		}
+	}
+	
+	public Element getGroupNode(){
+		if(getParent() == null){ return null; }
+		return getParent().getControlNode();
+	}
+	
+	public void setGroupNode(Element element){
+		if(getParent() == null){ return; }
+		if(element.getNodeName() == "group"){
+			NodeList repeats = element.getElementsByTagName("repeat");
+			if(repeats.getLength() > 0){
+				Element repeat = (Element)(repeats.item(0));
+				if(repeat != null){
+					getParent().setControlNode(repeat);
+				}
+			}
+		}else{
+			GWT.log("In RepeatQtnsDef something horrible is happening. Please check it out tag:badControl");
+			//might as well be confident this won't happen...
+			throw new RuntimeException("In RepeatQtnsDef something horrible is happening. Please check it out tag:badControl");
+		}
+	}
+	
+	public String getName(){
+		if(getParent() == null){ return null; }
+		return getParent().getText();
+	}
+	
+	public void setName(String text){
+		if(getParent() == null){ return; }
+		getParent().setText(text);
+	}
+	
+	public Element getLabelNode(){
+		if(getParent() == null){ return null; }
+		return getParent().getLabelNode();
+	}
+	
+	public void setLabelNode(Element element){
+		if(getParent() == null){ 
+			GWT.log("Attempted to set LabelNode in RepeatQtnDef with no parent questionDef available!");
+			return; 
+		}
+		getParent().setLabelNode(element);
+	}
+		
+		
 //	public Vector getQuestions() {
 //		return questions;
 //	}

@@ -839,6 +839,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 				//tree.setSelectedItem(item);
 				treePanel.getSelectionModel().select(selectedItem, false);
+				
+				if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+					treePanel.getSelectionModel().select(selectedItem, false);
+//					QuestionDef newChildQtn = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+//					addFormDefItem(newChildQtn, selectedItem);
+					addNewChildItem(true, QuestionDef.QTN_TYPE_TEXT);
+				}
 			}
 			else if(selectedUserObj instanceof FormDef){
 				//addNewForm();
@@ -864,6 +871,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				}
 
 				treePanel.getSelectionModel().select(selectedItem, false);
+				
+				if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+					treePanel.getSelectionModel().select(selectedItem, false);
+//					QuestionDef newChildQtn = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+//					addFormDefItem(newChildQtn, selectedItem);
+					addNewChildItem(true, QuestionDef.QTN_TYPE_TEXT);
+				}
 			}
 		}
 		else{
@@ -882,6 +896,13 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			}
 
 			treePanel.getSelectionModel().select(selectedItem, false);
+			
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+				treePanel.getSelectionModel().select(selectedItem, false);
+//				QuestionDef newChildQtn = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
+//				addFormDefItem(newChildQtn, selectedItem);
+				addNewChildItem(true, QuestionDef.QTN_TYPE_TEXT);
+			}
 		}
 
 	}

@@ -15,6 +15,7 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
+import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.UUID;
 import org.openrosa.client.xforms.XformConstants;
@@ -210,15 +211,31 @@ public class XformBuilder {
 			Element groupNode =  doc.createElement(XformConstants.NODE_NAME_GROUP);
 			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 			Element hintNode = doc.createElement(XformConstants.NODE_NAME_HINT);
+			Element bindNode = doc.createElement("bind");
+			Element parentDataNode = pageDef.getParent().getDataNode();
+			String nodesetPath = pageDef.getDataNodesetPath();
+			String qtnID = FormUtil.getQtnIDFromNodeSetPath(nodesetPath);
+			
+			if(parentDataNode == null){
+				parentDataNode = formDef.getDataNode();
+			}
+			Element dataNode = doc.createElement(qtnID);
+			parentDataNode.appendChild(dataNode);
+			
+			pageDef.setDataNode(dataNode);
+			
+			
 			if(pageDef.getHelpText()!= null || Itext.getDefaultLocale().hasID(pageDef.getItextId()+";hint")){
 				UiElementBuilder.addHelpItextRefs(hintNode, pageDef);
 				pageDef.setHintNode(hintNode);
 				groupNode.appendChild(hintNode);
 			}
+			
 			labelNode.appendChild(doc.createTextNode(pageDef.getName()));
 			UiElementBuilder.addItextRefs(labelNode, pageDef);
 			groupNode.appendChild(labelNode);
 			xformsNode.appendChild(groupNode);
+			
 			if(pageDef.getDataType() == QuestionDef.QTN_TYPE_GROUP){
 				pageDef.setLabelNode(labelNode);
 				pageDef.setGroupNode(groupNode);
@@ -228,7 +245,14 @@ public class XformBuilder {
 			}
 			//Set the identifier of the group node to be used for localisation.
 			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getBinding()+"");
-
+			
+			bindNode.setAttribute("id", qtnID);
+			bindNode.setAttribute("nodeset", nodesetPath);
+			modelNode.appendChild(bindNode);
+			pageDef.setBindNode(bindNode);
+			
+			
+			
 			//Check if we have any questions in this page.
 			List<IFormElement> questions = pageDef.getChildren();
 			if(questions == null){

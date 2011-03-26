@@ -48,10 +48,15 @@ public class UiElementBuilder {
 	 * @param groupNode the xforms group node to which the question belongs.
 	 */
 	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
-		if(qtn.getParent() != null && qtn.getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+		if(qtn.getParent() != null){
 			formNode = qtn.getParent().getDataNode();
 		}
+		
+		String dataPath = qtn.getDataNodesetPath();
+		String id = FormUtil.getQtnIDFromNodeSetPath(dataPath);
+		
 		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
+
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){
 				XmlUtil.setTextNodeValue(dataNode,qtn.getDefaultValue());
@@ -60,19 +65,19 @@ public class UiElementBuilder {
 		qtn.setDataNode(dataNode);
 
 		Element bindNode =  doc.createElement(XformConstants.NODE_NAME_BIND);
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtn.getBinding(),false);
+
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
 
-		String nodeset = qtn.getBinding();
-		
-		if(!nodeset.startsWith("/")){
-			nodeset = "/" + nodeset;
-		}
-		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/")){
-			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
-		}
+//		String nodeset = qtn.getBinding();
+//		
+//		if(!nodeset.startsWith("/")){
+//			nodeset = "/" + nodeset;
+//		}
+//		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/")){
+//			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
+//		}
 	
-		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, nodeset);
+		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, dataPath);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode));	

@@ -632,6 +632,11 @@ public class FormUtil {
 	public static boolean showSubmitSuccessMsg(){
 		return showSubmitSuccessMsg;
 	}
+	
+	public static String getQtnIDFromNodeSetPath(String path){
+		String[] tokens = path.split("/");
+		return tokens[tokens.length-1];
+	}
 
 	/**
 	 * Displays an exception to the user.

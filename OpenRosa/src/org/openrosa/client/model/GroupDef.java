@@ -1067,9 +1067,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public String getDataNodesetPath(){
 		if(getParent() == null){
-			return "/"+getName();
+			return "/"+getBinding();
 		}else{
-			return getParent().getDataNodesetPath() + "/"+getName();
+			return getParent().getDataNodesetPath() + "/"+getBinding();
 		}
 		
 	}

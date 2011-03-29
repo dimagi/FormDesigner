@@ -436,12 +436,13 @@ public class Itext {
 		ItextLocale defLocale = Itext.getDefaultLocale();
 		String dText = "";
 		if(defLocale != null){
-			dText = defLocale.getDefaultTranslation(ID);
+			dText = defLocale.getLongTranslation(ID);
+
 			if(dText == null || dText.isEmpty()){
 				dText = defLocale.getShortTranslation(ID);
 			}
 			if(dText == null || dText.isEmpty()){
-				dText = defLocale.getLongTranslation(ID);
+				dText = defLocale.getDefaultTranslation(ID);
 			}
 			if(dText == null || dText.isEmpty()){
 				//give up

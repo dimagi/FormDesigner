@@ -421,6 +421,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 	
 	private void updateQuestionHasUINode(){
+		if(chkHasUINode.getValue() == ((QuestionDef)propertiesObj).hasUINode()){
+			//nothing to do, the flag is already set.
+			return;
+		}
 		if(chkHasUINode.getValue()){
 			((QuestionDef)propertiesObj).setHasUINode(true);
 		}else{
@@ -796,7 +800,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtHelpText.setVisible(true);
 		lblDefaultValue.setVisible(true);
 		txtDefaultValue.setVisible(true);
-		
+		lblDefaultValue.setText("Default Value");
 		lblType.setVisible(true);
 		cbDataType.setVisible(true);
 		
@@ -850,23 +854,25 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		setEverythingVisible(false);
 		lblDefaultLabel.setText("Default Label Text");
 		
-		lblQtnID.setVisible(true);
-		qtnID.setVisible(true);
+//		lblQtnID.setVisible(true);
+//		qtnID.setVisible(true);
 		lblDefaultLabel.setVisible(true);
 		txtDefaultLabel.setVisible(true);
-		lblDefaultValue.setVisible(true);
+		
+		lblDefaultValue.setText("Value");
 		txtDefaultValue.setVisible(true);
+		lblDefaultValue.setVisible(true);
 		
 		lblBinding.setVisible(true);
 		txtBinding.setVisible(true);
 		
 		tabs.setVisible(true);
 		
-		qtnID.setText(optionDef.getItextId());
+//		qtnID.setText(optionDef.getItextId());
 		currentObjQtnID = propertiesObj.getItextId();
 		txtDefaultLabel.setText(optionDef.getText());
 		txtBinding.setText(optionDef.getDataNodesetPath());
-		txtDefaultValue.setText(optionDef.getDefaultValue());
+		txtDefaultValue.setText(optionDef.getBinding());
 
 		final IFormElement fe = optionDef;
 		DeferredCommand.addCommand(new Command(){

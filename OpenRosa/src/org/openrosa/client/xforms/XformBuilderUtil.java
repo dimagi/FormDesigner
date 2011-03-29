@@ -67,7 +67,7 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 			return "select";
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
-			return "1select";
+			return "select";
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			return "";
 		case QuestionDef.QTN_TYPE_GPS:
@@ -201,6 +201,7 @@ public class XformBuilderUtil {
 	public static boolean hasChildElementWithName(Element parent, String name){
 		if(!parent.hasChildNodes()){ return false; }
 		for(int i=0;i<parent.getChildNodes().getLength();i++){
+			if((parent.getChildNodes().item(i)).getNodeType() == Element.TEXT_NODE){ continue; }
 			Element child = (Element)parent.getChildNodes().item(i);
 			if(child.getNodeName().equals(name)){
 				return true;

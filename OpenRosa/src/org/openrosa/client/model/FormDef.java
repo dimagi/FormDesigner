@@ -644,8 +644,9 @@ public class FormDef implements IFormElement, Serializable{
 		if(element instanceof GroupDef){
 			((GroupDef)element).removeAllElements(this);
 
-			if(((GroupDef)element).getGroupNode() != null)
+			if(((GroupDef)element).getGroupNode() != null){
 				((GroupDef)element).getGroupNode().getParentNode().removeChild(((GroupDef)element).getGroupNode());
+			}
 		}
 		else
 			GroupDef.removeElement2((QuestionDef)element, this, true);

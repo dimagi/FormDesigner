@@ -381,7 +381,6 @@ public class XformParser {
 			//else if (tagname.equals(NODE_NAME_ITEM)||tagname.equals(NODE_NAME_ITEM_MINUS_PREFIX))
 			else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_ITEM_MINUS_PREFIX)){
 				OptionDef optionDef = new OptionDef((QuestionDef)questionDef);
-				questionDef.addChild(optionDef);
 				parseElement(formDef, child,id2VarNameMap,optionDef,relevants,repeatQtns,rptKidMap,currentPageNo,questionDef,constraints,orphanDynOptionQns);
 			//else if (tagname.equals(NODE_NAME_VALUE)||tagname.equals(NODE_NAME_VALUE_MINUS_PREFIX)){
 			}else if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_VALUE_MINUS_PREFIX)){
@@ -424,21 +423,25 @@ public class XformParser {
 									(	(nodeContext.getLabelNode() != null) &&
 										(nodeContext.getLabelNode().getAttribute("ref") != null) &&
 										(!nodeContext.getLabelNode().getAttribute("ref").isEmpty())	);
+		
 		boolean hasValue = !nodeContext.getValue().isEmpty();
+		
 		if (hasLabel && hasValue) {
-			if (questionDef instanceof QuestionDef && questionDef != null && questionDef.getChildren() != null){
-				if(((QuestionDef)questionDef).getOptions().size() == 0)
-					((QuestionDef)questionDef).setFirstOptionNode(element);
-				OptionDef optionDef = new OptionDef(Integer.parseInt(String.valueOf(questionDef.getChildren().size())),nodeContext.getLabel(), nodeContext.getValue(),(QuestionDef)questionDef);
-				optionDef.setControlNode(element);
-				optionDef.setLabelNode(nodeContext.getLabelNode());
-				optionDef.setValueNode(nodeContext.getValueNode());
-				((QuestionDef)questionDef).addOption(optionDef);
+			if (parentQtn instanceof QuestionDef && parentQtn != null && parentQtn.getChildren() != null){
+				if(((QuestionDef)parentQtn).getOptions().size() == 0){
+					((QuestionDef)parentQtn).setFirstOptionNode(element);
+				}
+				OptionDef option = ((OptionDef)questionDef);
+				option.setId(Integer.parseInt(String.valueOf(parentQtn.getChildren().size())));
+				option.setText(nodeContext.getLabel());
+				option.setBinding(nodeContext.getValue());
+				option.setParent((QuestionDef)parentQtn);
 
-				//Ids are mandatory for uniquely identifying items for localization xpath expressions.
-				String id = element.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
-				if(id == null || id.trim().length() == 0)
-					element.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, optionDef.getBinding());
+				option.setControlNode(element);
+				option.setLabelNode(nodeContext.getLabelNode());
+				option.setValueNode(nodeContext.getValueNode());
+				((QuestionDef)parentQtn).addOption(option);
+
 			}
 		}
 		else if (hasLabel && questionDef != null){
@@ -545,6 +548,9 @@ public class XformParser {
 	 * @return the variable name of the new question.
 	 */
 	private static String addNonBindControl(FormDef formDef,Element child,HashMap relevants, String ref, String bind,HashMap constraints, IFormElement parentQtn){
+		if(parentQtn == null){
+			parentQtn = formDef;
+		}
 		QuestionDef qtn = new QuestionDef(null);
 		qtn.setId(getNextQuestionId());
 
@@ -658,11 +664,10 @@ public class XformParser {
 	 */
 	private static void parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
 		String parentName = ((Element)child.getParentNode()).getNodeName();
-		
 		//Check to see if we're dealing with a REPEAT instead of a regular group.
 		NodeList childNodes = child.getChildNodes();
 		for(int i=0;i<childNodes.getLength();i++){
-			if(childNodes.item(i).getNodeType() == Node.TEXT_NODE){ continue; }
+			if(childNodes.item(i).getNodeType() != Node.ELEMENT_NODE){ continue; }
 			Element grpChild = (Element)childNodes.item(i);
 			if(grpChild.getNodeType() == Element.TEXT_NODE){ continue; }
 			if(XmlUtil.nodeNameEquals(grpChild.getNodeName(), "repeat")){
@@ -674,11 +679,24 @@ public class XformParser {
 			}
 		}
 		
-		
+		String variableName = XformParserUtil.getVariableName(child, formDef);
 		GroupDef groupDef = new GroupDef();
+		QuestionDef groupBind = (QuestionDef)formDef.getElement(variableName);
+		if(groupBind != null){
+			groupDef.setBinding(groupBind.getBinding());
+			groupDef.setBindNode(groupBind.getBindNode());
+			groupDef.setParent(groupBind.getParent());
+			groupDef.setId(groupBind.getId());
+			groupDef.setRequired(groupBind.isRequired());
+			groupDef.setVisible(groupBind.isVisible());
+			groupDef.setEnabled(groupBind.isEnabled());
+			formDef.removeChild(groupBind);
+			
+		}
+		
 		groupDef.setControlNode(child);
-		groupDef.setBinding(XformParserUtil.getVariableName(child, formDef));
-		groupDef.setName(XformParserUtil.getVariableName(child, formDef));
+		groupDef.setBinding(variableName);
+		groupDef.setName(variableName);
 
 		if(parentQtn == null)
 			formDef.addElement(groupDef);
@@ -696,6 +714,8 @@ public class XformParser {
 		QuestionDef repeat = null;
 		Element repeatNode = ((Element)child.getChildNodes().item(repeatElementIndex));
 		nodeset = repeatNode.getAttribute("nodeset");
+		boolean hasLabelNode = ((Element)child).getElementsByTagName("label").getLength() > 0;
+		Element labelNode = (Element)child.getElementsByTagName("label").item(0);
 		
 		String[] idTokens = nodeset.split("/");
 		String id = idTokens[idTokens.length-1];
@@ -711,6 +731,11 @@ public class XformParser {
 			repeat.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 			repeat.setHasUINode(true);
 			repeat.setItextId(id);
+
+			if(hasLabelNode){
+				repeat.setText(XmlUtil.getTextValue(labelNode));
+				repeat.setLabelNode(labelNode);
+			}
 			repeat.setControlNode(((Element)child.getChildNodes().item(repeatElementIndex)));
 			RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(repeat); 
 			repeat.setRepeatQtnsDef(repeatQtnsDef);
@@ -856,7 +881,10 @@ public class XformParser {
 			if(qtn == null){  //what about questions without binds?
 				qtn = (QuestionDef)rptKidMap.get(varName);
 			}
-
+			if(qtn == null){
+				varName = addNonBindControl(formDef, child, relevants, varName, bind, constraints, parentQtn);
+				qtn = formDef.getElement(varName);
+			}
 			if(XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX) || XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT_MINUS_PREFIX)){
 				qtn.setDataType((XmlUtil.nodeNameEquals(tagname,XformConstants.NODE_NAME_SELECT1_MINUS_PREFIX)) ? QuestionDef.QTN_TYPE_LIST_EXCLUSIVE : QuestionDef.QTN_TYPE_LIST_MULTIPLE);
 				((QuestionDef)qtn).setOptions(new Vector());
@@ -891,7 +919,6 @@ public class XformParser {
 				}
 			}
 
-			//TODO second addition for repeats
 			Element parent = (Element)child.getParentNode(); 
 			if(XmlUtil.nodeNameEquals(parent.getNodeName(),XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
 				varName = (String)id2VarNameMap.get(parent.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) != null ? parent.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) : parent.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET));
@@ -914,6 +941,7 @@ public class XformParser {
 		}
 		
 		//For the children being oredered in the correct way (by appearance of the Control node in the xml doc).
+		
 		IFormElement parent = questionDef.getParent();
 		if(parent instanceof FormDef || parent instanceof GroupDef){
 			int numChildren = parent.getChildCount();
@@ -948,8 +976,12 @@ public class XformParser {
 			
 		}
 		else if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_REPEAT_MINUS_PREFIX)){
-			if(questionDef != null)
-				questionDef.setText(getText(child));
+			if(questionDef != null){
+				questionDef.setText(XmlUtil.getTextValue(child));
+				if(getText(child)!=null){
+					questionDef.setItextId(getText(child));
+				}
+			}
 		}
 		else if(XmlUtil.nodeNameEquals(parentName,XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){
 				String label = XmlUtil.getTextValue(child);

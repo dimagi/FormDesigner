@@ -263,6 +263,11 @@ public class XformParserUtil {
 			}
 			else if(type.equalsIgnoreCase("barcode"))
 				def.setDataType(QuestionDef.QTN_TYPE_BARCODE);
+			else if(type.toLowerCase().contains("1select")){
+				def.setDataType(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+			}else if(type.toLowerCase().contains("select")){
+				def.setDataType(QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+			}
 		}
 		else
 			def.setDataType(QuestionDef.QTN_TYPE_TEXT); //QTN_TYPE_REPEAT

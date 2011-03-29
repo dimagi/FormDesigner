@@ -63,10 +63,13 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_NUMERIC:
 			return XformConstants.DATA_TYPE_INT;
 		case QuestionDef.QTN_TYPE_TEXT:
-		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
-		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
-		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 			return XformConstants.DATA_TYPE_TEXT;
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
+			return "select";
+		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
+			return "1select";
+		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
+			return "";
 		case QuestionDef.QTN_TYPE_GPS:
 			return "geopoint"; //XformConstants.DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_IMAGE:

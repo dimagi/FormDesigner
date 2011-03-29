@@ -637,6 +637,25 @@ public class FormUtil {
 		String[] tokens = path.split("/");
 		return tokens[tokens.length-1];
 	}
+	
+	/**
+	 * Takes in an element with either a nodeset or a ref
+	 * attribute, returns the question ID extracted from either
+	 * of those attributes. Assumes that either ref or nodeset
+	 * is present, never both.
+	 * Returns null if neither attrs are present.
+	 * @param element
+	 * @return
+	 */
+	public static String getQtnIDFromElement(Element element){
+		String nodeset = element.getAttribute("nodeset");
+		String ref = element.getAttribute("ref");
+		
+		if(nodeset == null && ref == null){ return null; }
+		String path = (nodeset == null ? ref : nodeset);
+		return getQtnIDFromNodeSetPath(path);
+		
+	}
 
 	/**
 	 * Displays an exception to the user.

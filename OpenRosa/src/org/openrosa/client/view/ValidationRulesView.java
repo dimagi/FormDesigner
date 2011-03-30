@@ -287,7 +287,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		if(questionDef != null)
 			lblAction.setText(questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
 		else
-			lblAction.setText(LocaleText.get("No question selected!"));
+			lblAction.setText("No question selected!");
 
 		this.questionDef = questionDef;
 

@@ -315,7 +315,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		VerticalPanel verticalPanel = new VerticalPanel();
 		verticalPanel.setSpacing(0);
 		verticalPanel.add(table);
-
+		
+		validationRulesView.setEnabled(true);
 		tabs.add(itextView, "Itext");
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));

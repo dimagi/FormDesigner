@@ -1,5 +1,6 @@
 package org.openrosa.client.view;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.openrosa.client.controller.IConditionController;
@@ -68,7 +69,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private boolean enabled;
 
 	/** Widget for the validation rule error message. */
-	private TextBox txtErrorMessage = new TextBox();
+	private TextArea txtErrorMessage;
 
 	/** Widget for Label "Question: ". */
 	private Label lblAction = new Label(LocaleText.get("question")+": " /*"Question: "*/);
@@ -96,19 +97,50 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		advtxtconstraint.setText("Not Implemented Yet!");
 		advlblconstraint = new Label("Advanced Validation Text");
 		chkUseAdvanced = new CheckBox("Use Advanced Validation Logic");
-		verticalPanel.add(chkUseAdvanced);
 		verticalPanel.setSpacing(5);
+		verticalPanel.setVisible(true);
+
 		advancedPanel.setWidget(0, 0, advlblconstraint);
 		advancedPanel.setWidget(0, 1, advtxtconstraint);
 		verticalPanel.add(chkUseAdvanced);
 		verticalPanel.add(advancedPanel);
 		advancedPanel.setVisible(false);
 		
+
+
+		txtErrorMessage = new TextArea();
+		regularPanel2 = new HorizontalPanel();
+		regularPanel2.setVisible(true);
+		regularPanel2.setWidth("100%");
+//		FormUtil.maximizeWidget(txtErrorMessage);
+		regularPanel2.add(new Label("Validation Error Message:"));
+		regularPanel2.add(txtErrorMessage);
+		regularPanel2.setSpacing(5);
+		verticalPanel.add(regularPanel2);
+		verticalPanel.add(lblAction);
+
+
+		regularPanel1 = new HorizontalPanel();
+		regularPanel1.setSpacing(HORIZONTAL_SPACING);
+		regularPanel1.add(groupHyperlink);
+		regularPanel1.add(new Label(LocaleText.get("ofTheFollowingApply")));
+		verticalPanel.add(regularPanel1);
+
+		//verticalPanel.add(new ConditionWidget(FormDefTest.getPatientFormDef(),this));
+		verticalPanel.add(addConditionLink);
+
+
+		setupHandlers();
+
+		verticalPanel.setSpacing(VERTICAL_SPACING);
+		initWidget(verticalPanel);
+	}
+	
+	private void setupHandlers(){
 		chkUseAdvanced.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				setAdvancedMode(chkUseAdvanced.getValue());
 //				questionDef.setHasAdvancedConstraint(chkUseAdvanced.getValue());
-				
 			}
 		});
 		
@@ -118,41 +150,12 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			}
 		});
 		
-		
-		
-		
-		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		regularPanel1 = horizontalPanel;
-		horizontalPanel.setSpacing(HORIZONTAL_SPACING);
-
-		HorizontalPanel actionPanel = new HorizontalPanel();
-		regularPanel2 = actionPanel;
-		actionPanel.setWidth("100%");
-		FormUtil.maximizeWidget(txtErrorMessage);
-		actionPanel.add(new Label(LocaleText.get("errorMessage")));
-		actionPanel.add(txtErrorMessage);
-		actionPanel.setSpacing(10);
-
-		verticalPanel.add(lblAction);
-		verticalPanel.add(actionPanel);
-
-		horizontalPanel.add(new Label(LocaleText.get("when")));
-		horizontalPanel.add(groupHyperlink);
-		horizontalPanel.add(new Label(LocaleText.get("ofTheFollowingApply")));
-		verticalPanel.add(horizontalPanel);
-
-		//verticalPanel.add(new ConditionWidget(FormDefTest.getPatientFormDef(),this));
-		verticalPanel.add(addConditionLink);
-
 		addConditionLink.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event){
 				addCondition();
 			}
 		});
 
-
-		verticalPanel.setSpacing(VERTICAL_SPACING);
-		initWidget(verticalPanel);
 	}
 	
 	private void setAdvancedMode(boolean enabled){
@@ -161,6 +164,18 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		lblAction.setVisible(!enabled);
 		regularPanel1.setVisible(!enabled);
 		regularPanel2.setVisible(!enabled);
+		setConditionWidgetVisible(!enabled);
+	}
+	
+	private void setConditionWidgetVisible(boolean enable){
+
+		int count = verticalPanel.getWidgetCount();
+		for(int i=0; i<count; i++){
+			Widget widget = verticalPanel.getWidget(i);
+			if(widget instanceof ConditionWidget){
+				widget.setVisible(enable);
+			}
+		}
 	}
 
 
@@ -175,7 +190,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			verticalPanel.add(conditionWidget);
 			verticalPanel.add(addConditionLink);
 
-			txtErrorMessage.setFocus(true);
+//			txtErrorMessage.setFocus(true);
 
 			/*String text = txtErrorMessage.getText();
 			if(text != null && text.trim().length() == 0){
@@ -270,9 +285,9 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			formDef = ((PageDef)((QuestionDef)questionDef.getParent()).getParent()).getParent();*/
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("question")+":  " + questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
+			lblAction.setText(questionDef.getDisplayText() + "  "+LocaleText.get("isValidWhen"));
 		else
-			lblAction.setText(LocaleText.get("question")+": ");
+			lblAction.setText(LocaleText.get("No question selected!"));
 
 		this.questionDef = questionDef;
 
@@ -329,9 +344,15 @@ public class ValidationRulesView extends Composite implements IConditionControll
 
 		questionDef = null;
 		lblAction.setText(LocaleText.get("question")+": ");
-
-		while(verticalPanel.getWidgetCount() > 4)
-			verticalPanel.remove(verticalPanel.getWidget(3));
+		
+		Iterator widgetIter = verticalPanel.iterator();
+		while(widgetIter.hasNext()){
+			Widget widget = (Widget)widgetIter.next();
+			if(widget instanceof ConditionWidget){
+				widgetIter.remove();
+			}
+		}
+		
 
 		txtErrorMessage.setText(null);
 	}
@@ -357,7 +378,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	 * @see com.google.gwt.user.client.WindowResizeListener#onWindowResized(int, int)
 	 */
 	public void onWindowResized(int width, int height){
-		if(width - 700 > 0)
-			txtErrorMessage.setWidth(width - 700 + PurcConstants.UNITS);
+//		if(width - 700 > 0)
+//			txtErrorMessage.setWidth(width - 700 + PurcConstants.UNITS);
 	}
 }

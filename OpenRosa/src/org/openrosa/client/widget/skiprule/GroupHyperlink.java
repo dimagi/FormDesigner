@@ -74,13 +74,13 @@ public class GroupHyperlink extends Hyperlink{
 		menuBar.addItem(CONDITIONS_OPERATOR_TEXT_ANY,true, new Command(){
 			public void execute() {popup.hide(); setText(CONDITIONS_OPERATOR_TEXT_ANY);}});
 
-		menuBar.addSeparator();		  
-		menuBar.addItem(CONDITIONS_OPERATOR_TEXT_NONE,true,new Command(){
-			public void execute() {popup.hide(); setText(CONDITIONS_OPERATOR_TEXT_NONE);}});
-
-		menuBar.addSeparator();		  
-		menuBar.addItem(CONDITIONS_OPERATOR_TEXT_NOT_ALL,true, new Command(){
-			public void execute() {popup.hide(); setText(CONDITIONS_OPERATOR_TEXT_NOT_ALL);}});
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(CONDITIONS_OPERATOR_TEXT_NONE,true,new Command(){
+//			public void execute() {popup.hide(); setText(CONDITIONS_OPERATOR_TEXT_NONE);}});
+//
+//		menuBar.addSeparator();		  
+//		menuBar.addItem(CONDITIONS_OPERATOR_TEXT_NOT_ALL,true, new Command(){
+//			public void execute() {popup.hide(); setText(CONDITIONS_OPERATOR_TEXT_NOT_ALL);}});
 
 		popup.setWidget(menuBar);
 	}

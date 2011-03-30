@@ -122,9 +122,11 @@ public class FormDesignerUtil {
 			
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.
-			if(questionDef instanceof GroupDef)
+			if(questionDef instanceof GroupDef){
 				loadQuestions(((GroupDef)questionDef).getChildren(),refQuestion,oracle,dynamicOptions,sameTypesOnly,parentQuestionDef);
-				
+			}else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+				loadQuestions(questionDef.getChildren(),refQuestion,oracle,dynamicOptions,sameTypesOnly,parentQuestionDef);
+			}
 			//if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 			//	loadQuestions(questionDef.getRepeatQtnsDef().getQuestions(),refQuestion,oracle,dynamicOptions,sameTypesOnly); //TODO These have different id sets and hence we are leaving them out for now
 		}
@@ -139,7 +141,7 @@ public class FormDesignerUtil {
 	 * @param dynamicOptions set to true if we are loading for dynamic options.
 	 */
 	public static void loadQuestions(List<IFormElement> questions, QuestionDef refQuestion, MultiWordSuggestOracle oracle, boolean dynamicOptions){
-		loadQuestions(questions, refQuestion, oracle, dynamicOptions,true, null);
+		loadQuestions(questions, refQuestion, oracle, dynamicOptions,false, null);
 	}
 
 	/**

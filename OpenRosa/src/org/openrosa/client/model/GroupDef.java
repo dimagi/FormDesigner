@@ -631,6 +631,13 @@ public class GroupDef implements IFormElement, Serializable{
 		boolean allQuestionsNew = areAllQuestionsNew();
 		boolean needsDOMNodes = false;
 		Element groupNode = (this.getDataType() == QuestionDef.QTN_TYPE_GROUP ? getGroupNode() : getParent().getControlNode());
+		if(groupNode == null){
+			XformBuilder.fromPageDef2Xform(this, doc, xformsNode, formDef, formNode, modelNode);
+			groupNode = this.getGroupNode();
+			if(groupNode == null){
+				throw new RuntimeException("Problem with getting groupNode for question: "+this.getDisplayText());
+			}
+		}
 		Element labelNode = getLabelNode();
 		if(this.getDataType() == QuestionDef.QTN_TYPE_GROUP){
 			needsDOMNodes = (getLabelNode() == null && groupNode == null);

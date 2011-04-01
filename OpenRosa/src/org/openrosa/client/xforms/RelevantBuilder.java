@@ -8,6 +8,7 @@ import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.xforms.XformBuilderUtil;
 import org.openrosa.client.xforms.XformConstants;
 
@@ -48,9 +49,31 @@ public class RelevantBuilder {
 			if(relevant.length() > 0){
 				relevant += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
 			}
-			relevant += fromSkipCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
+			relevant += fromCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
 		}
 		return relevant;
+	}
+	
+	/**
+	 * Takes in a SkipRule and returns the completed Relevant
+	 * attribute value
+	 * @param rule
+	 * @param formDef - the underlying formdef for this mess.
+	 * @return - The reconstructed relevant attribute.
+	 */
+	public static String fromValidationRule2String(ValidationRule rule, FormDef formDef){
+		String constraint = "";
+		if(rule == null){
+			return constraint;
+		}
+		Vector conditions  = rule.getConditions();
+		for(int i=0; i<conditions.size(); i++){
+			if(constraint.length() > 0){
+				constraint += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
+			}
+			constraint += fromCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getConditionsOperator());
+		}
+		return constraint;
 	}
 	
 	/**
@@ -82,7 +105,7 @@ public class RelevantBuilder {
 			if(relevant.length() > 0){
 				relevant += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
 			}
-			relevant += fromSkipCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
+			relevant += fromCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getAction());
 		}
 		
 		
@@ -156,14 +179,14 @@ public class RelevantBuilder {
 	 * @param action the skip rule action to its target questions.
 	 * @return the condition xforms representation.
 	 */
-	private static String fromSkipCondition2Xform(Condition condition, FormDef formDef, int action){
-		String relevant = null;
+	private static String fromCondition2Xform(Condition condition, FormDef formDef, int action){
+		String attrText = null;
 
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef != null){
-			relevant = questionDef.getBinding();
-			if(!relevant.contains(formDef.getVariableName())){
-				relevant = "/" + formDef.getVariableName() + "/" + questionDef.getBinding();
+			attrText = questionDef.getBinding();
+			if(!attrText.contains(formDef.getVariableName())){
+				attrText = "/" + formDef.getVariableName() + "/" + questionDef.getBinding();
 			}
 			
 			String value = " '" + condition.getValue() + "'";
@@ -171,8 +194,8 @@ public class RelevantBuilder {
 				value = " " + condition.getValue();
 			}
 			
-			relevant += " " + XformBuilderUtil.getXpathOperator(condition.getOperator(),action)+value;
+			attrText += " " + XformBuilderUtil.getXpathOperator(condition.getOperator(),action)+value;
 		}
-		return relevant;
+		return attrText;
 	}
 }

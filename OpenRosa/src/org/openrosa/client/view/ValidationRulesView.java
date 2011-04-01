@@ -7,18 +7,26 @@ import org.openrosa.client.controller.IConditionController;
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
+import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
 import org.openrosa.client.widget.skiprule.GroupHyperlink;
+import org.openrosa.client.xforms.RelevantBuilder;
+import org.openrosa.client.xforms.RelevantParser;
 import org.openrosa.client.PurcConstants;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.util.FormUtil;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -94,7 +102,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private void setupWidgets(){
 		advancedPanel = new FlexTable();
 		advtxtconstraint = new TextArea();
-		advtxtconstraint.setText("Not Implemented Yet!");
+		advtxtconstraint.setText("");
 		advlblconstraint = new Label("Advanced Validation Text");
 		chkUseAdvanced = new CheckBox("Use Advanced Validation Logic");
 		verticalPanel.setSpacing(5);
@@ -139,14 +147,25 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	private void setupHandlers(){
 		chkUseAdvanced.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				questionDef.setHasAdvancedConstraint(chkUseAdvanced.getValue());
 				setAdvancedMode(chkUseAdvanced.getValue());
-//				questionDef.setHasAdvancedConstraint(chkUseAdvanced.getValue());
+				if(event.getValue()){
+					fromSimpleToAdvancedConstraint();
+				}else{
+					fromAdvancedToSimpleConstraint();
+				}
+				setQuestionDef(questionDef);
+			
 			}
 		});
 		
-		advtxtconstraint.addKeyPressHandler(new KeyPressHandler() {
-			public void onKeyPress(KeyPressEvent event) {
-//				questionDef.setAdvancedText(advtxtconstraint.getText());
+		advtxtconstraint.addKeyUpHandler(new KeyUpHandler() {
+			
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				questionDef.setAdvancedConstraint(advtxtconstraint.getText());
+				//and if we've done that the hasAdvanced() should definitely return true so:
+				questionDef.setHasAdvancedConstraint(true);
 			}
 		});
 		
@@ -155,7 +174,115 @@ public class ValidationRulesView extends Composite implements IConditionControll
 				addCondition();
 			}
 		});
-
+		
+		txtErrorMessage.addKeyUpHandler(new KeyUpHandler() {
+			
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				ValidationRule currentRule = formDef.getValidationRule(questionDef);
+				if(currentRule != null){
+					currentRule.setErrorMessage(txtErrorMessage.getText());
+				}else{
+					//create the rull since we'll be needing it anyway, and add to the formDef
+					currentRule = new ValidationRule(questionDef.getId(), formDef);
+					formDef.addValidationRule(currentRule);
+				}
+				
+			}
+		});
+	}
+	
+	/**
+	 * Converts from and advanced to simple relevant
+	 * (simple uses SkipRules).
+	 * Returns false if not successfully converted
+	 * Returns true if succesful.
+	 * 
+	 * Will keep data in advanced if succesful.
+	 * Will always overwrite existing SkipRules
+	 * if they exist.  On return false, will
+	 * blank out existing SkipRules
+	 * @return
+	 */
+	public boolean fromAdvancedToSimpleConstraint(){
+		questionDef.setHasAdvancedConstraint(false);
+		
+		String currentAdvCons = questionDef.getAdvancedConstraint();
+		boolean hasAdv = (currentAdvCons != null && !currentAdvCons.isEmpty());
+		ValidationRule currentVR = formDef.getValidationRule(questionDef);
+		if(currentVR != null){
+			formDef.removeValidationRule(currentVR);
+		}
+		
+		if(!hasAdv){
+			return true; //the 'conversion' was a success, because there was nothing to convert.
+		}else{
+			//do the conversion using the existing SR parser.
+			currentVR = RelevantParser.buildValidationRule(formDef, questionDef.getId(), currentAdvCons, questionDef.getId(), ModelConstants.ACTION_ENABLE);
+			if(currentVR != null){
+				formDef.addValidationRule(currentVR);
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+	}
+	
+	/**
+	 * Converts a simple relevant (that uses SkipRules)
+	 * and converts to Advanced relevant (if possible).
+	 * 
+	 * Returns false if unsuccesful
+	 * Returns true if the succesful.
+	 * 
+	 * Leaves the old skipRules intact
+	 * 
+	 * If no SkipRules are present, will use
+	 * data stored in AdvancedRelevant in the QuestionDef
+	 * (if possible).
+	 * 
+	 * Will OVERWRITE any existing advanced relevant data
+	 * if SkipRules are present
+	 * @return
+	 */
+	public boolean fromSimpleToAdvancedConstraint(){
+		ValidationRule currentRule = formDef.getValidationRule(questionDef);
+		String currentAdvVR = questionDef.getAdvancedConstraint();
+		questionDef.setHasAdvancedConstraint(true);
+		boolean currentAdvConsExists = (currentAdvVR != null && !currentAdvVR.isEmpty());
+		
+		if(currentRule == null){
+			//start from scratch, use existing AdvRel (if it exists).
+			currentRule = createNewValidationRuleForQtn(questionDef);
+			formDef.addValidationRule(currentRule);
+			return true;
+		}
+		
+		//if we get here, it implies we already have a skip rule pointing to this question
+		//in the FormDef, so no need to worry about it.
+		String newAdvCons = RelevantBuilder.fromValidationRule2String(currentRule, formDef);
+		boolean newAdvConsExists = (newAdvCons != null && !newAdvCons.isEmpty());
+		if(!newAdvConsExists){
+			
+			if(currentAdvConsExists){
+				//we already have advanced text that isn't empty, so stick with that and return false to indicate something went wrong with conversion.
+				return false;
+			}else{
+				questionDef.setAdvancedConstraint(""); //we've converted nothing and had nothing, so everything went well.
+				return true;
+			}
+		}else{
+			questionDef.setAdvancedConstraint(newAdvCons);
+			return true; //great success.
+		}
+	}
+	
+	public ValidationRule createNewValidationRuleForQtn(IFormElement qtn){
+		ValidationRule vr = new ValidationRule(qtn.getId(),new Vector(), txtErrorMessage.getText());
+//		ValidationRule sr = new ValidationRule(formDef.getNextSkipRuleId(), new Vector(), ModelConstants.ACTION_ENABLE, new Vector());
+//		vr.addActionTarget(qtn.getId());
+		return vr;
 	}
 	
 	private void setAdvancedMode(boolean enabled){
@@ -163,7 +290,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		addConditionLink.setVisible(!enabled);
 		lblAction.setVisible(!enabled);
 		regularPanel1.setVisible(!enabled);
-		regularPanel2.setVisible(!enabled);
+		regularPanel2.setVisible(true);
 		setConditionWidgetVisible(!enabled);
 	}
 	
@@ -255,7 +382,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		}
 
 		if(validationRule.getConditions() == null || validationRule.getConditionCount() == 0){
-			formDef.removeValidationRule(validationRule);
+//			formDef.removeValidationRule(validationRule);
 			validationRule = null;
 		}
 		else
@@ -309,7 +436,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 				for(int i=0; i<lostConditions.size(); i++)
 					validationRule.removeCondition((Condition)lostConditions.elementAt(i));
 				if(validationRule.getConditionCount() == 0){
-					formDef.removeValidationRule(validationRule);
+//					formDef.removeValidationRule(validationRule);
 					validationRule = null;
 				}
 

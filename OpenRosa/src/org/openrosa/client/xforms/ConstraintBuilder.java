@@ -4,7 +4,9 @@ import java.util.Vector;
 
 import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformConstants;
@@ -28,6 +30,44 @@ public class ConstraintBuilder {
 
 	}
 	
+	/**
+	 * A slightly higher level function that figures out
+	 * if the question associated with this rule has
+	 * an 'advanced' relevant or if it should be extracted
+	 * out of the SkipRule in the traditional way (for less
+	 * complex relevants)
+	 * @param rule The SkipRule associated with the specified skip rule.
+	 * @param qID The internal ID for the question for which the relevant will be generated
+	 * @param formDef
+	 * @return
+	 */
+	public static String getConstraintFromRule(ValidationRule rule, int qID, FormDef formDef){
+		IFormElement elementDef = formDef.getElement(qID);
+		String constraint = "";
+		if(elementDef.hasAdvancedConstraint()){
+			constraint = elementDef.getAdvancedConstraint();
+			if(constraint != null){
+				return constraint;
+			}else{
+				return "";
+			}
+		}
+		
+		
+		Vector conditions  = rule.getConditions();
+		if(conditions == null || conditions.size() == 0){
+			return null;
+		}
+		for(int i=0; i<conditions.size(); i++){
+			if(constraint.length() > 0){
+				constraint += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
+			}
+			constraint += fromValidationRuleCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getConditionsOperator(),elementDef);
+		}
+		
+		
+		return constraint;
+	}
 	
 	/**
 	 * Converts a validation rule to its xforms representation.
@@ -50,31 +90,15 @@ public class ConstraintBuilder {
 		if(node == null)
 			node = questionDef.getControlNode();
 
-		Vector conditions  = rule.getConditions();
-		if(conditions == null || conditions.size() == 0){
+
+		String constraint = getConstraintFromRule(rule,questionDef.getId(),formDef);
+		if(constraint == null){
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
 			return;
 		}
 
-		String constratint = "";
-		for(int i=0; i<conditions.size(); i++){
-			
-			Condition condition  = (Condition)conditions.elementAt(i);
-			
-			if(condition.getValue() == null && conditions.size() == 1){
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
-				formDef.removeValidationRule(rule);
-				return; //This could happen if say data type changed from text to single select.
-			}
-			
-			if(constratint.length() > 0)
-				constratint += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
-			constratint += fromValidationRuleCondition2Xform(condition,formDef,ModelConstants.ACTION_ENABLE,questionDef);
-		}
-
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT, constratint);
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT, constraint);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}
 	
@@ -88,7 +112,7 @@ public class ConstraintBuilder {
 	 * @param actionQtnDef the question referenced by the validation rule.
 	 * @return the condition xforms representation.
 	 */
-	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action, QuestionDef actionQtnDef){
+	private static String fromValidationRuleCondition2Xform(Condition condition, FormDef formDef, int action, IFormElement actionQtnDef){
 		String constraint = null;
 
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());

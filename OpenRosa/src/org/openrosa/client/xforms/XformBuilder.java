@@ -146,8 +146,12 @@ public class XformBuilder {
 			if(questionDef == null)
 				continue;
 			Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
-			if(node != null)
-				node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE, calculation.getCalculateExpression());
+			String expr = calculation.getCalculateExpression();
+			if(node != null && expr != null && expr.length() != 0){
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE, expr);
+			}else{
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
+			}
 		}
 
 		//Build itemsets for dynamic option definition objects.

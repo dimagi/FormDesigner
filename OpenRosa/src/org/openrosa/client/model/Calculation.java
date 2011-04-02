@@ -52,9 +52,15 @@ public class Calculation implements Serializable{
 		QuestionDef questionDef = formDef.getQuestion(questionId);
 		assert(questionDef != null);
 		Element node = questionDef.getBindNode();
-		if(node == null)
-			node = questionDef.getControlNode();
-		
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE,calculateExpression);
+		if(node == null){
+			return;
+		}
+		String expr = getCalculateExpression();
+		String oldexpr = node.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
+		if(expr == null || expr.isEmpty() || (oldexpr != null && oldexpr.isEmpty())){
+			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
+		}else{
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE,calculateExpression);
+		}
 	}
 }

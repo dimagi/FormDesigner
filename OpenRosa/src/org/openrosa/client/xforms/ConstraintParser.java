@@ -46,14 +46,36 @@ public class ConstraintParser {
 		//int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
+			String valRuleString = (String)constraints.get(qtn);
+			boolean hasValidationRule = valRuleString != null && !valRuleString.isEmpty();
+			
 			ValidationRule validationRule = buildValidationRule(formDef, qtn.getId(),(String)constraints.get(qtn));
 			if(validationRule != null)
 				rules.add(validationRule);
+			
+			boolean similar = isConstraintEquivalent(valRuleString, validationRule, formDef);
+			if(similar){
+				qtn.setHasAdvancedConstraint(false);
+			}else{
+				qtn.setHasAdvancedConstraint(true);
+				qtn.setAdvancedConstraint(valRuleString);
+			}
 		}
 
 		formDef.setValidationRules(rules);
 	}
 	
+	public static boolean isConstraintEquivalent(String valString, ValidationRule valRule, FormDef formDef){
+		String oldString = valString.trim();
+		oldString = XformUtil.ripOutWhitespace(oldString);
+		String newString = ConstraintBuilder.fromValidationRule2String(valRule, formDef);
+		newString = XformUtil.ripOutWhitespace(newString);
+		if(newString.toLowerCase().equals(oldString.toLowerCase())){
+			return true;
+		}else{
+			return false;
+		}
+	}
 	
 	/**
 	 * Creates a validation rule object from a constraint attribute value.
@@ -77,10 +99,41 @@ public class ConstraintParser {
 			validationRule.setErrorMessage(node.getAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE));
 
 		// If the validation rule has no conditions, then its as good as no rule at all.
-		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0)
-			return null;
+//		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0)
+//			return null;
 		return validationRule;
 	}
+	
+	/**
+	 * Creates a skip rule object from a relevent attribute value.
+	 * 
+	 * @param formDef the form definition object to build the skip rule for.
+	 * @param questionId the identifier of the question which is the target of the skip rule.
+	 * @param constraint the relevant attribute value.
+	 * @param id the identifier for the skip rule.
+	 * @param action the skip rule action to apply to the above target question.
+	 * @return the skip rule object.
+	 */
+	public static ValidationRule buildValidationRule(FormDef formDef, int questionId, String constraint, int id, int action){
+
+		ValidationRule validationRule = new ValidationRule(formDef);
+		validationRule.setQuestionId(id);
+		//TODO For now we are only dealing with enabling and disabling.
+		validationRule.setConditionsOperator(action);
+		validationRule.setConditions(getValidationRuleConditions(formDef,constraint,action));
+		validationRule.setConditionsOperator(XformParserUtil.getConditionsOperator(constraint));
+
+
+		// If skip rule has no conditions, then its as good as no skip rule at all.
+		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0){
+			return null;
+		}
+
+		return validationRule;
+		
+	}
+
+	
 	
 	
 	/**

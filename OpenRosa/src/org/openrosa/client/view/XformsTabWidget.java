@@ -131,7 +131,7 @@ public class XformsTabWidget extends Composite {
 				validateXForm(txtXforms.getText());
 			}
 		});
-//		validate.disable();
+		validate.disable();
 		tb.add(validate);
 		
 		tb.add(new SeparatorToolItem());

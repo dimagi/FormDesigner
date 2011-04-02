@@ -76,6 +76,9 @@ public class ValidationRule implements Serializable{
 	}
 
 	public Vector getConditions() {
+		if(conditions == null){
+			conditions = new Vector();
+		}
 		return conditions;
 	}
 

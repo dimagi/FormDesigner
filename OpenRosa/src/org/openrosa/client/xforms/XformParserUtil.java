@@ -308,11 +308,11 @@ public class XformParserUtil {
 	public static int getAction(QuestionDef qtn){
 		Element node = qtn.getBindNode();
 		if(node == null)
-			return ModelConstants.ACTION_DISABLE;
+			return ModelConstants.ACTION_ENABLE;
 
 		String value = node.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);
 		if(value == null)
-			return ModelConstants.ACTION_DISABLE;
+			return ModelConstants.ACTION_ENABLE;
 
 		int action = 0;
 		if(value.equalsIgnoreCase(XformConstants.ATTRIBUTE_VALUE_ENABLE))

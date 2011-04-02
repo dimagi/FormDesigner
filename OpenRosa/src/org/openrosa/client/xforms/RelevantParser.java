@@ -116,34 +116,7 @@ public class RelevantParser {
 		
 	}
 	
-	/**
-	 * Creates a skip rule object from a relevent attribute value.
-	 * 
-	 * @param formDef the form definition object to build the skip rule for.
-	 * @param questionId the identifier of the question which is the target of the skip rule.
-	 * @param constraint the relevant attribute value.
-	 * @param id the identifier for the skip rule.
-	 * @param action the skip rule action to apply to the above target question.
-	 * @return the skip rule object.
-	 */
-	public static ValidationRule buildValidationRule(FormDef formDef, int questionId, String constraint, int id, int action){
 
-		ValidationRule validationRule = new ValidationRule(formDef);
-		validationRule.setQuestionId(id);
-		//TODO For now we are only dealing with enabling and disabling.
-		validationRule.setConditionsOperator(action);
-		validationRule.setConditions(getConditions(formDef,constraint,action));
-		validationRule.setConditionsOperator(XformParserUtil.getConditionsOperator(constraint));
-
-
-		// If skip rule has no conditions, then its as good as no skip rule at all.
-		if(validationRule.getConditions() == null || validationRule.getConditions().size() == 0){
-			return null;
-		}
-
-		return validationRule;
-		
-	}
 	
 	/**
 	 * Compares the given Relevant attribute (origRel) to the
@@ -189,28 +162,6 @@ public class RelevantParser {
 		return conditions;
 	}
 	
-	/**
-	 * Gets a list of conditions for a skip rule as per the relevant attribute value.
-	 * 
-	 * @param formDef the form definition object to which the skip rule belongs.
-	 * @param relevant the relevant attribute value.
-	 * @param action the skip rule target action.
-	 * @return the conditions list.
-	 */
-	private static Vector getValidationRuleConditions(FormDef formDef, String relevant, int action){
-		Vector conditions = new Vector();
-
-		Vector list = XpathParser.getConditionsOperatorTokens(relevant);
-
-		Condition condition  = new Condition();
-		for(int i=0; i<list.size(); i++){
-			condition = getCondition(formDef,(String)list.elementAt(i),(int)(i+1),action);
-			if(condition != null)
-				conditions.add(condition);
-		}
-
-		return conditions;
-	}
 
 
 	/**

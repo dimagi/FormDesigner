@@ -54,27 +54,7 @@ public class RelevantBuilder {
 		return relevant;
 	}
 	
-	/**
-	 * Takes in a SkipRule and returns the completed Relevant
-	 * attribute value
-	 * @param rule
-	 * @param formDef - the underlying formdef for this mess.
-	 * @return - The reconstructed relevant attribute.
-	 */
-	public static String fromValidationRule2String(ValidationRule rule, FormDef formDef){
-		String constraint = "";
-		if(rule == null){
-			return constraint;
-		}
-		Vector conditions  = rule.getConditions();
-		for(int i=0; i<conditions.size(); i++){
-			if(constraint.length() > 0){
-				constraint += XformBuilderUtil.getConditionsOperatorText(rule.getConditionsOperator());
-			}
-			constraint += fromCondition2Xform((Condition)conditions.elementAt(i),formDef,rule.getConditionsOperator());
-		}
-		return constraint;
-	}
+
 	
 	/**
 	 * A slightly higher level function that figures out

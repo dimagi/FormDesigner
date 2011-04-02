@@ -243,21 +243,21 @@ public class XformBuilderUtil {
 	 */
 	public static String getXpathOperator(int operator, int action){
 		if(operator == ModelConstants.OPERATOR_EQUAL)
-			return isPositiveAction(action) ? "=" : "!=";
+			return "=";
 		else if(operator == ModelConstants.OPERATOR_NOT_EQUAL)
-			return isPositiveAction(action) ? "!=" : "=";
+			return "!=";
 		else if(operator == ModelConstants.OPERATOR_LESS)
-			return isPositiveAction(action) ? "<" : ">=";
+			return "<";
 		else if(operator == ModelConstants.OPERATOR_GREATER)
-			return isPositiveAction(action) ? ">" : "<=";
+			return ">";
 		else if(operator == ModelConstants.OPERATOR_LESS_EQUAL)
-			return isPositiveAction(action) ? "<=" : ">";
+			return "<=";
 		else if(operator == ModelConstants.OPERATOR_GREATER_EQUAL)
-			return isPositiveAction(action) ? ">=" : "<";
+			return ">=";
 		else if(operator == ModelConstants.OPERATOR_IS_NOT_NULL)
-			return isPositiveAction(action) ? "!=" : "=";
+			return "!=";
 		else if(operator == ModelConstants.OPERATOR_IS_NULL)
-			return isPositiveAction(action) ? "=" : "!=";
+			return "=";
 		
 		return "=";
 	}

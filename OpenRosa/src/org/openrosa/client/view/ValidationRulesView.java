@@ -13,6 +13,8 @@ import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
 import org.openrosa.client.widget.skiprule.ConditionWidget;
 import org.openrosa.client.widget.skiprule.GroupHyperlink;
+import org.openrosa.client.xforms.ConstraintBuilder;
+import org.openrosa.client.xforms.ConstraintParser;
 import org.openrosa.client.xforms.RelevantBuilder;
 import org.openrosa.client.xforms.RelevantParser;
 import org.openrosa.client.PurcConstants;
@@ -218,7 +220,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 			return true; //the 'conversion' was a success, because there was nothing to convert.
 		}else{
 			//do the conversion using the existing SR parser.
-			currentVR = RelevantParser.buildValidationRule(formDef, questionDef.getId(), currentAdvCons, questionDef.getId(), ModelConstants.ACTION_ENABLE);
+			currentVR = ConstraintParser.buildValidationRule(formDef, questionDef.getId(), currentAdvCons, questionDef.getId(), ModelConstants.ACTION_ENABLE);
 			if(currentVR != null){
 				formDef.addValidationRule(currentVR);
 				return true;
@@ -261,7 +263,7 @@ public class ValidationRulesView extends Composite implements IConditionControll
 		
 		//if we get here, it implies we already have a skip rule pointing to this question
 		//in the FormDef, so no need to worry about it.
-		String newAdvCons = RelevantBuilder.fromValidationRule2String(currentRule, formDef);
+		String newAdvCons = ConstraintBuilder.fromValidationRule2String(currentRule, formDef);
 		boolean newAdvConsExists = (newAdvCons != null && !newAdvCons.isEmpty());
 		if(!newAdvConsExists){
 			
@@ -445,7 +447,28 @@ public class ValidationRulesView extends Composite implements IConditionControll
 //				chkUseAdvanced.setValue(questionDef.hasAdvancedDConstraint());
 //				advtxtconstraint.setText(questionDef.advancedConstraintText());
 			}
+			
+			
 		}
+		checkSetAdvanced();
+	}
+	
+	/**
+	 * Checks to see if this question has an advanced relevant and sets the widgets
+	 * on this view accordingly
+	 */
+	private void checkSetAdvanced(){
+		chkUseAdvanced.setValue(questionDef.hasAdvancedConstraint());
+		if(questionDef.hasAdvancedConstraint()){
+			advtxtconstraint.setText(questionDef.getAdvancedConstraint());
+		}
+		ValidationRule vr = formDef.getValidationRule(questionDef);
+		if(vr != null){
+			txtErrorMessage.setText(vr.getErrorMessage());
+		}else{
+			txtErrorMessage.setText("");
+		}
+		setAdvancedMode(chkUseAdvanced.getValue());
 	}
 
 

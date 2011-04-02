@@ -78,7 +78,7 @@ public class AdvancedLogicView extends Composite {
 		this.selectedObj = (IFormElement)item; //should always be an IFormElement or we're in trouble.
 		
 		this.formDef = selectedObj.getFormDef();
-		
+		txtcalculate.setText("");
 		//select the checkboxes according to the flags set in the selected items.
 		//unless they're of the type that can't have any kind of bind logic
 		if(selectedObj instanceof FormDef || selectedObj instanceof OptionDef){
@@ -99,7 +99,12 @@ public class AdvancedLogicView extends Composite {
 	private void updateTextBoxFromQuestion(){
 		if(disabled){ return ; }
 		createCalculateForQuestion();
-		txtcalculate.setText(currentCalc.getCalculateExpression());
+		String expr = currentCalc.getCalculateExpression();
+		if(expr == null){
+			txtcalculate.setText("");
+		}else{
+			txtcalculate.setText(expr);
+		}
 	}
 	
 	/**
@@ -124,8 +129,6 @@ public class AdvancedLogicView extends Composite {
 		if(calc == null){
 			calc = new Calculation(selectedObj.getId(), "");
 			formDef.addCalculation(calc);
-		}else{
-			return;
 		}
 		
 		currentCalc = calc;

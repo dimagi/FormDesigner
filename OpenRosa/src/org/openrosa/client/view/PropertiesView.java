@@ -394,13 +394,14 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(!isFormDef && !isOptionDef){
 			skipRulesView.setEnabled(true);
 			validationRulesView.setEnabled(true);
-			advancedLogicView.onItemSelected(this, objectDef);
 			validationRulesView.setQuestionDef(objectDef);
 			skipRulesView.onItemSelected(this, objectDef);
 		}else{
 			validationRulesView.setEnabled(false);
 			skipRulesView.setEnabled(false);
 		}
+		
+		advancedLogicView.onItemSelected(this, objectDef);
 	}
 	
 

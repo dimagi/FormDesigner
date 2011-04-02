@@ -381,14 +381,26 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	public void changeSelectedObject(IFormElement objectDef){
 		commitChanges();
 		propertiesObj = objectDef;
-		if(objectDef instanceof FormDef) setFormProperties((FormDef)objectDef);
-		else if (objectDef instanceof GroupDef) setGroupProperties((GroupDef) objectDef);
-		else if (objectDef instanceof QuestionDef) setQuestionProperties((QuestionDef) objectDef);
-		else if (objectDef instanceof OptionDef) setOptionDefProperties(objectDef);
+		boolean isFormDef = objectDef instanceof FormDef;
+		boolean isOptionDef = objectDef instanceof OptionDef;
+		boolean isGroupDef = objectDef instanceof GroupDef;
+		boolean isQuestionDef = objectDef instanceof QuestionDef;
 		
-		advancedLogicView.onItemSelected(this, objectDef);
-		validationRulesView.setQuestionDef(objectDef);
-		skipRulesView.onItemSelected(this, objectDef);
+			 if (isFormDef)    { setFormProperties((FormDef)objectDef); }
+		else if (isGroupDef)   { setGroupProperties((GroupDef) objectDef); }
+		else if (isQuestionDef){ setQuestionProperties((QuestionDef) objectDef); }
+		else if (isOptionDef)  { setOptionDefProperties(objectDef); }
+
+		if(!isFormDef && !isOptionDef){
+			skipRulesView.setEnabled(true);
+			validationRulesView.setEnabled(true);
+			advancedLogicView.onItemSelected(this, objectDef);
+			validationRulesView.setQuestionDef(objectDef);
+			skipRulesView.onItemSelected(this, objectDef);
+		}else{
+			validationRulesView.setEnabled(false);
+			skipRulesView.setEnabled(false);
+		}
 	}
 	
 

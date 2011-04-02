@@ -53,7 +53,7 @@ public class ItextParser {
 			Element translation = (Element)translations.item(i);
 			String languageName = translation.getAttribute("lang");
 			ItextLocale language = Itext.getLocale(languageName); //creates a new locale (if it doesn't exist already) and adds it to the list in Itext
-			if(translation.getAttribute("default")!=null) Itext.setDefaultLocale(languageName);
+			if(translation.getAttribute("default")!=null){ Itext.setDefaultLocale(languageName); }
 
 			
 			NodeList textNodes = translation.getChildNodes();
@@ -76,7 +76,11 @@ public class ItextParser {
 						fullID = id + ";" + textform;
 						language.setTranslation(fullID, XmlUtil.getTextValue(valNode)); //some textform value
 					}else{
-						language.setTranslation(fullID, XmlUtil.getTextValue(valNode));  //this is obviously the default value
+						if(fullID.contains("_hint")){
+							language.setTranslation(fullID.replace("_", ";"), XmlUtil.getTextValue(valNode));
+						}else{
+							language.setTranslation(fullID, XmlUtil.getTextValue(valNode));  //this is obviously the default value
+						}
 					}
 				}
 				

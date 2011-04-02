@@ -8,6 +8,7 @@ import org.openrosa.client.model.Condition;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.ModelConstants;
+import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.SkipRule;
 import org.openrosa.client.model.ValidationRule;
@@ -458,6 +459,9 @@ public class ValidationRulesView extends Composite implements IConditionControll
 	 * on this view accordingly
 	 */
 	private void checkSetAdvanced(){
+		if(questionDef instanceof OptionDef || questionDef instanceof FormDef || questionDef == null){
+			return;
+		}
 		chkUseAdvanced.setValue(questionDef.hasAdvancedConstraint());
 		if(questionDef.hasAdvancedConstraint()){
 			advtxtconstraint.setText(questionDef.getAdvancedConstraint());

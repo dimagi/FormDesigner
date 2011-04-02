@@ -1009,10 +1009,8 @@ public class XformParser {
 			}
 		}
 		else if(questionDef != null){
-			if(true /*child.getChildNodes().getLength() != 0*/){
-				questionDef.setHelpText(getText(child));
-				questionDef.setHintNode(child /*element*/);
-			}
+			questionDef.setHelpText(getText(child));
+			questionDef.setHintNode(child /*element*/);
 		}
 	}
 
@@ -1022,6 +1020,6 @@ public class XformParser {
 			if(text.length() > 0)
 				return text;
 		}
-		return node.getAttribute("ref");
+		return null;
 	}
 }

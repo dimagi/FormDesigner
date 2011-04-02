@@ -221,7 +221,7 @@ public class QuestionItextView extends Composite {
 		final TextBox textBoxWidget = new TextBox();
 		
 
-		String fullText = (form == null) ? lang : (lang + ":" + form);
+		String fullText = (form == null) ? lang : (lang + ";" + form);
 		if(rowLocations.containsKey(fullText)) return; //don't want to duplicate rows.
 		Label labelWidget = new Label(fullText);
 		

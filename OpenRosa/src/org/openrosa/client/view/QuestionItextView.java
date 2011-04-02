@@ -15,6 +15,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -230,8 +232,10 @@ public class QuestionItextView extends Composite {
 		}
 		textBoxWidget.setText(itextValue); 
 		
-		textBoxWidget.addChangeHandler(new ChangeHandler(){
-			public void onChange(ChangeEvent event){ 
+		textBoxWidget.addKeyUpHandler(new KeyUpHandler() {
+			
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
 				Itext.addText(lang, ((form == null) ? id : (id + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
 				update();
 			}

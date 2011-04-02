@@ -231,7 +231,7 @@ public class XformBuilder {
 				groupNode.appendChild(hintNode);
 			}
 			
-			labelNode.appendChild(doc.createTextNode(pageDef.getName()));
+			labelNode.appendChild(doc.createTextNode(pageDef.getText()));
 			UiElementBuilder.addItextRefs(labelNode, pageDef);
 			groupNode.appendChild(labelNode);
 			xformsNode.appendChild(groupNode);

@@ -32,7 +32,7 @@ public class GroupDef implements IFormElement, Serializable{
 	private List<IFormElement> children;
 
 	/** The name of the group. */
-	private String name = ModelConstants.EMPTY_STRING;
+	private String defaultLabel = ModelConstants.EMPTY_STRING;
 
 	/** The help text of the group. */
 	private String helpText = ModelConstants.EMPTY_STRING;
@@ -93,10 +93,10 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(GroupDef pageDef,IFormElement parent) {
 		this(parent);
-		setName(pageDef.getName());
+		setBinding(pageDef.getBinding());
 		setChildren(pageDef.getChildren());
 		setItextId(pageDef.getItextId());
-		setItextId(getName());
+		setItextId(getBinding());
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(String name,IFormElement parent) {
 		this(parent);
-		setName(name);
+		setBinding(name);
 		setChildren(children);
 		setItextId(name);
 	}
@@ -123,7 +123,7 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(String name,List<IFormElement> children, IFormElement parent) {
 		this(parent);
-		setName(name);
+		setBinding(name);
 		setBinding(name);
 		setChildren(children);
 		setItextId(name);
@@ -143,14 +143,6 @@ public class GroupDef implements IFormElement, Serializable{
 		if(parent instanceof FormDef)
 			return parent;
 		return getParentFormDef(parent);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public IFormElement getParent() {
@@ -299,7 +291,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 	@Override
 	public String toString() {
-		return getName();
+		return getDisplayText();
 	}
 
 
@@ -656,13 +648,13 @@ public class GroupDef implements IFormElement, Serializable{
 				child = (Element)groupNode.getOwnerDocument().importNode(child, true);
 				groupNode.getParentNode().replaceChild(child, groupNode);
 				groupNode =  child;
-				UiElementBuilder.addItextRefs(groupNode, this);
+				
 			}
 		}
 		
 		
 		if(labelNode != null){
-			XmlUtil.setTextNodeValue(getLabelNode(),getName());
+			XmlUtil.setTextNodeValue(getLabelNode(),getText());
 		}else{
 			Element label =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 			label.appendChild(doc.createTextNode(getText()));
@@ -670,12 +662,7 @@ public class GroupDef implements IFormElement, Serializable{
 			this.setLabelNode(label);
 		}
 		
-		if(Itext.hasItext()){
-			String labelRef = Itext.getDefaultLocale().getTranslation(this.getBinding());
-			if(labelRef != null){
-				getLabelNode().setAttribute("ref", labelRef);
-			}
-		}
+		UiElementBuilder.addItextRefs(labelNode, this);
 
 		//if(groupNode != null)
 		//	groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
@@ -915,7 +902,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 		Element node = doc.createElement(XformConstants.NODE_NAME_TEXT);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_XPATH,  xpath + "/" + FormUtil.getNodeName(labelNode));
-		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, name);
+		node.setAttribute(XformConstants.ATTRIBUTE_NAME_VALUE, defaultLabel);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, itextId);
 		parentLangNode.appendChild(node);
 
@@ -952,11 +939,11 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public String getText(){
-		return name;
+		return defaultLabel;
 	}
 
 	public void setText(String text){
-		this.name = text;
+		this.defaultLabel = text;
 	}
 
 	public int getDataType(){
@@ -1017,7 +1004,7 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public String getDisplayText(){
-		return name;
+		return getText();
 	}
 
 	public String getItextId() {

@@ -1004,7 +1004,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			updateNodeValue(doc,formNode,defaultValue,withData);
 		}
 		
-		UiElementBuilder.addItextRefs(controlNode, this);
+//		UiElementBuilder.addItextRefs(controlNode, this);
 		return isNew;
 	}
 	

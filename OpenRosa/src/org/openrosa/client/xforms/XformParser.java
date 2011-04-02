@@ -696,7 +696,6 @@ public class XformParser {
 		
 		groupDef.setControlNode(child);
 		groupDef.setBinding(variableName);
-		groupDef.setName(variableName);
 
 		if(parentQtn == null)
 			formDef.addElement(groupDef);

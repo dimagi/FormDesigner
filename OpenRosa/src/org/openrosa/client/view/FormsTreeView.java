@@ -744,8 +744,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(userObj instanceof GroupDef){
 				int id = ++nextQuestionId;
 				GroupDef pageDef = new GroupDef(LocaleText.get("page")+id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
-				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getName()));
-				TreeModelItem modelItem = new TreeModelItem(pageDef.getName(),pageDef,selModelItem.getParent());
+				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getBinding()));
+				TreeModelItem modelItem = new TreeModelItem(pageDef.getBinding(),pageDef,selModelItem.getParent());
 				addFormDefItem(pageDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);

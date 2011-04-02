@@ -335,9 +335,10 @@ public class FormDef implements IFormElement, Serializable{
 		return null;
 	}
 
-	public Calculation getCalculation(QuestionDef questionDef){
-		if(calculations == null)
+	public Calculation getCalculation(IFormElement questionDef){
+		if(calculations == null){
 			return null;
+		}
 
 		for(int i=0; i<calculations.size(); i++){
 			Calculation calculation = (Calculation)calculations.elementAt(i);

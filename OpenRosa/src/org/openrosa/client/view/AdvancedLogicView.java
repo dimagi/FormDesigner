@@ -1,11 +1,14 @@
 package org.openrosa.client.view;
 
+import org.openrosa.client.model.Calculation;
 import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -24,13 +27,21 @@ public class AdvancedLogicView extends Composite {
 	 */
 	private TextArea txtcalculate;
 	
-	/** Used to set the use Advanced text flags in IFormElements **/
-	private CheckBox chkUseAdvancedCalculate;
+
 	
 	private IFormElement selectedObj;
+	private FormDef formDef;
+	private Calculation currentCalc;
+	
+	/**
+	 * Used to determine if this widget can be used or not
+	 * For example, if an OptionDef is selected, this widget is not valid.
+	 */
+	private boolean disabled;
 	
 	
 	public AdvancedLogicView(){
+		disabled = false;
 		setupWidgets();
 		setupHandlers();
 	}
@@ -41,16 +52,12 @@ public class AdvancedLogicView extends Composite {
 	private void setupWidgets(){
 		FlexTable table = new FlexTable();
 		txtcalculate = new TextArea(); 
-		txtcalculate.setText("Not supported yet!");
-		chkUseAdvancedCalculate = new CheckBox("Use Advanced Calculate Text");
+		txtcalculate.setText("");
 		
 		//Set all to false intially
-		chkUseAdvancedCalculate.setValue(false);
 		txtcalculate.setEnabled(false);
 		
-		//REQUIRED
-		table.setWidget(4, 0, chkUseAdvancedCalculate);
-		table.getFlexCellFormatter().setColSpan(4, 0, 2);
+		lblcalculate = new Label("Calculate Expression: ");
 		table.setWidget(5, 0, lblcalculate);
 		table.setWidget(5, 1, txtcalculate);
 		
@@ -59,18 +66,10 @@ public class AdvancedLogicView extends Composite {
 	
 	private void setupHandlers(){
 				
-		chkUseAdvancedCalculate.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-			
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-//				selectedObj.setHasAdvancedCalculate(event.getValue()); 
-				txtcalculate.setEnabled(event.getValue());
-			}
-		});
 		
-		txtcalculate.addChangeHandler(new ChangeHandler() {
-			
-			public void onChange(ChangeEvent event) {
-//				selectedObj.setAdvancedConstraint(txtcalculate.getText());
+		txtcalculate.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				updateQuestionFromTextBox();
 			}
 		});
 	}
@@ -78,14 +77,61 @@ public class AdvancedLogicView extends Composite {
 	public void onItemSelected(Object senderWidget, Object item){
 		this.selectedObj = (IFormElement)item; //should always be an IFormElement or we're in trouble.
 		
+		this.formDef = selectedObj.getFormDef();
+		
 		//select the checkboxes according to the flags set in the selected items.
 		//unless they're of the type that can't have any kind of bind logic
 		if(selectedObj instanceof FormDef || selectedObj instanceof OptionDef){
-			chkUseAdvancedCalculate.setEnabled(false);
-			chkUseAdvancedCalculate.setValue(false);
+			disabled = true;
+			txtcalculate.setEnabled(false);
 		}else{
-			chkUseAdvancedCalculate.setEnabled(true);
-//			chkUseAdvancedCalculate.setValue(selectedObj.getHasAdvancedCalculate());
+			disabled = false;
+			txtcalculate.setEnabled(true);
 		}
+		updateTextBoxFromQuestion();
+	}
+	
+	/**
+	 * Fills the textbox with the existing calculate expression
+	 * (if any) for this question.  If no calculate exists, it will be created
+	 * and initialized with an empty string.
+	 */
+	private void updateTextBoxFromQuestion(){
+		if(disabled){ return ; }
+		createCalculateForQuestion();
+		txtcalculate.setText(currentCalc.getCalculateExpression());
+	}
+	
+	/**
+	 * Grabs the text entered into the textbox and
+	 * updates the stored expression in Calculation 
+	 * (stored by the FormDef).
+	 */
+	private void updateQuestionFromTextBox(){
+		if(disabled){ return ; }
+		String expr = txtcalculate.getText();
+		currentCalc.setCalculateExpression(expr);
+	}
+	
+	/**
+	 * Creates a new calculate for a question and
+	 * adds it to the list of calculates maintained by the formDef.
+	 * If a calculate for this question already exists, does nothing.
+	 */
+	private void createCalculateForQuestion(){
+		if(disabled){ return; }
+		Calculation calc = formDef.getCalculation(selectedObj);
+		if(calc == null){
+			calc = new Calculation(selectedObj.getId(), "");
+			formDef.addCalculation(calc);
+		}else{
+			return;
+		}
+		
+		currentCalc = calc;
+	}
+	
+	public void setFormDef(FormDef formDef){
+		this.formDef = formDef;
 	}
 }

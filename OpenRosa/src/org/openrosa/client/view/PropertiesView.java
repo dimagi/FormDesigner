@@ -320,7 +320,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.add(itextView, "Itext");
 		tabs.add(skipRulesView, LocaleText.get("skipLogic"));
 		tabs.add(validationRulesView, LocaleText.get("validationLogic"));
-		tabs.add(advancedLogicView, "Advanced Logic");
+		tabs.add(advancedLogicView, "Calculate Logic");
 		tabs.selectTab(0);
 
 //		tabs.getTabBar().setTabEnabled(3, false);

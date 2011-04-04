@@ -718,7 +718,7 @@ public class FormUtil {
 	public static boolean shouldHaveHintDOMNode(IFormElement def){
 		boolean hasDefaultHelpText = (def.getHelpText() != null && !def.getHelpText().isEmpty());
 		boolean hasHelpItext = Itext.getDefaultLocale().hasID(def.getItextId()+";hint");
-		return hasDefaultHelpText || hasHelpItext;
+		return (hasDefaultHelpText || hasHelpItext) && def.hasUINode();
 	}
 	/**
 	 * Converts string dimension in say pixels to integer.
@@ -737,6 +737,54 @@ public class FormUtil {
 		return 1;
 	}
 
+	/**
+	 * Gets the control node from the parent element (a Group, Repeat or the root html body node)
+	 * based on the specified question ID
+	 * @param questionID
+	 * @param parentElement
+	 * @return - The control node, or null if no such control node was found.
+	 */
+	public static Element getControlNodeByQuestionID(String questionID, Element parentElement){
+		com.google.gwt.xml.client.NodeList children = parentElement.getChildNodes();
+		Element retChild = null;
+		for(int i = 0; i<children.getLength();i++){
+			if(children.item(i).getNodeType() != Node.ELEMENT_NODE){ continue; }
+			
+			retChild = (Element)children.item(i);
+			String ref = retChild.getAttribute("ref");
+			String bind = retChild.getAttribute("bind");
+			String nodeset = retChild.getAttribute("nodeset");
+			String childID = getIDfromRefBindOrNodeset(ref, bind, nodeset);
+			if(questionID.equals(childID)){
+				return retChild;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Pass in any of the params (scraped from the Element attributes with the same name)
+	 * and get a questionID back. Gives preference to ref, then nodeset, then bind
+	 * @param ref
+	 * @param bind
+	 * @param nodeset
+	 * @return
+	 */
+	public static String getIDfromRefBindOrNodeset(String ref,String bind, String nodeset){
+		if(ref == null || ref.isEmpty()){ ref = null; } //I don't want to have to do both checks all day.
+		if(bind == null || bind.isEmpty()){ bind = null; }
+		if(nodeset == null || nodeset.isEmpty()){ nodeset = null; }
+		
+		String attr = (ref == null ? bind : ref);
+		attr = (attr == null ? nodeset : attr);
+		if(attr == null){ return null; } //well, clearly nothing was passed in.
+		
+		//now do the split boogie
+		String[] tokens = attr.split("/");
+		return tokens[tokens.length-1];
+	}
+	
+	
 	public static String getNodePath(com.google.gwt.xml.client.Node node){
 		String path = removePrefix(node.getNodeName());
 

@@ -1232,9 +1232,19 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	private void updateControlNodeName(){
 		//TODO How about cases where the prefix is not xf?
-	
+		
+		//Remove the control node from the XForms doc if hasUINode == false
 		if(!hasUINode()){
-			return;
+			Element parentCtr = this.getParent().getControlNode();
+			if(parentCtr == null){ return ; } //well...shit.
+			
+			Element ctrl = FormUtil.getControlNodeByQuestionID(this.getBinding(), this.getParent().getControlNode());
+			if(ctrl != null){
+				ctrl.getParentNode().removeChild(ctrl);
+				this.controlNode = null;
+			}
+			
+			return; //short circuit the below since we've presumably removed the control node, for real.
 		}
 		String name = controlNode.getNodeName();
 		Element parent = (Element)controlNode.getParentNode();

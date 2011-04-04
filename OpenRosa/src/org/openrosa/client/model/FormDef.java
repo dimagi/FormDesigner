@@ -1430,7 +1430,7 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	public Element getControlNode(){
-		return null;
+		return getBodyNode();
 	}
 
 	public void setControlNode(Element controlNode){

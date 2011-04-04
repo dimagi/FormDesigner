@@ -519,6 +519,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			List options = questionDef.getOptions();
+			if(options == null){
+				return questionRoot;
+			}
 			for(int currentOptionNo=0; currentOptionNo < options.size(); currentOptionNo++){
 				GWT.log("FormsTreeView adding select option...");
 				OptionDef optionDef = (OptionDef)options.get(currentOptionNo);

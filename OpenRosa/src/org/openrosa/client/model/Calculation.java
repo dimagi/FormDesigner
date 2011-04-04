@@ -49,7 +49,7 @@ public class Calculation implements Serializable{
 	
 	
 	public void updateDoc(FormDef formDef){
-		QuestionDef questionDef = formDef.getQuestion(questionId);
+		IFormElement questionDef = formDef.getElement(questionId);
 		assert(questionDef != null);
 		Element node = questionDef.getBindNode();
 		if(node == null){

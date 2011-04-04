@@ -663,7 +663,6 @@ public class XformParser {
 	 *                           questions have not yet been parsed.
 	 */
 	private static void parseGroupElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns){
-		String parentName = ((Element)child.getParentNode()).getNodeName();
 		//Check to see if we're dealing with a REPEAT instead of a regular group.
 		NodeList childNodes = child.getChildNodes();
 		for(int i=0;i<childNodes.getLength();i++){
@@ -776,8 +775,9 @@ public class XformParser {
 		}
 		
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE)){
-			if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION) == null)
+			if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION) == null){
 				def.setRequired(true);
+			}
 		}
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY).equals(XformConstants.XPATH_VALUE_TRUE)){
 			def.setEnabled(false);
@@ -806,7 +806,11 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE) != null){
 			formDef.addCalculation(new Calculation(def.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
 		}
-
+		
+		child.removeAttribute("id");
+		if(child.getAttribute("type").isEmpty()){
+			child.removeAttribute("type");
+		}
 		formDef.addChild(def);
 		
 //		if(def.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -848,6 +852,11 @@ public class XformParser {
 												NodeContext nodeContext){
 		
 		String ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);
+		if(ref != null && ref.contains("jr:itext")){
+			ref = ref.replace("jr:itext('",""); //
+			ref = ref.replace("')", "");        //remove incorrect jr:itext('ID') string
+			ref = ref.replace(" ", "");//remove spaces (are not allowed)
+		}
 		String bind = child.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND);
 		if(ref == null && bind == null){
 			ref = child.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);

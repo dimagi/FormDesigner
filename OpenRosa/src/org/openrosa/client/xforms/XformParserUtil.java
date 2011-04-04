@@ -209,7 +209,7 @@ public class XformParserUtil {
 		if(name == null){
 			return null;
 		}
-		
+		name = name.replace(" ", "");
 		String[] tokens = name.split("/");
 		name = tokens[tokens.length-1];
 		

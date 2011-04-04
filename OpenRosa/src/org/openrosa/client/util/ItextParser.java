@@ -69,8 +69,9 @@ public class ItextParser {
 					String fullID = id;
 					Node valNode = forms.item(k);
 					boolean tagNameEqualsValue = ((Element)valNode).getTagName().toLowerCase().equals("value");
-					if(!tagNameEqualsValue) 
-						continue; //means invalid xml
+					if(!tagNameEqualsValue || XmlUtil.getTextValue(valNode).isEmpty()){
+						continue; //means invalid xform itext
+					}
 					String textform = ((Element)valNode).getAttribute("form");
 					if(textform != null){
 						fullID = id + ";" + textform;

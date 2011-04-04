@@ -119,10 +119,11 @@ public class XformBuilder {
 		//Build the ui nodes for all questions in each page.
 		for(int pageNo=0; pageNo<formDef.getChildCount(); pageNo++){
 			IFormElement element = formDef.getChildAt(pageNo);
-			if(element instanceof GroupDef)
+			if(element instanceof GroupDef){
 				fromPageDef2Xform((GroupDef)element,doc,parentNode,formDef,formNode,modelNode);
-			else
-				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,parentNode,formDef,formNode,modelNode,parentNode);
+			}else{
+				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,formDef,formNode,modelNode,parentNode);
+			}
 		}
 
 		//Build relevant s for the skip rules.
@@ -266,7 +267,7 @@ public class XformBuilder {
 			for(int i=0; i<questions.size(); i++){
 				IFormElement qtn = questions.get(i);
 				if(qtn instanceof QuestionDef){
-					UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+					UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,formDef,formNode,modelNode,groupNode);
 				}else{
 					fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
 				}

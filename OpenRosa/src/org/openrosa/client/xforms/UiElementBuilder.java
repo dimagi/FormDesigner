@@ -35,6 +35,47 @@ public class UiElementBuilder {
 
 	}
 	
+	/**
+	 * Creates a bindNode and attaches it to the DOMStructure in the appropriate place.
+	 * Also attaches it to the IFormElement this bind is being produced for
+	 * @param qtn the question definition object.
+	 * @param doc the xforms document.
+	 * @param modelNode the xforms model node.
+	 */
+	public static Element createBindNodeForIFormElement(IFormElement qtn, Document doc, Element modelNode){
+		Element bindNode = doc.createElement(XformConstants.NODE_NAME_BIND);
+		String dataPath = qtn.getDataNodesetPath();
+		String id = FormUtil.getQtnIDFromNodeSetPath(dataPath);
+		
+		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
+		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, dataPath);
+
+		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode));	
+			if(bindNode.getAttribute("type").isEmpty()){
+				bindNode.removeAttribute("type");
+			}
+		}
+		if(qtn.isRequired()){
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
+		}
+		if(!qtn.isEnabled()){
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY, XformConstants.XPATH_VALUE_TRUE);
+		}
+		if(qtn.isLocked()){
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
+		}
+		if(!qtn.isVisible()){
+			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
+		}
+
+		modelNode.appendChild(bindNode);
+		qtn.setBindNode(bindNode);
+
+		
+		
+		return bindNode;
+	}
 	
 	/**
 	 * Converts a question definition object to xforms.
@@ -45,9 +86,9 @@ public class UiElementBuilder {
 	 * @param formDef the form definition object to which the question belongs.
 	 * @param formNode the xforms instance data node.
 	 * @param modelNode the xforms model node.
-	 * @param groupNode the xforms group node to which the question belongs.
+	 * @param UIParentNode the parent DOM node to which UI control node's should be added to (as children) in the document.
 	 */
-	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode){
+	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, FormDef formDef, Element formNode, Element modelNode,Element UIParentNode){
 		if(qtn.getParent() != null){
 			formNode = qtn.getParent().getDataNode();
 		}
@@ -64,50 +105,11 @@ public class UiElementBuilder {
 		}
 		qtn.setDataNode(dataNode);
 
-		Element bindNode =  doc.createElement(XformConstants.NODE_NAME_BIND);
+		Element bindNode = createBindNodeForIFormElement(qtn, doc, modelNode);
 
-		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, id);
-
-//		String nodeset = qtn.getBinding();
-//		
-//		if(!nodeset.startsWith("/")){
-//			nodeset = "/" + nodeset;
-//		}
-//		if(!nodeset.startsWith("/" + formDef.getVariableName() + "/")){
-//			nodeset = "/" + formDef.getVariableName() + "/" + qtn.getBinding();
-//		}
+		Element uiNode =  buildXformUIElement(doc,qtn,false);
+		UIParentNode.appendChild(uiNode);
 	
-		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, dataPath);
-
-		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode));	
-		}
-		if(qtn.isRequired()){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
-		}
-		if(!qtn.isEnabled()){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY, XformConstants.XPATH_VALUE_TRUE);
-		}
-		if(qtn.isLocked()){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
-		}
-		if(!qtn.isVisible()){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
-		}
-
-		String bindAttributeName = XformConstants.ATTRIBUTE_NAME_REF;
-//		if(!groupNode.getNodeName().equals(XformConstants.NODE_NAME_REPEAT)){
-			modelNode.appendChild(bindNode);
-			qtn.setBindNode(bindNode);
-			bindAttributeName = XformConstants.ATTRIBUTE_NAME_BIND;
-//		}	
-
-		Element uiNode =  buildXformUIElement(doc,qtn,bindAttributeName,false);
-		if(groupNode != null){ //Some forms may not be in groups
-			groupNode.appendChild(uiNode);
-		}else{
-			xformsNode.appendChild(uiNode);
-		}
 		qtn.setControlNode(uiNode);
 
 		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
@@ -119,9 +121,9 @@ public class UiElementBuilder {
 		addHelpTextNode(qtn,doc,uiNode,null);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC)
-				((QuestionDef)qtn).setFirstOptionNode(ItemsetBuilder.createDynamicOptionDefNode(doc,uiNode));
-			else{
+			if(qtn.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC){
+				((QuestionDef)qtn) .setFirstOptionNode(ItemsetBuilder.createDynamicOptionDefNode(doc,uiNode));
+			}else{
 				List options = qtn.getChildren();
 				if(options != null && options.size() > 0){
 					for(int j=0; j<options.size(); j++){
@@ -145,7 +147,7 @@ public class UiElementBuilder {
 			}
 			for(int j=0; j<rptQtns.size(); j++){
 //				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
-				fromQuestionDef2Xform(rptQtns.get(j), doc, xformsNode, formDef, formNode, modelNode, qtn.getControlNode());
+				fromQuestionDef2Xform(rptQtns.get(j), doc, formDef, formNode, modelNode, repeatNode);
 			}
 		}
 	}
@@ -182,62 +184,62 @@ public class UiElementBuilder {
 	}
 
 
-	/**
-	 * Creates an xforms ui node for a child question of a parent repeat question type.
-	 * 
-	 * @param qtnDef the child question definition object.
-	 * @param parentControlNode the ui node of the parent repeat question.
-	 * @param parentDataNode the data node of the parent repeat question.
-	 * @param doc the xforms document.
-	 */
-	private static void createQuestion(IFormElement qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
-		String name = qtnDef.getBinding();
-
-		//TODO Should do this for all invalid characters in node names.
-		name = name.replace("/", "");
-		name = name.replace("\\", "");
-		name = name.replace(" ", "");
-
-		Element dataNode =  doc.createElement(name);
-		if(qtnDef.getDefaultValue() != null && qtnDef.getDefaultValue().trim().length() > 0)
-			dataNode.appendChild(doc.createTextNode(qtnDef.getDefaultValue()));
-		parentDataNode.appendChild(dataNode);
-		qtnDef.setDataNode(dataNode);
-
-		Element inputNode =  buildXformUIElement(doc,qtnDef,XformConstants.ATTRIBUTE_NAME_REF,true);
-//		inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtnDef.getDataType(),inputNode));
-		if(qtnDef.isRequired())
-			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
-		if(!qtnDef.isEnabled())
-			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY, XformConstants.XPATH_VALUE_TRUE);
-		if(qtnDef.isLocked())
-			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
-		if(!qtnDef.isVisible())
-			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
-
-		parentControlNode.appendChild(inputNode);
-		qtnDef.setControlNode(inputNode);
-		qtnDef.setBindNode(inputNode);
-
-		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
-		labelNode.appendChild(doc.createTextNode(qtnDef.getText()));
-		inputNode.appendChild(labelNode);
-		qtnDef.setLabelNode(labelNode);
-
-		addHelpTextNode(qtnDef,doc,inputNode,null);
-
-		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			List options = qtnDef.getChildren();
-			if(options != null && options.size() > 0){
-				for(int index=0; index<options.size(); index++){
-					OptionDef optionDef = (OptionDef)options.get(index);
-					Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
-					if(index == 0)
-						((QuestionDef)qtnDef).setFirstOptionNode(itemNode);
-				}
-			}
-		}
-	}
+//	/**
+//	 * Creates an xforms ui node for a child question of a parent repeat question type.
+//	 * 
+//	 * @param qtnDef the child question definition object.
+//	 * @param parentControlNode the ui node of the parent repeat question.
+//	 * @param parentDataNode the data node of the parent repeat question.
+//	 * @param doc the xforms document.
+//	 */
+//	private static void createQuestion(IFormElement qtnDef, Element parentControlNode, Element parentDataNode, Document doc){
+//		String name = qtnDef.getBinding();
+//
+//		//TODO Should do this for all invalid characters in node names.
+//		name = name.replace("/", "");
+//		name = name.replace("\\", "");
+//		name = name.replace(" ", "");
+//
+//		Element dataNode =  doc.createElement(name);
+//		if(qtnDef.getDefaultValue() != null && qtnDef.getDefaultValue().trim().length() > 0)
+//			dataNode.appendChild(doc.createTextNode(qtnDef.getDefaultValue()));
+//		parentDataNode.appendChild(dataNode);
+//		qtnDef.setDataNode(dataNode);
+//
+//		Element inputNode =  buildXformUIElement(doc,qtnDef,XformConstants.ATTRIBUTE_NAME_REF,true);
+////		inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtnDef.getDataType(),inputNode));
+//		if(qtnDef.isRequired())
+//			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED, XformConstants.XPATH_VALUE_TRUE);
+//		if(!qtnDef.isEnabled())
+//			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_READONLY, XformConstants.XPATH_VALUE_TRUE);
+//		if(qtnDef.isLocked())
+//			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
+//		if(!qtnDef.isVisible())
+//			inputNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
+//
+//		parentControlNode.appendChild(inputNode);
+//		qtnDef.setControlNode(inputNode);
+//		qtnDef.setBindNode(inputNode);
+//
+//		Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
+//		labelNode.appendChild(doc.createTextNode(qtnDef.getText()));
+//		inputNode.appendChild(labelNode);
+//		qtnDef.setLabelNode(labelNode);
+//
+//		addHelpTextNode(qtnDef,doc,inputNode,null);
+//
+//		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
+//			List options = qtnDef.getChildren();
+//			if(options != null && options.size() > 0){
+//				for(int index=0; index<options.size(); index++){
+//					OptionDef optionDef = (OptionDef)options.get(index);
+//					Element itemNode = fromOptionDef2Xform(optionDef,doc,inputNode);	
+//					if(index == 0)
+//						((QuestionDef)qtnDef).setFirstOptionNode(itemNode);
+//				}
+//			}
+//		}
+//	}
 
 
 	/**
@@ -245,11 +247,10 @@ public class UiElementBuilder {
 	 * 
 	 * @param doc the xforms document.
 	 * @param qtnDef the question definition object.
-	 * @param bindAttributeName the attribute name for binding. Could be "bind" or "ref".
 	 * @param isRepeatKid set to true if this question is a child of another repeat question type.
 	 * @return the xforms ui node.
 	 */
-	private static Element buildXformUIElement(Document doc, IFormElement qtnDef, String bindAttributeName, boolean isRepeatKid){
+	private static Element buildXformUIElement(Document doc, IFormElement qtnDef, boolean isRepeatKid){
 
 		String name = XformConstants.NODE_NAME_INPUT;
 
@@ -273,15 +274,11 @@ public class UiElementBuilder {
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = createElementNS(name,null,null);
-		if(qtnDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			node.setAttribute(bindAttributeName, id);
-		}else{
-			node.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, qtnDef.getBinding());
-		}
+		node.setAttribute("ref", qtnDef.getDataNodesetPath());
 		
-		if(XmlUtil.nodeNameEquals(node.getNodeName(), "group")){
+//		if(XmlUtil.nodeNameEquals(node.getNodeName(), "group")){
 			node.removeAttribute("id");
-		}
+//		}
 		setMediaType(node, type);
 		
 		//if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || qtnDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)

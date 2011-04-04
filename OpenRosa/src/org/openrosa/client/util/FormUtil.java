@@ -634,7 +634,8 @@ public class FormUtil {
 	}
 	
 	public static String getQtnIDFromNodeSetPath(String path){
-		String[] tokens = path.split("/");
+		String p = path.replace(" ", ""); //clean out spaces
+		String[] tokens = p.split("/");
 		return tokens[tokens.length-1];
 	}
 	

@@ -815,14 +815,27 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 		return (OptionDef)options.get(index);
 	}
+	
 
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
 		boolean isNew = (controlNode == null);
 		if(isNew && hasUINode()){ //Must be new question.
-			UiElementBuilder.fromQuestionDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode,groupNode);
+			Element parentNode;
+			if(this.getParent() instanceof FormDef){
+				 parentNode = formDef.getXformsNode();;
+			}else{
+				parentNode = this.getParent().getControlNode();
+			}
+			UiElementBuilder.fromQuestionDef2Xform(this, doc, formDef, formNode, modelNode, parentNode);
 		}
 		else{
-			updateControlNodeName();
+			updateControlNode();
+		}
+		if(hasUINode()){
+			controlNode.removeAttribute("bind");
+			if(this.getDataType() != QuestionDef.QTN_TYPE_REPEAT){ //repeats are special beasts.
+				controlNode.setAttribute("ref", this.getDataNodesetPath());
+			}
 		}
 		if(labelNode != null){
 			XmlUtil.setTextNodeValue(labelNode,text);
@@ -831,9 +844,9 @@ public class QuestionDef implements IFormElement, Serializable{
 		
 		Element node = bindNode;
 		if(node == null && hasUINode()){
-			//We are using a ref instead of bind
-			node = controlNode;
-			appendParentBinding = false;
+			//No bindNode, generate one.
+			node = UiElementBuilder.createBindNodeForIFormElement(this, doc, modelNode);
+			this.setBindNode(node);
 		}
 		if(node != null){
 			String binding = variableName;
@@ -1230,7 +1243,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * Checks if the xforms ui node name of this question requires to
 	 * be changed and does so, if it needs to be changed.
 	 */
-	private void updateControlNodeName(){
+	private void updateControlNode(){
 		//TODO How about cases where the prefix is not xf?
 		
 		//Remove the control node from the XForms doc if hasUINode == false
@@ -1313,6 +1326,10 @@ public class QuestionDef implements IFormElement, Serializable{
 			controlNode =  child;
 			updateControlNodeChildren();
 		}
+		
+		
+		controlNode.removeAttribute("bind");
+		controlNode.setAttribute("ref", this.getDataNodesetPath());
 	}
 	
 	private boolean isMultiMedia(int dataType){

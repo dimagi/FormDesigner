@@ -341,8 +341,9 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	public void removeLanguage(){
 		String language = cm.getColumnHeader(currentColumnIndex);
-		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + language + " language?"))
+		if(!com.google.gwt.user.client.Window.confirm("Do you really want to remove the " + language + " language?")){
 			return;
+		}
 		
 		Itext.removeLocale(language);
 		

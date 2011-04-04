@@ -98,6 +98,9 @@ public class ItextLocale {
 		return values.get(fullID)!=null;
 	}
 	
+	public void removeTranslation(String fullID){
+		values.remove(fullID);
+	}
 	/**
 	 * Gets a translation. If no form is present, use null
 	 * @param ID

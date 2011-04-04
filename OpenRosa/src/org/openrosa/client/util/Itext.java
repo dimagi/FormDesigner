@@ -147,11 +147,9 @@ public class Itext {
 			
 			//find entry in each locale corresponding to this id
 			//and remove it
-			Iterator<ItextLocale> iter = locales.iterator();
-			while(iter.hasNext()){
-				ItextLocale locale = iter.next();
+			for(ItextLocale locale : locales){
 				if(locale.hasID(id)){
-					iter.remove();
+					locale.removeTranslation(id);
 				}
 			}
 			

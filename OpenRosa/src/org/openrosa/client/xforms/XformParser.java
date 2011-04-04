@@ -808,7 +808,7 @@ public class XformParser {
 		}
 		
 		child.removeAttribute("id");
-		if(child.getAttribute("type").isEmpty()){
+		if(child.getAttribute("type") != null && child.getAttribute("type").isEmpty()){
 			child.removeAttribute("type");
 		}
 		formDef.addChild(def);

@@ -111,6 +111,7 @@ public class RelevantBuilder {
 			}
 			
 			String relevant = getRelevantFromRule(rule, id, formDef);
+			relevant = XmlUtil.escapeXMLAttribute(relevant);
 			if(relevant.trim().length() == 0){
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT);
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_ACTION);

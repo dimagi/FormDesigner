@@ -97,7 +97,7 @@ public class ConstraintBuilder {
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);
 			return;
 		}
-
+//		constraint = XmlUtil.escapeXMLAttribute(constraint);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT, constraint);
 		node.setAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE, rule.getErrorMessage());
 	}

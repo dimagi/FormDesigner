@@ -148,6 +148,7 @@ public class XformBuilder {
 				continue;
 			Element node = elementDef.getBindNode() != null ? elementDef.getBindNode() : elementDef.getControlNode();
 			String expr = calculation.getCalculateExpression();
+			expr = XmlUtil.escapeXMLAttribute(expr);
 			if(node != null && expr != null && expr.length() != 0){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE, expr);
 			}else{

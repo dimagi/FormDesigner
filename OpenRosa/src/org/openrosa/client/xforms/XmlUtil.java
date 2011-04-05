@@ -219,6 +219,14 @@ public class XmlUtil {
 		return setDataNodeXMLNS(doc.toString());
 	}
 	
+	public static String escapeXMLAttribute(String s){
+		if(s == null){ return null; }
+		String ret = s.replace(">", "&gt;");
+		ret = ret.replace("<", "&lt;");
+		ret = ret.replace("'", "&apos;");
+		ret = ret.replace("\"", "&quot;");
+		return ret;
+	}
 	
 	/**
 	 * So hacky I don't want to think about it.

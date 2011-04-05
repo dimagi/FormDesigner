@@ -3,6 +3,7 @@ package org.openrosa.client.model;
 import java.io.Serializable;
 
 import org.openrosa.client.xforms.XformConstants;
+import org.openrosa.client.xforms.XmlUtil;
 
 import com.google.gwt.xml.client.Element;
 
@@ -60,7 +61,8 @@ public class Calculation implements Serializable{
 		if(expr == null || expr.isEmpty() || (oldexpr != null && oldexpr.isEmpty())){
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
 		}else{
-			node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE,calculateExpression);
+			expr = XmlUtil.escapeXMLAttribute(expr);
+			node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE,expr);
 		}
 	}
 }

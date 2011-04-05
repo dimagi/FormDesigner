@@ -143,10 +143,10 @@ public class XformBuilder {
 		//Build calculates for calculations
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
-			QuestionDef questionDef = formDef.getQuestion(calculation.getQuestionId());
-			if(questionDef == null)
+			IFormElement elementDef = formDef.getElement(calculation.getQuestionId());
+			if(elementDef == null)
 				continue;
-			Element node = questionDef.getBindNode() != null ? questionDef.getBindNode() : questionDef.getControlNode();
+			Element node = elementDef.getBindNode() != null ? elementDef.getBindNode() : elementDef.getControlNode();
 			String expr = calculation.getCalculateExpression();
 			if(node != null && expr != null && expr.length() != 0){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE, expr);

@@ -1737,7 +1737,13 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public List<IFormElement> getChildren(){
-		return (List<IFormElement>)options;
+		if(dataType == QuestionDef.QTN_TYPE_REPEAT) {
+			return this.getRepeatQtnsDef().getChildren();
+		}else if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) {
+			return (List<IFormElement>)options;
+		}else{
+			return null;
+		}
 	}
 
 	public void setChildren(List<IFormElement> children){
@@ -1758,7 +1764,13 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 	
 	public void addChild(IFormElement element){
-		addOption((OptionDef)element);
+		if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) {
+			addOption((OptionDef)element);
+		}else if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+			this.getRepeatQtnsDef().addChild(element);
+		}else{
+			throw new RuntimeException("Cannot 'addChild' with this Question Type!");
+		}
 	}
 	
 	public boolean removeChild(IFormElement element){

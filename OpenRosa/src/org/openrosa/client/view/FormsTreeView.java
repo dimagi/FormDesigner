@@ -22,6 +22,7 @@ import org.openrosa.client.jr.xforms.util.XFormUtils;
 import org.openrosa.client.locale.LocaleText;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.xforms.XformConstants;
 import org.openrosa.client.xforms.XformUtil;
@@ -103,11 +104,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	/** The next available form id. We always have one form for OpenRosa form designer. */
 	private int nextFormId = 1;
 
-	/** The next available question id. */
-	private int nextQuestionId = 0;
 
-	/** The next available question option id. */
-	private int nextOptionId = 0;
+
 
 	/** The listener to form designer global events. */
 	private IFormDesignerListener formDesignerListener;
@@ -358,9 +356,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			formDef.setId(nextFormId);
 
 		if(!langRefresh){
-			int count = formDef.getQuestionCount();
-			if(nextQuestionId <= count)
-				nextQuestionId = count;
+//			int count = formDef.getQuestionCount();
+//			if(nextQuestionId <= count)
+//				nextQuestionId = count;
 
 			this.formDef = formDef;
 
@@ -625,8 +623,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			
 
 			nextFormId = 1;
-			nextQuestionId = 0;
-			nextOptionId = 0;
+//			nextQuestionId = 0;
+//			nextOptionId = 0;
 		}
 	}
 
@@ -727,7 +725,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(selModelItem != null){
 			Object userObj = selModelItem.getUserObject();
 			if(userObj instanceof QuestionDef){
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				questionDef.setItextId(questionDef.getBinding());
 				TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem.getParent());
@@ -736,7 +734,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
 			else if(userObj instanceof OptionDef){
-				int id = ++nextOptionId;
+				int id = FormUtil.getNextNewOptionID(formDef);
 				OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				optionDef.setItextId(optionDef.getBinding());
 				TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem.getParent());
@@ -745,7 +743,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
 			else if(userObj instanceof GroupDef){
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				GroupDef pageDef = new GroupDef(LocaleText.get("page")+id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getBinding()));
 				TreeModelItem modelItem = new TreeModelItem(pageDef.getBinding(),pageDef,selModelItem.getParent());
@@ -770,7 +768,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(selectedItem != null){
 			Object selectedUserObj = selectedItem.getUserObject();
 			if(selectedUserObj instanceof QuestionDef){
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
 					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
 					selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), Itext.getDisplayText(pageDef) ,pageDef);
@@ -810,7 +808,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(selectedUserObj instanceof OptionDef){
 				//addNewOptionDef();
 
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent().getParent()).getUserObject());
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
@@ -827,7 +825,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				treePanel.getSelectionModel().select(selectedItem, false);
 			}
 			else if(selectedUserObj instanceof GroupDef){				
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
@@ -860,7 +858,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					parentItem = (TreeModelItem)selectedItem.getChild(0);
 				}
 
-				int id = ++nextQuestionId;
+				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)parentItem.getUserObject());
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getBinding());
@@ -912,7 +910,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 
 	private void addNewOptionDef(QuestionDef questionDef, TreeModelItem parentItem){
-		int id = ++nextOptionId;
+		int id = FormUtil.getNextNewOptionID(formDef);
 		OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,questionDef);
 		optionDef.setItextId(optionDef.getBinding());
 		//addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
@@ -1003,7 +1001,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
            (userObj instanceof QuestionDef && 
 						 ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_REPEAT) ){
 
-			int id = ++nextQuestionId;
+			int id = FormUtil.getNextNewQuestionID(formDef);
 			IFormElement questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)userObj);
 
 			if(dataType == QuestionDef.QTN_TYPE_REPEAT){
@@ -1022,7 +1020,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				( ((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
 						((QuestionDef)userObj).getDataType() ==  QuestionDef.QTN_TYPE_LIST_MULTIPLE ) ){
 
-			int id = ++nextOptionId;
+			int id = FormUtil.getNextNewOptionID(formDef);
 			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
 			optionDef.setItextId(optionDef.getBinding());
 			TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem);

@@ -1489,6 +1489,44 @@ public class FormDef implements IFormElement, Serializable{
 		
 	}
 	
+	/**
+	 * Convenience method that returns the total
+	 * number of OptionDefs present in the form
+	 * (useful for generating IDs for new option items)
+	 * @return
+	 */
+	public int getOptionCount(){
+		return recurseCount(this);
+	}
+	
+	private int recurseCount(IFormElement parent){
+		int count = 0;
+		if(parent == null){ return 0; }
+		boolean hasQuestionDefChildren = parent instanceof GroupDef || //is a group or
+										 parent instanceof FormDef ||
+										(parent instanceof QuestionDef &&
+												parent.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || // or is a 1select 
+												parent.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE || // or is a select
+												parent.getDataType() == QuestionDef.QTN_TYPE_REPEAT); // or is a repeat
+		
+		if(hasQuestionDefChildren){
+			if(parent.getChildren() == null || parent.getChildren().size() <= 0){ return 0; }
+			for(IFormElement item : parent.getChildren()){
+				count += recurseCount(item);
+			}
+			return count;
+		}else if(parent instanceof QuestionDef){
+			return 0; //not a question that has OptionDef for children
+		}else if(parent instanceof FormDef){
+			return ((FormDef) parent).getOptionCount();
+		}else if(parent instanceof OptionDef){
+			return 1;
+		}else{
+			return 0;
+		}
+		
+	}
+	
 	public FormDef getFormDef(){
 		return this;
 	}

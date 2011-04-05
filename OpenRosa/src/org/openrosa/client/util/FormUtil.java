@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.openrosa.client.PurcConstants;
 import org.openrosa.client.locale.LocaleText;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.view.ErrorDialog;
@@ -25,6 +26,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
@@ -638,6 +640,56 @@ public class FormUtil {
 		String[] tokens = p.split("/");
 		return tokens[tokens.length-1];
 	}
+	
+	/**
+	 * Returns a int that can be used as a unique questionID
+	 * (checks to see if the generated ID already exists,
+	 * if so, generates a new one until it hits a unique)
+	 * @param formDef
+	 * @return
+	 */
+	public static int getNextNewQuestionID(FormDef formDef){
+		int id=formDef.getChildCount();
+		boolean alreadyUsed = true;
+		while(alreadyUsed){
+			id++;
+			alreadyUsed = formDef.getElement("question"+id) != null;
+		}
+		return id;
+	}
+	
+	
+	private static int lastOptionID = 0;
+	private static boolean hasBeenInit = false;
+	/** 
+	 * 	 * Returns a int that can be used as a unique questionID
+	 * (checks to see if the generated ID already exists,
+	 * if so, generates a new one until it hits a unique)
+	 * @param formDef
+	 * @return
+	 */
+	public static int getNextNewOptionID(FormDef formDef){
+		if(!hasBeenInit){
+			lastOptionID = formDef.getOptionCount();
+			hasBeenInit = true;
+		}
+		lastOptionID++;		
+		return Integer.parseInt(lastOptionID+""+getRand2DigitNum());
+	}
+	
+	public static String getTwoRandomAlphaChars(){
+		int ran = (int)(Random.nextDouble()*25);
+		char a = "abcdefghijklmnopqrstuvwxyz".charAt(ran);
+		ran = (int)(Random.nextDouble()*25);
+		char b = "abcdefghijklmnopqrstuvwxyz".charAt(ran);
+		return (""+a+b).toUpperCase();
+	}
+	
+	public static int getRand2DigitNum(){
+		return ((int)(Random.nextDouble()*99));
+	}
+	
+	
 	
 	/**
 	 * Takes in an element with either a nodeset or a ref

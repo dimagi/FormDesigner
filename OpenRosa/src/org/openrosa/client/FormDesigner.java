@@ -13,6 +13,7 @@ import org.openrosa.client.util.FormUtil;
 import org.openrosa.client.xforms.XformConstants;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -61,6 +62,10 @@ public class FormDesigner implements EntryPoint ,ResizeHandler{
 		FormDesigner.XEP_GET_FORM_URL = com.google.gwt.user.client.Window.Location.getParameter("get_url");
 		FormDesigner.XEP_POST_FORM_URL = com.google.gwt.user.client.Window.Location.getParameter("save_url");
 		FormUtil.setupUncaughtExceptionHandler();
+		GWT.log("token:"+FormDesigner.token);
+		GWT.log("status:"+FormDesigner.status);
+		GWT.log("GET_URL:"+FormDesigner.XEP_GET_FORM_URL);
+		GWT.log("POST_URL:"+FormDesigner.XEP_POST_FORM_URL);
 		
 		FormUtil.dlg.setText(LocaleText.get("loading"));
 		FormUtil.dlg.center();

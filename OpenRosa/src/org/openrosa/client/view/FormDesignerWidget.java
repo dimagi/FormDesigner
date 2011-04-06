@@ -154,6 +154,7 @@ public class FormDesignerWidget extends Composite{
 	}
 	
 	public void doGet(String url) {
+		GWT.log("Attempting to download form from URL:"+url);
 		RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
 		String s = "";
 		Iterator<String> iter = Cookies.getCookieNames().iterator();
@@ -170,6 +171,7 @@ public class FormDesignerWidget extends Composite{
 				
 				public void onResponseReceived(Request request, Response response) {
 //					parseCookies(response);
+					GWT.log("HTTP GET Response Received. Code:"+response.getStatusCode()+". Text:"+response.getText());
 					setReturnErrorCode(response.getStatusCode());
 					setRetrievedXML(response.getText());
 				}

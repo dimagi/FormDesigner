@@ -366,7 +366,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void addNewRow(){
-		Itext.getItextRows().add(new ItextModel());
+		String lang = Itext.getDefaultLocale().name;
+		Itext.addText(lang, "new_row", "value me!");
 		Itext.getItextRows().commitChanges();
 		grid.reconfigure(Itext.getItextRows(), cm);
 	}

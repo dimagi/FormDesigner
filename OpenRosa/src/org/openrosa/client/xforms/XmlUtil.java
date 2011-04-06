@@ -220,12 +220,13 @@ public class XmlUtil {
 	}
 	
 	public static String escapeXMLAttribute(String s){
-		if(s == null){ return null; }
-		String ret = s.replace(">", "&gt;");
-		ret = ret.replace("<", "&lt;");
-		ret = ret.replace("'", "&apos;");
-		ret = ret.replace("\"", "&quot;");
-		return ret;
+		return s;
+//		if(s == null){ return null; }
+//		String ret = s.replace(">", "&gt;");
+//		ret = ret.replace("<", "&lt;");
+//		ret = ret.replace("'", "&apos;");
+//		ret = ret.replace("\"", "&quot;");
+//		return ret;
 	}
 	
 	/**

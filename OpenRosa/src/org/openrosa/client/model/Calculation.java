@@ -29,7 +29,7 @@ public class Calculation implements Serializable{
 	public Calculation(int questionId, String calculateExpression) {
 		super();
 		this.questionId = questionId;
-		this.calculateExpression = calculateExpression;
+		this.calculateExpression = calculateExpression.replace("&gt;",">").replace("&lt;","<");
 	}
 
 	public int getQuestionId() {
@@ -57,6 +57,7 @@ public class Calculation implements Serializable{
 			return;
 		}
 		String expr = getCalculateExpression();
+//		expr = expr.replace(">", "&gt;").replace("<", "&lt;");
 		String oldexpr = node.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);
 		if(expr == null || expr.isEmpty() || (oldexpr != null && oldexpr.isEmpty())){
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE);

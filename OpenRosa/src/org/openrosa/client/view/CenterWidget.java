@@ -336,9 +336,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 				Window.alert("Client side submission error. Data not sent!");
 			}
 	}
-	private String escapeAmpChar(String s){
-		return s.replace("&", "%26");
-	}
+
 	public static boolean continueEditing = false;
 	private boolean submitData(){
 		
@@ -372,7 +370,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 				FormUtil.dlg.center("Sending Form...");
 				FormUtil.dlg.show();
 			}
-			data += escapeAmpChar(URL.encode("xform="+xml));
+			data += URL.encode("xform="+URL.encodeComponent(xml));
 			builder.sendRequest(data, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					int code = response.getStatusCode();

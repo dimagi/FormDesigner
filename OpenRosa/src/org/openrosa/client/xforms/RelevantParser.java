@@ -46,7 +46,7 @@ public class RelevantParser {
 		int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
-			String relevant = (String)relevants.get(qtn);
+			String relevant = ((String)relevants.get(qtn)).replace("&gt;", ">").replace("&lt;", "<");
 
 			//If there is a skip rule with the same relevant as the current
 			//then just add this question as another action target to the skip

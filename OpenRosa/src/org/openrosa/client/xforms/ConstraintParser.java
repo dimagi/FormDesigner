@@ -46,7 +46,7 @@ public class ConstraintParser {
 		//int id = 0;
 		while(keys.hasNext()){
 			QuestionDef qtn = (QuestionDef)keys.next();
-			String valRuleString = (String)constraints.get(qtn);
+			String valRuleString = ((String)constraints.get(qtn)).replace("&gt;", ">").replace("&lt;", "<");
 			boolean hasValidationRule = valRuleString != null && !valRuleString.isEmpty();
 			
 			ValidationRule validationRule = buildValidationRule(formDef, qtn.getId(),(String)constraints.get(qtn));

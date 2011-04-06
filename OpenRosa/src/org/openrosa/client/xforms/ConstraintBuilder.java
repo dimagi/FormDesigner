@@ -92,6 +92,7 @@ public class ConstraintBuilder {
 
 
 		String constraint = getConstraintFromRule(rule,questionDef.getId(),formDef);
+//		constraint = constraint.replace(">", "&gt;").replace("<", "&lt;");
 		if(constraint == null){
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT);
 			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_CONSTRAINT_MESSAGE);

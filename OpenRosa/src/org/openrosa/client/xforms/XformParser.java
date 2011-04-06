@@ -770,7 +770,7 @@ public class XformParser {
 		def.setBindNode(child);
 		def.setId(getNextQuestionId());
 		def.setBinding(FormUtil.getQtnIDFromElement(child));
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE)== null){
+		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE)!= null){
 			XformParserUtil.setQuestionType((QuestionDef)def,child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE),child);
 		}
 		

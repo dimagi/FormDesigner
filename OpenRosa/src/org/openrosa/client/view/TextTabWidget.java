@@ -18,8 +18,12 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.GridEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.StoreEvent;
+import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -59,6 +63,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 
 	private ITextListener listener;
 	private static boolean showWindow = false;
+	private String curSelectedRowID = "";
 
 
 	/** The images for the tool bar icons. */
@@ -153,6 +158,23 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 			{
 				currentColumnIndex = ge.getColIndex();
 				currentRowIndex = ge.getRowIndex();
+				curSelectedRowID = ge.getModel().get("id");
+			}
+		});
+		
+		grid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<ItextModel>() {
+			public void selectionChanged(SelectionChangedEvent<ItextModel> se) {
+				Itext.updateRow(se.getSelectedItem(), curSelectedRowID);
+				curSelectedRowID = se.getSelectedItem().get("id");
+			}
+		});
+		
+		grid.addListener(Events.SelectionChange, new Listener<GridEvent<ModelData>>() {
+			
+			@Override
+			public void handleEvent(GridEvent<ModelData> be) {
+				// TODO Auto-generated method stub
+				System.out.println("asd");
 			}
 		});
 	}
@@ -366,10 +388,16 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void addNewRow(){
-		String lang = Itext.getDefaultLocale().name;
-		Itext.addText(lang, "new_row", "value me!");
-		Itext.getItextRows().commitChanges();
-		grid.reconfigure(Itext.getItextRows(), cm);
+		ItextModel newrow = new ItextModel();
+		newrow.set("id", "new_row");
+		newrow.set(Itext.getDefaultLocale().name, "value me!");
+		grid.stopEditing();
+		grid.getStore().insert(newrow, grid.getStore().getCount());
+		grid.startEditing(grid.getStore().indexOf(newrow), 0);
+//		String lang = Itext.getDefaultLocale().name;
+//		Itext.addText(lang, "new_row", "value me!");
+//		Itext.getItextRows().commitChanges();
+//		grid.reconfigure(Itext.getItextRows(), cm);
 	}
 
 	public void removeRow(){
@@ -387,6 +415,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void save(boolean showWindow){
+		Itext.updateModel(grid.getStore());
 		TextTabWidget.showWindow = showWindow;
 		grid.getStore().commitChanges();
 		hideWindow();

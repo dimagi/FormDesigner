@@ -54,6 +54,22 @@ public class Itext {
 		return false;
 	}
 	
+	/**
+	 * Update the itextModel with the given row.
+	 * Also updates the internal itext model representation
+	 * @param row
+	 * @param oldID - the old Question ID (used for if the ID has been changes by this update)
+	 */
+	public static void updateRow(ItextModel row, String oldID){
+		for(ItextModel r : itextRows.getModels()){
+			if(r.get("id").equals(oldID)){
+				for(String k: row.getPropertyNames()){
+					r.set(k, row.get(k));
+				}
+			}
+		}
+		updateModel(itextRows);
+	}
 	
 	/**
 	 * Returns a row of ONLY the itext values (for all languages) specified by

@@ -370,7 +370,7 @@ public class CenterWidget extends Composite implements IFileListener,IFormSelect
 				FormUtil.dlg.center("Sending Form...");
 				FormUtil.dlg.show();
 			}
-			data += URL.encode("xform="+URL.encodeComponent(xml));
+			data += "xform="+URL.encodeComponent(xml);
 			builder.sendRequest(data, new RequestCallback(){
 				public void onResponseReceived(Request request, Response response){
 					int code = response.getStatusCode();

@@ -195,6 +195,7 @@ public class Itext {
 	 */
 	private static ItextLocale getLocaleNoAdd(String name){
 		for(ItextLocale language : locales){
+			if(language == null){ return null; }
 			if(language.getName().equals(name))
 				return language;
 		}

@@ -1039,73 +1039,76 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(inReadOnlyMode())
 			return;
 
-		TreeModelItem item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 
 		//Check if there is any selection.
-		if(item == null)
+		if(selectedItem == null){
 			return;
+		}
 
-		TreeModelItem parent = (TreeModelItem)item.getParent();
+		TreeModelItem parentOfSelectedItem = (TreeModelItem)selectedItem.getParent();
 
 		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
-		if(parent == null)
+		if(parentOfSelectedItem == null){
 			return;
+		}
 
 		//One item can't move against itself.
-		int count = parent.getChildCount();
-		if(count == 1)
+		int count = parentOfSelectedItem.getChildCount();
+		if(count == 1){
 			return;
+		}
 
-		int index = parent.indexOf(item);
-		if(index == 0)
+		int selectedItemIndex = parentOfSelectedItem.indexOf(selectedItem);
+		if(selectedItemIndex == 0){
 			return; //Can't move any further upwards.
+		}
 
 		//move the item in the form object model.
-		moveFormItemUp(item,parent);
+		moveFormItemUp(selectedItem,parentOfSelectedItem);
 
 		TreeModelItem currentItem; // = parent.getChild(index - 1);
 		List list = new ArrayList();
 
 		//item.remove();
-		parent.remove(item);
-		treePanel.getStore().remove(item);
+		parentOfSelectedItem.remove(selectedItem);
+		treePanel.getStore().remove(selectedItem);
 
 		//parent.insert(item, index -1);
 
-		while(parent.getChildCount() >= index){
-			currentItem = (TreeModelItem)parent.getChild(index-1);
+		while(parentOfSelectedItem.getChildCount() >= selectedItemIndex){
+			currentItem = (TreeModelItem)parentOfSelectedItem.getChild(selectedItemIndex-1);
 			list.add(currentItem);
 			//currentItem.remove();
 			currentItem.getParent().remove(currentItem);
 			treePanel.getStore().remove(currentItem);
 		}
 
-		parent.add(item);
-		treePanel.getStore().add(parent,item,true);
+		parentOfSelectedItem.add(selectedItem);
+		treePanel.getStore().add(parentOfSelectedItem,selectedItem,true);
 		for(int i=0; i<list.size(); i++){
-			parent.add((TreeModelItem)list.get(i));
-			treePanel.getStore().add(parent,(TreeModelItem)list.get(i),true);
+			parentOfSelectedItem.add((TreeModelItem)list.get(i));
+			treePanel.getStore().add(parentOfSelectedItem,(TreeModelItem)list.get(i),true);
 		}
 
 		//treePanel.getStore().update(parent);
 
 		//tree.setSelectedItem(item);
-		treePanel.getSelectionModel().select(item, false);
+		treePanel.getSelectionModel().select(selectedItem, false);
 	}
 
-	private void moveFormItemUp(TreeModelItem item,TreeModelItem parent){
-		IFormElement userObj = (IFormElement)item.getUserObject();
-		IFormElement parentObj = (IFormElement)parent.getUserObject();
+	private void moveFormItemUp(TreeModelItem selectedItem,TreeModelItem parentSelectedItem){
+		IFormElement userObj = (IFormElement)selectedItem.getUserObject();
+		IFormElement parentObj = (IFormElement)parentSelectedItem.getUserObject();
 
 		//Normal question
-		if(parentObj instanceof GroupDef)
+		if(parentObj instanceof GroupDef){
 			((GroupDef)parentObj).moveElementUp(userObj);
-		/*else if(userObj instanceof QuestionDef && parentObj instanceof QuestionDef)
-			((QuestionDef)parentObj).getRepeatQtnsDef().moveQuestionUp((QuestionDef)userObj);*/
-		else if(parentObj instanceof FormDef)
+		}else if(parentObj instanceof FormDef){
 			GroupDef.moveElementUp(((IFormElement)parentObj).getChildren(), userObj); //((FormDef)parentObj).movePageUp(userObj);
-		else if(userObj instanceof OptionDef)
+		}else if(userObj instanceof OptionDef){
 			((QuestionDef)parentObj).moveOptionUp((OptionDef)userObj);
+		}
 	}
 
 	private void moveFormItemDown(TreeModelItem item,TreeModelItem parent){

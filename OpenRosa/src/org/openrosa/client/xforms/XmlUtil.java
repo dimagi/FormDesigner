@@ -39,6 +39,24 @@ public class XmlUtil {
 
 	}
 
+	public static String getItextTextValue(Node node){
+		int numOfEntries = node.getChildNodes().getLength();
+		if(numOfEntries == 0){ return null; }
+		
+		String s = "";
+		for (int i = 0; i < numOfEntries; i++) {
+			Node child = node.getChildNodes().item(i);
+			if (child.getNodeType() == Node.TEXT_NODE){
+				s += child.getNodeValue();				
+			}else if (child.getNodeType() == Node.ELEMENT_NODE && child.getNodeName().toLowerCase().equals("output")){
+				s += ((Element)child).toString();
+			}
+		}
+
+		return s;
+	}
+	
+	
 	/**
 	 * Gets the text value of a node.
 	 * 
@@ -158,24 +176,28 @@ public class XmlUtil {
 			return null;
 
 		for(int i=0; i<parent.getChildNodes().getLength(); i++){
-			if(parent.getChildNodes().item(i).getNodeType() != Node.ELEMENT_NODE)
+			if(parent.getChildNodes().item(i).getNodeType() != Node.ELEMENT_NODE){
 				continue;
+			}
 
 			Element child = (Element)parent.getChildNodes().item(i);
-			if(XmlUtil.getNodeName(child).equals(name))
+			if(XmlUtil.getNodeName(child).equals(name)){
 				return child;
+			}
 			else if(name.contains("/")){
 				String parentName = name.substring(0,name.indexOf('/'));
 				if(XmlUtil.getNodeName(child).equals(parentName)){
 					child = getNode(child,name.substring(name.indexOf('/') + 1));
-					if(child != null)
+					if(child != null){
 						return child;
+					}
 				}
 			}
 
 			child = getNode(child,name);
-			if(child != null)
+			if(child != null){
 				return child;
+			}
 		}
 
 		return null;
@@ -216,8 +238,15 @@ public class XmlUtil {
 	 * @return the xml string.
 	 */
 	public static String fromDoc2String(Document doc){
-		return setDataNodeXMLNS(doc.toString());
+		String pretty = prettifyXML(doc.toString());
+		return setDataNodeXMLNS(pretty);
 	}
+	
+	static native String prettifyXML(String xml)/*-{
+//		var s = $wnd.beautifyXml(xml);
+		var s = $wnd.formatXml(xml);
+		return s;
+	}-*/;
 	
 	public static String escapeXMLAttribute(String s){
 		return s;

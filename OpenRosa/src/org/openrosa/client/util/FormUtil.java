@@ -238,88 +238,88 @@ public class FormUtil {
 	}
 
 	private static String formatXmlPrivate(String xmlContent) {
-
-		String result = "";
-
-		try {
-			String prevBeginSection = "";
-			int prevIndex = 0;
-
-			for(int indentLevel = 0, index = 0 ; index < xmlContent.length() ; index++) {
-
-				//Seek to next "<"
-				index = xmlContent.indexOf("<", index);
-
-				if(index < 0 || index >= xmlContent.length())
-					break;
-
-				//Trim out XML block
-				String section = xmlContent.substring(index, xmlContent.indexOf(">", index) + 1);
-
-				if(section.matches("<!--.*-->")) {
-					//Is comment <!--....-->
-					result = indent(result, indentLevel);
-				}
-				else if(section.matches("<!.*>")) {
-					//Directive
-					result = indent(result, indentLevel);
-				}
-				else if(section.matches("<\\?.*\\?>")) {
-					//Is directive <?...?>
-					result = indent(result, indentLevel);
-				}
-				else if(section.matches("<[\\s]*[/\\\\].*>")) {
-					//Is closing tag </...>
-					result = indent(result, --indentLevel);
-				}
-				else if(section.matches("<.*[/\\\\][\\s]*>")) {
-					//Is standalone tag <.../>
-					result = indent(result, indentLevel);
-					prevBeginSection = section;
-				}
-				else {
-					//Is begin tag <....>
-					result = indent(result, indentLevel++);
-					prevBeginSection = section;
-				}
-
-				//My addition of making <> and </> be on same line and include text between
-				//if(prevSection.equalsIgnoreCase(section.replace("/", ""))){
-				//and we do this when we come accross a closing tag.
-				if(section.matches("<[\\s]*[/\\\\].*>")) {
-					if(prevIndex > 0){
-						int len = 1+(indentLevel*2);
-						if(result.substring(result.length()-len).contains("\n")){
-							if(isClosingPreviousBeginTag(prevBeginSection,section))
-								result = result.substring(0,result.length()-len);
-							String s = xmlContent.substring(prevIndex+1,index);
-							if(s.contains("\r\n")){
-								if(!s.trim().equals(""))
-									result += s.replace("\r\n", " ");
-							}
-							else if(s.contains("\n")){
-								if(!s.trim().equals(""))
-									result += s.replace("\n", " ");
-							}
-							else
-								result += s;
-
-							prevIndex = 0;
-						}
-					}
-				}
-				else
-					prevIndex = xmlContent.indexOf(">", index);
-
-				result += section + "\n";
-			}
-		}
-		catch(StringIndexOutOfBoundsException s) {
-			s.printStackTrace();
-			return "Invalid XML";
-		}
-
-		return result;
+		return xmlContent;
+//		String result = "";
+//
+//		try {
+//			String prevBeginSection = "";
+//			int prevIndex = 0;
+//
+//			for(int indentLevel = 0, index = 0 ; index < xmlContent.length() ; index++) {
+//
+//				//Seek to next "<"
+//				index = xmlContent.indexOf("<", index);
+//
+//				if(index < 0 || index >= xmlContent.length())
+//					break;
+//
+//				//Trim out XML block
+//				String section = xmlContent.substring(index, xmlContent.indexOf(">", index) + 1);
+//
+//				if(section.matches("<!--.*-->")) {
+//					//Is comment <!--....-->
+//					result = indent(result, indentLevel);
+//				}
+//				else if(section.matches("<!.*>")) {
+//					//Directive
+//					result = indent(result, indentLevel);
+//				}
+//				else if(section.matches("<\\?.*\\?>")) {
+//					//Is directive <?...?>
+//					result = indent(result, indentLevel);
+//				}
+//				else if(section.matches("<[\\s]*[/\\\\].*>")) {
+//					//Is closing tag </...>
+//					result = indent(result, --indentLevel);
+//				}
+//				else if(section.matches("<.*[/\\\\][\\s]*>")) {
+//					//Is standalone tag <.../>
+//					result = indent(result, indentLevel);
+//					prevBeginSection = section;
+//				}
+//				else {
+//					//Is begin tag <....>
+//					result = indent(result, indentLevel++);
+//					prevBeginSection = section;
+//				}
+//
+//				//My addition of making <> and </> be on same line and include text between
+//				//if(prevSection.equalsIgnoreCase(section.replace("/", ""))){
+//				//and we do this when we come accross a closing tag.
+//				if(section.matches("<[\\s]*[/\\\\].*>")) {
+//					if(prevIndex > 0){
+//						int len = 1+(indentLevel*2);
+//						if(result.substring(result.length()-len).contains("\n")){
+//							if(isClosingPreviousBeginTag(prevBeginSection,section))
+//								result = result.substring(0,result.length()-len);
+//							String s = xmlContent.substring(prevIndex+1,index);
+//							if(s.contains("\r\n")){
+//								if(!s.trim().equals(""))
+//									result += s.replace("\r\n", " ");
+//							}
+//							else if(s.contains("\n")){
+//								if(!s.trim().equals(""))
+//									result += s.replace("\n", " ");
+//							}
+//							else
+//								result += s;
+//
+//							prevIndex = 0;
+//						}
+//					}
+//				}
+//				else
+//					prevIndex = xmlContent.indexOf(">", index);
+//
+//				result += section + "\n";
+//			}
+//		}
+//		catch(StringIndexOutOfBoundsException s) {
+//			s.printStackTrace();
+//			return "Invalid XML";
+//		}
+//
+//		return result;
 	}
 
 	private static boolean isClosingPreviousBeginTag(String prevBeginSection, String currentEndSection){

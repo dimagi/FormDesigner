@@ -14,6 +14,8 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.Text;
+import com.google.gwt.xml.client.XMLParser;
 
 
 /**
@@ -41,8 +43,9 @@ public class ItextParser {
 		
 		//Check if we have an itext block in this xform.
 		NodeList itext = doc.getElementsByTagName("itext");
-		if(itext == null || itext.getLength() == 0)
+		if(itext == null || itext.getLength() == 0){
 			return doc;
+		}
 
 		//Check if we have any translations in this itext block.
 		NodeList translations = ((Element)itext.item(0)).getElementsByTagName("translation");
@@ -69,18 +72,18 @@ public class ItextParser {
 					String fullID = id;
 					Node valNode = forms.item(k);
 					boolean tagNameEqualsValue = ((Element)valNode).getTagName().toLowerCase().equals("value");
-					if(!tagNameEqualsValue || XmlUtil.getTextValue(valNode) == null || XmlUtil.getTextValue(valNode).isEmpty()){
+					if(!tagNameEqualsValue || XmlUtil.getItextTextValue(valNode) == null || XmlUtil.getItextTextValue(valNode).isEmpty()){
 						continue; //means invalid xform itext
 					}
 					String textform = ((Element)valNode).getAttribute("form");
 					if(textform != null){
 						fullID = id + ";" + textform;
-						language.setTranslation(fullID, XmlUtil.getTextValue(valNode)); //some textform value
+						language.setTranslation(fullID, XmlUtil.getItextTextValue(valNode)); //some textform value
 					}else{
 						if(fullID.contains("_hint")){
-							language.setTranslation(fullID.replace("_", ";"), XmlUtil.getTextValue(valNode));
+							language.setTranslation(fullID.replace("_", ";"), XmlUtil.getItextTextValue(valNode));
 						}else{
-							language.setTranslation(fullID, XmlUtil.getTextValue(valNode));  //this is obviously the default value
+							language.setTranslation(fullID, XmlUtil.getItextTextValue(valNode));  //this is obviously the default value
 						}
 					}
 				}
@@ -105,8 +108,9 @@ public class ItextParser {
 		assert(modelNode != null); //we must have a model in an xform.
 
 		Element itextNode = XmlUtil.getNode(modelNode,"itext");
-		if(itextNode != null)
+		if(itextNode != null){
 			itextNode.getParentNode().removeChild(itextNode);
+		}
 		
 		if(!Itext.hasItext()){
 			return;
@@ -119,8 +123,9 @@ public class ItextParser {
 		itextNode = formDef.getDoc().createElement("itext");
 		modelNode.appendChild(itextNode);
 		
-		for(ItextLocale locale : locales)
+		for(ItextLocale locale : locales){
 			createTextValueNodes(formDef,locale,itextNode);
+		}
 		
 		
 	}
@@ -155,7 +160,8 @@ public class ItextParser {
 			textNode.setAttribute("id", ItextID);
 			if(defaultText != null){
 				valueNode = doc.createElement("value");
-				valueNode.appendChild(doc.createTextNode(defaultText));
+//				valueNode.appendChild(doc.createTextNode(defaultText));
+				attachItextText(valueNode, defaultText);
 				textNode.appendChild(valueNode);
 			}
 			
@@ -171,7 +177,8 @@ public class ItextParser {
 					
 					valueNode = doc.createElement("value");
 					valueNode.setAttribute("form", form);
-					valueNode.appendChild(doc.createTextNode(locale.getTranslation(ItextID,form)));
+//					valueNode.appendChild(doc.createTextNode(locale.getTranslation(ItextID,form)));
+					attachItextText(valueNode, locale.getTranslation(ItextID,form));
 					textNode.appendChild(valueNode);
 				}
 				
@@ -182,6 +189,33 @@ public class ItextParser {
 		}
 		formDef.setDoc(doc);
 		
+	}
+	
+	/**
+	 * Creates the correct TEXT and (if necessary output nodes) combo and attaches
+	 * it to the specified parentNode.  The parentNode is returned after attachment.
+	 * @param parentNode - Element you want to attach the Itext Text to.
+	 * @param rawText - Raw text (including any '&lt;output&gt;' string tags
+	 * @return
+	 */
+	public static Element attachItextText(Element parentNode, String rawText){
+		if(rawText == null || rawText.isEmpty()){
+			return null;
+		}else{
+			rawText = "<foo>" + rawText + "</foo>";
+		}
+		
+		Document tempDoc = XMLParser.parse(rawText);
+		Node imp = parentNode.getOwnerDocument().importNode(tempDoc.getChildNodes().item(0), true);
+		NodeList childNodes = imp.getChildNodes();
+		int numChildren = childNodes.getLength();
+		for(int i = 0; i<numChildren;i++){
+			Node child = imp.getFirstChild(); //for some reason appendChild below actively removes the child from the childNodes list...
+			int nodeType = child.getNodeType();
+			parentNode.appendChild(child);
+		}
+		
+		return parentNode;
 	}
 	
 	/**
@@ -199,7 +233,8 @@ public class ItextParser {
 		Element textNode = doc.createElement("text");
 		textNode.setAttribute("id", itextID+"_hint");
 		Element valNode = doc.createElement("value");
-		valNode.appendChild(doc.createTextNode(hintValue));
+//		valNode.appendChild(doc.createTextNode(hintValue));
+		attachItextText(valNode, hintValue);
 		textNode.appendChild(valNode);
 		translation.appendChild(textNode);
 	}

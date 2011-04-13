@@ -237,8 +237,15 @@ public class XmlUtil {
 	 * @return the xml string.
 	 */
 	public static String fromDoc2String(Document doc){
+//		String unformatted = flattenXML(doc.toString());
 		String pretty = prettifyXML(doc.toString());
 		return setDataNodeXMLNS(pretty);
+	}
+	
+	private static String flattenXML(String s){
+		String flatS = s.replaceAll("> *<([^/])", "><$1")
+						.replaceAll("\n", "");  
+		return flatS;
 	}
 	
 	static native String prettifyXML(String xml)/*-{

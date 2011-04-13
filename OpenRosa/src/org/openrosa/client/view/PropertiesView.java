@@ -169,6 +169,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** Widget for setting the form key property. */
 	private TextBox txtFormKey = new TextBox();
+	
+	private TextBox txtRepeatCount = new TextBox();
+	private Label lblRepeatCount = new Label("Repeat Repitition Count");
 
 	/** The selected object which could be FormDef, PageDef, QuestionDef or OptionDef */
 	private IFormElement propertiesObj;
@@ -237,9 +240,10 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(7, 0, lblRequired);
 		table.setWidget(8, 0, lblHasUINode);
 		table.setWidget(9, 0, lblBinding);
-		table.setWidget(10, 0, lblCalculate);
+		table.setWidget(10, 0, lblRepeatCount);
+		table.setWidget(11, 0, lblCalculate);
 
-		table.setWidget(11, 0, lblFormKey);
+		table.setWidget(12, 0, lblFormKey);
 
 		table.setWidget(0, 1, qtnID);
 		table.setWidget(1, 1, txtDefaultLabel);
@@ -251,17 +255,18 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(7, 1, chkRequired);
 		table.setWidget(8, 1, chkHasUINode);
 		table.setWidget(9, 1, txtBinding);
+		table.setWidget(10, 1, txtRepeatCount);
 
 		HorizontalPanel panel = new HorizontalPanel();
 		panel.add(txtCalculation);
 		FormUtil.maximizeWidget(txtCalculation);
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(10, 1, panel);
+		table.setWidget(11, 1, panel);
 		//panel.setVisible(false);
 
 		panel = new HorizontalPanel();
 		FormUtil.maximizeWidget(panel);
-		table.setWidget(11, 1, panel);
+		table.setWidget(12, 1, panel);
 		//panel.setVisible(false);
 
 
@@ -325,8 +330,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 //		tabs.getTabBar().setTabEnabled(3, false);
 		
-		table.setWidget(12, 0, tabs);
-		table.getFlexCellFormatter().setColSpan(12, 0, 2);
+		table.setWidget(13, 0, tabs);
+		table.getFlexCellFormatter().setColSpan(13, 0, 2);
 		//verticalPanel.add(pnl);
 		//FormUtil.maximizeWidget(tabs);
 
@@ -348,6 +353,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 //		enableDescriptionTemplate(false);
 		txtCalculation.setVisible(false);
 		lblCalculate.setVisible(false);
+		lblRepeatCount.setVisible(false);
+		txtRepeatCount.setVisible(false);
 
 		tabs.setVisible(false);
 		txtBinding.setVisible(false);
@@ -549,6 +556,21 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				updateQuestionRequired();
 			}});
+		
+		txtRepeatCount.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				updateRepeatCount();
+			}
+		});
+	}
+	
+	private void updateRepeatCount(){
+		if(propertiesObj != null && 
+			propertiesObj instanceof QuestionDef && 
+			((QuestionDef)propertiesObj).getDataType() == QuestionDef.QTN_TYPE_REPEAT)
+		{
+			((QuestionDef)propertiesObj).setRepeatCountNodePath(txtRepeatCount.getValue());
+		}
 	}
 	
 	/**
@@ -836,6 +858,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setText(questionDef.getDataNodesetPath());
 		txtHelpText.setText(questionDef.getHelpText());
 		txtDefaultValue.setText(questionDef.getDefaultValue());
+		txtRepeatCount.setText(questionDef.getRepeatCountNodePath());
 
 		chkVisible.setValue(questionDef.isVisible());
 		chkLocked.setValue(questionDef.isLocked());
@@ -843,6 +866,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkHasUINode.setValue(questionDef.hasUINode());
 		
 		cbDataType.setSelectedIndex(getCBIndexFromQtnDataType(questionDef));
+		
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			txtRepeatCount.setVisible(true);
+			lblRepeatCount.setVisible(true);
+		}
 		
 		final QuestionDef qd = questionDef;
 		DeferredCommand.addCommand(new Command(){
@@ -948,6 +976,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtCalculation.setVisible(visible);
 		lblCalculate.setVisible(visible);
 		txtCalculation.setVisible(visible);
+		
+		txtRepeatCount.setVisible(visible);
+		lblRepeatCount.setVisible(visible);
 
 		tabs.setVisible(visible);
 

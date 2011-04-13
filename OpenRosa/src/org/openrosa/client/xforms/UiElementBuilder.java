@@ -138,6 +138,10 @@ public class UiElementBuilder {
 		}else{
 			Element repeatNode =  doc.createElement(XformConstants.NODE_NAME_REPEAT);
 			repeatNode.setAttribute("nodeset", qtn.getDataNodesetPath());
+			String repeatNodePath = ((QuestionDef)qtn).getRepeatCountNodePath();
+			if(repeatNodePath != null && !repeatNodePath.isEmpty()){
+				repeatNode.setAttribute("jr:count", repeatNodePath);
+			}
 			uiNode.appendChild(repeatNode);
 			qtn.setControlNode(repeatNode);
 

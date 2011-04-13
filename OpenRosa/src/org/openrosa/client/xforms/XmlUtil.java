@@ -82,15 +82,14 @@ public class XmlUtil {
 					else
 						break;
 				}
-
-				return s;
+				return s.trim();
 				//return node.getChildNodes().item(i).getNodeValue();
 			}
 
 			if(node.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
 				String val = getTextValue((Element)node.getChildNodes().item(i));
 				if(val != null)
-					return val;
+					return val.trim();
 			}
 		}
 

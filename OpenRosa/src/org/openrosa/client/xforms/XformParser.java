@@ -708,10 +708,11 @@ public class XformParser {
 	}
 	
 	private static void parseRepeatElement(FormDef formDef, Element child, HashMap id2VarNameMap,IFormElement questionDef,HashMap relevants,Vector repeatQtns, HashMap rptKidMap, int currentPageNo, IFormElement parentQtn, HashMap constraints, List<QuestionDef> orphanDynOptionQns, int repeatElementIndex){
-		String nodeset;
+		String nodeset, jrCount;
 		QuestionDef repeat = null;
 		Element repeatNode = ((Element)child.getChildNodes().item(repeatElementIndex));
 		nodeset = repeatNode.getAttribute("nodeset");
+		jrCount = getJRCountAttributeValue(repeatNode);
 		boolean hasLabelNode = ((Element)child).getElementsByTagName("label").getLength() > 0;
 		Element labelNode = (Element)child.getElementsByTagName("label").item(0);
 		
@@ -734,6 +735,10 @@ public class XformParser {
 				repeat.setText(XmlUtil.getTextValue(labelNode));
 				repeat.setLabelNode(labelNode);
 			}
+			
+			if(jrCount != null && !jrCount.isEmpty()){
+				repeat.setRepeatCountNodePath(jrCount);
+			}
 			repeat.setControlNode(((Element)child.getChildNodes().item(repeatElementIndex)));
 			RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(repeat); 
 			repeat.setRepeatQtnsDef(repeatQtnsDef);
@@ -742,6 +747,15 @@ public class XformParser {
 			parentQtn = repeatQtnsDef;
 
 			parseElement(formDef, repeatNode,id2VarNameMap,questionDef,relevants,repeatQtns,rptKidMap,currentPageNo,parentQtn,constraints,orphanDynOptionQns);
+	}
+	
+	/**
+	 * Convenience function, gets the jr:repeatCount attribute value from the node and returns it
+	 * @param repeatNode
+	 * @return
+	 */
+	private static String getJRCountAttributeValue(Element repeatNode){
+		return (repeatNode.getAttribute("jr:count") != null ? repeatNode.getAttribute("jr:count") : repeatNode.getAttribute("count"));
 	}
 
 

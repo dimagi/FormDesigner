@@ -201,6 +201,13 @@ public class QuestionDef implements IFormElement, Serializable{
 	private boolean hasAdvancedCalculate, hasAdvancedConstraint, hasAdvancedRelevant;
 	
 	private String advancedCalculate, advancedConstraint, advancedRelevant;
+	
+	/**
+	 * Node path to an integer value that tells the JR engine
+	 * how many times to do a repeat.  Shows up as a
+	 * "jr:repeatCount" attribute in the control node.
+	 */
+	private String repeatCountNodePath;
 
 
 	/** This constructor is used mainly during deserialization. */
@@ -842,6 +849,13 @@ public class QuestionDef implements IFormElement, Serializable{
 			UiElementBuilder.addItextRefs(labelNode, this);
 		}
 		
+		if(getRepeatCountNodePath() != null && !getRepeatCountNodePath().isEmpty()){
+			controlNode.setAttribute("jr:count", getRepeatCountNodePath());
+		}else{
+			controlNode.removeAttribute("jr:count");
+			controlNode.removeAttribute("count");
+		}
+		
 		Element node = bindNode;
 		if(node == null && hasUINode()){
 			//No bindNode, generate one.
@@ -1021,7 +1035,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		return isNew;
 	}
 	
-
+	
 
 	private boolean areAllOptionsNew(){
 		if(options == null)
@@ -1153,14 +1167,17 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		String name = dataNode.getNodeName();
 		if(name.equals(variableName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
-			if(dataType != QuestionDef.QTN_TYPE_REPEAT)
+			if(dataType != QuestionDef.QTN_TYPE_REPEAT){
 				return;
-			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getVariableName().equals(dataNode.getParentNode().getNodeName()))
+			}
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getVariableName().equals(dataNode.getParentNode().getNodeName())){
 				return;
+			}
 		}
 
-		if(variableName.contains("/") && name.equals(variableName.substring(variableName.lastIndexOf("/")+1)) && dataNode.getParentNode().getNodeName().equals(variableName.substring(0,variableName.indexOf("/"))))
+		if(variableName.contains("/") && name.equals(variableName.substring(variableName.lastIndexOf("/")+1)) && dataNode.getParentNode().getNodeName().equals(variableName.substring(0,variableName.indexOf("/")))){
 			return;
+		}
 
 
 		String xml = dataNode.toString();
@@ -1855,6 +1872,14 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setAdvancedRelevant(String releValue) {
 		advancedRelevant = releValue;
+	}
+	
+	public void setRepeatCountNodePath(String nodePath){
+		this.repeatCountNodePath = nodePath;
+	}
+	
+	public String getRepeatCountNodePath(){
+		return repeatCountNodePath;
 	}
 
 }

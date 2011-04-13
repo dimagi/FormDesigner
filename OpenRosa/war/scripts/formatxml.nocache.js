@@ -1,8 +1,8 @@
 function formatXml(xml) {
-var reg = /(>)(<)(\/*)/g;
+var reg = /(>)(<)(\/*)/g;  // g means global /..../ means regexp.  g means look for multiple times.
 var wsexp = / *(.*) +\n/g;
 var contexp = /(<.+>)(.+\n)/g;
-xml = xml.replace(reg, '$1\n$2$3').replace(wsexp, '$1\n').replace(contexp, '$1\n$2');
+xml = xml.replace(reg, '$1\n$2$3').replace(wsexp, '$1\n').replace(contexp, '$1$2');
 var pad = 0;
 var formatted = '';
 var lines = xml.split('\n');

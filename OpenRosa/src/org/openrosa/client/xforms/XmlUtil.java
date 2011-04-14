@@ -249,8 +249,8 @@ public class XmlUtil {
 	}
 	
 	static native String prettifyXML(String xml)/*-{
-//		var s = $wnd.beautifyXml(xml);
-		var s = $wnd.formatXml(xml);
+		var s = $wnd.beautifyXml(xml);
+//		var s = $wnd.formatXml(xml);
 		return s;
 	}-*/;
 	

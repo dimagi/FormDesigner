@@ -91,25 +91,18 @@ public class XformBuilder {
 
 		//Create the instance node and add it to the model node.
 		Element instanceNode =  doc.createElement(XformConstants.NODE_NAME_INSTANCE);
-//		instanceNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, formDef.getVariableName());
-//		instanceNode.setAttribute("xmlns", UUID.uuid());
 		modelNode.appendChild(instanceNode);
 		formDef.setModelNode(modelNode);
 
 		//Create the form data node and add it to the instance node.
 		Element formNode =  doc.createElement("data");
-//		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NAME, formDef.getName());
 		formNode.setAttribute("xmlnsCHANGEME", "http://openrosa.org/formdesigner/"+UUID.uuid());
-//		formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_FORM_KEY, String.valueOf(formDef.getFormKey()));
 		formNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
 		formNode.setAttribute("uiVersion", "1");
 		formNode.setAttribute("version", "1");
-//		addMetaData(doc, formNode);
 		instanceNode.appendChild(formNode);
 		formDef.setDataNode(formNode);
 
-//		if(formDef.getDescriptionTemplate() != null && formDef.getDescriptionTemplate().trim().length() > 0)
-//			formNode.setAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE, formDef.getDescriptionTemplate());
 
 		//Check if we have any pages.
 		if(formDef.getChildren() == null){
@@ -120,7 +113,7 @@ public class XformBuilder {
 		for(int pageNo=0; pageNo<formDef.getChildCount(); pageNo++){
 			IFormElement element = formDef.getChildAt(pageNo);
 			if(element instanceof GroupDef){
-				fromPageDef2Xform((GroupDef)element,doc,parentNode,formDef,formNode,modelNode);
+				fromGroupDef2Xform((GroupDef)element,doc,parentNode,formDef,formNode,modelNode);
 			}else{
 				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,formDef,formNode,modelNode,parentNode);
 			}
@@ -201,14 +194,14 @@ public class XformBuilder {
 	/**
 	 * Converts a page definition object to xforms.
 	 * 
-	 * @param pageDef the page definition object.
+	 * @param groupDef the page definition object.
 	 * @param doc the xforms document.
 	 * @param xformsNode the root node of the xforms document.
 	 * @param formDef the form definition object to which the page belongs.
 	 * @param formNode the xforms instance data node.
 	 * @param modelNode the xforms model node.
 	 */
-	public static void fromPageDef2Xform(GroupDef pageDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
+	public static void fromGroupDef2Xform(GroupDef groupDef, Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode){
 
 //		if(pageDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 //			UiElementBuilder.fromQuestionDef2Xform(pageDef,doc,xformsNode,formDef,formNode,modelNode,xformsNode);
@@ -218,8 +211,8 @@ public class XformBuilder {
 			Element labelNode =  doc.createElement(XformConstants.NODE_NAME_LABEL);
 			Element hintNode = doc.createElement(XformConstants.NODE_NAME_HINT);
 			Element bindNode = doc.createElement("bind");
-			Element parentDataNode = pageDef.getParent().getDataNode();
-			String nodesetPath = pageDef.getDataNodesetPath();
+			Element parentDataNode = groupDef.getParent().getDataNode();
+			String nodesetPath = groupDef.getDataNodesetPath();
 			String qtnID = FormUtil.getQtnIDFromNodeSetPath(nodesetPath);
 			
 			if(parentDataNode == null){
@@ -228,39 +221,37 @@ public class XformBuilder {
 			Element dataNode = doc.createElement(qtnID);
 			parentDataNode.appendChild(dataNode);
 			
-			pageDef.setDataNode(dataNode);
+			groupDef.setDataNode(dataNode);
 			
 			
-			if(pageDef.getHelpText()!= null || Itext.getDefaultLocale().hasID(pageDef.getItextId()+";hint")){
-				UiElementBuilder.addHelpItextRefs(hintNode, pageDef);
-				pageDef.setHintNode(hintNode);
+			if(groupDef.getHelpText()!= null || Itext.getDefaultLocale().hasID(groupDef.getItextId()+";hint")){
+				UiElementBuilder.addHelpItextRefs(hintNode, groupDef);
+				groupDef.setHintNode(hintNode);
 				groupNode.appendChild(hintNode);
 			}
 			
-			labelNode.appendChild(doc.createTextNode(pageDef.getText()));
-			UiElementBuilder.addItextRefs(labelNode, pageDef);
+			labelNode.appendChild(doc.createTextNode(groupDef.getText()));
+			UiElementBuilder.addItextRefs(labelNode, groupDef);
 			groupNode.appendChild(labelNode);
 			xformsNode.appendChild(groupNode);
 			
-			if(pageDef.getDataType() == QuestionDef.QTN_TYPE_GROUP){
-				pageDef.setLabelNode(labelNode);
-				pageDef.setGroupNode(groupNode);
+			if(groupDef.getDataType() == QuestionDef.QTN_TYPE_GROUP){
+				groupDef.setLabelNode(labelNode);
+				groupDef.setGroupNode(groupNode);
 			}else{
-				pageDef.getParent().setLabelNode(labelNode);
-				pageDef.getParent().setControlNode(groupNode);
+				groupDef.getParent().setLabelNode(labelNode);
+				groupDef.getParent().setControlNode(groupNode);
 			}
-			//Set the identifier of the group node to be used for localisation.
-			groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageDef.getBinding()+"");
-			
+
 			bindNode.setAttribute("id", qtnID);
 			bindNode.setAttribute("nodeset", nodesetPath);
 			modelNode.appendChild(bindNode);
-			pageDef.setBindNode(bindNode);
+			groupDef.setBindNode(bindNode);
 			
 			
 			
 			//Check if we have any questions in this page.
-			List<IFormElement> questions = pageDef.getChildren();
+			List<IFormElement> questions = groupDef.getChildren();
 			if(questions == null){
 				return;
 			}
@@ -270,7 +261,7 @@ public class XformBuilder {
 				if(qtn instanceof QuestionDef){
 					UiElementBuilder.fromQuestionDef2Xform((QuestionDef)qtn,doc,formDef,formNode,modelNode,groupNode);
 				}else{
-					fromPageDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
+					fromGroupDef2Xform((GroupDef)qtn,doc,groupNode,formDef,formNode,modelNode);
 				}
 			}
 //		}

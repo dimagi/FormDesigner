@@ -234,6 +234,10 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 		parentQtnDef.setVariableName(binding);
 	}
 	
+	public void setBindingInternal(String binding){
+		super.setBinding(binding);
+	}
+	
 	
 	public int getDataType(){
 		return QuestionDef.QTN_TYPE_REPEAT;

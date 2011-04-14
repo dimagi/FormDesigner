@@ -504,7 +504,9 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public void setVariableName(String variableName) {
 		boolean changed = this.variableName != variableName;
-
+		if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			this.getRepeatQtnsDef().setBindingInternal(variableName);
+		}
 		this.variableName = variableName;
 
 		if(changed){
@@ -834,8 +836,7 @@ public class QuestionDef implements IFormElement, Serializable{
 				parentNode = this.getParent().getControlNode();
 			}
 			UiElementBuilder.fromQuestionDef2Xform(this, doc, formDef, formNode, modelNode, parentNode);
-		}
-		else{
+		}else{
 			updateControlNode();
 		}
 		if(hasUINode()){
@@ -980,9 +981,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			getRepeatQtnsDef().updateDoc(doc, groupNode, formDef, formNode, modelNode, withData, orgFormVarName);
 
 			if(controlNode != null){
-				((Element)controlNode.
-						getParentNode()).
-						setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
+//				((Element)controlNode.
+//						getParentNode()).
+//						setAttribute(XformConstants.ATTRIBUTE_NAME_ID, variableName);
 			}
 			if(!withData && dataNode != null){
 				//Remove all repeating data kids
@@ -1234,8 +1235,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			id = id.substring(id.lastIndexOf('/')+1);
 
 		//update binding node
-		if(bindNode != null && bindNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null)
+		if(bindNode != null && bindNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID) != null){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID,id);
+		}
 
 		//update control node referencing the binding
 		if(controlNode != null&& controlNode.getAttribute(XformConstants.ATTRIBUTE_NAME_BIND) != null)
@@ -1346,7 +1348,11 @@ public class QuestionDef implements IFormElement, Serializable{
 		
 		
 		controlNode.removeAttribute("bind");
-		controlNode.setAttribute("ref", this.getDataNodesetPath());
+		if(this.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
+			controlNode.setAttribute("nodeset", this.getDataNodesetPath());
+		}else{
+			controlNode.setAttribute("ref", this.getDataNodesetPath());
+		}
 	}
 	
 	private boolean isMultiMedia(int dataType){

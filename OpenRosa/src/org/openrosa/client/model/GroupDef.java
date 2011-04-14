@@ -624,7 +624,7 @@ public class GroupDef implements IFormElement, Serializable{
 		boolean needsDOMNodes = false;
 		Element groupNode = (this.getDataType() == QuestionDef.QTN_TYPE_GROUP ? getGroupNode() : getParent().getControlNode());
 		if(groupNode == null){
-			XformBuilder.fromPageDef2Xform(this, doc, xformsNode, formDef, formNode, modelNode);
+			XformBuilder.fromGroupDef2Xform(this, doc, xformsNode, formDef, formNode, modelNode);
 			groupNode = this.getGroupNode();
 			if(groupNode == null){
 				throw new RuntimeException("Problem with getting groupNode for question: "+this.getDisplayText());
@@ -637,7 +637,7 @@ public class GroupDef implements IFormElement, Serializable{
 			needsDOMNodes = (getParent().getControlNode() == null && getParent().getLabelNode() == null);
 		}
 		if(needsDOMNodes){ //Must be new page{
-			XformBuilder.fromPageDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
+			XformBuilder.fromGroupDef2Xform(this,doc,xformsNode,formDef,formNode,modelNode);
 		}
 		if(getDataType() == QuestionDef.QTN_TYPE_GROUP){
 			if(groupNode != null && !groupNode.getNodeName().contains(XformConstants.NODE_NAME_GROUP_MINUS_PREFIX)){

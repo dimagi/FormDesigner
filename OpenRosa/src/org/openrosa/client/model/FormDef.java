@@ -552,18 +552,18 @@ public class FormDef implements IFormElement, Serializable{
 		return ModelConstants.NULL_ID;
 	}
 
-	/**
-	 * Adds a new question to the form.
-	 * 
-	 * @param qtn the new question to add.
-	 */
-	public void addElement(IFormElement qtn){
-		if(children == null)
-			children = new ArrayList<IFormElement>();
-
-		children.add(qtn);
-		qtn.setParent(this);
-	}
+//	/**
+//	 * Adds a new question to the form.
+//	 * 
+//	 * @param qtn the new question to add.
+//	 */
+//	public void addElement(IFormElement qtn){
+//		if(children == null)
+//			children = new ArrayList<IFormElement>();
+//
+//		children.add(qtn);
+//		qtn.setParent(this);
+//	}
 
 	/**
 	 * Copies a given list of pages into this form.

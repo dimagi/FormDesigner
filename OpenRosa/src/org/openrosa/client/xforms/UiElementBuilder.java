@@ -278,7 +278,9 @@ public class UiElementBuilder {
 
 		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
 		Element node = createElementNS(name,null,null);
-		node.setAttribute("ref", qtnDef.getDataNodesetPath());
+		if(type != QuestionDef.QTN_TYPE_REPEAT){
+			node.setAttribute("ref", qtnDef.getDataNodesetPath());
+		}
 		
 //		if(XmlUtil.nodeNameEquals(node.getNodeName(), "group")){
 			node.removeAttribute("id");

@@ -844,18 +844,20 @@ public class QuestionDef implements IFormElement, Serializable{
 			if(this.getDataType() != QuestionDef.QTN_TYPE_REPEAT){ //repeats are special beasts.
 				controlNode.setAttribute("ref", this.getDataNodesetPath());
 			}
+			
+			if(getDataType() == QuestionDef.QTN_TYPE_REPEAT && getRepeatCountNodePath() != null && !getRepeatCountNodePath().isEmpty()){
+				controlNode.setAttribute("jr:count", getRepeatCountNodePath());
+			}else{
+				controlNode.removeAttribute("jr:count");
+				controlNode.removeAttribute("count");
+			}
 		}
 		if(labelNode != null){
 			XmlUtil.setTextNodeValue(labelNode,text);
 			UiElementBuilder.addItextRefs(labelNode, this);
 		}
 		
-		if(getRepeatCountNodePath() != null && !getRepeatCountNodePath().isEmpty()){
-			controlNode.setAttribute("jr:count", getRepeatCountNodePath());
-		}else{
-			controlNode.removeAttribute("jr:count");
-			controlNode.removeAttribute("count");
-		}
+
 		
 		Element node = bindNode;
 		if(node == null && hasUINode()){

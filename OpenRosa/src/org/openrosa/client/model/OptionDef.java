@@ -301,7 +301,7 @@ public class OptionDef implements IFormElement, Serializable {
 	}
 	
 	public void addChild(IFormElement element){
-		
+		throw new RuntimeException("Can't add a child to an OptionDef!");
 	}
 	
 	public String getHelpText(){

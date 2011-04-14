@@ -720,6 +720,11 @@ public class XformParser {
 		IFormElement elementDef = formDef.getElement(id);
 		if(id != null && elementDef != null){
 			repeat = (QuestionDef)elementDef;
+			if(parentQtn != null){
+				parentQtn.getChildren().remove(repeat);
+			}else{
+				formDef.getChildren().remove(repeat);
+			}
 //			formDef.removeChild(elementDef);
 		}
 		
@@ -743,7 +748,7 @@ public class XformParser {
 		repeat.setControlNode(((Element)child.getChildNodes().item(repeatElementIndex)));
 		RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(repeat); 
 		repeat.setRepeatQtnsDef(repeatQtnsDef);
-//		parentQtn.addChild(repeat);
+		parentQtn.addChild(repeat);
 		questionDef = repeat;
 		parentQtn = repeatQtnsDef;
 

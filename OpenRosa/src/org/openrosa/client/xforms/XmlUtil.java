@@ -46,9 +46,11 @@ public class XmlUtil {
 		String s = "";
 		for (int i = 0; i < numOfEntries; i++) {
 			Node child = node.getChildNodes().item(i);
+			
 			if (child.getNodeType() == Node.TEXT_NODE){
 				s += child.getNodeValue();				
-			}else if (child.getNodeType() == Node.ELEMENT_NODE && child.getNodeName().toLowerCase().equals("output")){
+			}else if (child.getNodeType() == Node.ELEMENT_NODE){
+				((Element)child).removeAttribute("xmlns");
 				s += ((Element)child).toString();
 			}
 		}

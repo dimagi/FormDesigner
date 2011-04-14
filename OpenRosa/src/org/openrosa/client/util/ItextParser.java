@@ -202,7 +202,7 @@ public class ItextParser {
 		if(rawText == null || rawText.isEmpty()){
 			return null;
 		}else{
-			rawText = "<foo>" + rawText + "</foo>";
+			rawText = "<foo xmlns=\"http://www.w3.org/2002/xforms\">" + rawText + "</foo>";
 		}
 		
 		Document tempDoc = XMLParser.parse(rawText);

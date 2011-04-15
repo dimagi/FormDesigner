@@ -164,11 +164,38 @@ public class XformBuilder {
 					orphanQuestions.add(questionDef);
 			}
 		}
+		
+		//Cleanse binds of bad attributs:
+		cleanBindNodeRecurse(formDef);
 
 		//If there are any itemsets which were not built completely due to their dependent
 		//parent questions not having been parsed yet, build them now.
 		if(orphanQuestions.size() > 0)
 			ItemsetBuilder.updateDynamicOptions(dynamicOptions,orphanQuestions,formDef,doc);
+	}
+	
+	/**
+	 * A little helper function that you can throw all your removeAttribute statements in...
+	 * @param bindNode
+	 */
+	private static void cleanBindNode(Element bindNode){
+		bindNode.removeAttribute("action");
+	}
+	
+	private static void cleanBindNodeRecurse(IFormElement parent){
+		//first clean the parent
+		Element bindNode = parent.getBindNode();
+		if(bindNode != null){
+			cleanBindNode(bindNode);
+		}
+		
+		if(parent.getChildren() != null){
+			//then recursively clean children
+			for(int i=0;i<parent.getChildCount();i++){
+				IFormElement child = parent.getChildren().get(i);
+				cleanBindNodeRecurse(child);
+			}
+		}
 	}
 
 	private static void addMetaData(Document doc, Element dataNode){

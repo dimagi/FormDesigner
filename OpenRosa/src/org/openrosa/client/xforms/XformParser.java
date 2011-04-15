@@ -436,6 +436,7 @@ public class XformParser {
 				option.setParent((QuestionDef)parentQtn);
 
 				option.setControlNode(element);
+				element.removeAttribute("id");
 				option.setLabelNode(nodeContext.getLabelNode());
 				option.setValueNode(nodeContext.getValueNode());
 				((QuestionDef)parentQtn).addOption(option);
@@ -734,7 +735,7 @@ public class XformParser {
 		if(repeat == null){
 			repeat = new QuestionDef(parentQtn);
 		}
-		
+		repeat.setBinding(id);
 		repeat.setParent(parentQtn);
 		repeat.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 		repeat.setHasUINode(true);

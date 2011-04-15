@@ -715,6 +715,9 @@ public class XformParser {
 		boolean hasLabelNode = ((Element)child).getElementsByTagName("label").getLength() > 0;
 		Element labelNode = (Element)child.getElementsByTagName("label").item(0);
 		
+		boolean hasHintNode = ((Element)child).getElementsByTagName("hint").getLength() > 0;
+		Element hintNode;
+		
 		String[] idTokens = nodeset.split("/");
 		String id = idTokens[idTokens.length-1];
 		IFormElement elementDef = formDef.getElement(id);
@@ -742,10 +745,18 @@ public class XformParser {
 			repeat.setLabelNode(labelNode);
 		}
 		
+		if(hasHintNode){
+			hintNode = (Element)child.getElementsByTagName("hint").item(0);
+			repeat.setHintNode(hintNode);
+			repeat.setHelpText(XmlUtil.getTextValue(hintNode));
+		}
+		
+		
 		if(jrCount != null && !jrCount.isEmpty()){
 			repeat.setRepeatCountNodePath(jrCount);
 		}
 		repeat.setControlNode(((Element)child.getChildNodes().item(repeatElementIndex)));
+		setQuestionDataNode((QuestionDef)repeat,formDef,parentQtn);
 		RepeatQtnsDef repeatQtnsDef = new RepeatQtnsDef(repeat); 
 		repeat.setRepeatQtnsDef(repeatQtnsDef);
 		parentQtn.addChild(repeat);

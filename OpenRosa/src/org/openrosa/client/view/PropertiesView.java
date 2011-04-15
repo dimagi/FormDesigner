@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
 
 
 /**
@@ -455,7 +456,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				//assuming this is a QuestionDef
 				QuestionDef q = (QuestionDef)propertiesObj;
 				q.setHasUINode(false);
-				q.setControlNode(null);
+				Element uiNode = q.getControlNode();
+				if(uiNode != null){
+					q.setControlNode(null);
+					Node parent = uiNode.getParentNode();
+					parent.removeChild((Node)uiNode);
+				}
 				q.setFirstOptionNode(null);
 				q.setOptionList(null);
 				q.setOptions(null);

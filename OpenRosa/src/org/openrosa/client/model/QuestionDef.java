@@ -1165,8 +1165,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	private void updateDataNode(Document doc, FormDef formDef, String orgFormVarName){
-		if(variableName.contains("@"))
+		if(variableName.contains("@")){
 			return;
+		}
 
 		String name = dataNode.getNodeName();
 		if(name.equals(variableName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive

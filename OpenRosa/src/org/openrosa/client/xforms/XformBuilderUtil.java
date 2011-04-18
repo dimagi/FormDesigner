@@ -65,7 +65,7 @@ public class XformBuilderUtil {
 		case QuestionDef.QTN_TYPE_TEXT:
 			return XformConstants.DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
-			return "select";
+			return "select1";
 		case QuestionDef.QTN_TYPE_LIST_MULTIPLE:
 			return "select";
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:

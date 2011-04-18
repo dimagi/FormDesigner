@@ -204,7 +204,7 @@ public class OptionDef implements IFormElement, Serializable {
     		UiElementBuilder.fromOptionDef2Xform(this,doc,selectNode);
     	}
     	if(controlNode != null){
-    		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, binding);
+//    		controlNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, binding);
     	}
 	}
     

@@ -394,8 +394,9 @@ public class FormDef implements IFormElement, Serializable{
 		}
 		
 		if(children != null){
-			if(bodyNode == null && children.size() > 0)
+			if(bodyNode == null && children.size() > 0){
 				bodyNode = (Element)children.get(0).getControlNode().getParentNode();
+			}
 			
 			for(int i=0; i<children.size(); i++){
 				IFormElement element = children.get(i);

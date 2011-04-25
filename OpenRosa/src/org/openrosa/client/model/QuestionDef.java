@@ -831,7 +831,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(isNew && hasUINode()){ //Must be new question.
 			Element parentNode;
 			if(this.getParent() instanceof FormDef){
-				 parentNode = formDef.getXformsNode();;
+				 parentNode = formDef.getBodyNode();
 			}else{
 				parentNode = this.getParent().getControlNode();
 			}

@@ -128,7 +128,7 @@ public class QuestionItextView extends Composite {
 	 */
 	private void addDefaultTextAndHintRows(String lang, int rowIndex){
 		addRow(lang,itemItextID,null,rowIndex);
-		addRow(lang,itemItextID,"hint",rowIndex+1); //hint text edit box
+//		addRow(lang,itemItextID,"hint",rowIndex+1); //hint text edit box //removed due to user confusion
 	}
 	/**
 	 * Adds a seperator in the widget table to help

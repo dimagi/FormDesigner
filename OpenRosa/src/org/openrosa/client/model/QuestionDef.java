@@ -878,7 +878,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT){
-//				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
+				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
+			}else{
+				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_TYPE);
 			}
 			boolean hasRefAttr = (node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF) != null);
 			boolean hasNodeSetAttr =(node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET) != null);

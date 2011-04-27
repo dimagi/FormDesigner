@@ -1123,7 +1123,6 @@ public class GroupDef implements IFormElement, Serializable{
 		}
 		
 		children.remove(child);
-		
 		int i = (index > children.size()) ? children.size() : index;
 		try{
 			children.add(i, child);
@@ -1178,5 +1177,17 @@ public class GroupDef implements IFormElement, Serializable{
 
 	public void setAdvancedRelevant(String releValue) {
 		advancedRelevant = releValue;
+	}
+	
+	public boolean insertChildAfter(IFormElement child, IFormElement target) {
+		boolean isChildQuestionOrGroupDef = (child instanceof GroupDef || child instanceof QuestionDef);
+		if(!isChildQuestionOrGroupDef){ return false; } //we don't want to insert OptionDefs into this list.
+		return FormDef.insertChildBeforeOrAfter(child, target, this.children, FormDef.INSERT_AFTER);
+	}
+	
+	public boolean insertChildBefore(IFormElement child, IFormElement target) {
+		boolean isChildQuestionOrGroupDef = (child instanceof GroupDef || child instanceof QuestionDef);
+		if(!isChildQuestionOrGroupDef){ return false; } //we don't want to insert OptionDefs into this list.
+		return FormDef.insertChildBeforeOrAfter(child, target, this.children, FormDef.INSERT_BEFORE);
 	}
 }

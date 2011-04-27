@@ -1892,6 +1892,47 @@ public class QuestionDef implements IFormElement, Serializable{
 	public String getRepeatCountNodePath(){
 		return repeatCountNodePath;
 	}
+	
+	
+	public boolean insertChildAfter(IFormElement child, IFormElement target) {
+		if(child == null || target == null){ return false; } //aah...defensive programming.
+		
+		boolean questionIsSelect = getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
+								   getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
+								   getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
+		boolean childIsOptionDef = child instanceof OptionDef;
+		boolean questionIsRepeat = getDataType() == QuestionDef.QTN_TYPE_REPEAT;
+		boolean childIsQtnOrGrpDef = child instanceof GroupDef || child instanceof QuestionDef;
+		
+		if(questionIsSelect && childIsOptionDef){
+			return FormDef.insertChildBeforeOrAfter(child, target, getOptions(), FormDef.INSERT_AFTER);
+		}else if (questionIsRepeat && childIsQtnOrGrpDef){
+			return FormDef.insertChildBeforeOrAfter(child, target, getRepeatQtnsDef().getChildren(), FormDef.INSERT_AFTER);
+		}else{
+			//unsupported op
+			return false;
+		}
+	}
+	
+	public boolean insertChildBefore(IFormElement child, IFormElement target) {
+		if(child == null || target == null){ return false; }
+		
+		boolean questionIsSelect = getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
+								   getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE ||
+								   getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC;
+		boolean childIsOptionDef = child instanceof OptionDef;
+		boolean questionIsRepeat = getDataType() == QuestionDef.QTN_TYPE_REPEAT;
+		boolean childIsQtnOrGrpDef = child instanceof GroupDef || child instanceof QuestionDef;
+		
+		if(questionIsSelect && childIsOptionDef){
+			return FormDef.insertChildBeforeOrAfter(child, target, getOptions(), FormDef.INSERT_BEFORE);
+		}else if (questionIsRepeat && childIsQtnOrGrpDef){
+			return FormDef.insertChildBeforeOrAfter(child, target, getRepeatQtnsDef().getChildren(), FormDef.INSERT_BEFORE);
+		}else{
+			//unsupported op
+			return false;
+		}
+	}
 
 }
 

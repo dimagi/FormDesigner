@@ -131,4 +131,27 @@ public interface IFormElement {
 	 * @throws Exception
 	 */
 	public void moveChildToIndex(IFormElement child, int index) throws Exception;
+	
+	/**
+	 * Insert the child IFormElement before the target element (which should
+	 * already be a child of the object calling this function)
+	 * 
+	 * WILL MOVE child TO NEW LOCATION IF ALREADY PRESENT IN PARENT'S CHILDREN LIST 
+	 * @param child
+	 * @param target
+	 * @return
+	 */
+	public boolean insertChildBefore(IFormElement child, IFormElement target);
+	
+	/**
+	 * Insert the child IFormElement after the target element (which should
+	 * already be a child of the object calling this function)
+	 * 
+	 * will MOVE child TO NEW LOCATION if child is already present in the target's children list! 
+	 * @param child
+	 * @param target
+	 * @return
+	 */
+	public boolean insertChildAfter(IFormElement child, IFormElement target);
+
 }

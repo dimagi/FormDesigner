@@ -39,6 +39,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
+
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -52,6 +53,8 @@ import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 
 
 /**
@@ -73,6 +76,14 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		ImageResource note();
 		ImageResource lookup();
 	}
+	
+	public static final int DRAG_MOVE_UP = -1;
+	public static final int DRAG_NO_MOVE = 0;
+	public static final int DRAG_MOVE_DOWN = 1;
+	
+	private static final int DATA_NODE = 0;
+	private static final int BIND_NODE = 1;
+	private static final int CONTROL_NODE = 2;
 
 	/** The main or root widget for displaying the list of forms and their contents
 	 * in a tree view.
@@ -103,6 +114,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 	/** The next available form id. We always have one form for OpenRosa form designer. */
 	private int nextFormId = 1;
+	
+	public static final int INSERT_BEFORE = 0;
+	public static final int INSERT_AFTER = 1;
 
 
 
@@ -309,7 +323,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		return item;
 	}*/
 
-
+//	public void moveItem()
 	/**
 	 * @see com.google.gwt.event.logical.shared.SelectionHandler#onSelection(SelectionEvent)
 	 */
@@ -1036,65 +1050,267 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @see org.openrosa.client.controller.IFormActionListener#moveItemUp()
 	 */
 	public void moveItemUp() {
-		if(inReadOnlyMode())
-			return;
-
-		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
-
-		//Check if there is any selection.
-		if(selectedItem == null){
-			return;
+//		if(inReadOnlyMode())
+//			return;
+//
+//		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+//
+//		//Check if there is any selection.
+//		if(selectedItem == null){
+//			return;
+//		}
+//
+//		TreeModelItem parentOfSelectedItem = (TreeModelItem)selectedItem.getParent();
+//
+//		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
+//		if(parentOfSelectedItem == null){
+//			return;
+//		}
+//
+//		//One item can't move against itself.
+//		int count = parentOfSelectedItem.getChildCount();
+//		if(count == 1){
+//			return;
+//		}
+//
+//		int selectedItemIndex = parentOfSelectedItem.indexOf(selectedItem);
+//		if(selectedItemIndex == 0){
+//			return; //Can't move any further upwards.
+//		}
+//
+//		//move the item in the form object model.
+//		moveFormItemUp(selectedItem,parentOfSelectedItem);
+//
+//		TreeModelItem currentItem; // = parent.getChild(index - 1);
+//		List list = new ArrayList();
+//
+//		//item.remove();
+//		parentOfSelectedItem.remove(selectedItem);
+//		treePanel.getStore().remove(selectedItem);
+//
+//		//parent.insert(item, index -1);
+//
+//		while(parentOfSelectedItem.getChildCount() >= selectedItemIndex){
+//			currentItem = (TreeModelItem)parentOfSelectedItem.getChild(selectedItemIndex-1);
+//			list.add(currentItem);
+//			//currentItem.remove();
+//			currentItem.getParent().remove(currentItem);
+//			treePanel.getStore().remove(currentItem);
+//		}
+//
+//		parentOfSelectedItem.add(selectedItem);
+//		treePanel.getStore().add(parentOfSelectedItem,selectedItem,true);
+//		for(int i=0; i<list.size(); i++){
+//			parentOfSelectedItem.add((TreeModelItem)list.get(i));
+//			treePanel.getStore().add(parentOfSelectedItem,(TreeModelItem)list.get(i),true);
+//		}
+//
+//		//treePanel.getStore().update(parent);
+//
+//		//tree.setSelectedItem(item);
+//		treePanel.getSelectionModel().select(selectedItem, false);
+	}
+	
+	public void moveItem(IFormElement droppedDef, IFormElement neighborDef, int aboveOrBelow){
+		/////Start Init of easy to read variable names
+		com.google.gwt.xml.client.Element anchorBindNode, anchorDataNode, anchorControlNode,
+										  droppedBindNode, droppedDataNode, droppedControlNode,
+										  droppedBindParent, droppedDataParent, droppedControlParent;
+		anchorBindNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
+		anchorDataNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
+		anchorControlNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
+		
+		droppedBindNode = droppedDef.getBindNode();
+		droppedControlNode = droppedDef.getControlNode();
+		droppedDataNode = droppedDef.getDataNode();
+		
+		droppedBindParent = null;
+		droppedDataParent = null;
+		droppedControlParent = null;
+		
+		if(droppedBindNode != null){ droppedBindParent = (com.google.gwt.xml.client.Element)droppedBindNode.getParentNode();}
+		if(droppedControlNode != null){ droppedControlParent = (com.google.gwt.xml.client.Element)droppedControlNode.getParentNode();}
+		if(droppedDataNode != null){ droppedDataParent = (com.google.gwt.xml.client.Element)droppedDataNode.getParentNode();}
+		////////////End init
+		
+		detachXformNodesFromParent(droppedDef); //detaches the data, bind and control nodes of the droppedDef from their respective parents
+		
+		///////////Start the insertion of the dropped Question's data,bind and control node's in their new locations.
+		if(droppedDataNode != null){
+			if(anchorDataNode != null){
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					insertAfter(droppedDataNode,anchorDataNode);
+					
+				}else{
+					anchorDataNode.getParentNode().insertBefore(droppedDataNode, anchorDataNode);
+				}
+			}else{
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					((com.google.gwt.dom.client.Node)droppedDataParent).insertFirst((com.google.gwt.dom.client.Node)droppedDataNode);
+				}else{
+					droppedDataNode.getParentNode().appendChild(droppedDataNode);
+				}
+			}
 		}
-
-		TreeModelItem parentOfSelectedItem = (TreeModelItem)selectedItem.getParent();
-
-		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
-		if(parentOfSelectedItem == null){
-			return;
+		
+		if(droppedBindNode != null){
+			if(anchorBindNode != null){
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					com.google.gwt.dom.client.Node anchorBindParent = ((com.google.gwt.dom.client.Node)anchorBindNode.getParentNode());
+					anchorBindParent.insertAfter((com.google.gwt.dom.client.Node)droppedBindNode, 
+												 (com.google.gwt.dom.client.Node)anchorBindNode);
+					
+				}else{
+					anchorBindNode.getParentNode().insertBefore(droppedBindNode, anchorBindNode);
+				}
+			}else{
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					((com.google.gwt.dom.client.Node)droppedBindParent).insertFirst((com.google.gwt.dom.client.Node)droppedBindNode);
+				}else{
+					droppedBindNode.getParentNode().appendChild(droppedBindNode);
+				}
+			}
 		}
-
-		//One item can't move against itself.
-		int count = parentOfSelectedItem.getChildCount();
-		if(count == 1){
-			return;
+		
+		if(droppedControlNode != null){
+			if(anchorControlNode != null){
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					com.google.gwt.dom.client.Node anchorControlParent = ((com.google.gwt.dom.client.Node)anchorControlNode.getParentNode());
+					anchorControlParent.insertAfter((com.google.gwt.dom.client.Node)droppedControlNode, 
+												 (com.google.gwt.dom.client.Node)anchorControlNode);
+					
+				}else{
+					anchorControlNode.getParentNode().insertBefore(droppedControlNode, anchorControlNode);
+				}
+			}else{
+				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+					((com.google.gwt.dom.client.Node)droppedControlParent).insertFirst((com.google.gwt.dom.client.Node)droppedControlNode);
+				}else{
+					droppedControlNode.getParentNode().appendChild(droppedControlNode);
+				}
+			}
 		}
-
-		int selectedItemIndex = parentOfSelectedItem.indexOf(selectedItem);
-		if(selectedItemIndex == 0){
-			return; //Can't move any further upwards.
+		/////////////end insertion
+		
+		//Re-organize the internal data model...
+		if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
+			neighborDef.getParent().insertChildAfter(droppedDef, neighborDef);
+		}else{
+			neighborDef.getParent().insertChildBefore(droppedDef, neighborDef);
 		}
-
-		//move the item in the form object model.
-		moveFormItemUp(selectedItem,parentOfSelectedItem);
-
-		TreeModelItem currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
-
-		//item.remove();
-		parentOfSelectedItem.remove(selectedItem);
-		treePanel.getStore().remove(selectedItem);
-
-		//parent.insert(item, index -1);
-
-		while(parentOfSelectedItem.getChildCount() >= selectedItemIndex){
-			currentItem = (TreeModelItem)parentOfSelectedItem.getChild(selectedItemIndex-1);
-			list.add(currentItem);
-			//currentItem.remove();
-			currentItem.getParent().remove(currentItem);
-			treePanel.getStore().remove(currentItem);
+		
+	}
+	
+	  /**
+	   * Inserts the node newChild after the existing child node refChild. If
+	   * refChild is <code>null</code>, insert newChild at the end of the list of children.
+	   * 
+	   * @param newChild The node to insert
+	   * @param refChild The reference node (that is, the node after which the new
+	   *          node must be inserted), or <code>null</code>
+	   * @return The node being inserted
+	   */
+	  public final Node insertAfter(Node newChild, Node refChild) {
+	    assert (newChild != null) : "Cannot add a null child node";
+	    assert (refChild != null) : "Cannot add After a null node";
+	    Node next = refChild.getNextSibling();
+	    if (next == null) {
+	      return refChild.appendChild(newChild);
+	    } else {
+	      return refChild.insertBefore(newChild, next);
+	    }
+	  }
+	
+	private static int nodeListIndexOf(NodeList list, Node node){
+		for(int i=0;i<list.getLength();i++){
+			if(list.item(i).equals(node)){
+				return i;
+			}
 		}
+		return -1;
+	}
+	
+	/**
+	 * In the event that a node (bind, data, control) is null, we need to find
+	 * the nearest neighbor that does have a not null node.
+	 * @param neighborDef
+	 * @param aboveOrBelow
+	 * @return
+	 */
+	private Node findNearestNeighborData(IFormElement originalNeighbour, int aboveOrBelow, int NodeTypeToGet){
+		List<IFormElement> siblings = originalNeighbour.getParent().getChildren();
+		int neighIndex = siblings.indexOf(originalNeighbour);
+		int curIndex = neighIndex;
+		com.google.gwt.xml.client.Element nNode;
+		
+		boolean atEnd = curIndex < 0 || curIndex >= siblings.size();
+		while(!atEnd){
 
-		parentOfSelectedItem.add(selectedItem);
-		treePanel.getStore().add(parentOfSelectedItem,selectedItem,true);
-		for(int i=0; i<list.size(); i++){
-			parentOfSelectedItem.add((TreeModelItem)list.get(i));
-			treePanel.getStore().add(parentOfSelectedItem,(TreeModelItem)list.get(i),true);
+			IFormElement newNeighbor;
+			
+			//the below if/else is to prevent code duplication (it's a determines the direction we're going through the list
+			//from the starting point specified by originalNeighbour argument.
+			if(aboveOrBelow == FormsTreeView.INSERT_BEFORE){
+				newNeighbor = siblings.get(curIndex); //look progressively upwards in the siblings list
+			}else{
+				newNeighbor = siblings.get(siblings.size() - curIndex - 1); //look progressively downwards in the list
+			}
+			
+			nNode = null;
+			
+			switch (NodeTypeToGet) { //get the relevant XML Node of the new sibling
+			case DATA_NODE:
+				nNode = newNeighbor.getDataNode();
+				break;
+			case BIND_NODE:
+				nNode = newNeighbor.getBindNode();
+				break;
+			case CONTROL_NODE:
+				nNode = newNeighbor.getControlNode();
+				break;
+			default:
+				break;
+			}
+			
+			if(nNode != null){ //if the XML Node exists return it otherwise continue going through the list.
+				return nNode;
+			}
+			
+			if(aboveOrBelow == FormsTreeView.INSERT_BEFORE){
+				curIndex -= 1;
+				atEnd = curIndex < 0;
+			}else{
+				curIndex += 1;
+				atEnd = curIndex >= siblings.size();
+			}
 		}
+		
+		return null;
+	}
 
-		//treePanel.getStore().update(parent);
-
-		//tree.setSelectedItem(item);
-		treePanel.getSelectionModel().select(selectedItem, false);
+	
+	
+	
+	/**
+	 * Detaches the bind, data, and control nodes from their parent holders, in anticipation of moving them
+	 * elsewhere in the form.
+	 * @param droppedDef
+	 */
+	private void detachXformNodesFromParent(IFormElement droppedDef){
+		com.google.gwt.xml.client.Element bindNode = droppedDef.getBindNode(); //this extended name thing is real unfortunate
+		if(bindNode != null){
+			bindNode.getParentNode().removeChild(bindNode);
+		}
+		
+		com.google.gwt.xml.client.Element dataNode = droppedDef.getDataNode();
+		if(dataNode != null){
+			dataNode.getParentNode().removeChild(dataNode);
+		}
+		
+		com.google.gwt.xml.client.Element controlNode = droppedDef.getControlNode();
+		if(controlNode != null){
+			controlNode.getParentNode().removeChild(controlNode);
+		}
 	}
 
 	private void moveFormItemUp(TreeModelItem selectedItem,TreeModelItem parentSelectedItem){
@@ -1683,118 +1899,32 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	}
 
 
-	public void dragMoveUp(TreeModelItem item ){
-		if(inReadOnlyMode())
-			return;
-
+	public void dragMove(TreeModelItem item, int direction){
+		if(inReadOnlyMode()){return;}
+		
 		//Check if there is any selection.
-		if(item == null)
-			return;
+		if(item == null){return;}
 
 		TreeModelItem parent = (TreeModelItem)item.getParent();
 
 		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
-		if(parent == null)
-			return;
+		if(parent == null){return;}
 
 		//One item can't move against itself.
 		int count = parent.getChildCount();
-		if(count == 1)
-			return;
+		if(count == 1){ return; }
 
 		int index = parent.indexOf(item);
-		if(index == 0)
-			return; //Can't move any further upwards.
+		
+		if(direction == DRAG_MOVE_UP){
+			if(index == 0){	return; }//Can't move any further upwards. 
 
-		//move the item in the form object model.
-		moveFormItemUp(item,parent);
+			moveFormItemUp(item,parent);
+		}else if(direction == DRAG_MOVE_DOWN){
+			if(index == count - 1){return;} //Can't move any further downwards.
 
-		/*TreeModelItem currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
-
-		//item.remove();
-		parent.remove(item);
-		treePanel.getStore().remove(item);
-
-		//parent.insert(item, index -1);
-
-		while(parent.getChildCount() >= index){
-			currentItem = (TreeModelItem)parent.getChild(index-1);
-			list.add(currentItem);
-			//currentItem.remove();
-			currentItem.getParent().remove(currentItem);
-			treePanel.getStore().remove(currentItem);
+			moveFormItemDown(item,parent);
 		}
-
-		parent.add(item);
-		treePanel.getStore().add(parent,item,true);
-		for(int i=0; i<list.size(); i++){
-			parent.add((TreeModelItem)list.get(i));
-			treePanel.getStore().add(parent,(TreeModelItem)list.get(i),true);
-		}
-
-		treePanel.getSelectionModel().select(item, false);*/
-	}
-
-
-	public void dragMoveDown(TreeModelItem item ){
-		if(inReadOnlyMode())
-			return;
-
-		//Check if there is any selection.
-		if(item == null)
-			return;
-
-		TreeModelItem parent = (TreeModelItem)item.getParent();
-
-		//We don't move root node (which has no parent, that is the form itself, since we design one form at a time)
-		if(parent == null)
-			return;
-
-		//One item can't move against itself.
-		int count = parent.getChildCount();
-		if(count == 1)
-			return;
-
-		int index = parent.indexOf(item);
-		if(index == count - 1)
-			return; //Can't move any further downwards.
-
-		//move the item in the form object model.
-		moveFormItemDown(item,parent);
-
-		/*TreeModelItem currentItem; // = parent.getChild(index - 1);
-		List list = new ArrayList();
-
-		//item.remove();
-		parent.remove(item);
-		treePanel.getStore().remove(item);
-
-		while(parent.getChildCount() > 0 && parent.getChildCount() > index){
-			currentItem = (TreeModelItem)parent.getChild(index);
-			list.add(currentItem);
-			//currentItem.remove();
-			currentItem.getParent().remove(currentItem);
-			treePanel.getStore().remove(currentItem);
-		}
-
-		for(int i=0; i<list.size(); i++){
-			if(i == 1){
-				parent.add(item); //Add after the first item.
-				treePanel.getStore().add(parent, item, true);
-			}
-
-			parent.add((TreeModelItem)list.get(i));
-			treePanel.getStore().add(parent, (TreeModelItem)list.get(i), true);
-		}
-
-		if(list.size() == 1){
-			parent.add(item);
-			treePanel.getStore().add(parent, item, true);
-		}
-
-		//tree.setSelectedItem(item);
-		treePanel.getSelectionModel().select(item, false);*/
 	}
 	
 	public AbstractImagePrototype getIcon(TreeModelItem model){

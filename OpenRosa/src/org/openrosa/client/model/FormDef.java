@@ -100,6 +100,9 @@ public class FormDef implements IFormElement, Serializable{
 	private boolean readOnly = false;
 
 	private String itextId;
+	
+	public static final int INSERT_BEFORE = 0;
+	public static final int INSERT_AFTER = 1;
 
 
 	List<IFormElement> children;
@@ -1701,5 +1704,45 @@ public class FormDef implements IFormElement, Serializable{
 		}
 		
 		return max+1;
+	}
+
+	public boolean insertChildAfter(IFormElement child, IFormElement target) {
+		if(child == null || target == null){ return false; }
+		boolean isChildQuestionOrGroupDef = (child instanceof GroupDef || child instanceof QuestionDef);
+		if(!isChildQuestionOrGroupDef){ return false; } //we don't want to insert OptionDefs into this list.
+		return FormDef.insertChildBeforeOrAfter(child, target, this.children, FormDef.INSERT_AFTER);
+	}
+	
+	/**
+	 * This is a static method use by all the classes implementing IFormElement interface (except OptionDef 
+	 * because it doesn't apply) to move things around.  
+	 * @param child
+	 * @param target
+	 * @param targetList
+	 * @param beforeOrAfter
+	 * @return
+	 */
+	protected static boolean insertChildBeforeOrAfter(IFormElement child, IFormElement target, List<IFormElement> targetList, int beforeOrAfter){
+		
+		boolean isTargetInChildren = targetList.contains(target); //target must be in targetList
+		boolean isChildAlreadyInChildren = targetList.contains(child);
+		if(isTargetInChildren){
+			if(isChildAlreadyInChildren){
+				targetList.remove(child);
+			}
+			int targetIndex = targetList.indexOf(target);
+			targetIndex += beforeOrAfter; //will add 1 for after, 0 for before. According to final INSERT_BEFORE and INSERT_AFTER fields in this class.
+			targetList.add(targetIndex,child);
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public boolean insertChildBefore(IFormElement child, IFormElement target) {
+		if(child == null || target == null){ return false; }
+		boolean isChildQuestionOrGroupDef = (child instanceof GroupDef || child instanceof QuestionDef);
+		if(!isChildQuestionOrGroupDef){ return false; } //we don't want to insert OptionDefs into this list.
+		return FormDef.insertChildBeforeOrAfter(child, target, this.children, FormDef.INSERT_BEFORE);
 	}
 }

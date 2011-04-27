@@ -18,7 +18,6 @@ import com.google.gwt.xml.client.Element;
  * Definition of an answer option or one of the possible answers of a question
  * with a given set of allowed answers..
  * 
- * @author Daniel Kayiwa
  *
  */
 public class OptionDef implements IFormElement, Serializable {
@@ -469,5 +468,15 @@ public class OptionDef implements IFormElement, Serializable {
 	/** Not Applicable **/
 	public void setAdvancedRelevant(String releValue) {
 		return;
+	}
+
+	//this method does not make sense for OptionDefs
+	public boolean insertChildAfter(IFormElement child, IFormElement target) {
+		return false;
+	}
+
+	//this method does not make sense for OptionDefs
+	public boolean insertChildBefore(IFormElement child, IFormElement target) {
+		return false;
 	}
 }

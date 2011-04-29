@@ -136,13 +136,6 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 	 * @see org.openrosa.client.controller.IFormActionListener#addNewQuestion()
 	 */
 	public void addNewQuestion(int dataType){
-		//HERE IS WHERE A NEW QUESTION SHOULD BE CREATED
-		// - Create Question
-		// - Add to FormDef
-		// - Add to FormsTreeView
-		
-		
-		
 		formsTreeView.addNewQuestion(dataType);
 	}
 	

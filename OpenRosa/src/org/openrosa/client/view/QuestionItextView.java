@@ -106,6 +106,7 @@ public class QuestionItextView extends Composite {
 		GWT.log("setting ItemID currentDef.getItextId()="+def.getItextId()+" QuestionItextView:90");
 		if(def == null || def.getItextId() == null){
 			currentDef = null;
+			txtItextID.setText("");
 			clearRows();
 			return;
 		}

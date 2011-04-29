@@ -212,7 +212,13 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 //		
 //	}
 	
+	public String getItextId() {
+		return parentQtnDef.getItextId();
+	}
 
+	public void setItextId(String itextId) {
+		parentQtnDef.setItextId(itextId);
+	}
 	
 	public void setId(int id){
 		parentQtnDef.setId(id);

@@ -424,11 +424,11 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public String getItextId() {
-		return itextId;
+			return itextId;
 	}
 
 	public void setItextId(String itextId) {
-		this.itextId = itextId;
+			this.itextId = itextId;
 	}
 
 	public void setDataType(int dataType) {
@@ -615,8 +615,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	public void setLabelNode(Element labelNode) {
 		this.labelNode = labelNode;
 
-		if(itextId == null)
-			setItextId(XmlUtil.getItextId(labelNode));
+//		if(itextId == null)
+//			setItextId(XmlUtil.getItextId(labelNode));
 	}
 
 	/**

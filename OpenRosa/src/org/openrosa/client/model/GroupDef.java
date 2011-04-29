@@ -124,7 +124,6 @@ public class GroupDef implements IFormElement, Serializable{
 	public GroupDef(String name,List<IFormElement> children, IFormElement parent) {
 		this(parent);
 		setQuestionID(name);
-		setQuestionID(name);
 		setChildren(children);
 		setItextId(name);
 	}
@@ -648,8 +647,10 @@ public class GroupDef implements IFormElement, Serializable{
 				child = (Element)groupNode.getOwnerDocument().importNode(child, true);
 				groupNode.getParentNode().replaceChild(child, groupNode);
 				groupNode =  child;
-				
 			}
+			
+			groupNode.setAttribute("nodeset", getDataNodesetPath());
+			
 		}
 		
 		

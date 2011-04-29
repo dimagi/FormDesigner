@@ -200,7 +200,7 @@ public class XformParserUtil {
 	 * @param formDef the form to which the question belongs.
 	 * @return the question variable name or null if neither nodeset, nor ref exists
 	 */
-	public static String getVariableName(Element Node, FormDef formDef){
+	public static String getQuestionIDFromRefOrNodeset(Element Node, FormDef formDef){
 		String name = Node.getAttribute(XformConstants.ATTRIBUTE_NAME_NODESET);
 		if(name == null){
 			name = Node.getAttribute(XformConstants.ATTRIBUTE_NAME_REF);

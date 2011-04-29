@@ -458,6 +458,15 @@ public class XformParser {
 				if(questionDef instanceof QuestionDef)
 					setQuestionDataNode((QuestionDef)questionDef,formDef,parentQtn);
 			}
+			if(nodeContext.getLabelNode() != null){
+				String ref = nodeContext.getLabelNode().getAttribute("ref");
+				if(ref != null && !ref.isEmpty()){
+					if(ref.contains("itext('")){
+						String[] refTokens = ref.split("'");
+						questionDef.setItextId(refTokens[1]); //refTokens should be in the form of [ "jr:itext(", "SOME_ID", ")" ] since we split on the ' char.
+					}
+				}
+			}
 		}
 	}
 
@@ -679,7 +688,7 @@ public class XformParser {
 			}
 		}
 		
-		String variableName = XformParserUtil.getVariableName(child, formDef);
+		String variableName = XformParserUtil.getQuestionIDFromRefOrNodeset(child, formDef);
 		GroupDef groupDef = new GroupDef();
 		QuestionDef groupBind = (QuestionDef)formDef.getElement(variableName);
 		if(groupBind != null){
@@ -741,11 +750,11 @@ public class XformParser {
 		repeat.setParent(parentQtn);
 		repeat.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 		repeat.setHasUINode(true);
-		repeat.setItextId(id);
 
 		if(hasLabelNode){
 			repeat.setText(XmlUtil.getTextValue(labelNode));
 			repeat.setLabelNode(labelNode);
+			repeat.setItextId(XmlUtil.getItextId(labelNode));
 		}
 		
 		if(hasHintNode){

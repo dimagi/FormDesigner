@@ -92,6 +92,9 @@ public class ConstraintParser {
 		validationRule.setConditionsOperator(XformParserUtil.getConditionsOperator(constraint));
 
 		QuestionDef questionDef = formDef.getQuestion(questionId);
+		if(questionDef == null){
+			return validationRule;
+		}
 		Element node = questionDef.getBindNode();
 		if(node == null)
 			validationRule.setErrorMessage("");

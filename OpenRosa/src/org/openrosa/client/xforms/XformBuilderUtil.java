@@ -107,10 +107,10 @@ public class XformBuilderUtil {
 	 * @param doc the xforms document.
 	 * @param variableName the question variable name.
 	 * @param formDef the form definition object.
-	 * @param formNode the xforms instance data node.
+	 * @param parentDataNode the xforms instance data node.
 	 * @return the instance data child node for the question.
 	 */
-	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element formNode){
+	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element parentDataNode){
 		String name = variableName;
 		//TODO May need to be smarter than this. Avoid invalid node
 		//names. eg those having slashes (form1/question1)
@@ -144,8 +144,8 @@ public class XformBuilderUtil {
 			String[] tokens = name.split("/");
 			name = tokens[tokens.length-1];
 			dataNode = doc.createElement(name);
-			if(!hasChildElementWithName(formNode,dataNode.getNodeName())){
-				formNode.appendChild(dataNode);
+			if(!hasChildElementWithName(parentDataNode,dataNode.getNodeName())){
+				parentDataNode.appendChild(dataNode);
 			}
 		}
 		else{
@@ -154,8 +154,8 @@ public class XformBuilderUtil {
 			for(int i=0; i<nodes.size(); i++){
 				if(i==0){
 					dataNode = nodes.elementAt(i);
-					if(!hasChildElementWithName(formNode,dataNode.getNodeName())){
-						formNode.appendChild(dataNode);
+					if(!hasChildElementWithName(parentDataNode,dataNode.getNodeName())){
+						parentDataNode.appendChild(dataNode);
 					}
 					parentNode = dataNode;
 				}

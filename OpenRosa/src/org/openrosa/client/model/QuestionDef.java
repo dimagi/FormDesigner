@@ -866,16 +866,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			this.setBindNode(node);
 		}
 		if(node != null){
-			String binding = variableName;
-			if(!binding.startsWith("/"+ formDef.getVariableName()+"/") && appendParentBinding){
-				//if(!binding.contains("/"+ formDef.getVariableName()+"/"))
-				if(!binding.startsWith(formDef.getVariableName()+"/"))
-					binding = "/"+ formDef.getVariableName()+"/" + binding;
-				else{
-					variableName = "/" + variableName; //correct user binding syntax error
-					binding = variableName;
-				}
-			}
+			String binding = getDataNodesetPath();
 
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT){
 				node.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(dataType,node));
@@ -1753,10 +1744,12 @@ public class QuestionDef implements IFormElement, Serializable{
 
 	public String getDisplayText(){
 		String displayText = getText();
-		int pos1 = displayText.indexOf("${");
-		int pos2 = displayText.indexOf("}$");
-		if(pos1 > -1 && pos2 > -1 && (pos2 > pos1))
-			displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
+		if(displayText != null && !displayText.isEmpty()){
+			int pos1 = displayText.indexOf("${");
+			int pos2 = displayText.indexOf("}$");
+			if(pos1 > -1 && pos2 > -1 && (pos2 > pos1))
+				displayText = displayText.replace(displayText.substring(pos1,pos2+2),"");
+		}
 		return displayText;
 	}
 

@@ -84,19 +84,19 @@ public class UiElementBuilder {
 	 * @param doc the xforms document.
 	 * @param xformsNode the root node of the xforms document.
 	 * @param formDef the form definition object to which the question belongs.
-	 * @param formNode the xforms instance data node.
+	 * @param parentDataNode the xforms instance data node.
 	 * @param modelNode the xforms model node.
 	 * @param UIParentNode the parent DOM node to which UI control node's should be added to (as children) in the document.
 	 */
-	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, FormDef formDef, Element formNode, Element modelNode,Element UIParentNode){
+	public static void fromQuestionDef2Xform(IFormElement qtn, Document doc, FormDef formDef, Element parentDataNode, Element modelNode,Element UIParentNode){
 		if(qtn.getParent() != null){
-			formNode = qtn.getParent().getDataNode();
+			parentDataNode = qtn.getParent().getDataNode();
 		}
 		
 		String dataPath = qtn.getDataNodesetPath();
 		String id = FormUtil.getQtnIDFromNodeSetPath(dataPath);
 		
-		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,formNode);
+		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,parentDataNode);
 
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){
@@ -151,7 +151,7 @@ public class UiElementBuilder {
 			}
 			for(int j=0; j<rptQtns.size(); j++){
 //				createQuestion(rptQtns.get(j),repeatNode,dataNode,doc);
-				fromQuestionDef2Xform(rptQtns.get(j), doc, formDef, formNode, modelNode, repeatNode);
+				fromQuestionDef2Xform(rptQtns.get(j), doc, formDef, parentDataNode, modelNode, repeatNode);
 			}
 		}
 	}

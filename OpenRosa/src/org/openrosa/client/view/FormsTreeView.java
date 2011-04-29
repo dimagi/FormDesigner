@@ -1117,8 +1117,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 										  droppedBindNode, droppedDataNode, droppedControlNode,
 										  droppedBindParent, droppedDataParent, droppedControlParent;
 		anchorBindNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
-		anchorDataNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
-		anchorControlNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.BIND_NODE);
+		anchorDataNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.DATA_NODE);
+		anchorControlNode = (com.google.gwt.xml.client.Element)findNearestNeighborData(neighborDef, aboveOrBelow, FormsTreeView.CONTROL_NODE);
 		
 		droppedBindNode = droppedDef.getBindNode();
 		droppedControlNode = droppedDef.getControlNode();
@@ -1156,10 +1156,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(droppedBindNode != null){
 			if(anchorBindNode != null){
 				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
-					com.google.gwt.dom.client.Node anchorBindParent = ((com.google.gwt.dom.client.Node)anchorBindNode.getParentNode());
-					anchorBindParent.insertAfter((com.google.gwt.dom.client.Node)droppedBindNode, 
-												 (com.google.gwt.dom.client.Node)anchorBindNode);
-					
+					insertAfter(droppedBindNode,anchorBindNode);
 				}else{
 					anchorBindNode.getParentNode().insertBefore(droppedBindNode, anchorBindNode);
 				}
@@ -1175,10 +1172,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		if(droppedControlNode != null){
 			if(anchorControlNode != null){
 				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
-					com.google.gwt.dom.client.Node anchorControlParent = ((com.google.gwt.dom.client.Node)anchorControlNode.getParentNode());
-					anchorControlParent.insertAfter((com.google.gwt.dom.client.Node)droppedControlNode, 
-												 (com.google.gwt.dom.client.Node)anchorControlNode);
-					
+					insertAfter(droppedControlNode,anchorControlNode);
 				}else{
 					anchorControlNode.getParentNode().insertBefore(droppedControlNode, anchorControlNode);
 				}
@@ -1215,9 +1209,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	    assert (refChild != null) : "Cannot add After a null node";
 	    Node next = refChild.getNextSibling();
 	    if (next == null) {
-	      return refChild.appendChild(newChild);
+	      return refChild.getParentNode().appendChild(newChild);
 	    } else {
-	      return refChild.insertBefore(newChild, next);
+	      return refChild.getParentNode().insertBefore(newChild, next);
 	    }
 	  }
 	
@@ -1253,7 +1247,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(aboveOrBelow == FormsTreeView.INSERT_BEFORE){
 				newNeighbor = siblings.get(curIndex); //look progressively upwards in the siblings list
 			}else{
-				newNeighbor = siblings.get(siblings.size() - curIndex - 1); //look progressively downwards in the list
+				newNeighbor = siblings.get(curIndex); //look progressively downwards in the list
 			}
 			
 			nNode = null;
@@ -1675,7 +1669,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * 
 	 * @return the selected form.
 	 */
-	public FormDef getSelectedForm(){
+	public FormDef getFormDef(){
 		return formDef; //we always have one form in openrosa form designer.
 
 		/*TreeModelItem  item = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();

@@ -95,13 +95,13 @@ public class XformBuilder {
 		formDef.setModelNode(modelNode);
 
 		//Create the form data node and add it to the instance node.
-		Element formNode =  doc.createElement("data");
-		formNode.setAttribute("xmlnsCHANGEME", "http://openrosa.org/formdesigner/"+UUID.uuid());
-		formNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
-		formNode.setAttribute("uiVersion", "1");
-		formNode.setAttribute("version", "1");
-		instanceNode.appendChild(formNode);
-		formDef.setDataNode(formNode);
+		Element parentDataNode =  doc.createElement("data");
+		parentDataNode.setAttribute("xmlnsCHANGEME", "http://openrosa.org/formdesigner/"+UUID.uuid());
+		parentDataNode.setAttribute("xmlns:jrm", XformUtil.getDataXMLNSjrm());
+		parentDataNode.setAttribute("uiVersion", "1");
+		parentDataNode.setAttribute("version", "1");
+		instanceNode.appendChild(parentDataNode);
+		formDef.setDataNode(parentDataNode);
 
 
 		//Check if we have any pages.
@@ -113,9 +113,9 @@ public class XformBuilder {
 		for(int pageNo=0; pageNo<formDef.getChildCount(); pageNo++){
 			IFormElement element = formDef.getChildAt(pageNo);
 			if(element instanceof GroupDef){
-				fromGroupDef2Xform((GroupDef)element,doc,parentNode,formDef,formNode,modelNode);
+				fromGroupDef2Xform((GroupDef)element,doc,parentNode,formDef,parentDataNode,modelNode);
 			}else{
-				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,formDef,formNode,modelNode,parentNode);
+				UiElementBuilder.fromQuestionDef2Xform((QuestionDef)element,doc,formDef,parentDataNode,modelNode,parentNode);
 			}
 		}
 

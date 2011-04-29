@@ -782,7 +782,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			if(data == null || data.trim().length() == 0)
 				return;
 
-			FormDef formDef = formsTreeView.getSelectedForm();
+			FormDef formDef = formsTreeView.getFormDef();
 			String fileName = "filename";
 			if(formDef != null)
 				fileName = formDef.getName();
@@ -808,7 +808,7 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 			public void execute() {
 				try{
 					int selFormId = -1; String xml = null; 
-					FormDef formDef = formsTreeView.getSelectedForm();
+					FormDef formDef = formsTreeView.getFormDef();
 					if(formDef != null)
 						selFormId = formDef.getId();
 

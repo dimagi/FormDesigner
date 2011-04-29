@@ -1022,6 +1022,14 @@ public class XformParser {
 				nodeContext.setLabel(label);
 				nodeContext.setLabelNode(child);
 		}
+		
+		String ref = child.getAttribute("ref");
+		if(ref != null && !ref.isEmpty()){
+			if(ref.contains("itext('")){
+				String[] refTokens = ref.split("'");
+				questionDef.setItextId(refTokens[1]); //refTokens should be in the form of [ "jr:itext(", "SOME_ID", ")" ] since we split on the ' char.
+			}
+		}
 	}
 
 

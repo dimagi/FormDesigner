@@ -1005,7 +1005,11 @@ public class GroupDef implements IFormElement, Serializable{
 	}
 
 	public String getDisplayText(){
-		return getText();
+		if(getText() != null && !getText().isEmpty()){
+			return getText();
+		}else{
+			return getQuestionID();
+		}
 	}
 
 	public String getItextId() {

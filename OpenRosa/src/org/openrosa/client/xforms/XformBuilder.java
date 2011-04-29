@@ -250,8 +250,9 @@ public class XformBuilder {
 			
 			groupDef.setDataNode(dataNode);
 			
-			
-			if(groupDef.getHelpText()!= null || Itext.getDefaultLocale().hasID(groupDef.getItextId()+";hint")){
+			boolean hasHintText = (groupDef.getHelpText()!= null && !groupDef.getHelpText().isEmpty() )||
+									(Itext.getDefaultLocale().hasID(groupDef.getItextId()+";hint"));
+			if(hasHintText){
 				UiElementBuilder.addHelpItextRefs(hintNode, groupDef);
 				groupDef.setHintNode(hintNode);
 				groupNode.appendChild(hintNode);

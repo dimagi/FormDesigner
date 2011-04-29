@@ -114,8 +114,8 @@ public class XformBuilderUtil {
 		String name = variableName;
 		//TODO May need to be smarter than this. Avoid invalid node
 		//names. eg those having slashes (form1/question1)
-		if(name.startsWith(formDef.getVariableName()))
-			name = name.substring(formDef.getVariableName().length()+1);
+		if(name.startsWith(formDef.getQuestionID()))
+			name = name.substring(formDef.getQuestionID().length()+1);
 
 		//TODO Should do this for all invalid characters in node names.
 		/*name = name.replace("/", "");

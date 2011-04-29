@@ -42,8 +42,8 @@ public interface IFormElement {
 	int getDataType();
 	void setDataType(int dataType);
 	
-	String getBinding();
-	void setBinding(String binding);
+	String getQuestionID();
+	void setQuestionID(String binding);
 	
 	List<IFormElement> getChildren();
 	void setChildren(List<IFormElement> children);

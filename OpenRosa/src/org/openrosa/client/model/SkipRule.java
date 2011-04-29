@@ -294,7 +294,7 @@ public class SkipRule implements Serializable{
 			QuestionDef qtn = srcFormDef.getQuestion(condition.getQuestionId());
 			if(qtn == null)
 				continue;
-			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getQuestionID());
 			if(questionDef == null)
 				continue;
 				
@@ -310,7 +310,7 @@ public class SkipRule implements Serializable{
 			QuestionDef qtn = srcFormDef.getQuestion(actionTarget);
 			if(qtn == null)
 				continue;
-			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
+			QuestionDef questionDef = dstFormDef.getQuestion(qtn.getQuestionID());
 			if(questionDef == null)
 				continue;
 			skipRule.addActionTarget(questionDef.getId());

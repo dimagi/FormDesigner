@@ -416,7 +416,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 		formDef = questionDef.getFormDef();
 
 		if(questionDef != null)
-			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getBinding());
+			lblAction.setText(LocaleText.get("forQuestion") + questionDef.getQuestionID());
 		else
 			lblAction.setText(LocaleText.get("forQuestion"));
 
@@ -537,7 +537,7 @@ public class SkipRulesView extends Composite implements IConditionController, Qu
 			if(qtnDef == questionDef)
 				continue; //Ignore the question for which we are editing the skip rule.
 
-			if(qtnDef == null || !questions.contains(qtnDef.getBinding())){
+			if(qtnDef == null || !questions.contains(qtnDef.getQuestionID())){
 				actnTargets.remove(index);
 				index = index - 1;
 			}

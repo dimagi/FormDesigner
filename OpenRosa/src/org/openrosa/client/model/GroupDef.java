@@ -93,10 +93,10 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(GroupDef pageDef,IFormElement parent) {
 		this(parent);
-		setBinding(pageDef.getBinding());
+		setQuestionID(pageDef.getQuestionID());
 		setChildren(pageDef.getChildren());
 		setItextId(pageDef.getItextId());
-		setItextId(getBinding());
+		setItextId(getQuestionID());
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(String name,IFormElement parent) {
 		this(parent);
-		setBinding(name);
+		setQuestionID(name);
 		setChildren(children);
 		setItextId(name);
 	}
@@ -123,8 +123,8 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public GroupDef(String name,List<IFormElement> children, IFormElement parent) {
 		this(parent);
-		setBinding(name);
-		setBinding(name);
+		setQuestionID(name);
+		setQuestionID(name);
 		setChildren(children);
 		setItextId(name);
 	}
@@ -248,7 +248,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement def = children.get(i);
-			if(varName.equals(def.getBinding()))
+			if(varName.equals(def.getQuestionID()))
 				return i;
 		}
 
@@ -336,7 +336,7 @@ public class GroupDef implements IFormElement, Serializable{
 		}
 
 		//Either no / or just one occurrence. More than one nestings are avoided to make things simple
-		if(qtnDef.getBinding() != null && qtnDef.getBinding().indexOf('/') == qtnDef.getBinding().lastIndexOf('/')){
+		if(qtnDef.getQuestionID() != null && qtnDef.getQuestionID().indexOf('/') == qtnDef.getQuestionID().lastIndexOf('/')){
 			if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null)
 				qtnDef.getDataNode().getParentNode().removeChild(qtnDef.getDataNode());
 			if(qtnDef.getBindNode() != null && qtnDef.getBindNode().getParentNode() != null)
@@ -410,7 +410,7 @@ public class GroupDef implements IFormElement, Serializable{
 		if(controlNode != null && parentNode != null && currentElement.getControlNode() != null)
 			parentNode.removeChild(controlNode);
 
-		if(!(questionDef.getBinding().indexOf('/') > -1)){
+		if(!(questionDef.getQuestionID().indexOf('/') > -1)){
 			if(questionDef.getDataNode() != null && questionDef.getDataNode().getParentNode() != null && currentElement.getDataNode() != null)
 				questionDef.getDataNode().getParentNode().removeChild(questionDef.getDataNode());
 		}
@@ -437,7 +437,7 @@ public class GroupDef implements IFormElement, Serializable{
 				}
 
 				//move data node (We are not moving nested data nodes just to avoid complications
-				if(!(questionDef.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1)){
+				if(!(questionDef.getQuestionID().indexOf('/') > -1 || qtnDef.getQuestionID().indexOf('/') > -1)){
 					if(qtnDef.getDataNode() != null && qtnDef.getDataNode().getParentNode() != null && questionDef.getDataNode() != null)
 						qtnDef.getDataNode().getParentNode().insertBefore(questionDef.getDataNode(), qtnDef.getDataNode());
 				}
@@ -520,12 +520,12 @@ public class GroupDef implements IFormElement, Serializable{
 
 
 					//move data node (We are not moving nested data nodes just to avoid complications
-					if(!(element.getBinding().indexOf('/') > -1 || qtnDef.getBinding().indexOf('/') > -1))
+					if(!(element.getQuestionID().indexOf('/') > -1 || qtnDef.getQuestionID().indexOf('/') > -1))
 						if(element.getDataNode() != null && element.getDataNode().getParentNode() != null){
 							parentDataNode.removeChild(element.getDataNode());
 
 							if(qtnDef.getDataNode() != null){
-								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getBinding().contains("/"))
+								if(qtnDef.getDataType() == QuestionDef.QTN_TYPE_REPEAT && qtnDef.getQuestionID().contains("/"))
 									parentDataNode.insertBefore(element.getDataNode(), qtnDef.getDataNode().getParentNode());
 								else
 									parentDataNode.insertBefore(element.getDataNode(), qtnDef.getDataNode());
@@ -559,7 +559,7 @@ public class GroupDef implements IFormElement, Serializable{
 					parentNode.appendChild(controlNode);
 				}
 
-				if(!(element.getBinding().indexOf('/') > -1)){
+				if(!(element.getQuestionID().indexOf('/') > -1)){
 					if(element.getDataNode() != null && parentDataNode != null){
 						parentDataNode.removeChild(element.getDataNode());
 						parentDataNode.appendChild(element.getDataNode());
@@ -617,9 +617,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 * @param formNode the xforms instance data node.
 	 * @param modelNode the xforms model node.
 	 * @param withData set to true to also update the xforms instance data values from question answers.
-	 * @param orgFormVarName the original form variable name before any updates were done.
+	 * @param rootDataNodeName the original form variable name before any updates were done.
 	 */
-	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String orgFormVarName){
+	public void updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode, boolean withData, String rootDataNodeName){
 		boolean allQuestionsNew = areAllQuestionsNew();
 		boolean needsDOMNodes = false;
 		Element groupNode = (this.getDataType() == QuestionDef.QTN_TYPE_GROUP ? getGroupNode() : getParent().getControlNode());
@@ -675,9 +675,9 @@ public class GroupDef implements IFormElement, Serializable{
 					newElements.add(questionDef);
 
 				if(questionDef instanceof QuestionDef)
-					((QuestionDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode, dataType != QuestionDef.QTN_TYPE_REPEAT, withData, orgFormVarName);
+					((QuestionDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode, dataType != QuestionDef.QTN_TYPE_REPEAT, withData, rootDataNodeName);
 				else
-					((GroupDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,withData,orgFormVarName);
+					((GroupDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,withData,rootDataNodeName);
 			}
 		}
 
@@ -785,7 +785,7 @@ public class GroupDef implements IFormElement, Serializable{
 		int count = groupDef.getChildCount();
 		for(int index = 0; index < count; index++){
 			IFormElement qtn = groupDef.getChildAt(index);
-			IFormElement element = this.getElement(qtn.getBinding());
+			IFormElement element = this.getElement(qtn.getQuestionID());
 			if(element == null)
 				continue; //Possibly this question was deleted on server
 			element.refresh(qtn);
@@ -851,7 +851,7 @@ public class GroupDef implements IFormElement, Serializable{
 		if(varName == null || children == null)
 			return null;
 		
-		if(getBinding().equals(varName)){
+		if(getQuestionID().equals(varName)){
 			return this;
 		}
 		
@@ -955,11 +955,11 @@ public class GroupDef implements IFormElement, Serializable{
 		this.dataType = dataType;
 	}
 
-	public String getBinding(){
+	public String getQuestionID(){
 		return binding;
 	}
 
-	public void setBinding(String binding){
+	public void setQuestionID(String binding){
 		this.binding = binding;
 	}
 
@@ -1061,9 +1061,9 @@ public class GroupDef implements IFormElement, Serializable{
 	 */
 	public String getDataNodesetPath(){
 		if(getParent() == null){
-			return "/"+getBinding();
+			return "/"+getQuestionID();
 		}else{
-			return getParent().getDataNodesetPath() + "/"+getBinding();
+			return getParent().getDataNodesetPath() + "/"+getQuestionID();
 		}
 		
 	}

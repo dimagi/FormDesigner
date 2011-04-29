@@ -60,7 +60,7 @@ public class OptionDef implements IFormElement, Serializable {
 		 this(parent);
 		 setId(optionDef.getId());
 		 setText(optionDef.getText());
-		 setBinding(optionDef.getBinding());
+		 setQuestionID(optionDef.getQuestionID());
 		 setItextId(optionDef.getItextId());
 		 //setParent(parent /*optionDef.getParent()*/);
 	}
@@ -75,7 +75,7 @@ public class OptionDef implements IFormElement, Serializable {
 		this(parent);
 		setId(id);
 		setText(text);
-		setBinding(variableName);
+		setQuestionID(variableName);
 	}
 	
 	public int getId() {
@@ -94,11 +94,11 @@ public class OptionDef implements IFormElement, Serializable {
 		this.text = text;
 	}
 	
-	public String getBinding() {
+	public String getQuestionID() {
 		return binding;
 	}
 	
-	public void setBinding(String variableName) {
+	public void setQuestionID(String variableName) {
 		this.binding = variableName;
 	}
 

@@ -400,7 +400,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		AbstractImagePrototype spacer = AbstractImagePrototype.create(images.emptyIcon());
 
 		editLocale = new Button();
-		editLocale.setText("Edit Locales");
+		editLocale.setText("Edit Languages");
 		editLocale.setBorders(true);
 		editLocale.setScale(ButtonScale.SMALL);
 		//		editLocale.disable(); //feature not ready yet

@@ -164,7 +164,7 @@ public class XformUtil {
 	 * @return
 	 */
 	public static String getOptionDefIdentifierString(OptionDef od){
-		return od.getBinding().isEmpty() ? od.getItextId() : od.getBinding();
+		return od.getQuestionID().isEmpty() ? od.getItextId() : od.getQuestionID();
 	}
 	
 	/**

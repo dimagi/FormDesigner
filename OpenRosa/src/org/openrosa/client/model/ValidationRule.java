@@ -268,7 +268,7 @@ public class ValidationRule implements Serializable{
 		
 		//using variable name instead of id because id could have changed as more questions are
 		//added or some deleted.
-		QuestionDef questionDef = dstFormDef.getQuestion(qtn.getBinding());
+		QuestionDef questionDef = dstFormDef.getQuestion(qtn.getQuestionID());
 		if(questionDef == null)
 			return; //possibly question for the validation rule has been deleted.
 		
@@ -282,7 +282,7 @@ public class ValidationRule implements Serializable{
 			if(qtn == null)
 				continue;
 			
-			questionDef = dstFormDef.getQuestion(qtn.getBinding());
+			questionDef = dstFormDef.getQuestion(qtn.getQuestionID());
 			if(questionDef == null)
 				continue;
 			

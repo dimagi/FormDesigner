@@ -144,7 +144,7 @@ public class RelevantBuilder {
 		Element node = doc
 			.createElement("bind");
 		node.setAttribute("nodeset", nodeSetVal);
-		node.setAttribute("id",elementDef.getBinding());
+		node.setAttribute("id",elementDef.getQuestionID());
 		elementDef.setBindNode(node);
 		formDef.getModelNode().appendChild(node);
 		
@@ -165,9 +165,9 @@ public class RelevantBuilder {
 
 		QuestionDef questionDef = formDef.getQuestion(condition.getQuestionId());
 		if(questionDef != null){
-			attrText = questionDef.getBinding();
-			if(!attrText.contains(formDef.getVariableName())){
-				attrText = "/" + formDef.getVariableName() + "/" + questionDef.getBinding();
+			attrText = questionDef.getQuestionID();
+			if(!attrText.contains(formDef.getQuestionID())){
+				attrText = "/" + formDef.getQuestionID() + "/" + questionDef.getQuestionID();
 			}
 			
 			String value = " '" + condition.getValue() + "'";

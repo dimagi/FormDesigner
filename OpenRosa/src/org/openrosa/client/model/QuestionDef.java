@@ -86,7 +86,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	/** The text indentifier of the question. This is used by the users of the questionaire 
 	 * but in code we use the dynamically generated numeric id for speed. 
 	 */
-	private String variableName = ModelConstants.EMPTY_STRING;
+	private String questionID = ModelConstants.EMPTY_STRING;
 
 	/** The allowed set of values (OptionDef) for an answer of the question. 
 	 * This also holds repeat sets of questions (RepeatQtnsDef) for the QTN_TYPE_REPEAT.
@@ -227,7 +227,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		setEnabled(questionDef.isEnabled());
 		setLocked(questionDef.isLocked());
 		setRequired(questionDef.isRequired());
-		setVariableName(questionDef.getBinding());
+		setVariableName(questionDef.getQuestionID());
 		setItextId(questionDef.getItextId());
 
 		if(getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
@@ -498,16 +498,16 @@ public class QuestionDef implements IFormElement, Serializable{
 		return true;
 	}
 	
-	public String getBinding() {
-		return variableName;
+	public String getQuestionID() {
+		return questionID;
 	}
 
-	public void setVariableName(String variableName) {
-		boolean changed = this.variableName != variableName;
+	private void setVariableName(String variableName) {
+		boolean changed = this.questionID != variableName;
 		if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
-			this.getRepeatQtnsDef().setBindingInternal(variableName);
+			this.getRepeatQtnsDef().setQuestionIDInternal(variableName);
 		}
-		this.variableName = variableName;
+		this.questionID = variableName;
 
 		if(changed){
 			for(int index = 0; index < changeListeners.size(); index++)
@@ -527,7 +527,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(varName == null){
 			return null;
 		}
-		if(getBinding().equals(varName)){
+		if(getQuestionID().equals(varName)){
 			return this;
 		}else{
 			if(this.getDataType() == QuestionDef.QTN_TYPE_REPEAT){
@@ -553,9 +553,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	 */
 	public String getDataNodesetPath(){
 		if(getParent() == null){
-			return "/"+getBinding();
+			return "/"+getQuestionID();
 		}else{
-			return getParent().getDataNodesetPath() + "/"+getBinding();
+			return getParent().getDataNodesetPath() + "/"+getQuestionID();
 		}
 		
 	}
@@ -826,7 +826,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 	
 
-	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String orgFormVarName){
+	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String rootDataNodeName){
 		boolean isNew = (controlNode == null);
 		if(isNew && hasUINode()){ //Must be new question.
 			Element parentNode;
@@ -885,9 +885,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			boolean hasRefOrNode = hasRefAttr || hasNodeSetAttr;
 			if(getParent()!= null && getParent().getDataType() == QuestionDef.QTN_TYPE_REPEAT){
 				if(!hasRefOrNode){
-					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,variableName);
+					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,questionID);
 				}else if(hasRefAttr){
-					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,variableName);
+					node.setAttribute(XformConstants.ATTRIBUTE_NAME_REF,questionID);
 				}else if(hasNodeSetAttr){
 					node.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET,getDataNodesetPath());
 				}
@@ -940,7 +940,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 
 			if(dataNode != null){
-				updateDataNode(doc,formDef,orgFormVarName);
+				updateDataNode(doc,formDef,rootDataNodeName);
 			}
 		}
 
@@ -973,7 +973,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 		}
 		else if(getDataType() == QuestionDef.QTN_TYPE_REPEAT){
-			getRepeatQtnsDef().updateDoc(doc, groupNode, formDef, formNode, modelNode, withData, orgFormVarName);
+			getRepeatQtnsDef().updateDoc(doc, groupNode, formDef, formNode, modelNode, withData, rootDataNodeName);
 
 			if(controlNode != null){
 //				((Element)controlNode.
@@ -1081,7 +1081,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		}
 
 		if(value != null && value.trim().length() > 0){
-			if(variableName.contains("@"))
+			if(questionID.contains("@"))
 				updateAttributeValue(formNode,value);
 			else if(dataNode != null){
 				if(isBinaryType()){
@@ -1102,7 +1102,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		else{
 			//TODO Check to see that this does not remove child model node of repeats
 			if(dataNode != null && dataType != QuestionDef.QTN_TYPE_REPEAT){
-				if(variableName.contains("@"))
+				if(questionID.contains("@"))
 					updateAttributeValue(formNode,"");
 				else{
 					NodeList childNodes = dataNode.getChildNodes();
@@ -1124,7 +1124,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	private void updateAttributeValue(Element formNode, String value){
-		String xpath = variableName;		
+		String xpath = questionID;		
 		Element elem = formNode; //(Element)formNode.getParentNode();
 
 		if(dataType != QuestionDef.QTN_TYPE_REPEAT){
@@ -1135,7 +1135,7 @@ public class QuestionDef implements IFormElement, Serializable{
 				xpath = xpath.substring(0,pos-1);
 			}
 			else if(pos == 0){
-				attributeName = variableName.substring(1,variableName.length());
+				attributeName = questionID.substring(1,questionID.length());
 				if(value != null && value.trim().length() > 0) //we are not allowing empty strings for now.
 					formNode.setAttribute(attributeName, value);
 				return;
@@ -1157,42 +1157,37 @@ public class QuestionDef implements IFormElement, Serializable{
 			;//updateRepeatModel(elem,qtnData);
 	}
 
-	private void updateDataNode(Document doc, FormDef formDef, String orgFormVarName){
-		if(variableName.contains("@")){
-			return;
-		}
+	private void updateDataNode(Document doc, FormDef formDef, String rootDataNodeName){
+//		if(questionID.contains("@")){
+//			return;
+//		}
 
 		String name = dataNode.getNodeName();
-		if(name.equals(variableName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
+		if(name.equals(questionID)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
 			if(dataType != QuestionDef.QTN_TYPE_REPEAT){
 				return;
 			}
-			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getVariableName().equals(dataNode.getParentNode().getNodeName())){
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT && formDef.getQuestionID().equals(dataNode.getParentNode().getNodeName())){
 				return;
 			}
 		}
 
-		if(variableName.contains("/") && name.equals(variableName.substring(variableName.lastIndexOf("/")+1)) && dataNode.getParentNode().getNodeName().equals(variableName.substring(0,variableName.indexOf("/")))){
+		if(questionID.contains("/") && name.equals(questionID.substring(questionID.lastIndexOf("/")+1)) && dataNode.getParentNode().getNodeName().equals(questionID.substring(0,questionID.indexOf("/")))){
 			return;
 		}
 
 
 		String xml = dataNode.toString();
-		if(!variableName.contains("/")){
-			xml = xml.replace(name, variableName);
+		if(!questionID.contains("/")){
+			xml = xml.replace(name, questionID);
 			Element node = XformUtil.getNode(xml);
 			node = (Element)controlNode.getOwnerDocument().importNode(node, true);
 			Element parent = (Element)dataNode.getParentNode();
-			if(formDef.getVariableName().equals(parent.getNodeName()))
-				parent.replaceChild(node, dataNode);
-			else
-				parent.replaceChild(node, dataNode);
-			//formDef.getDataNode().replaceChild(node, parent);
-
+			parent.replaceChild(node, dataNode);
 			dataNode = node;
 		}
 		else{
-			String newName = variableName.substring(variableName.lastIndexOf("/")+1);
+			String newName = questionID.substring(questionID.lastIndexOf("/")+1);
 			if(!name.equals(newName)){
 				xml = xml.replace(name, newName);
 				Element node = XformUtil.getNode(xml);
@@ -1202,13 +1197,13 @@ public class QuestionDef implements IFormElement, Serializable{
 				dataNode = node;
 			}
 
-			String parentName = variableName.substring(0,variableName.indexOf("/"));
+			String parentName = questionID.substring(0,questionID.indexOf("/"));
 			String parentNodeName = dataNode.getParentNode().getNodeName();
 			if(!parentName.equals(parentNodeName)){ //equalsIgnoreCase was bug because our xpath lib is case sensitive
-				if(variableName.equals(parentName+"/"+parentNodeName+"/"+name))
+				if(questionID.equals(parentName+"/"+parentNodeName+"/"+name))
 					return;
 				
-				if(variableName.endsWith("/"+parentNodeName+"/"+name))
+				if(questionID.endsWith("/"+parentNodeName+"/"+name))
 					return; //Some bindings have nested paths which expose some bug here.
 
 				Element parentNode = doc.createElement(parentName);
@@ -1216,7 +1211,7 @@ public class QuestionDef implements IFormElement, Serializable{
 				Element parent = (Element)dataNode.getParentNode();
 				Element node = (Element)dataNode.cloneNode(true);
 				parentNode.appendChild(node);
-				if(formDef.getVariableName().equals(parent.getNodeName()))
+				if(this.getParent().getQuestionID().equals(parent.getNodeName()))
 					parent.replaceChild(parentNode, dataNode);
 				else
 					//if(dataNode.getParentNode().getParentNode() != null)
@@ -1226,7 +1221,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 		}
 
-		String id = variableName;
+		String id = questionID;
 		if(id.contains("/"))
 			id = id.substring(id.lastIndexOf('/')+1);
 
@@ -1250,7 +1245,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		if(dataType == QuestionDef.QTN_TYPE_REPEAT)
 			getRepeatQtnsDef().updateDataNodes(dataNode);
 
-		formDef.updateRuleConditionValue(orgFormVarName+"/"+name, formDef.getVariableName()+"/"+variableName);
+		formDef.updateRuleConditionValue(rootDataNodeName+"/"+name, parent.getQuestionID()+"/"+questionID);
 	}
 
 
@@ -1266,7 +1261,7 @@ public class QuestionDef implements IFormElement, Serializable{
 			Element parentCtr = this.getParent().getControlNode();
 			if(parentCtr == null){ return ; } //well...shit.
 			
-			Element ctrl = FormUtil.getControlNodeByQuestionID(this.getBinding(), this.getParent().getControlNode());
+			Element ctrl = FormUtil.getControlNodeByQuestionID(this.getQuestionID(), this.getParent().getControlNode());
 			if(ctrl != null){
 				ctrl.getParentNode().removeChild(ctrl);
 				this.controlNode = null;
@@ -1468,7 +1463,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		List list = (List)options;
 		for(int i=0; i<list.size(); i++){
 			OptionDef optionDef = (OptionDef)list.get(i);
-			if(optionDef.getBinding().equals(value))
+			if(optionDef.getQuestionID().equals(value))
 				return optionDef;
 		}
 		return null;
@@ -1519,7 +1514,7 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		for(int i=0; i<getOptions().size(); i++){
 			OptionDef def = (OptionDef)getOptions().get(i);
-			if(def.getBinding().equals(varName))
+			if(def.getQuestionID().equals(varName))
 				return i;
 		}
 
@@ -1536,7 +1531,7 @@ public class QuestionDef implements IFormElement, Serializable{
 
 		for(int index = 0; index < options2.size(); index++){
 			OptionDef optn = (OptionDef)options2.get(index);
-			OptionDef optionDef = this.getOptionWithValue(optn.getBinding());
+			OptionDef optionDef = this.getOptionWithValue(optn.getQuestionID());
 			if(optionDef == null){
 				missingOptns.add(optn);
 				continue;
@@ -1559,7 +1554,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		int count = getOptionCount();
 		for(int index = 0; index < count; index++){
 			OptionDef optionDef = getOptionAt(index);
-			if(questionDef.getOptionWithValue(optionDef.getBinding()) == null){
+			if(questionDef.getOptionWithValue(optionDef.getQuestionID()) == null){
 				
 				//TODO Make sure this is not buggy.
 				//If before refresh number of options is the same as the new number,
@@ -1567,7 +1562,7 @@ public class QuestionDef implements IFormElement, Serializable{
 				//ones with the old values.
 				if(oldCount == count){
 					OptionDef optnDef = questionDef.getOptionAt(index);
-					optionDef.setBinding(optnDef.getBinding());
+					optionDef.setQuestionID(optnDef.getQuestionID());
 					optionDef.setText(optnDef.getText());
 				}
 				
@@ -1579,7 +1574,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		//original server side form.
 		for(int index = 0; index < missingOptns.size(); index++){
 			OptionDef optnDef = missingOptns.get(index);
-			orderedOptns.add(new OptionDef((orderedOptns.size() + index + 1), optnDef.getText(), optnDef.getBinding(), this));
+			orderedOptns.add(new OptionDef((orderedOptns.size() + index + 1), optnDef.getText(), optnDef.getQuestionID(), this));
 		}
 
 		options = orderedOptns;
@@ -1753,7 +1748,7 @@ public class QuestionDef implements IFormElement, Serializable{
 		return displayText;
 	}
 
-	public void setBinding(String binding){
+	public void setQuestionID(String binding){
 		setVariableName(binding);
 	}
 

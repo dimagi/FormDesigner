@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openrosa.client.Context;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.ItextModel;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.Itext;
@@ -39,11 +40,14 @@ public class QuestionItextView extends Composite {
 	private FlexTable widgetTable = new FlexTable();
 	private FlexTable layoutTable = new FlexTable();
 	
-	private Button addLanguageButton;
+//	private Button addLanguageButton;
 	private Button addFormButton;
 	
+	private Label lblItextID;
+	private TextBox txtItextID;
+	
 	/** Current ItextID that we're concerned about **/
-	private String itemItextID;
+	private IFormElement currentDef;
 	private List<String> languages;
 	private List<String> forms;
 	private PropertiesView propertiesView;
@@ -64,15 +68,17 @@ public class QuestionItextView extends Composite {
 
 	public QuestionItextView(PropertiesView propertiesView){
 		this.propertiesView = propertiesView;
-		initButtons();
+		initButtonsAndLabels();
 		
-		layoutTable.setWidget(0, 0, addLanguageButton);
-		layoutTable.setWidget(0, 1, addFormButton);
+//		layoutTable.setWidget(0, 0, addLanguageButton);
+		layoutTable.setWidget(0, 0, addFormButton);
+		layoutTable.setWidget(0, 1, lblItextID);
+		layoutTable.setWidget(0, 2, txtItextID);
+
 		layoutTable.setWidget(1, 0, widgetTable);
 		layoutTable.getFlexCellFormatter().setColSpan(1, 0, 2);
 
 		
-		itemItextID = null;
 		rowLocations = new HashMap<String, Integer>();
 		widgetTable.clear();
 		languages = new ArrayList<String>();
@@ -81,12 +87,12 @@ public class QuestionItextView extends Composite {
 		initWidget(layoutTable);
 	}
 	
-	private void init(String id){
+	private void init(IFormElement def){
 		rowLocations = new HashMap<String, Integer>();
 		widgetTable.clear();
 		languages = new ArrayList<String>();
 		forms = new ArrayList<String>();
-		itemItextID = id;
+		txtItextID.setValue(def.getItextId());
 		findAndAddAvailableLangs();
 		findAndAddAvailableForms();
 		refreshRows();
@@ -96,13 +102,15 @@ public class QuestionItextView extends Composite {
 		propertiesView.update();
 	}
 	
-	public void setItemID(String id){
-		GWT.log("setting ItemID id="+id+" QuestionItextView:90");
-		if(id == null){
+	public void setItemID(IFormElement def){
+		GWT.log("setting ItemID currentDef.getItextId()="+def.getItextId()+" QuestionItextView:90");
+		if(def == null || def.getItextId() == null){
+			currentDef = null;
 			clearRows();
 			return;
 		}
-		init(id);
+		currentDef = def;
+		init(def);
 	}
 	private void clearRows(){
 		widgetTable.clear(); //clear the row and re-add everything so that widgets are added in the right order
@@ -119,7 +127,8 @@ public class QuestionItextView extends Composite {
 			addDefaultTextAndHintRows(lang,rowIndex);
 			rowIndex+=2; //two rows were added above
 			for (String f:forms){
-				addRow(lang, itemItextID, f, rowIndex);
+				if(currentDef == null){ continue; }
+				addRow(lang, f, rowIndex);
 				rowIndex++;
 			}
 			
@@ -133,8 +142,7 @@ public class QuestionItextView extends Composite {
 	 * and the "hint" form rows.  
 	 */
 	private void addDefaultTextAndHintRows(String lang, int rowIndex){
-		addRow(lang,itemItextID,null,rowIndex);
-//		addRow(lang,itemItextID,"hint",rowIndex+1); //hint text edit box //removed due to user confusion
+		addRow(lang,null,rowIndex);
 	}
 	/**
 	 * Adds a seperator in the widget table to help
@@ -177,7 +185,7 @@ public class QuestionItextView extends Composite {
 	 */
 	private void findAndAddAvailableForms(){
 		for(ItextLocale locale: Itext.locales){
-			mergeForms(locale.getAvailableForms(itemItextID));
+			mergeForms(locale.getAvailableForms(currentDef.getItextId()));
 		}
 	}
 	
@@ -190,7 +198,7 @@ public class QuestionItextView extends Composite {
 	 * @param name
 	 */
 	public void addLanguage(String language){
-		if(itemItextID == null)return;
+		if(currentDef.getItextId() == null)return;
 		languages.add(language);
 		refreshRows();
 	}
@@ -202,7 +210,7 @@ public class QuestionItextView extends Composite {
 	 * @param form
 	 */
 	public void addForm(String form){
-		if(itemItextID == null)return;
+		if(currentDef.getItextId() == null)return;
 		forms.add(form);
 		refreshRows();
 	}
@@ -219,10 +227,9 @@ public class QuestionItextView extends Composite {
 		}
 	}
 	
-	private void addRow(String language, String ID, String Form, int rowNumber){
-		GWT.log("adding textRow:QuestionItextView:207, ID="+ID+"; form="+Form);
+	private void addRow(String language, String Form, int rowNumber){
+		GWT.log("adding textRow:QuestionItextView:207, currentDef.getItextId()="+currentDef.getItextId()+"; form="+Form);
 		final String lang = language;
-		final String id = ID;
 		final String form = Form; //this final business is to use the anon inner class below
 		final TextBox textBoxWidget = new TextBox();
 		
@@ -232,7 +239,7 @@ public class QuestionItextView extends Composite {
 		Label labelWidget = new Label(fullText);
 		
 		//set the default val for the textbox
-		String itextValue = Itext.getLocale(language).getTranslation(((form == null) ? id : (id + ";" + form)));
+		String itextValue = Itext.getLocale(language).getTranslation(((form == null) ? currentDef.getItextId() : (currentDef.getItextId() + ";" + form)));
 		if(itextValue == null){
 			itextValue = "";
 		}
@@ -242,7 +249,7 @@ public class QuestionItextView extends Composite {
 			
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
-				Itext.addText(lang, ((form == null) ? id : (id + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
+				Itext.addText(lang, ((form == null) ? currentDef.getItextId() : (currentDef.getItextId() + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
 				update();
 			}
 		});
@@ -251,7 +258,7 @@ public class QuestionItextView extends Composite {
 			
 			@Override
 			public void onBlur(BlurEvent event) {
-				Itext.addText(lang, ((form == null) ? id : (id + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
+				Itext.addText(lang, ((form == null) ? currentDef.getItextId() : (currentDef.getItextId() + ";" + form)), textBoxWidget.getText()); //handles creating new itext data
 				update();
 				
 			}
@@ -266,19 +273,6 @@ public class QuestionItextView extends Composite {
 		widgetTable.getFlexCellFormatter().removeStyleName(rowNumber, 0, "itextTabSeperator");
 		widgetTable.getFlexCellFormatter().removeStyleName(rowNumber, 1, "itextTabSeperator");
 
-//		//this is a hack job.
-//		Label altLabel;
-//		if(form!=null){
-//			altLabel = new Label(form);
-//			widgetTable.setWidget(rowNumber, 0, altLabel);
-//			widgetTable.getFlexCellFormatter().setAlignment(rowNumber, 0, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE);
-//		}else{
-//			altLabel = new Label(lang);
-//			widgetTable.setWidget(rowNumber, 0, altLabel);
-//			widgetTable.getFlexCellFormatter().setAlignment(rowNumber, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-//		}
-		
-		
 		rowLocations.put(fullText, rowNumber); //in case we need to reference back at this.
 	}
 	
@@ -286,16 +280,22 @@ public class QuestionItextView extends Composite {
 	 * Sets up the addLanguage and addForm buttons
 	 * to have dialogue boxes pop up and all that.
 	 */
-	private void initButtons(){
-		addLanguageButton = new Button("Add a new Language");
+	private void initButtonsAndLabels(){
+		currentDef = null;
 		addFormButton = new Button("Add a new TextForm");
 		
-		addLanguageButton.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				String newLang = Window.prompt("Please enter the name of the language you would like to edit", "LanguageName");
-				addLanguage(newLang);
+		lblItextID = new Label("ItextID:");
+		txtItextID = new TextBox();
+		
+		txtItextID.addKeyUpHandler(new KeyUpHandler() {
+			public void onKeyUp(KeyUpEvent event) {
+				updateItextID();
+			}
+		});
+		
+		txtItextID.addBlurHandler(new BlurHandler() {
+			public void onBlur(BlurEvent event) {
+				updateItextID();
 			}
 		});
 		
@@ -307,6 +307,19 @@ public class QuestionItextView extends Composite {
 				addForm(newForm);
 			}
 		});
+	}
+	
+	private void updateItextID(){
+		if(currentDef == null){
+			return;
+		}
+		
+		String newID = txtItextID.getText();
+		String currentID = currentDef.getItextId();
+		if(!newID.equals(currentID)){
+			currentDef.setItextId(newID);
+			Itext.renameID(currentID, newID);
+		}
 	}
 	
 

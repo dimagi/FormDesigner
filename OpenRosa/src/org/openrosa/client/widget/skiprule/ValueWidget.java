@@ -537,7 +537,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(chkQuestionValue.getValue() == true){
 			valueQtnDef = (QuestionDef)formDef.getQuestionWithText(val);
 			if(valueQtnDef != null)
-				val = valueQtnDef.getBinding();
+				val = valueQtnDef.getQuestionID();
 			else
 				val = EMPTY_VALUE;
 		}
@@ -545,7 +545,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE){
 			OptionDef optionDef = questionDef.getOptionWithText(val);
 			if(optionDef != null)
-				val = optionDef.getBinding();
+				val = optionDef.getQuestionID();
 			else
 				val = null;
 		}
@@ -554,7 +554,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			if(dynamicOptionDef != null){
 				OptionDef optionDef = dynamicOptionDef.getOptionWithText(val);
 				if(optionDef != null)
-					val = optionDef.getBinding();
+					val = optionDef.getQuestionID();
 			}
 		}
 		else if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
@@ -568,7 +568,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 					if(optionDef != null){
 						if(val.length() > 0)
 							val += LIST_SEPARATOR;
-						val += optionDef.getBinding();
+						val += optionDef.getQuestionID();
 					}
 				}
 			}
@@ -581,7 +581,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		}
 
 		if(val != null && this.chkQuestionValue.getValue() == true)
-			val = formDef.getVariableName() + "/" + val;
+			val = formDef.getQuestionID() + "/" + val;
 
 		return val;
 	}
@@ -590,14 +590,14 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		String sValue = value;
 
 		if(sValue != null){
-			if(sValue.startsWith(formDef.getVariableName() + "/")){
+			if(sValue.startsWith(formDef.getQuestionID() + "/")){
 				sValue = sValue.substring(sValue.indexOf('/')+1);
 				IFormElement qtn = formDef.getElement(sValue);
 				if(qtn != null)
 					sValue = qtn.getText();
 				else{ //possibly varname changed.
 					if(valueQtnDef != null){
-						qtn = formDef.getElement(valueQtnDef.getBinding());
+						qtn = formDef.getElement(valueQtnDef.getQuestionID());
 						if(qtn != null)
 							sValue = qtn.getText();
 						else

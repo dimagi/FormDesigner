@@ -186,7 +186,7 @@ public class RelevantParser {
 		String varName = relevant.substring(0, pos);
 		IFormElement questionDef = formDef.getElement(varName.trim());
 		if(questionDef == null){
-			String prefix = "/" + formDef.getVariableName() + "/";
+			String prefix = "/" + formDef.getQuestionID() + "/";
 			if(varName.startsWith(prefix))
 				questionDef = formDef.getElement(varName.trim().substring(prefix.length(), varName.trim().length()));
 			if(questionDef == null)
@@ -215,7 +215,7 @@ public class RelevantParser {
 			condition.setValue(value);
 
 			//This is just for the designer
-			if(value.startsWith(formDef.getVariableName() + "/"))
+			if(value.startsWith(formDef.getQuestionID() + "/"))
 				condition.setValueQtnDef((QuestionDef)formDef.getElement(value.substring(value.indexOf('/')+1)));
 
 			if(condition.getOperator() == ModelConstants.OPERATOR_NULL)

@@ -206,7 +206,7 @@ public class ConstraintParser {
 			condition.setValue(value);
 
 			//This is just for the designer
-			if(value.startsWith(formDef.getVariableName() + "/")){
+			if(value.startsWith(formDef.getQuestionID() + "/")){
 				condition.setValueQtnDef((QuestionDef)formDef.getElement(value.substring(value.indexOf('/')+1)));
 			}
 

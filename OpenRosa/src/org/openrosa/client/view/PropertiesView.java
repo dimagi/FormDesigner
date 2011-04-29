@@ -415,9 +415,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	
 	private void updateID(){
-		propertiesObj.setItextId(qtnID.getText());
-		propertiesObj.setBinding(qtnID.getText());
-		Itext.renameID(currentObjQtnID, qtnID.getText());
+		propertiesObj.setQuestionID(qtnID.getText());
 		currentObjQtnID = qtnID.getText();
 		update();
 	}
@@ -435,7 +433,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj instanceof QuestionDef || propertiesObj instanceof GroupDef){
 			((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
 		}else if(propertiesObj instanceof OptionDef){
-			((OptionDef) propertiesObj).setBinding(txtDefaultValue.getText());
+			((OptionDef) propertiesObj).setQuestionID(txtDefaultValue.getText());
 		}
 	}
 	
@@ -775,7 +773,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultLabel.setText(formDef.getName());
 		txtBinding.setText(formDef.getDataNodesetPath());
 		txtFormKey.setText(formDef.getFormKey());
-		currentObjQtnID = propertiesObj.getBinding();
+		currentObjQtnID = propertiesObj.getQuestionID();
 		//skipRulesView.setFormDef(formDef);
 
 	}
@@ -806,8 +804,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		tabs.setVisible(true);
 
 		//set initial values
-		qtnID.setText(groupObj.getBinding());
-		currentObjQtnID = propertiesObj.getBinding();
+		qtnID.setText(groupObj.getQuestionID());
+		currentObjQtnID = propertiesObj.getQuestionID();
 		txtDefaultLabel.setText(groupObj.getText());
 		txtHelpText.setText(groupObj.getHelpText());
 		cbDataType.setSelectedIndex(DT_INDEX_GROUP);
@@ -820,7 +818,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void execute() {
 				skipRulesView.setQuestionDef(qd);
 				validationRulesView.setQuestionDef(qd);
-				itextView.setItemID(qd.getBinding());
+				itextView.setItemID(qd);
 				
 			}
 		});
@@ -858,8 +856,8 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		
 		tabs.setVisible(true);
 		
-		qtnID.setText(questionDef.getBinding());
-		currentObjQtnID = propertiesObj.getBinding();
+		qtnID.setText(questionDef.getQuestionID());
+		currentObjQtnID = propertiesObj.getQuestionID();
 		txtDefaultLabel.setText(questionDef.getText());
 		txtBinding.setText(questionDef.getDataNodesetPath());
 		txtHelpText.setText(questionDef.getHelpText());
@@ -883,7 +881,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			public void execute() {
 				skipRulesView.setQuestionDef((IFormElement)qd);
 				validationRulesView.setQuestionDef(qd);
-				itextView.setItemID(qd.getBinding());
+				itextView.setItemID(qd);
 				
 			}
 		});
@@ -921,7 +919,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		currentObjQtnID = propertiesObj.getItextId();
 		txtDefaultLabel.setText(optionDef.getText());
 		txtBinding.setText(optionDef.getDataNodesetPath());
-		txtDefaultValue.setText(optionDef.getBinding());
+		txtDefaultValue.setText(optionDef.getQuestionID());
 
 		final IFormElement fe = optionDef;
 		DeferredCommand.addCommand(new Command(){
@@ -936,7 +934,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				}
 				
 				if(fe instanceof IFormElement){
-					itextView.setItemID(fe.getItextId());
+					itextView.setItemID(fe);
 				}
 			}
 		});

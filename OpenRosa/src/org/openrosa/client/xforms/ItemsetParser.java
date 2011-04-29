@@ -146,7 +146,7 @@ public class ItemsetParser {
 		if (!label.equals("") && !value.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (optionDef != null){
 				optionDef.setText(label);
-				optionDef.setBinding(value);
+				optionDef.setQuestionID(value);
 				optionDef.setLabelNode(labelNode);
 				optionDef.setValueNode(valueNode);
 			}

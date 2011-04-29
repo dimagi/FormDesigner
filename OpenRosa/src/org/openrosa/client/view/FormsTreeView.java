@@ -527,7 +527,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private TreeModelItem loadQuestion(QuestionDef questionDef,TreeModelItem root){
 		//TreeItem questionRoot = addImageItem(root, questionDef.getDisplayText(), images.lookup(),questionDef,questionDef.getHelpText());
 		TreeModelItem questionRoot = addImageItem(root, Itext.getDisplayText(questionDef), questionDef);
-		GWT.log("Loading Question in FormsTreeView, Name="+questionDef.getBinding()+", type="+questionDef.getDataType());
+		GWT.log("Loading Question in FormsTreeView, Name="+questionDef.getQuestionID()+", type="+questionDef.getDataType());
 		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || 
 				questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 			List options = questionDef.getOptions();
@@ -741,7 +741,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(userObj instanceof QuestionDef){
 				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selModelItem.getParent()).getUserObject());
-				questionDef.setItextId(questionDef.getBinding());
+				questionDef.setItextId(questionDef.getQuestionID());
 				TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem.getParent());
 				addFormDefItem(questionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
@@ -750,7 +750,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(userObj instanceof OptionDef){
 				int id = FormUtil.getNextNewOptionID(formDef);
 				OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
-				optionDef.setItextId(optionDef.getBinding());
+				optionDef.setItextId(optionDef.getQuestionID());
 				TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem.getParent());
 				addFormDefItem(optionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
@@ -759,8 +759,8 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			else if(userObj instanceof GroupDef){
 				int id = FormUtil.getNextNewQuestionID(formDef);
 				GroupDef pageDef = new GroupDef(LocaleText.get("page")+id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
-				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getBinding()));
-				TreeModelItem modelItem = new TreeModelItem(pageDef.getBinding(),pageDef,selModelItem.getParent());
+				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getQuestionID()));
+				TreeModelItem modelItem = new TreeModelItem(pageDef.getQuestionID(),pageDef,selModelItem.getParent());
 				addFormDefItem(pageDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);
@@ -799,7 +799,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 									
 					questionDef.setDataType(dataType);
 //					questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
-					questionDef.setItextId(questionDef.getBinding());
+					questionDef.setItextId(questionDef.getQuestionID());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 					selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), Itext.getDisplayText(questionDef), questionDef);
 					addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
@@ -825,7 +825,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent().getParent()).getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getBinding());
+				questionDef.setItextId(questionDef.getQuestionID());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				selectedItem = addImageItem((TreeModelItem)selectedItem.getParent().getParent(), Itext.getDisplayText(questionDef), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
@@ -842,7 +842,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getBinding());
+				questionDef.setItextId(questionDef.getQuestionID());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), questionDef.getText(), questionDef);
 				addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
@@ -875,7 +875,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				int id = FormUtil.getNextNewQuestionID(formDef);
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)parentItem.getUserObject());
 				questionDef.setDataType(dataType);
-				questionDef.setItextId(questionDef.getBinding());
+				questionDef.setItextId(questionDef.getQuestionID());
 				selectedItem = addImageItem(selectedItem, questionDef.getText(), questionDef);
 				addFormDefItem(questionDef, (TreeModelItem)selectedItem.getParent());
 
@@ -902,7 +902,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 			IFormElement questionDef = (IFormElement)selectedItem.getUserObject();
 			questionDef.setDataType(dataType);
-			questionDef.setItextId(questionDef.getBinding());
+			questionDef.setItextId(questionDef.getQuestionID());
 
 			if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 				addNewOptionDef((QuestionDef)questionDef, selectedItem);
@@ -926,7 +926,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private void addNewOptionDef(QuestionDef questionDef, TreeModelItem parentItem){
 		int id = FormUtil.getNextNewOptionID(formDef);
 		OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,questionDef);
-		optionDef.setItextId(optionDef.getBinding());
+		optionDef.setItextId(optionDef.getQuestionID());
 		//addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
 		addImageItem(parentItem, Itext.getDisplayText(optionDef),optionDef);
 		addFormDefItem(optionDef,parentItem);
@@ -975,7 +975,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			return;
 
 		FormDef formDef = new FormDef(formId,name,varName, varName,null,null,null,null,null,null);
-		formDef.setItextId(formDef.getVariableName());
+		formDef.setItextId(formDef.getQuestionID());
 		/*TreeItem item = new CompositeTreeItem(new TreeItemWidget(images.note(), formDef.getName(),popup,this));
 		item.setUserObject(formDef);
 		tree.addItem(item);
@@ -1021,10 +1021,10 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			if(dataType == QuestionDef.QTN_TYPE_REPEAT){
 				questionDef.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 				questionDef.setHasUINode(true); //when adding questions using the toolbar, it is implied that it contains a UI node.
-				questionDef.setItextId(questionDef.getBinding());
+				questionDef.setItextId(questionDef.getQuestionID());
 			}
 
-			questionDef.setItextId(questionDef.getBinding());
+			questionDef.setItextId(questionDef.getQuestionID());
 			TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem);
 			addFormDefItem(questionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
@@ -1036,7 +1036,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			int id = FormUtil.getNextNewOptionID(formDef);
 			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
-			optionDef.setItextId(optionDef.getBinding());
+			optionDef.setItextId(optionDef.getQuestionID());
 			TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem);
 			addFormDefItem(optionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
@@ -1465,7 +1465,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private void copyElementValues(IFormElement newElement, IFormElement element){
 		newElement.setId(element.getId());
 		newElement.setItextId(element.getItextId());
-		newElement.setBinding(element.getBinding());
+		newElement.setQuestionID(element.getQuestionID());
 		newElement.setBindNode(element.getBindNode());
 		newElement.setDataNode(element.getDataNode());
 		newElement.setDataType(element.getDataType());
@@ -1747,7 +1747,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		for(int index = 0; index < count; index++){
 			TreeModelItem child = (TreeModelItem)parent.getChild(index);
 			QuestionDef questionDef = (QuestionDef)child.getUserObject();
-			String variableName = questionDef.getBinding();
+			String variableName = questionDef.getQuestionID();
 			if(bindings.containsKey(variableName) /*&& questionDef.getParent() == bindings.get(variableName).getParent()*/){
 				//tree.setSelectedItem(child);
 				//tree.ensureSelectedItemVisible();
@@ -1779,7 +1779,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		for(int index = 0; index < count; index++){
 			TreeModelItem child = (TreeModelItem)parent.getChild(index);
 			OptionDef optionDef = (OptionDef)child.getUserObject();
-			String variableName = optionDef.getBinding();
+			String variableName = optionDef.getQuestionID();
 			if(bindings.containsKey(variableName)){
 				//tree.setSelectedItem(child);
 				//tree.ensureSelectedItemVisible();

@@ -96,7 +96,7 @@ public class UiElementBuilder {
 		String dataPath = qtn.getDataNodesetPath();
 		String id = FormUtil.getQtnIDFromNodeSetPath(dataPath);
 		
-		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getBinding(),formDef,parentDataNode);
+		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getQuestionID(),formDef,parentDataNode);
 
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){
@@ -276,7 +276,7 @@ public class UiElementBuilder {
 			
 		}
 
-		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getBinding(), isRepeatKid);
+		String id = XformBuilderUtil.getBindIdFromVariableName(qtnDef.getQuestionID(), isRepeatKid);
 		Element node = createElementNS(name,null,null);
 		if(type != QuestionDef.QTN_TYPE_REPEAT){
 			node.setAttribute("ref", qtnDef.getDataNodesetPath());
@@ -368,7 +368,7 @@ public class UiElementBuilder {
 		optionDef.setLabelNode(node);
 
 		node =  doc.createElement(XformConstants.NODE_NAME_VALUE);
-		node.appendChild(doc.createTextNode(optionDef.getBinding()));
+		node.appendChild(doc.createTextNode(optionDef.getQuestionID()));
 		itemNode.appendChild(node);
 		optionDef.setValueNode(node);
 

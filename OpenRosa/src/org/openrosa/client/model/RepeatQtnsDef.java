@@ -226,16 +226,16 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 		parentQtnDef.setText(text);
 	}
 	
-	public String getBinding(){
-		return parentQtnDef.getBinding();
+	public String getQuestionID(){
+		return parentQtnDef.getQuestionID();
 	}
 	
-	public void setBinding(String binding){
-		parentQtnDef.setVariableName(binding);
+	public void setQuestionID(String binding){
+		parentQtnDef.setQuestionID(binding);
 	}
 	
-	public void setBindingInternal(String binding){
-		super.setBinding(binding);
+	public void setQuestionIDInternal(String binding){
+		super.setQuestionID(binding);
 	}
 	
 	

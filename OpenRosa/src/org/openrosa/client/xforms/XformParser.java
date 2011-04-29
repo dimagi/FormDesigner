@@ -215,7 +215,7 @@ public class XformParser {
 		parseElement(formDef,rootNode,id2VarNameMap,null,relevants,repeats,rptKidMap,(int)0,null,constraints,orphanDynOptionQns);
 
 		if(formDef.getName() == null || formDef.getName().length() == 0)
-			formDef.setName(formDef.getVariableName());
+			formDef.setName(formDef.getQuestionID());
 
 		DefaultValueUtil.setDefaultValues(XformUtil.getInstanceDataNode(doc),formDef,id2VarNameMap); //TODO Very slow needs optimisation for very big forms
 		RelevantParser.addSkipRules(formDef,relevants);
@@ -239,7 +239,7 @@ public class XformParser {
 			IFormElement element = elements.get(index);
 			if(element.getControlNode() == null && !(element instanceof GroupDef)){
 				//element.getParent().removeChild(element); //We do not want to lose the bindings if any.
-				GWT.log("removing node:"+element.getBinding());
+				GWT.log("removing node:"+element.getQuestionID());
 				element.getParent().getChildren().remove(element);
 				index--;
 			}
@@ -432,7 +432,7 @@ public class XformParser {
 				OptionDef option = ((OptionDef)questionDef);
 				option.setId(Integer.parseInt(String.valueOf(parentQtn.getChildren().size())));
 				option.setText(nodeContext.getLabel());
-				option.setBinding(nodeContext.getValue());
+				option.setQuestionID(nodeContext.getValue());
 				option.setParent((QuestionDef)parentQtn);
 
 				option.setControlNode(element);
@@ -471,7 +471,7 @@ public class XformParser {
 	 * 					This is only non null for kids of repeat question types.
 	 */
 	private static void setQuestionDataNode(IFormElement qtn, FormDef formDef, IFormElement parentQtn){
-		String xpath = qtn.getBinding();
+		String xpath = qtn.getQuestionID();
 
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
@@ -578,8 +578,10 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE).equals(XformConstants.XPATH_VALUE_FALSE)){
 			qtn.setVisible(false);
 		}
-
-		qtn.setVariableName(((ref != null) ? ref : bind));
+		String qtnID = ((ref != null) ? ref : bind);
+		String[] tokens = qtnID.split("/");
+		qtnID = tokens[tokens.length-1];
+		qtn.setQuestionID(qtnID);
 
 		if(parentQtn instanceof GroupDef){
 			parentQtn.addChild(qtn);
@@ -601,7 +603,7 @@ public class XformParser {
 			formDef.addCalculation(new Calculation(qtn.getId(),child.getAttribute(XformConstants.ATTRIBUTE_NAME_CALCULATE)));
 		}
 
-		return qtn.getBinding();
+		return qtn.getQuestionID();
 	}
 
 
@@ -623,7 +625,7 @@ public class XformParser {
 			}
 		}
 
-		formDef.setVariableName(XmlUtil.getNodeName(dataNode));
+		formDef.setQuestionID(XmlUtil.getNodeName(dataNode));
 		if(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE) != null)
 			formDef.setDescriptionTemplate(dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_DESCRIPTION_TEMPLATE));
 
@@ -681,7 +683,7 @@ public class XformParser {
 		GroupDef groupDef = new GroupDef();
 		QuestionDef groupBind = (QuestionDef)formDef.getElement(variableName);
 		if(groupBind != null){
-			groupDef.setBinding(groupBind.getBinding());
+			groupDef.setQuestionID(groupBind.getQuestionID());
 			groupDef.setBindNode(groupBind.getBindNode());
 			groupDef.setParent(groupBind.getParent());
 			groupDef.setId(groupBind.getId());
@@ -693,7 +695,7 @@ public class XformParser {
 		}
 		
 		groupDef.setControlNode(child);
-		groupDef.setBinding(variableName);
+		groupDef.setQuestionID(variableName);
 
 		if(parentQtn == null){
 			formDef.addChild(groupDef);
@@ -735,7 +737,7 @@ public class XformParser {
 		if(repeat == null){
 			repeat = new QuestionDef(parentQtn);
 		}
-		repeat.setBinding(id);
+		repeat.setQuestionID(id);
 		repeat.setParent(parentQtn);
 		repeat.setDataType(QuestionDef.QTN_TYPE_REPEAT);
 		repeat.setHasUINode(true);
@@ -801,7 +803,7 @@ public class XformParser {
 		IFormElement def = new QuestionDef(null);
 		def.setBindNode(child);
 		def.setId(getNextQuestionId());
-		def.setBinding(FormUtil.getQtnIDFromElement(child));
+		def.setQuestionID(FormUtil.getQtnIDFromElement(child));
 
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE)!= null){
 			XformParserUtil.setQuestionType((QuestionDef)def,child.getAttribute(XformConstants.ATTRIBUTE_NAME_TYPE),child);
@@ -894,7 +896,7 @@ public class XformParser {
 		//new addition may cause bugs
 		if(varName == null){
 
-			if(ref != null && ref.startsWith("/"+formDef.getVariableName()+"/")){
+			if(ref != null && ref.startsWith("/"+formDef.getQuestionID()+"/")){
 				String[] tokens = ref.split("/");
 				varName = tokens[tokens.length-1];
 			}
@@ -924,7 +926,7 @@ public class XformParser {
 				questionDef.setText(nodeContext.getLabel());
 				questionDef.setHelpText(nodeContext.getHint());
 
-				questionDef.setBinding(qtn.getBinding());
+				questionDef.setQuestionID(qtn.getQuestionID());
 				questionDef.setBindNode(qtn.getBindNode());
 
 				nodeContext.setLabel("");

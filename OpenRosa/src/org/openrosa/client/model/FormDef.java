@@ -34,7 +34,7 @@ public class FormDef implements IFormElement, Serializable{
 	//TODO May not need to serialize this property for smaller pay load. Then we may just rely on the id.
 	//afterall it is not even guaranteed to be unique.
 	/** The string unique identifier of the form definition. */
-	private String variableName = ModelConstants.EMPTY_STRING;
+	private String questionID = ModelConstants.EMPTY_STRING;
 
 	/** The display name of the form. */
 	private String name = ModelConstants.EMPTY_STRING;
@@ -210,12 +210,12 @@ public class FormDef implements IFormElement, Serializable{
 	}
 
 	//I just don't think we need this in addition to the id
-	public String getVariableName() {
-		return variableName;
+	private String getVariableName() {
+		return questionID;
 	}
 
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
+	private void setVariableName(String variableName) {
+		this.questionID = variableName;
 	}
 
 	public int getId() {
@@ -385,9 +385,9 @@ public class FormDef implements IFormElement, Serializable{
 
 		String sid = dataNode.getAttribute(XformConstants.ATTRIBUTE_NAME_ID);
 
-		String orgVarName = dataNode.getNodeName();
-		if(!orgVarName.equalsIgnoreCase(variableName)){
-			dataNode = XformUtil.renameNode(dataNode,variableName);
+		String dataNodeName = dataNode.getNodeName();
+		if(!dataNodeName.equalsIgnoreCase(questionID)){
+			dataNode = XformUtil.renameNode(dataNode,questionID);
 			updateDataNodes();
 		}
 
@@ -404,9 +404,9 @@ public class FormDef implements IFormElement, Serializable{
 			for(int i=0; i<children.size(); i++){
 				IFormElement element = children.get(i);
 				if(element instanceof GroupDef)
-					((GroupDef)element).updateDoc(doc,bodyNode,this,dataNode,modelNode,withData,orgVarName);
+					((GroupDef)element).updateDoc(doc,bodyNode,this,dataNode,modelNode,withData,dataNodeName);
 				else
-					((QuestionDef)element).updateDoc(doc,xformsNode,this,dataNode,modelNode,bodyNode,true,withData, orgVarName);;
+					((QuestionDef)element).updateDoc(doc,xformsNode,this,dataNode,modelNode,bodyNode,true,withData, dataNodeName);;
 			}
 		}
 
@@ -1195,7 +1195,7 @@ public class FormDef implements IFormElement, Serializable{
 	public void refresh(FormDef formDef){
 		this.id = formDef.getId();
 
-		if(variableName.equals(formDef.getVariableName()))
+		if(questionID.equals(formDef.getVariableName()))
 			name = formDef.getName();
 
 		for(int index = 0; index < formDef.getChildren().size(); index++){
@@ -1233,7 +1233,7 @@ public class FormDef implements IFormElement, Serializable{
 				if(oldParentQtnDef == null)
 					continue; //How can this be missing in the original formdef???
 
-				QuestionDef newParentQtnDef = (QuestionDef)getElement(oldParentQtnDef.getBinding());
+				QuestionDef newParentQtnDef = (QuestionDef)getElement(oldParentQtnDef.getQuestionID());
 				if(newParentQtnDef == null)
 					continue; //My be deleted by refresh source.
 
@@ -1242,7 +1242,7 @@ public class FormDef implements IFormElement, Serializable{
 				if(oldChildQtnDef == null)
 					return; //can this be lost in the old formdef????
 
-				QuestionDef newChildQtnDef = (QuestionDef)getElement(oldChildQtnDef.getBinding());
+				QuestionDef newChildQtnDef = (QuestionDef)getElement(oldChildQtnDef.getQuestionID());
 				if(newChildQtnDef == null)
 					continue; //possibly deleted by refresh sourced (eg server).
 
@@ -1257,7 +1257,7 @@ public class FormDef implements IFormElement, Serializable{
 		calculations = new Vector();
 		for(int index = 0; index < formDef.getCalculationCount(); index++){
 			Calculation calculation = formDef.getCalculationAt(index);
-			QuestionDef questionDef = (QuestionDef)getElement(formDef.getElement(calculation.getQuestionId()).getBinding());
+			QuestionDef questionDef = (QuestionDef)getElement(formDef.getElement(calculation.getQuestionId()).getQuestionID());
 			if(questionDef != null)
 				addCalculation(new Calculation(questionDef.getId(),calculation.getCalculateExpression()));
 		}
@@ -1402,11 +1402,11 @@ public class FormDef implements IFormElement, Serializable{
 		setName(text);
 	}
 
-	public String getBinding(){
-		return variableName;
+	public String getQuestionID(){
+		return questionID;
 	}
 
-	public void setBinding(String binding){
+	public void setQuestionID(String binding){
 		setVariableName(binding);
 	}
 
@@ -1608,9 +1608,9 @@ public class FormDef implements IFormElement, Serializable{
 	 */
 	public String getDataNodesetPath(){
 		if(getParent() == null){
-			return "/"+getBinding();
+			return "/"+getQuestionID();
 		}else{
-			return getParent().getDataNodesetPath() + "/"+getBinding();
+			return getParent().getDataNodesetPath() + "/"+getQuestionID();
 		}
 		
 	}

@@ -124,7 +124,9 @@ public class ItextParser {
 		modelNode.appendChild(itextNode);
 		
 		for(ItextLocale locale : locales){
-			createTextValueNodes(formDef,locale,itextNode);
+			if(locale.hasItext()){
+				createTextValueNodes(formDef,locale,itextNode);
+			}
 		}
 		
 		

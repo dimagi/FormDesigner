@@ -672,13 +672,15 @@ public class GroupDef implements IFormElement, Serializable{
 		if(children != null){
 			for(int i=0; i<children.size(); i++){
 				IFormElement questionDef = children.get(i);
-				if(!allQuestionsNew && questionDef instanceof QuestionDef && questionDef.getDataNode() == null)
+				if(!allQuestionsNew && questionDef instanceof QuestionDef && questionDef.getDataNode() == null){
 					newElements.add(questionDef);
+				}
 
-				if(questionDef instanceof QuestionDef)
+				if(questionDef instanceof QuestionDef){
 					((QuestionDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,(groupNode == null) ? xformsNode : groupNode, dataType != QuestionDef.QTN_TYPE_REPEAT, withData, rootDataNodeName);
-				else
+				}else{
 					((GroupDef)questionDef).updateDoc(doc,xformsNode,formDef,formNode,modelNode,withData,rootDataNodeName);
+				}
 			}
 		}
 
@@ -822,34 +824,49 @@ public class GroupDef implements IFormElement, Serializable{
 	public void moveElementNodesUp(IFormElement element, IFormElement refElement){
 
 		//Not relying on group node because some forms have no groups
-		Element controlNode = element.getControlNode();
-		Element parentNode = controlNode != null ? (Element)controlNode.getParentNode() : null;
-		if(element.getDataType() == QuestionDef.QTN_TYPE_REPEAT && controlNode != null){
-			controlNode = (Element)controlNode.getParentNode();
-			parentNode = (Element)parentNode.getParentNode();
+		Element eControlNode = element.getControlNode();
+		Element eControlParentNode = eControlNode != null ? (Element)eControlNode.getParentNode() : null;
+		Element eDataNode = element.getDataNode();
+		Element eBindNode = element.getBindNode();
+		
+		Element rBindNode = refElement.getBindNode();
+		Element rControlNode = refElement.getControlNode();
+		Element rDataNode = refElement.getDataNode();
+		
+		if(element.getDataType() == QuestionDef.QTN_TYPE_REPEAT && eControlNode != null){
+			eControlNode = (Element)eControlNode.getParentNode();
+			eControlParentNode = (Element)eControlParentNode.getParentNode();
 		}
 
-		if(controlNode != null)
-			parentNode.removeChild(controlNode);
+		if(eControlNode != null){
+			eControlParentNode.removeChild(eControlNode);
+		}
 
-		if(element.getDataNode() != null)
-			element.getDataNode().getParentNode().removeChild(element.getDataNode());
+		if(eDataNode != null){
+			eDataNode.getParentNode().removeChild(eDataNode);
+		}
 
-		if(element.getBindNode() != null)
-			element.getBindNode().getParentNode().removeChild(element.getBindNode());
+		if(eBindNode != null){
+			eBindNode.getParentNode().removeChild(eBindNode);
+		}
 
-		if(refElement.getControlNode() != null){
-			Node sibNode = refElement.getControlNode();
+		if(rControlNode != null){
+			Node sibNode = rControlNode;
 			if(refElement.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				sibNode = sibNode.getParentNode();
-			parentNode.insertBefore(controlNode, sibNode);
+			eControlParentNode.insertBefore(eControlNode, sibNode);
 		}
 
-		if(refElement.getDataNode() != null)
-			refElement.getDataNode().getParentNode().insertBefore(element.getDataNode(), refElement.getDataNode());
+		if(rDataNode != null){
+			rDataNode.getParentNode().insertBefore(eDataNode, rDataNode);
+		}
 
-		if(refElement.getBindNode() != null)
-			refElement.getBindNode().getParentNode().insertBefore(element.getBindNode(), refElement.getBindNode());
+		if(rBindNode != null){
+			Node parentBindOfRefElement = rBindNode.getParentNode();
+			if(parentBindOfRefElement != null){
+				parentBindOfRefElement.insertBefore(eBindNode, rBindNode);
+			}
+		}
 
 	}
 

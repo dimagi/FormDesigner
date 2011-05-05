@@ -417,8 +417,23 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	private void updateID(){
 		propertiesObj.setQuestionID(qtnID.getText());
 		currentObjQtnID = qtnID.getText();
+		String currentItextID = propertiesObj.getItextId(); //temp hack to reduce confusion for new users when they edit itext (see below*)
+		if(!propertiesObj.getItextId().equals(qtnID.getText())){
+			propertiesObj.setItextId(qtnID.getText());
+			Itext.renameID(currentItextID, qtnID.getText());
+		}
 		update();
 	}
+	
+	//*(see updateID()) There's a bit of an issues here.  Technically, ItextID does not have to == QuestionID
+	//We deal with this fine when parsing incoming forms. However, this can be confusing to new users
+	//if the Itext and QuestionIDs do not match up when they go to the "Edit Languages" grid view
+	//and can't find the ItextID they're looking for because it doesn't match the QuestionID.
+	//Therefore, the rig up in updateID().  If the user alters the QuestionID, the QuestionID,
+	//along with the ItextID, will be changed.  This ensures that they will be able to easily find
+	//the itext associated with a question.  
+	//This is a temporary solution until we can incorporate some way for the users to expose the ItextID
+	//to the user without confusing them.
 	
 	private void updateHelpText(){
 		propertiesObj.setHelpText(txtHelpText.getText());

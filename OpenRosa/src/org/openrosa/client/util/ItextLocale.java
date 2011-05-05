@@ -229,7 +229,12 @@ public class ItextLocale {
 	 * @return true if any keys exist, false if it is empty.
 	 */
 	public boolean hasItext(){
-		return (values.size() > 0);
+		for(String s: values.keySet()){
+			if(s != null && !s.isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

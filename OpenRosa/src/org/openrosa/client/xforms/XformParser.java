@@ -819,9 +819,7 @@ public class XformParser {
 		}
 		
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_REQUIRED).equals(XformConstants.XPATH_VALUE_TRUE)){
-			if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_ACTION) == null){
-				def.setRequired(true);
-			}
+			def.setRequired(true);
 		}
 		
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_READONLY).equals(XformConstants.XPATH_VALUE_TRUE)){

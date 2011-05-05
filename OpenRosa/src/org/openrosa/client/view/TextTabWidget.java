@@ -469,6 +469,6 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		FormDef formDef = Context.getFormDef();
 		List<String> usedIDs = formDef.getAllChildrenItextIDs();
 		Itext.removeUnusedItext(usedIDs);
-		
+		grid.reconfigure(Itext.getItextRows(), cm);
 	}
 }

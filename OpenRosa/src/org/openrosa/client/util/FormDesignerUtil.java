@@ -118,7 +118,8 @@ public class FormDesignerUtil {
 			if(questionDef == parentQuestionDef)
 				continue;
 			
-			oracle.add(questionDef.getDisplayText());	
+			String displayText = Itext.getDisplayText(questionDef);
+			oracle.add(displayText);	
 			
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.

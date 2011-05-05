@@ -415,6 +415,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	
 	private void updateID(){
+		qtnID.setText(qtnID.getText().replace(" ", "_")); //prevents spaces in QuestionID
 		propertiesObj.setQuestionID(qtnID.getText());
 		currentObjQtnID = qtnID.getText();
 		String currentItextID = propertiesObj.getItextId(); //temp hack to reduce confusion for new users when they edit itext (see below*)

@@ -431,6 +431,18 @@ public class QuestionDef implements IFormElement, Serializable{
 			this.itextId = itextId;
 	}
 
+	public List<String> getAllChildrenItextIDs(){
+		ArrayList<String> list = new ArrayList<String>();
+		List<IFormElement> children = this.getChildren();
+		if(children == null){ return new ArrayList<String>(); }
+		
+		for(IFormElement child : children){
+			list.addAll(Itext.getFullAvailableTextForms(child.getItextId())); //get the child's ItextID(s)
+			list.addAll(child.getAllChildrenItextIDs()); //recurse down
+		}
+		return list;
+	}
+	
 	public void setDataType(int dataType) {
 		int oldDataType = this.dataType;
 		int newDataType = dataType;

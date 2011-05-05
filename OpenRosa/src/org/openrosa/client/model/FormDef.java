@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.openrosa.client.OpenRosaConstants;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.util.FormUtil;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.xforms.XformConstants;
 import org.openrosa.client.xforms.XformUtil;
 
@@ -173,6 +174,19 @@ public class FormDef implements IFormElement, Serializable{
 		setDynamicOptions(dynamicOptions);
 		setDescriptionTemplate((descTemplate == null) ? ModelConstants.EMPTY_STRING : descTemplate);
 		setCalculations(calculations);
+	}
+	
+	public List<String> getAllChildrenItextIDs(){
+		ArrayList<String> list = new ArrayList<String>();
+		if(children == null){ return null; }
+		//add self ItextID(s) for this edge case
+		list.addAll(Itext.getFullAvailableTextForms(this.getItextId()));
+		
+		for(IFormElement child : children){
+			list.addAll(Itext.getFullAvailableTextForms(child.getItextId()));
+			list.addAll(child.getAllChildrenItextIDs()); //recurse down to children
+		}
+		return list;
 	}
 
 	public SkipRule getSkipRuleAt(int index) {

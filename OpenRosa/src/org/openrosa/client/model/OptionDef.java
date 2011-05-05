@@ -1,9 +1,11 @@
 package org.openrosa.client.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openrosa.client.OpenRosaConstants;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextParser;
 import org.openrosa.client.xforms.UiElementBuilder;
 import org.openrosa.client.util.FormUtil;
@@ -54,6 +56,11 @@ public class OptionDef implements IFormElement, Serializable {
 	public OptionDef(QuestionDef parent) {  
 		this.parent = parent;
 	}
+	
+	public List<String> getAllChildrenItextIDs(){
+		return new ArrayList<String>(); //This method does not apply to OptionDefs (they can never have children)
+	}
+	
 	
 	/** The copy constructor  */
 	public OptionDef(OptionDef optionDef,QuestionDef parent) { 

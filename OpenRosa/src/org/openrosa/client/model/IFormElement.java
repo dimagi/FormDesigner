@@ -75,6 +75,13 @@ public interface IFormElement {
 	
 	void clearChangeListeners();
 	
+	/**
+	 * Returns a list of all the itext IDs used
+	 * by children of this question (including special forms).
+	 * @return
+	 */
+	List<String> getAllChildrenItextIDs();
+	
 	String getDisplayText();
 	
 	/**

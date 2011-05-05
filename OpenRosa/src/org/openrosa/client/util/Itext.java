@@ -122,6 +122,48 @@ public class Itext {
 		syncItextRowsToLocale();
 	}
 	
+	/**
+	 * Returns a list of special text forms used by this ID
+	 * (across ALL locales).  Only returns the actual forms
+	 * (i.e. "long") as opposed to the entire string (i.e. "someID;long").
+	 * Will use a blank string "" for no form (i.e. there's a default Itext value).
+	 * @param baseID
+	 * @return
+	 */
+	public static List<String> getAvailableTextForms(String baseID){
+		if(baseID == null || baseID.isEmpty()){ return new ArrayList<String>(); }
+		List<String> forms = new ArrayList<String>();
+		for(ItextLocale locale:locales){
+			forms.addAll(locale.getAvailableForms(baseID));
+			String defaultTrans = locale.getDefaultTranslation(baseID);
+			if(defaultTrans != null && !defaultTrans.isEmpty()){
+				forms.add(""); //add blank to indicate there's a default val also
+			}
+		}
+		return forms;
+	}
+	
+	/**
+	 * Same as <code>getAvailableTextForms()</code> except
+	 * the IDs are fully qualified (i.e. instead of a list of
+	 * "long","short", etc you get "someID;long","someID;short", etc.
+	 * @param baseID
+	 * @return
+	 */
+	public static List<String> getFullAvailableTextForms(String baseID){
+		if(baseID == null || baseID.isEmpty()){ return new ArrayList<String>(); }
+		List<String> shortList = getAvailableTextForms(baseID);
+		List<String> longList = new ArrayList<String>();
+		for(String s:shortList){
+			if(s.equals("")){
+				longList.add(baseID);
+			}else{
+				longList.add(baseID+";"+s);
+			}
+		}
+		return longList;
+	}
+	
 	private static void renameIdInItextRows(String oldID, String newID){
 		for(ItextModel row: getItextRows().getModels()){
 			if(hasID((String)row.get("id"), oldID)){

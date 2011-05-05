@@ -1,5 +1,6 @@
 package org.openrosa.client.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -119,8 +120,7 @@ public class FormDesignerUtil {
 				continue;
 			
 			String displayText = Itext.getDisplayText(questionDef);
-			oracle.add(displayText);	
-			
+			oracle.add(displayText);
 			//TODO Allowed for now since repeat questions will have ids which cant be equal to
 			//those of parents. But test this to ensure it does not bring in bugs.
 			if(questionDef instanceof GroupDef){

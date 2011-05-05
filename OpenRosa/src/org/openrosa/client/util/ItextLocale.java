@@ -37,7 +37,7 @@ public class ItextLocale {
 	}
 	
 	/**
-	 * Returns the available itext forms for the specified textID
+	 * Returns *ONLY* the available itext forms for the specified textID beyond the default.
 	 * @param textID
 	 * @return
 	 */

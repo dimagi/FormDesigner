@@ -437,12 +437,14 @@ public class Itext {
 	}
 	
 	public static String getDisplayText(IFormElement elementDef){
-		String displayText = "";
-		String defaultLabelText = elementDef.getDisplayText();
-		if(defaultLabelText != null && !defaultLabelText.isEmpty()){
-			return defaultLabelText;
+		String displayText = getDefaultIText(elementDef.getItextId());
+		if(displayText != null && !displayText.isEmpty()){
+			return displayText;
 		}else{
-			displayText = getDefaultIText(elementDef.getItextId());
+			displayText = elementDef.getDisplayText();
+			if((displayText == null || displayText.isEmpty()) && !elementDef.hasUINode()){
+				return "DATA NODE";
+			}
 			return displayText;
 		}
 	}

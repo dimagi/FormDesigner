@@ -84,6 +84,12 @@ public class QuestionItextView extends Composite {
 		languages = new ArrayList<String>();
 		forms = new ArrayList<String>();
 		
+		//HIDE ITEXT ID TEXTBOX
+		lblItextID.setVisible(false);
+		txtItextID.setVisible(false);
+		///////////////////////
+		
+		
 		initWidget(layoutTable);
 	}
 	

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openrosa.client.Context;
 import org.openrosa.client.controller.ITextListener;
+import org.openrosa.client.model.FormDef;
 import org.openrosa.client.model.ItextModel;
 import org.openrosa.client.util.Itext;
 import org.openrosa.client.util.ItextLocale;
@@ -180,13 +182,14 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 	}
 
 	public void makeToolbar(){
-		Button addLang,removeLang, btnSave, btnAddRow, btnRemoveRow;
+		Button addLang,removeLang, btnSave, btnAddRow, btnRemoveRow, btnRemoveItext;
 		btnSave = new Button("Save");
 		addLang = new Button("Add Language");
 		removeLang = new Button("Remove Language");
 		btnAddRow = new Button("Add Row");
 		btnRemoveRow = new Button("Remove Row");
-		ButtonGroup group = new ButtonGroup(5);
+		btnRemoveItext = new Button("Remove Unused Itext");
+		ButtonGroup group = new ButtonGroup(6);
 		ToolBar tb = new ToolBar();
 		tb.add(btnSave);
 		tb.add(new SeparatorToolItem());
@@ -197,6 +200,8 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		tb.add(btnAddRow);
 		tb.add(new SeparatorToolItem());
 		tb.add(btnRemoveRow);
+		tb.add(new SeparatorToolItem());
+		tb.add(btnRemoveItext);
 
 		contentPanel.setTopComponent(tb);
 
@@ -234,8 +239,14 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 				removeRow();
 			}
 		});
+		
+		btnRemoveItext.addListener(Events.Select, new Listener<ButtonEvent>(){
+			public void handleEvent(ButtonEvent be)
+			{
+				removeCrufItext();
+			}
+		});
 	}
-
 
 
 	public void makeContextMenu(){
@@ -449,4 +460,15 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		return false;
 	}
 
+	private void removeCrufItext(){
+		String warning = "WARNING: This action will cause the FormDesigner to remove all Itext entries it thinks are not being used. Are you sure you want to continue?";
+		if(!com.google.gwt.user.client.Window.confirm(warning)){
+			return;
+		}		
+		
+		FormDef formDef = Context.getFormDef();
+		List<String> usedIDs = formDef.getAllChildrenItextIDs();
+		Itext.removeUnusedItext(usedIDs);
+		
+	}
 }

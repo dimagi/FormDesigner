@@ -164,6 +164,19 @@ public class Itext {
 		return longList;
 	}
 	
+	/**
+	 * Takes in a list of actively used ItextIDs (including those with special forms!)
+	 * and strips away all unused Itext currently in the internal store
+	 * @param usedIDs
+	 */
+	public static void removeUnusedItext(List<String> usedIDs){
+		for(ItextLocale locale:locales){
+			locale.removeUnusedItext(usedIDs);
+		}
+		
+		syncItextRowsToLocale();
+	}
+	
 	private static void renameIdInItextRows(String oldID, String newID){
 		for(ItextModel row: getItextRows().getModels()){
 			if(hasID((String)row.get("id"), oldID)){

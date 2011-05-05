@@ -37,6 +37,25 @@ public class ItextLocale {
 	}
 	
 	/**
+	 * Takes in a list of actively used ItextIDs (including those with special forms!)
+	 * and strips away all unused Itext currently in the internal store
+	 * @param usedIDs
+	 */
+	public void removeUnusedItext(List<String> usedIDs){
+		HashMap<String, String> allValues = this.getValues();
+		List<String> unusedIDs = new ArrayList<String>();
+		for(String fullID: allValues.keySet()){
+			if(!usedIDs.contains(fullID)){
+				unusedIDs.add(fullID);
+			}
+		}
+		
+		for(String unusedID: unusedIDs){
+			this.removeTranslation(unusedID);
+		}
+	}
+	
+	/**
 	 * Returns *ONLY* the available itext forms for the specified textID beyond the default.
 	 * @param textID
 	 * @return

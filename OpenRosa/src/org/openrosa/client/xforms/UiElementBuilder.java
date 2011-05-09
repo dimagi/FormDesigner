@@ -96,7 +96,7 @@ public class UiElementBuilder {
 		String dataPath = qtn.getDataNodesetPath();
 		String id = FormUtil.getQtnIDFromNodeSetPath(dataPath);
 		
-		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getQuestionID(),formDef,parentDataNode);
+		Element dataNode =  XformBuilderUtil.fromVariableName2Node(doc,qtn.getQuestionID(),formDef,parentDataNode,qtn,qtn.getParent());
 
 		if(qtn.getDefaultValue() != null && qtn.getDefaultValue().trim().length() > 0){
 			if(XformBuilderUtil.nodeHasNoOrEmptyTextNodeChildren(dataNode)){

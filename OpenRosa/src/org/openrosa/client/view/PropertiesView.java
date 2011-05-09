@@ -419,7 +419,12 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		propertiesObj.setQuestionID(qtnID.getText());
 		currentObjQtnID = qtnID.getText();
 		String currentItextID = propertiesObj.getItextId(); //temp hack to reduce confusion for new users when they edit itext (see below*)
-		if(!propertiesObj.getItextId().equals(qtnID.getText())){
+		if(currentItextID == null){
+			propertiesObj.setItextId("");
+			update();
+			return;
+		}
+		if(!currentItextID.equals(qtnID.getText())){
 			propertiesObj.setItextId(qtnID.getText());
 			Itext.renameID(currentItextID, qtnID.getText());
 		}
@@ -458,6 +463,11 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	}
 	
 	private void updateQuestionHasUINode(){
+		if(!(propertiesObj instanceof QuestionDef)){
+			Window.alert("Objects that are not questions must have a UI Node!");
+			chkHasUINode.setValue(true);
+			propertiesObj.setHasUINode(true);
+		}
 		if(chkHasUINode.getValue() == ((QuestionDef)propertiesObj).hasUINode()){
 			//nothing to do, the flag is already set.
 			return;

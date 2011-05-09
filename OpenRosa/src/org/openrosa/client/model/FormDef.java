@@ -1749,7 +1749,9 @@ public class FormDef implements IFormElement, Serializable{
 			targetIndex += beforeOrAfter; //will add 1 for after, 0 for before. According to final INSERT_BEFORE and INSERT_AFTER fields in this class.
 			targetList.add(targetIndex,child);
 			child.setParent(target.getParent());
-			originalSiblings.remove(child);
+			if(!isChildAlreadyInChildren){
+				originalSiblings.remove(child);
+			}
 			return true;
 		}else{
 			return false;

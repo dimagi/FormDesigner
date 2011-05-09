@@ -1,8 +1,10 @@
 package org.openrosa.client.xforms;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.openrosa.client.model.FormDef;
+import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformConstants;
@@ -110,7 +112,7 @@ public class XformBuilderUtil {
 	 * @param parentDataNode the xforms instance data node.
 	 * @return the instance data child node for the question.
 	 */
-	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element parentDataNode){
+	public static Element fromVariableName2Node(Document doc, String variableName,FormDef formDef,Element parentDataNode, IFormElement currentQuestion, IFormElement parentQuestion){
 		String name = variableName;
 		//TODO May need to be smarter than this. Avoid invalid node
 		//names. eg those having slashes (form1/question1)
@@ -145,7 +147,18 @@ public class XformBuilderUtil {
 			name = tokens[tokens.length-1];
 			dataNode = doc.createElement(name);
 			if(!hasChildElementWithName(parentDataNode,dataNode.getNodeName())){
-				parentDataNode.appendChild(dataNode);
+				List<IFormElement> childrenDefs = parentQuestion.getChildren();
+				int childIndex = childrenDefs.indexOf(currentQuestion);
+				if(childIndex == -1 || childrenDefs.size() == 0){
+					parentDataNode.appendChild(dataNode);
+				}else{
+					Node nearestSibling = parentDataNode.getChildNodes().item(childIndex);
+					if(nearestSibling != null){
+						parentDataNode.insertBefore(dataNode, nearestSibling);
+					}else{
+						parentDataNode.appendChild(dataNode);
+					}
+				}
 			}
 		}
 		else{

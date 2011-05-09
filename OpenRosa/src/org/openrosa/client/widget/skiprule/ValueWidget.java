@@ -73,7 +73,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	private HandlerRegistration handlerReg2;
 
 	private QuestionDef prevQuestionDef;
-	private CheckBox chkQuestionValue = new CheckBox(LocaleText.get("questionValue"));
+	private CheckBox chkQuestionValue = new CheckBox("Other Question Value");
 	private FormDef formDef;
 	private SuggestBox sgstField = new SuggestBox();
 	private QuestionDef valueQtnDef;

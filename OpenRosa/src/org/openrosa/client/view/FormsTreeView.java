@@ -1146,7 +1146,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				}
 			}else{
 				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
-					((com.google.gwt.dom.client.Node)droppedDataParent).insertFirst((com.google.gwt.dom.client.Node)droppedDataNode);
+					Node firstChild = droppedDataParent.getFirstChild();
+					if(firstChild != null){
+						droppedDataParent.insertBefore(droppedDataNode, firstChild);
+					}else{
+						droppedDataParent.appendChild(droppedDataNode);
+					}
 				}else{
 					droppedDataParent.appendChild(droppedDataNode);
 				}
@@ -1162,7 +1167,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				}
 			}else{
 				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
-					((com.google.gwt.dom.client.Node)droppedBindParent).insertFirst((com.google.gwt.dom.client.Node)droppedBindNode);
+					Node firstChild = droppedBindParent.getFirstChild();
+					if(firstChild != null){
+						droppedBindParent.insertBefore(droppedBindNode, firstChild);
+					}else{
+						droppedBindParent.appendChild(droppedBindNode);
+					}
 				}else{
 					droppedBindParent.appendChild(droppedBindNode);
 				}
@@ -1178,7 +1188,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				}
 			}else{
 				if(aboveOrBelow == FormsTreeView.INSERT_AFTER){
-					((com.google.gwt.dom.client.Node)droppedControlParent).insertFirst((com.google.gwt.dom.client.Node)droppedControlNode);
+					Node firstChild = droppedControlParent.getFirstChild();
+					if(firstChild != null){
+						droppedControlParent.insertBefore(droppedControlNode, firstChild);
+					}else{
+						droppedControlParent.appendChild(droppedControlNode);
+					}
 				}else{
 					droppedControlParent.appendChild(droppedControlNode);
 				}

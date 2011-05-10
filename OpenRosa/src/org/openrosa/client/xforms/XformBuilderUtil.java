@@ -209,32 +209,32 @@ public class XformBuilderUtil {
 	 * return the first or last, respectively, node regardless of its type
 	 * @param index
 	 * @param childrenDOMNodes
-	 * @return
+	 * @return null, if such an index is not found or is > than the length of childrenDOMNodes
 	 */
 	private static Node getNearestSibling(int index, NodeList childrenDOMNodes){
 		int count = 0;
+		int childrenLength = childrenDOMNodes.getLength();
 		if(index < 0){
 			return childrenDOMNodes.item(0);
-		}else if(index > childrenDOMNodes.getLength()){
-			return childrenDOMNodes.item(childrenDOMNodes.getLength()-1);
+		}else if(index >= childrenDOMNodes.getLength()){
+			return null;
+		}else if(index == childrenDOMNodes.getLength() - 1){
+			return null;
 		}
 		
 		for(int i=0;i<childrenDOMNodes.getLength();i++){
 			Node currentItem = childrenDOMNodes.item(i);
-			if(count > index ){ 
+			if(count == index ){ 
 				return currentItem; 
 			}
-			if(currentItem.getNodeType() == Element.TEXT_NODE){
+			if(currentItem.getNodeType() != Element.ELEMENT_NODE){
 				continue;
 			}
 			
-			if(count == index){
-				return currentItem;
-			}else{
-				count++;
-			}
+			count++;
+			
 		}
-		return childrenDOMNodes.item(childrenDOMNodes.getLength()-1); //since we got this far we should return the last node in the list.
+		return null; //since we got this far we should return null, such that the node gets appended to the end.
 	}
 	
 	/**

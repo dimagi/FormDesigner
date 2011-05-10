@@ -1285,12 +1285,18 @@ public class QuestionDef implements IFormElement, Serializable{
 			
 			return; //short circuit the below since we've presumably removed the control node, for real.
 		}
-		if(controlNode == null){
+		if(controlNode == null && hasUINode()){
 			Element parentControlNode = this.getParent().getControlNode();
 			Element controlNode = UiElementBuilder.buildXformUIElement(this.getFormDef().getDoc(),this,false);
 			NodeList childDOMNodes = parentControlNode.getChildNodes();
 			XformBuilderUtil.insertNodeAtIndex(parentControlNode,childDOMNodes,this.getParent().getChildren().indexOf(this),controlNode);
 			setControlNode(controlNode);
+			
+			Element labelNode =  controlNode.getOwnerDocument().createElement(XformConstants.NODE_NAME_LABEL);
+			XmlUtil.setTextNodeValue(labelNode,this.getText());
+			UiElementBuilder.addItextRefs(labelNode, this);
+			controlNode.appendChild(labelNode);
+			setLabelNode(labelNode);
 		}
 		String name = controlNode.getNodeName();
 		Element parent = (Element)controlNode.getParentNode();

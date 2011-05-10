@@ -761,8 +761,9 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int i=0; i<children.size(); i++){
 			IFormElement questionDef = children.get(i);
-			if(text.equals(questionDef.getText()))
+			if(text.equals(Itext.getDisplayText(questionDef))){
 				return questionDef;
+			}
 
 			if(questionDef instanceof GroupDef){
 				IFormElement elem = ((GroupDef)questionDef).getQuestionWithText(text);

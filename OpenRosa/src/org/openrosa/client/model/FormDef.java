@@ -1007,8 +1007,9 @@ public class FormDef implements IFormElement, Serializable{
 	public IFormElement getQuestionWithText(String text){
 		for(int i=0; i<children.size(); i++){
 			IFormElement element = children.get(i);
-			if(text.equals(element.getText()))
+			if(text.equals(Itext.getDisplayText(element))){
 				return element;
+			}
 			
 			if(element instanceof GroupDef){
 				element = ((GroupDef)element).getQuestionWithText(text);

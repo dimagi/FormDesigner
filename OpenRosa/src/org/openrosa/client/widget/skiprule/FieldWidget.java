@@ -7,6 +7,7 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.QuestionDef;
 import org.openrosa.client.util.FormDesignerUtil;
+import org.openrosa.client.util.Itext;
 import org.openrosa.client.controller.ItemSelectionListener;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +83,7 @@ public class FieldWidget extends Composite{
 	}
 
 	private void setupWidgets(){
-		fieldHyperlink = new Hyperlink("",""); //Field 1
+		fieldHyperlink = new Hyperlink("_",""); //Field 1
 
 		horizontalPanel = new HorizontalPanel();
 		horizontalPanel.add(fieldHyperlink);
@@ -160,7 +161,7 @@ public class FieldWidget extends Composite{
 	}
 
 	public void selectQuestion(IFormElement questionDef){
-		fieldHyperlink.setText(questionDef.getText());
+		fieldHyperlink.setText(Itext.getDisplayText(questionDef));
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}
 

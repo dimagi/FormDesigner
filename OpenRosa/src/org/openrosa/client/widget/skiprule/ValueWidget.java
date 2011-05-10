@@ -537,7 +537,7 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 		if(chkQuestionValue.getValue() == true){
 			valueQtnDef = (QuestionDef)formDef.getQuestionWithText(val);
 			if(valueQtnDef != null)
-				val = valueQtnDef.getQuestionID();
+				val = valueQtnDef.getDataNodesetPath();
 			else
 				val = EMPTY_VALUE;
 		}
@@ -580,8 +580,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 				val = QuestionDef.FALSE_VALUE;
 		}
 
-		if(val != null && this.chkQuestionValue.getValue() == true)
-			val = formDef.getQuestionID() + "/" + val;
+//		if(val != null && this.chkQuestionValue.getValue() == true)
+//			val = formDef.getQuestionID() + "/" + val;
 
 		return val;
 	}

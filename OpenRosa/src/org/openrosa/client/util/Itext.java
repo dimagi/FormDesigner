@@ -498,7 +498,7 @@ public class Itext {
 		}else{
 			displayText = elementDef.getDisplayText();
 			if((displayText == null || displayText.isEmpty()) && !elementDef.hasUINode()){
-				return "DATA NODE";
+				return "DATA NODE. ID: "+elementDef.getQuestionID();
 			}
 			return displayText;
 		}

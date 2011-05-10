@@ -720,7 +720,7 @@ public class QuestionDef implements IFormElement, Serializable{
 	}
 
 	public String toString() {
-		return getText();
+		return Itext.getDisplayText(this);
 	}
 
 	private void copyQuestionOptions(List options){

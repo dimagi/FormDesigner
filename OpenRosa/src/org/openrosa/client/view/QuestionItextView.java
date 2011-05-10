@@ -110,11 +110,13 @@ public class QuestionItextView extends Composite {
 	
 	public void setItemID(IFormElement def){
 		GWT.log("setting ItemID currentDef.getItextId()="+def.getItextId()+" QuestionItextView:90");
-		if(def == null || def.getItextId() == null){
+		if(def == null){
 			currentDef = null;
 			txtItextID.setText("");
 			clearRows();
 			return;
+		}else if(def.getItextId() == null){
+			def.setItextId(def.getQuestionID());
 		}
 		currentDef = def;
 		init(def);

@@ -10,6 +10,7 @@ import org.openrosa.client.model.ModelConstants;
 import org.openrosa.client.xforms.XformConstants;
 
 
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
@@ -149,16 +150,7 @@ public class XformBuilderUtil {
 			if(!hasChildElementWithName(parentDataNode,dataNode.getNodeName())){
 				List<IFormElement> childrenDefs = parentQuestion.getChildren();
 				int childIndex = childrenDefs.indexOf(currentQuestion);
-				if(childIndex == -1 || childrenDefs.size() == 0){
-					parentDataNode.appendChild(dataNode);
-				}else{
-					Node nearestSibling = parentDataNode.getChildNodes().item(childIndex);
-					if(nearestSibling != null){
-						parentDataNode.insertBefore(dataNode, nearestSibling);
-					}else{
-						parentDataNode.appendChild(dataNode);
-					}
-				}
+				insertNodeAtIndex(parentDataNode, parentDataNode.getChildNodes(), childIndex, dataNode);
 			}
 		}
 		else{
@@ -184,6 +176,65 @@ public class XformBuilderUtil {
 		}
 
 		return dataNode;
+	}
+	
+	/**
+	 * Inserts the given childNode /before/ the item at Index
+	 * applicable to Data and Control XML nodes only
+	 * if index > childrenDOMNodes.length || index < 0 it appends the child to the list and returns.
+	 */
+	public static void insertNodeAtIndex(Element parentDOMNode, NodeList childrenDOMNodes, int index, Element child){
+		if(index > childrenDOMNodes.getLength() || index < 0){
+			parentDOMNode.appendChild(child);
+			return;
+		}
+	
+		if(index == -1 || childrenDOMNodes.getLength() == 0){
+			parentDOMNode.appendChild(child);
+		}else{
+			Node nearestSibling = getNearestSibling(index, parentDOMNode.getChildNodes());
+			if(nearestSibling != null){
+				parentDOMNode.insertBefore(child, nearestSibling);
+			}else{
+				parentDOMNode.appendChild(child);
+			}
+		}
+	}
+	
+	/**
+	 * Goes through childrenDOMNodes and gets the Node specified by index. (where index is
+	 * calculated by counting the number of NON-TEXT nodes).  E.g. childrenDOMNodes.getLength == 15
+	 * but there are only 5 non-text nodes in the list. Specifiying getNearestSibling(3,...) would
+	 * return the 3rd non-text node.  If index is out of bounds of the ChildrenDOMNodes list it will
+	 * return the first or last, respectively, node regardless of its type
+	 * @param index
+	 * @param childrenDOMNodes
+	 * @return
+	 */
+	private static Node getNearestSibling(int index, NodeList childrenDOMNodes){
+		int count = 0;
+		if(index < 0){
+			return childrenDOMNodes.item(0);
+		}else if(index > childrenDOMNodes.getLength()){
+			return childrenDOMNodes.item(childrenDOMNodes.getLength()-1);
+		}
+		
+		for(int i=0;i<childrenDOMNodes.getLength();i++){
+			Node currentItem = childrenDOMNodes.item(i);
+			if(count > index ){ 
+				return currentItem; 
+			}
+			if(currentItem.getNodeType() == Element.TEXT_NODE){
+				continue;
+			}
+			
+			if(count == index){
+				return currentItem;
+			}else{
+				count++;
+			}
+		}
+		return childrenDOMNodes.item(childrenDOMNodes.getLength()-1); //since we got this far we should return the last node in the list.
 	}
 	
 	/**

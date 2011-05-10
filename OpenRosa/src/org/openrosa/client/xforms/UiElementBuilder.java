@@ -15,6 +15,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 
@@ -108,7 +109,9 @@ public class UiElementBuilder {
 		Element bindNode = createBindNodeForIFormElement(qtn, doc, modelNode);
 
 		Element uiNode =  buildXformUIElement(doc,qtn,false);
-		UIParentNode.appendChild(uiNode);
+		int uiNodeIndex = qtn.getParent().getChildren().indexOf(qtn);
+		NodeList uiNodeSiblings = UIParentNode.getChildNodes();
+		XformBuilderUtil.insertNodeAtIndex(UIParentNode, uiNodeSiblings, uiNodeIndex , uiNode);
 	
 		qtn.setControlNode(uiNode);
 
@@ -254,7 +257,7 @@ public class UiElementBuilder {
 	 * @param isRepeatKid set to true if this question is a child of another repeat question type.
 	 * @return the xforms ui node.
 	 */
-	private static Element buildXformUIElement(Document doc, IFormElement qtnDef, boolean isRepeatKid){
+	public static Element buildXformUIElement(Document doc, IFormElement qtnDef, boolean isRepeatKid){
 
 		String name = XformConstants.NODE_NAME_INPUT;
 

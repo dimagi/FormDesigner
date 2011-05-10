@@ -839,8 +839,8 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 
 	public boolean updateDoc(Document doc, Element xformsNode, FormDef formDef, Element formNode, Element modelNode,Element groupNode,boolean appendParentBinding, boolean withData, String rootDataNodeName){
-		boolean isNew = (controlNode == null);
-		if(isNew && hasUINode()){ //Must be new question.
+		boolean isNew = (controlNode == null) && (dataNode == null) && (bindNode == null);
+		if(isNew){ //Must be new question.
 			Element parentNode;
 			if(this.getParent() instanceof FormDef){
 				 parentNode = formDef.getBodyNode();
@@ -848,9 +848,13 @@ public class QuestionDef implements IFormElement, Serializable{
 				parentNode = this.getParent().getControlNode();
 			}
 			UiElementBuilder.fromQuestionDef2Xform(this, doc, formDef, formNode, modelNode, parentNode);
+			if(!hasUINode()){
+				updateControlNode();
+			}
 		}else{
 			updateControlNode();
 		}
+
 		if(hasUINode()){
 			controlNode.removeAttribute("bind");
 			if(this.getDataType() != QuestionDef.QTN_TYPE_REPEAT){ //repeats are special beasts.
@@ -1280,6 +1284,13 @@ public class QuestionDef implements IFormElement, Serializable{
 			}
 			
 			return; //short circuit the below since we've presumably removed the control node, for real.
+		}
+		if(controlNode == null){
+			Element parentControlNode = this.getParent().getControlNode();
+			Element controlNode = UiElementBuilder.buildXformUIElement(this.getFormDef().getDoc(),this,false);
+			NodeList childDOMNodes = parentControlNode.getChildNodes();
+			XformBuilderUtil.insertNodeAtIndex(parentControlNode,childDOMNodes,this.getParent().getChildren().indexOf(this),controlNode);
+			setControlNode(controlNode);
 		}
 		String name = controlNode.getNodeName();
 		Element parent = (Element)controlNode.getParentNode();

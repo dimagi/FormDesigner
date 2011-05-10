@@ -73,6 +73,22 @@ public class RepeatQtnsDef extends GroupDef implements Serializable {
 		}
 	}
 	
+	public Element getControlNode(){
+		return getGroupNode();
+	}
+	
+	public void setControlNode(Element controlNode){
+		setGroupNode(controlNode);
+	}
+	
+	public Element getBindNode(){
+		return parentQtnDef.getBindNode();
+	}
+	
+	public void setBindNode(Element bind){
+		this.parentQtnDef.setBindNode(bind);
+	}
+	
 	public Element getGroupNode(){
 		if(getParent() == null){ return null; }
 		return getParent().getControlNode();

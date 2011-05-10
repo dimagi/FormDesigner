@@ -480,8 +480,8 @@ public class XformParser {
 	 * 					This is only non null for kids of repeat question types.
 	 */
 	private static void setQuestionDataNode(IFormElement qtn, FormDef formDef, IFormElement parentQtn){
-		String xpath = qtn.getQuestionID();
-
+//		String xpath = qtn.getQuestionID();
+		String xpath = qtn.getDataNodesetPath();
 		//xpath = new String(xpath.toCharArray(), 1, xpath.length()-1);
 		int pos = xpath.lastIndexOf('@'); String attributeName = null;
 		if(pos > 0){
@@ -498,8 +498,11 @@ public class XformParser {
 		if(node == null)
 			return; //data node may not be present in the xforms document.
 		
-		if(xpath.startsWith("/" + node.getNodeName() + "/"))
-			xpath = xpath.substring(node.getNodeName().length() + 2);
+		String nodeName = "/" + node.getNodeName() + "/";
+		if(xpath.contains(nodeName)){
+			xpath = xpath.substring(xpath.indexOf(nodeName) + nodeName.length());
+		}
+		
 
 		XPathExpression xpls = new XPathExpression(node, xpath);
 		Vector result = xpls.getResult();
@@ -966,7 +969,7 @@ public class XformParser {
 				qtn.setId(getNextQuestionId());
 
 
-				qtn.setBindNode(child);
+//				qtn.setBindNode(child);
 				qtn.setControlNode(child);
 
 				//Remove repeat question constraint if any

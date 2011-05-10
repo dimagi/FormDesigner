@@ -665,9 +665,6 @@ public class GroupDef implements IFormElement, Serializable{
 		
 		UiElementBuilder.addItextRefs(labelNode, this);
 
-		//if(groupNode != null)
-		//	groupNode.setAttribute(XformConstants.ATTRIBUTE_NAME_ID, pageNo+"");
-
 		List<IFormElement> newElements = new ArrayList<IFormElement>();
 		if(children != null){
 			for(int i=0; i<children.size(); i++){
@@ -686,12 +683,6 @@ public class GroupDef implements IFormElement, Serializable{
 
 		for(int k = 0; k < newElements.size(); k++){
 			IFormElement element = newElements.get(k);
-
-//			//We do not update data nodes which deal with attributes.
-//			if(element.getDataNode() == null && !element.getBinding().contains("@")){
-//				Window.alert(LocaleText.get("missingDataNode") + element.getText());
-//				continue; //TODO This is a bug which should be resolved
-//			}
 
 			int proposedIndex = children.size() - (newElements.size() - k);
 			int currentIndex = children.indexOf(element);
@@ -854,7 +845,9 @@ public class GroupDef implements IFormElement, Serializable{
 			Node sibNode = rControlNode;
 			if(refElement.getDataType() == QuestionDef.QTN_TYPE_REPEAT)
 				sibNode = sibNode.getParentNode();
-			eControlParentNode.insertBefore(eControlNode, sibNode);
+			if(eControlParentNode != null){
+				eControlParentNode.insertBefore(eControlNode, sibNode);
+			}
 		}
 
 		if(rDataNode != null){

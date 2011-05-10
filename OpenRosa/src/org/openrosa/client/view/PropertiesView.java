@@ -484,7 +484,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 				if(uiNode != null){
 					q.setControlNode(null);
 					Node parent = uiNode.getParentNode();
-					parent.removeChild((Node)uiNode);
+					if(parent != null){
+						parent.removeChild((Node)uiNode);
+					}
 				}
 				q.setFirstOptionNode(null);
 				q.setOptionList(null);

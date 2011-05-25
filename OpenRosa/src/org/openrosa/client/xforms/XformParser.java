@@ -439,6 +439,7 @@ public class XformParser {
 				element.removeAttribute("id");
 				option.setLabelNode(nodeContext.getLabelNode());
 				option.setValueNode(nodeContext.getValueNode());
+				option.setDefaultValue(nodeContext.getValue());
 				((QuestionDef)parentQtn).addOption(option);
 
 			}

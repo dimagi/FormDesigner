@@ -781,11 +781,9 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		final String DEFAULT_QUESTION_TEXT = "Yes/No Question";
 		
 		addFormIfNew();
-		TreeModelItem listItem = addNewQuestionBare(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
-		treePanel.getSelectionModel().select(false, listItem);
-
-		TreeModelItem yesItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM);
-		TreeModelItem noItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM);
+		TreeModelItem listItem = addNewQuestionBare(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE, (TreeModelItem)treePanel.getSelectionModel().getSelectedItem());
+		TreeModelItem yesItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM, listItem);
+		TreeModelItem noItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM, listItem);
 
 		QuestionDef listQuestionDef = (QuestionDef)listItem.getUserObject();
 		OptionDef yesOptionDef = (OptionDef)yesItem.getUserObject();
@@ -805,10 +803,12 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		noOptionDef.setDefaultValue(EN_NO);
 		noItem.setText(EN_NO);
 		
-		treePanel.setExpanded(listItem, true);
 		treePanel.getStore().update(listItem);
 		treePanel.getStore().update(yesItem);
 		treePanel.getStore().update(noItem);
+		treePanel.setExpanded(listItem, true);
+		treePanel.getSelectionModel().select(false, listItem);
+
 	}
 	
 	/**
@@ -817,7 +817,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	private void addFormIfNew(){
 		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
 		if(selectedItem == null){
-			addNewQuestionBare(-1); //argument doesn't matter as it will trigger creation of a new FormDef
+			addNewQuestionBare(-1, null); //argument doesn't matter as it will trigger creation of a new FormDef
 		}else{
 			return; //something is already selected, implying that a form exists.
 		}
@@ -840,11 +840,11 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 	 * @param dataType - The type of the new IFormElement which needs to be created
 	 * @return TreeModelItem of the new IFormElement
 	 */
-	public TreeModelItem addNewQuestionBare(int dataType){
+	public TreeModelItem addNewQuestionBare(int dataType, TreeModelItem parentItem){
 		//Auto adding of children (for groups/repeats/(1)selects should not be done in this method
 		//this is for the bare addition of new IFormElements, allowing for flexibly making new
 		//combo question macros (like an auto Yes/No question generator) further upstream.
-		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		TreeModelItem selectedItem = parentItem;
 		if(selectedItem == null){ 
 			addNewForm("Form","data",1);
 			return (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();

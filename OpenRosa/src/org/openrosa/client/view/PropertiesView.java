@@ -454,7 +454,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(propertiesObj instanceof QuestionDef || propertiesObj instanceof GroupDef){
 			((QuestionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
 		}else if(propertiesObj instanceof OptionDef){
-			((OptionDef) propertiesObj).setQuestionID(txtDefaultValue.getText());
+			((OptionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
 		}
 	}
 	
@@ -464,7 +464,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	
 	private void updateQuestionHasUINode(){
 		if(!(propertiesObj instanceof QuestionDef)){
-			Window.alert("Objects that are not questions must have a UI Node!");
 			chkHasUINode.setValue(true);
 			propertiesObj.setHasUINode(true);
 		}
@@ -877,7 +876,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		chkVisible.setVisible(true);
 		lblRequired.setVisible(true);
 		chkRequired.setVisible(true);
-		chkHasUINode.setVisible(true);
+		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
+			chkHasUINode.setVisible(true);
+		}
 		lblHasUINode.setVisible(true);
 		lblBinding.setVisible(true);
 		txtBinding.setVisible(true);
@@ -938,16 +939,16 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultValue.setVisible(true);
 		lblDefaultValue.setVisible(true);
 		
-		lblBinding.setVisible(true);
-		txtBinding.setVisible(true);
+//		lblBinding.setVisible(true);
+//		txtBinding.setVisible(true);
 		
 		tabs.setVisible(true);
 		
 //		qtnID.setText(optionDef.getItextId());
-		currentObjQtnID = propertiesObj.getItextId();
+		currentObjQtnID = propertiesObj.getQuestionID();
 		txtDefaultLabel.setText(optionDef.getText());
 		txtBinding.setText(optionDef.getDataNodesetPath());
-		txtDefaultValue.setText(optionDef.getQuestionID());
+		txtDefaultValue.setText(optionDef.getDefaultValue());
 
 		final IFormElement fe = optionDef;
 		DeferredCommand.addCommand(new Command(){

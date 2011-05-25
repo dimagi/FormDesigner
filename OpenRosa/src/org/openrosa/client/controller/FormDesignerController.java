@@ -1110,4 +1110,8 @@ public class FormDesignerController implements IFormDesignerListener, OpenFileDi
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void addYesNoQuestion() {
+		formsTreeView.addYesNoQuestion();
+	}
 }

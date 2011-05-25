@@ -106,7 +106,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut, yesNoBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bdelete;
@@ -148,6 +148,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			"Barcode Question", 		//20
 			"Label Question", 			//21
 			"Repeat Question"};			//22
+	String yesNoButtonText = "Yes/No Question";
 	
 //	/** Widget to display the list of languages or locales. */
 //	ListBox localesComboBox = new ListBox(false);
@@ -352,13 +353,19 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		rptBut.setScale(ButtonScale.LARGE);
 		rptBut.setIconAlign(IconAlign.LEFT);
 		rptBut.addStyleName("myMenuButton");
+		yesNoBut = new Button(yesNoButtonText);
+		yesNoBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+		yesNoBut.setScale(ButtonScale.LARGE);
+		yesNoBut.setIconAlign(IconAlign.LEFT);
+		yesNoBut.addStyleName("myMenuButton");
 
 		menu.add(txtBut);  
 		menu.add(intBut);  
 		menu.add(decBut);
 		menu.add(dateBut);
 		menu.add(multBut);
-		menu.add(singBut); 
+		menu.add(singBut);
+		menu.add(yesNoBut);
 		menu.add(timeBut);
 		menu.add(datetimeBut);
 		menu.add(picBut);
@@ -601,6 +608,15 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				splitItem.hideMenu();
 			}
 		});
+		
+		yesNoBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.addYesNoQuestion();
+				splitItem.setText(yesNoBut.getText());
+				splitItem.setIcon(yesNoBut.getIcon());
+				splitItem.hideMenu();
+			}
+		});
 
 		splitItem.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
@@ -639,6 +655,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_LABEL);
 				}else if(t.equals(buttonLabels[23])){
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_REPEAT);
+				}else if(t.equals(yesNoButtonText)){
+					controller.addYesNoQuestion();
 				}else{
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}	

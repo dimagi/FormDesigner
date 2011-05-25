@@ -202,7 +202,7 @@ public class TextTabWidget extends com.extjs.gxt.ui.client.widget.Composite {
 		tb.add(btnRemoveRow);
 		tb.add(new SeparatorToolItem());
 		tb.add(btnRemoveItext);
-		btnRemoveItext.disable(); //turned off for now to prevent shitty itext removal code from happening.
+//		btnRemoveItext.disable(); //turned off for now to prevent shitty itext removal code from happening.
 
 		contentPanel.setTopComponent(tb);
 

@@ -50,6 +50,9 @@ public class OptionDef implements IFormElement, Serializable {
 
 	private String itextId;
 	
+	/** The internal value of this OptionDef element */
+	private String defaultValue;
+	
 	
 	/** Constructs the answer option definition object where
 	 * initialization parameters are not supplied. */
@@ -198,12 +201,12 @@ public class OptionDef implements IFormElement, Serializable {
 	 */
     public void updateDoc(Document doc, Element selectNode){
     	if(labelNode != null){
-    		XmlUtil.setTextNodeValue(labelNode,text);
+    		XmlUtil.setTextNodeValue(labelNode,getText());
     		UiElementBuilder.addItextRefs(labelNode, this);
     	}
     	
     	if(valueNode != null){
-    		XmlUtil.setTextNodeValue(valueNode,binding);
+    		XmlUtil.setTextNodeValue(valueNode,getDefaultValue());
     	}
     	
     	if(labelNode == null && valueNode == null){ ////Must be new option.
@@ -246,7 +249,7 @@ public class OptionDef implements IFormElement, Serializable {
     }
     
     public int getDataType(){
-    	return QuestionDef.QTN_TYPE_NULL;
+    	return QuestionDef.QTN_TYPE_OPTION_ITEM;
     }
     
     public IFormElement getElement(String varName){
@@ -303,7 +306,7 @@ public class OptionDef implements IFormElement, Serializable {
 	}
 	
 	public String getDisplayText(){
-		return text;
+		return getText();
 	}
 	
 	public void addChild(IFormElement element){
@@ -361,7 +364,11 @@ public class OptionDef implements IFormElement, Serializable {
 	}
 	
 	public String getDefaultValue(){
-		return null;
+		return defaultValue;
+	}
+	
+	public void setDefaultValue(String defaultValue){
+		this.defaultValue = defaultValue;
 	}
 
 	@Override

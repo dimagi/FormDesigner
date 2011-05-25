@@ -12,6 +12,7 @@ import org.openrosa.client.model.GroupDef;
 import org.openrosa.client.model.IFormElement;
 import org.openrosa.client.model.OptionDef;
 import org.openrosa.client.model.QuestionDef;
+import org.openrosa.client.model.RepeatQtnsDef;
 import org.openrosa.client.model.TreeModelItem;
 import org.openrosa.client.controller.FormDesignerController;
 import org.openrosa.client.controller.IFormActionListener;
@@ -743,7 +744,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				QuestionDef questionDef = new QuestionDef(id,LocaleText.get("question")+id,QuestionDef.QTN_TYPE_TEXT,"question"+id,(IFormElement)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				questionDef.setItextId(questionDef.getQuestionID());
 				TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem.getParent());
-				addFormDefItem(questionDef,(TreeModelItem)selModelItem.getParent());
+				addChildItemToParent(questionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
@@ -752,7 +753,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				optionDef.setItextId(optionDef.getQuestionID());
 				TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem.getParent());
-				addFormDefItem(optionDef,(TreeModelItem)selModelItem.getParent());
+				addChildItemToParent(optionDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
@@ -761,7 +762,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				GroupDef pageDef = new GroupDef(LocaleText.get("page")+id,null,(FormDef)((TreeModelItem)selModelItem.getParent()).getUserObject());
 				pageDef.setItextId(FormDesignerUtil.getXmlTagName(pageDef.getQuestionID()));
 				TreeModelItem modelItem = new TreeModelItem(pageDef.getQuestionID(),pageDef,selModelItem.getParent());
-				addFormDefItem(pageDef,(TreeModelItem)selModelItem.getParent());
+				addChildItemToParent(pageDef,(TreeModelItem)selModelItem.getParent());
 				treePanel.getStore().add(selModelItem.getParent(),modelItem, true);
 				treePanel.getSelectionModel().select(modelItem, false);
 			}
@@ -770,6 +771,200 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		}
 		else
 			addNewForm();
+	}
+	
+	public void addYesNoQuestion(){
+		final String YES_ITEXT_ID = "answer_yes";
+		final String NO_ITEXT_ID = "answer_no";
+		final String EN_YES = "Yes";
+		final String EN_NO = "No";
+		final String DEFAULT_QUESTION_TEXT = "Yes/No Question";
+		
+		addFormIfNew();
+		TreeModelItem listItem = addNewQuestionBare(QuestionDef.QTN_TYPE_LIST_EXCLUSIVE);
+		treePanel.getSelectionModel().select(false, listItem);
+
+		TreeModelItem yesItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM);
+		TreeModelItem noItem = addNewQuestionBare(QuestionDef.QTN_TYPE_OPTION_ITEM);
+
+		QuestionDef listQuestionDef = (QuestionDef)listItem.getUserObject();
+		OptionDef yesOptionDef = (OptionDef)yesItem.getUserObject();
+		OptionDef noOptionDef = (OptionDef)noItem.getUserObject();
+		
+		listQuestionDef.setText(DEFAULT_QUESTION_TEXT); //don't set ItextID like below since each yes/no question text will likely be unique
+		listItem.setText(DEFAULT_QUESTION_TEXT);
+		
+		yesOptionDef.setItextId(YES_ITEXT_ID);
+		yesOptionDef.setText(EN_YES);
+		yesOptionDef.setDefaultValue(EN_YES);
+		yesItem.setText(EN_YES);
+		//don't set Itext since the user might want to specify which language to use, and they'll only have to do it once
+		
+		noOptionDef.setItextId(NO_ITEXT_ID);
+		noOptionDef.setText(EN_NO);
+		noOptionDef.setDefaultValue(EN_NO);
+		noItem.setText(EN_NO);
+		
+		treePanel.setExpanded(listItem, true);
+		treePanel.getStore().update(listItem);
+		treePanel.getStore().update(yesItem);
+		treePanel.getStore().update(noItem);
+	}
+	
+	/**
+	 * Creates a new FormDef in the FormTreeView if none is present (i.e. it's a blank new form)
+	 */
+	private void addFormIfNew(){
+		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		if(selectedItem == null){
+			addNewQuestionBare(-1); //argument doesn't matter as it will trigger creation of a new FormDef
+		}else{
+			return; //something is already selected, implying that a form exists.
+		}
+	}
+	
+	/**
+	 * Creates a new Question in the FormsTreeView (and the internal data model) according
+	 * to the dataType specified and the current item selected.  Certain types of combinations
+	 * of selected questions + specified dataTypes are invalid operations and will result in 
+	 * null being returned (for example, have a group selected and trying to create a new
+	 * OptionDef).  Ideally these combinations will be prevented further up stream, but the buck 
+	 * definitely stops here, regardless.
+	 * 
+	 * The reason this method is called "Bare" is that it creates the new Question Type
+	 * without any additional help (auto adding new options to (1)select questions, etc).
+	 * That type of behavior is left up to functions calling this function, allowing one to get
+	 * creative with interesting combo questions (such as setting up an auto Yes/No question generator)
+	 * for common question combinations.
+	 * 
+	 * @param dataType - The type of the new IFormElement which needs to be created
+	 * @return TreeModelItem of the new IFormElement
+	 */
+	public TreeModelItem addNewQuestionBare(int dataType){
+		//Auto adding of children (for groups/repeats/(1)selects should not be done in this method
+		//this is for the bare addition of new IFormElements, allowing for flexibly making new
+		//combo question macros (like an auto Yes/No question generator) further upstream.
+		TreeModelItem selectedItem = (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		if(selectedItem == null){ 
+			addNewForm("Form","data",1);
+			return (TreeModelItem)treePanel.getSelectionModel().getSelectedItem();
+		}
+		IFormElement selectedIFormElement = (IFormElement)selectedItem.getUserObject();
+		if(selectedIFormElement == null){ return null; }
+		
+		TreeModelItem parentTreeItem = getCorrectParent(selectedItem,dataType);
+		if(parentTreeItem == null){ return null; }
+		IFormElement parentIFormElement = (IFormElement)parentTreeItem.getUserObject();
+		if(parentIFormElement == null){ return null; }
+		
+		//create the IFormElement
+		if(dataType == QuestionDef.QTN_TYPE_OPTION_ITEM){
+			//TODO create a new OptionDef and return it as selected
+			
+			int id = FormUtil.getNextNewOptionID(formDef);
+			String optionIDString = "option"+id;
+			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,optionIDString,(QuestionDef)parentIFormElement);
+			optionDef.setItextId(optionDef.getQuestionID());
+			TreeModelItem newTreeItem = new TreeModelItem(Itext.getDisplayText(optionDef),optionDef,parentTreeItem);
+			addChildItemToParent(optionDef,parentTreeItem);
+			treePanel.getStore().add(parentTreeItem,newTreeItem, true);
+			
+			return newTreeItem;
+		}else if(dataType == QuestionDef.QTN_TYPE_GROUP){
+			//TODO create new group and return it as selected
+			//....
+			int id = FormUtil.getNextNewQuestionID(formDef);
+			String groupIDString = "Group"+id;
+			GroupDef groupDef = new GroupDef(groupIDString,null,parentIFormElement);
+			TreeModelItem newSelectedItem = addImageItem(parentTreeItem, Itext.getDisplayText(groupDef) ,groupDef);
+			addChildItemToParent(groupDef, parentTreeItem);
+
+			return newSelectedItem;
+		}else{
+			//add a new question and return it as selected
+			int id = FormUtil.getNextNewQuestionID(formDef);
+			String questionIDString = "question"+id;
+			QuestionDef questionDef = new QuestionDef(id,
+					  LocaleText.get("question")+id,
+					  QuestionDef.QTN_TYPE_TEXT,
+					  questionIDString,
+					  parentIFormElement);
+	
+			questionDef.setDataType(dataType);
+			questionDef.setHasUINode(true);
+			questionDef.setItextId(questionDef.getQuestionID());
+			if(dataType == QuestionDef.QTN_TYPE_REPEAT){
+				RepeatQtnsDef rptQtnsDef = new RepeatQtnsDef(questionDef);
+				questionDef.setRepeatQtnsDef(rptQtnsDef);
+			}
+			TreeModelItem newSelectedItem = addImageItem(parentTreeItem, Itext.getDisplayText(questionDef), questionDef);
+			addChildItemToParent(questionDef,parentTreeItem);
+			return newSelectedItem;
+		}
+		
+		
+	}
+	
+	/**
+	 * Looks for the correct parent of the new IFormElement to be created
+	 * based on the datatype specified by newItemDataType and the currently
+	 * selected item in the tree.
+	 * 
+	 * For example, if a text question is currently selected and a new text question
+	 * is to be created, the correct parent for the new question is the same as the parent for the existing text
+	 * question.
+	 * However, if a Select question was selected, with the new Item to be created being a select question OptionDef,
+	 * the correct parent is the currently selected item (the Select question), as opposed to it's parent.
+	 * @param selectedItem
+	 * @param newItemDataType
+	 * @return
+	 */
+	private TreeModelItem getCorrectParent(TreeModelItem selectedItem, int newItemDataType){
+		if(selectedItem == null){ return null; }
+		IFormElement selectedElement = (IFormElement)selectedItem.getUserObject();
+		
+		if(selectedElement instanceof FormDef){
+			return selectedItem;
+		}
+		
+		boolean isSelectedOptionDef = selectedElement instanceof OptionDef;
+		boolean isSelectedGroupOrRepeat = selectedElement instanceof GroupDef || 
+											(selectedElement instanceof QuestionDef && 
+											 selectedElement.getDataType() == QuestionDef.QTN_TYPE_REPEAT);
+		boolean isSelectedListQuestion = selectedElement instanceof QuestionDef &&
+											(selectedElement.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE ||
+											 selectedElement.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE);
+		boolean isSelectedRegQuestion = selectedElement instanceof QuestionDef;
+		
+		TreeModelItem parentOfSelectedItem = (TreeModelItem)selectedItem.getParent(); //should never be null (FormDef case taken care of above)
+		
+		if(isSelectedOptionDef){
+			if(newItemDataType == QuestionDef.QTN_TYPE_OPTION_ITEM){
+				return parentOfSelectedItem;
+			}else{
+				return (TreeModelItem)parentOfSelectedItem.getParent();
+			}
+		}else if(isSelectedGroupOrRepeat){
+			if(newItemDataType == QuestionDef.QTN_TYPE_OPTION_ITEM){
+				return null;
+			}else{
+				return selectedItem;
+			}
+		}else if(isSelectedListQuestion){
+			if(newItemDataType == QuestionDef.QTN_TYPE_OPTION_ITEM){
+				return selectedItem;
+			}else{
+				return parentOfSelectedItem;
+			}
+		}else if(isSelectedRegQuestion){
+			if(newItemDataType == QuestionDef.QTN_TYPE_OPTION_ITEM){
+				return null;
+			}else{
+				return parentOfSelectedItem;
+			}
+		}else{
+			return null;
+		}
 	}
 
 	public void addNewQuestion(int dataType){
@@ -786,7 +981,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				if(dataType == QuestionDef.QTN_TYPE_GROUP){
 					GroupDef pageDef = new GroupDef("Group"+id,null,(IFormElement)((TreeModelItem)selectedItem.getParent()).getUserObject());
 					selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), Itext.getDisplayText(pageDef) ,pageDef);
-					addFormDefItem(pageDef, (TreeModelItem)selectedItem.getParent());
+					addChildItemToParent(pageDef, (TreeModelItem)selectedItem.getParent());
 
 					//if(dataType == QuestionDef.QTN_TYPE_GROUP)
 					//	addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
@@ -802,7 +997,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 					questionDef.setItextId(questionDef.getQuestionID());
 					//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 					selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), Itext.getDisplayText(questionDef), questionDef);
-					addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
+					addChildItemToParent(questionDef,(TreeModelItem)selectedItem.getParent());
 
 					if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 						addNewOptionDef(questionDef, selectedItem);
@@ -828,7 +1023,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				questionDef.setItextId(questionDef.getQuestionID());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				selectedItem = addImageItem((TreeModelItem)selectedItem.getParent().getParent(), Itext.getDisplayText(questionDef), questionDef);
-				addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
+				addChildItemToParent(questionDef,(TreeModelItem)selectedItem.getParent());
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, selectedItem);
@@ -845,7 +1040,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				questionDef.setItextId(questionDef.getQuestionID());
 				//item = addImageItem(item.getParent(), questionDef.getText(), images.lookup(),questionDef,questionDef.getHelpText());
 				selectedItem = addImageItem((TreeModelItem)selectedItem.getParent(), questionDef.getText(), questionDef);
-				addFormDefItem(questionDef,(TreeModelItem)selectedItem.getParent());
+				addChildItemToParent(questionDef,(TreeModelItem)selectedItem.getParent());
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE)
 					addNewOptionDef(questionDef, selectedItem);
@@ -877,7 +1072,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 				questionDef.setDataType(dataType);
 				questionDef.setItextId(questionDef.getQuestionID());
 				selectedItem = addImageItem(selectedItem, questionDef.getText(), questionDef);
-				addFormDefItem(questionDef, (TreeModelItem)selectedItem.getParent());
+				addChildItemToParent(questionDef, (TreeModelItem)selectedItem.getParent());
 
 				if(dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE){
 					addNewOptionDef(questionDef, selectedItem);
@@ -929,16 +1124,21 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 		optionDef.setItextId(optionDef.getQuestionID());
 		//addImageItem(parentItem, optionDef.getText(), images.markRead(),optionDef,null);
 		addImageItem(parentItem, Itext.getDisplayText(optionDef),optionDef);
-		addFormDefItem(optionDef,parentItem);
+		addChildItemToParent(optionDef,parentItem);
 	}
 
-	private void addFormDefItem(Object obj,TreeModelItem parentItem){
+	/**
+	 * Adds the new IFormeElement as a child to its parent in the correct way
+	 * @param newIFormeElement
+	 * @param parentItem
+	 */
+	private void addChildItemToParent(Object newIFormeElement,TreeModelItem parentItem){
 		Object parentUserObj = parentItem.getUserObject();
 		if(parentUserObj instanceof QuestionDef){
-			if(obj instanceof OptionDef){
-				((QuestionDef)parentUserObj).addOption((OptionDef)obj);
-			}else if(obj instanceof QuestionDef && ((IFormElement)parentUserObj).getDataType()==QuestionDef.QTN_TYPE_REPEAT){
-				((QuestionDef)parentUserObj).addRepeatChildDef((IFormElement)obj);
+			if(newIFormeElement instanceof OptionDef){
+				((QuestionDef)parentUserObj).addOption((OptionDef)newIFormeElement);
+			}else if(newIFormeElement instanceof QuestionDef && ((IFormElement)parentUserObj).getDataType()==QuestionDef.QTN_TYPE_REPEAT){
+				((QuestionDef)parentUserObj).addRepeatChildDef((IFormElement)newIFormeElement);
 			}
 			
 //			{
@@ -948,7 +1148,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			//((QuestionDef)parentUserObj).getRepeatQtnsDef().addQuestion((QuestionDef)obj);
 		}
 		else if(parentUserObj instanceof GroupDef || parentUserObj instanceof FormDef)
-			((IFormElement)parentUserObj).addChild((IFormElement)obj);
+			((IFormElement)parentUserObj).addChild((IFormElement)newIFormeElement);
 	}
 
 	public void addNewForm(){
@@ -1026,7 +1226,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 
 			questionDef.setItextId(questionDef.getQuestionID());
 			TreeModelItem modelItem = new TreeModelItem(questionDef.getText(),questionDef,selModelItem);
-			addFormDefItem(questionDef,selModelItem);
+			addChildItemToParent(questionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
 			treePanel.getSelectionModel().select(modelItem, false);
 		}
@@ -1038,7 +1238,7 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			OptionDef optionDef = new OptionDef(id,LocaleText.get("option")+id,"option"+id,(QuestionDef)userObj);
 			optionDef.setItextId(optionDef.getQuestionID());
 			TreeModelItem modelItem = new TreeModelItem(optionDef.getText(),optionDef,selModelItem);
-			addFormDefItem(optionDef,selModelItem);
+			addChildItemToParent(optionDef,selModelItem);
 			treePanel.getStore().add(selModelItem,modelItem, true);
 			treePanel.getSelectionModel().select(modelItem, false);
 		}
@@ -1425,7 +1625,6 @@ public class FormsTreeView extends com.extjs.gxt.ui.client.widget.Composite impl
 			return formItem; //How can this happen?
 
 		if(item.getUserObject() != formItem){
-//			GWT.log("Passed Item: "+((IFormElement)formItem).getBinding() + ", Selected Item:" + ((IFormElement)item.getUserObject()).getBinding());
 			return formItem;
 		}
 

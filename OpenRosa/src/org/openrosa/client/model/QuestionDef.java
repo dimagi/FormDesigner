@@ -160,6 +160,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	/** Question which is a group. */
 	public static final int QTN_TYPE_LABEL = 18;
+	
+	/** Option Item for (1)Select type questions */
+	public static final int QTN_TYPE_OPTION_ITEM = 19;
 
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;

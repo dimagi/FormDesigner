@@ -371,7 +371,7 @@ public class UiElementBuilder {
 		optionDef.setLabelNode(node);
 
 		node =  doc.createElement(XformConstants.NODE_NAME_VALUE);
-		node.appendChild(doc.createTextNode(optionDef.getQuestionID()));
+		node.appendChild(doc.createTextNode(optionDef.getDefaultValue()));
 		itemNode.appendChild(node);
 		optionDef.setValueNode(node);
 

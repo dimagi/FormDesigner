@@ -94,4 +94,12 @@ public interface IFormActionListener {
 	public void moveToChild();
 	
 	public void addNewQuestion(int dataType);
+	
+	/**
+	 * Adds an automatically generated Yes/No type question
+	 * where all questions of this type have the same ItextID (for the Yes and No Options)
+	 * but allow for unique question Text.
+	 * @param dataType
+	 */
+	public void addYesNoQuestion();
 }

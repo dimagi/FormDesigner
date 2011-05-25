@@ -69,9 +69,6 @@ public class QuestionDef implements IFormElement, Serializable{
 	/** A flag to tell whether the question is to be answered or is optional. */
 	private boolean required = false;
 
-	/** A flag to tell whether the question should be shown or not. */
-	private boolean visible = true;
-
 	/** A flag to tell whether the question should be enabled or disabled. */
 	private boolean enabled = true;
 
@@ -226,7 +223,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		setHelpText(questionDef.getHelpText());
 		setDataType(questionDef.getDataType());
 		setDefaultValue(questionDef.getDefaultValue());
-		setVisible(questionDef.isVisible());
 		setEnabled(questionDef.isEnabled());
 		setLocked(questionDef.isLocked());
 		setRequired(questionDef.isRequired());
@@ -265,14 +261,13 @@ public class QuestionDef implements IFormElement, Serializable{
 	 * @param variableName
 	 * @param options
 	 */
-	public QuestionDef(int id,String text, String helpText, boolean mandatory, int type, String defaultValue, boolean visible, boolean enabled, boolean locked, String variableName, Object options,IFormElement parent) {
+	public QuestionDef(int id,String text, String helpText, boolean mandatory, int type, String defaultValue, boolean enabled, boolean locked, String variableName, Object options,IFormElement parent) {
 		this(parent);
 		setId(id);
 		setText(text);
 		setHelpText(helpText);
 		setDataType(type);
 		setDefaultValue(defaultValue);
-		setVisible(visible);
 		setEnabled(enabled);
 		setLocked(locked);
 		setRequired(mandatory);		
@@ -662,21 +657,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		this.firstOptionNode = firstOptionNode;
 	}
 
-	public boolean isVisible() {
-		return visible;
-	}
-
-	public void setVisible(boolean visible) {
-		boolean changed = this.visible != visible;
-
-		this.visible = visible;
-
-		if(changed){
-			for(int index = 0; index < changeListeners.size(); index++)
-				changeListeners.get(index).onVisibleChanged(this,visible);
-		}
-	}
-
 	public void removeChangeListener(QuestionChangeListener changeListener) {
 		changeListeners.remove(changeListener);
 	}
@@ -930,11 +910,9 @@ public class QuestionDef implements IFormElement, Serializable{
 			else
 				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED);*/
 
-			if(!visible){
-				node.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE,XformConstants.XPATH_VALUE_FALSE);
-			}else{
-				node.removeAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE);
-			}
+
+			node.removeAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE);
+
 
 
 			if(!(dataType == QuestionDef.QTN_TYPE_IMAGE || dataType == QuestionDef.QTN_TYPE_AUDIO ||
@@ -1520,7 +1498,6 @@ public class QuestionDef implements IFormElement, Serializable{
 		setEnabled(questionDef.isEnabled());
 		setRequired(questionDef.isRequired());
 		setLocked(questionDef.isLocked());
-		setVisible(questionDef.isVisible());
 
 		if((dataType == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || dataType == QuestionDef.QTN_TYPE_LIST_MULTIPLE) &&
 				(questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_EXCLUSIVE || questionDef.getDataType() == QuestionDef.QTN_TYPE_LIST_MULTIPLE) ){

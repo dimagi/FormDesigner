@@ -66,9 +66,9 @@ public class UiElementBuilder {
 		if(qtn.isLocked()){
 			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED, XformConstants.XPATH_VALUE_TRUE);
 		}
-		if(!qtn.isVisible()){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
-		}
+//		if(!qtn.isVisible()){
+//			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE, XformConstants.XPATH_VALUE_FALSE);
+//		}
 
 		modelNode.appendChild(bindNode);
 		qtn.setBindNode(bindNode);

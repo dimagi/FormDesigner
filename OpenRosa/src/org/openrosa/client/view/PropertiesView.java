@@ -140,9 +140,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** Widget to determine if a UI Node (input, 1select, etc) should be generated in the xml. **/
 	private CheckBox chkHasUINode = new CheckBox();
-	
-	/** Widget for setting the visibility property. */
-	private CheckBox chkVisible = new CheckBox();
 
 
 	/** Widget for setting the locked property. */
@@ -199,7 +196,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	Label lblHelpText = new Label("Default Help Text");
 	Label lblType = new Label(LocaleText.get("type"));
 	Label lblBinding = new Label(LocaleText.get("binding"));
-	Label lblVisible = new Label(LocaleText.get("visible"));
 	Label lblEnabled = new Label(LocaleText.get("enabled"));
 	Label lblLocked = new Label(LocaleText.get("locked"));
 	Label lblRequired = new Label(LocaleText.get("required"));
@@ -235,7 +231,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(2, 0, lblHelpText);
 		table.setWidget(3, 0, lblDefaultValue);
 		table.setWidget(4, 0, lblType);
-		table.setWidget(5, 0, lblVisible);
 //		table.setWidget(6, 0, lblEnabled);
 		//table.setWidget(7, 0, lblLocked);
 		table.setWidget(7, 0, lblRequired);
@@ -251,7 +246,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		table.setWidget(2, 1, txtHelpText);
 		table.setWidget(3, 1, txtDefaultValue);
 		table.setWidget(4, 1, cbDataType);
-		table.setWidget(5, 1, chkVisible);
 		//table.setWidget(7, 1, chkLocked);
 		table.setWidget(7, 1, chkRequired);
 		table.setWidget(8, 1, chkHasUINode);
@@ -457,10 +451,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			((OptionDef) propertiesObj).setDefaultValue(txtDefaultValue.getText());
 		}
 	}
-	
-	private void updateQuestionVisible(){
-		propertiesObj.setVisible(chkVisible.getValue());
-	}
+
 	
 	private void updateQuestionHasUINode(){
 		if(!(propertiesObj instanceof QuestionDef)){
@@ -507,7 +498,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		if(txtHelpText.isVisible()){ updateHelpText(); }
 		if(txtDefaultLabel.isVisible()){ updateQuestionDefaultLabel(); }
 		if(txtDefaultValue.isVisible()){ updateQuestionDefaultValue(); }
-		if(chkVisible.isVisible()){ updateQuestionVisible(); }
 		if(chkHasUINode.isVisible()){ updateQuestionHasUINode(); }
 		if(chkRequired.isVisible()){ updateQuestionRequired(); }
 	}
@@ -568,12 +558,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addChangeHandler(new ChangeHandler(){
 			public void onChange(ChangeEvent event){
 				updateDataType();
-			}});
-		
-		chkVisible.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				updateQuestionVisible();
 			}});
 		
 		chkHasUINode.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -822,8 +806,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtHelpText.setVisible(true);
 		lblType.setVisible(true);
 		cbDataType.setVisible(true);
-		lblVisible.setVisible(true);
-		chkVisible.setVisible(true);
 		lblRequired.setVisible(true);
 		chkRequired.setVisible(true);
 		lblBinding.setVisible(true);
@@ -836,7 +818,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultLabel.setText(groupObj.getText());
 		txtHelpText.setText(groupObj.getHelpText());
 		cbDataType.setSelectedIndex(DT_INDEX_GROUP);
-		chkVisible.setValue(groupObj.isVisible());
 		chkRequired.setValue(groupObj.isRequired());
 		txtBinding.setText(groupObj.getDataNodesetPath());
 		
@@ -872,8 +853,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		lblType.setVisible(true);
 		cbDataType.setVisible(true);
 		
-		lblVisible.setVisible(true);
-		chkVisible.setVisible(true);
 		lblRequired.setVisible(true);
 		chkRequired.setVisible(true);
 		if(questionDef.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
@@ -893,7 +872,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtDefaultValue.setText(questionDef.getDefaultValue());
 		txtRepeatCount.setText(questionDef.getRepeatCountNodePath());
 
-		chkVisible.setValue(questionDef.isVisible());
 		chkLocked.setValue(questionDef.isLocked());
 		chkRequired.setValue(questionDef.isRequired());
 		chkHasUINode.setValue(questionDef.hasUINode());
@@ -983,7 +961,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		txtBinding.setVisible(visible);
 		lblBinding.setVisible(visible);
 		cbDataType.setVisible(visible);
-		chkVisible.setVisible(visible);
 		chkLocked.setVisible(visible);
 		chkRequired.setVisible(visible);
 		chkHasUINode.setVisible(visible);
@@ -996,7 +973,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 //		itextView.setEnabled(enable2);
 
 		lblType.setVisible(visible);
-		lblVisible.setVisible(visible);
 		lblEnabled.setVisible(visible);
 		lblLocked.setVisible(visible);
 		lblRequired.setVisible(visible);
@@ -1023,7 +999,6 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 	 */
 	public void clearProperties(){
 		cbDataType.setSelectedIndex(DT_INDEX_NONE);
-		chkVisible.setValue(false);
 		chkLocked.setValue(false);
 		chkRequired.setValue(false);
 		txtDefaultValue.setText(null);

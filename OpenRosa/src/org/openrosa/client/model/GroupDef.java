@@ -61,7 +61,7 @@ public class GroupDef implements IFormElement, Serializable{
 
 	private int dataType = QuestionDef.QTN_TYPE_GROUP;
 	
-	private boolean required,enabled,visible;
+	private boolean required,enabled;
 	
 	private boolean hasAdvancedCalculate, hasAdvancedConstraint, hasAdvancedRelevant;
 	
@@ -82,7 +82,6 @@ public class GroupDef implements IFormElement, Serializable{
 		this.parent = parent;
 		required = false;
 		enabled = true;
-		visible = true;
 	}
 
 	/**
@@ -1109,10 +1108,6 @@ public class GroupDef implements IFormElement, Serializable{
 		return enabled;
 	}
 
-	public boolean isVisible(){
-		return visible;
-	}
-
 	public String getDefaultValue(){
 		return null;
 	}
@@ -1131,11 +1126,6 @@ public class GroupDef implements IFormElement, Serializable{
 	@Override
 	public void setRequired(boolean required) {
 		this.required = required;
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
 	}
 
 	public boolean hasUINode() {

@@ -359,10 +359,6 @@ public class OptionDef implements IFormElement, Serializable {
 		return true;
 	}
 	
-	public boolean isVisible(){
-		return true;
-	}
-	
 	public String getDefaultValue(){
 		return defaultValue;
 	}
@@ -389,11 +385,6 @@ public class OptionDef implements IFormElement, Serializable {
 		
 	}
 
-	@Override
-	public void setVisible(boolean visible) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	/**
 	 * Get the Nodeset ref that points to the data node where the question's answer will be stored.

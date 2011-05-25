@@ -1562,10 +1562,6 @@ public class FormDef implements IFormElement, Serializable{
 		return true;
 	}
 	
-	public boolean isVisible(){
-		return true;
-	}
-	
 	public String getDefaultValue(){
 		return null;
 	}
@@ -1584,12 +1580,6 @@ public class FormDef implements IFormElement, Serializable{
 
 	@Override
 	public void setRequired(boolean required) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setVisible(boolean visible) {
 		// TODO Auto-generated method stub
 		
 	}

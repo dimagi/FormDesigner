@@ -250,7 +250,6 @@ public class SkipRule implements Serializable{
 	
 	/** Executes the rule action on the supplied question. */
 	public void ExecuteAction(QuestionDef qtn,boolean conditionTrue){
-		qtn.setVisible(true);
 		qtn.setEnabled(true);
 		qtn.setRequired(false);
 		
@@ -258,10 +257,6 @@ public class SkipRule implements Serializable{
 			qtn.setEnabled(conditionTrue);
 		else if((action & ModelConstants.ACTION_DISABLE) != 0)
 			qtn.setEnabled(!conditionTrue);
-		else if((action & ModelConstants.ACTION_SHOW) != 0)
-			qtn.setVisible(conditionTrue);
-		else if((action & ModelConstants.ACTION_HIDE) != 0)
-			qtn.setVisible(!conditionTrue);
 		
 		if((action & ModelConstants.ACTION_MAKE_MANDATORY) != 0)
 			qtn.setRequired(conditionTrue);

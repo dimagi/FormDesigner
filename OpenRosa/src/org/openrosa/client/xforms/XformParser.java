@@ -588,9 +588,7 @@ public class XformParser {
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_LOCKED).equals(XformConstants.XPATH_VALUE_TRUE)){
 			qtn.setLocked(true);
 		}
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE).equals(XformConstants.XPATH_VALUE_FALSE)){
-			qtn.setVisible(false);
-		}
+
 		String qtnID = ((ref != null) ? ref : bind);
 		String[] tokens = qtnID.split("/");
 		qtnID = tokens[tokens.length-1];
@@ -701,7 +699,7 @@ public class XformParser {
 			groupDef.setParent(groupBind.getParent());
 			groupDef.setId(groupBind.getId());
 			groupDef.setRequired(groupBind.isRequired());
-			groupDef.setVisible(groupBind.isVisible());
+//			groupDef.setVisible(groupBind.isVisible());
 			groupDef.setEnabled(groupBind.isEnabled());
 			formDef.removeChild(groupBind);
 			
@@ -834,9 +832,6 @@ public class XformParser {
 			def.setLocked(true);
 		}
 		
-		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE) != null && child.getAttribute(XformConstants.ATTRIBUTE_NAME_VISIBLE).equals(XformConstants.XPATH_VALUE_FALSE)){
-			def.setVisible(false);
-		}
 
 		if(child.getAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT) != null){
 			relevants.put(def,child.getAttribute(XformConstants.ATTRIBUTE_NAME_RELEVANT));

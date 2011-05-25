@@ -113,8 +113,6 @@ public interface IFormElement {
 	void setRequired(boolean required);
 	boolean isEnabled();
 	void setEnabled(boolean enabled);
-	boolean isVisible();
-	void setVisible(boolean visible);
 	String getDefaultValue();
 	
 	FormDef getParentFormDef();

@@ -191,7 +191,7 @@ public class XformBuilder {
 		
 		if(parent.getChildren() != null){
 			//then recursively clean children
-			for(int i=0;i<parent.getChildCount();i++){
+			for(int i=0;i<parent.getChildren().size();i++){
 				IFormElement child = parent.getChildren().get(i);
 				cleanBindNodeRecurse(child);
 			}

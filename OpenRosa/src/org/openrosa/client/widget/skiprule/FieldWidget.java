@@ -161,7 +161,8 @@ public class FieldWidget extends Composite{
 	}
 
 	public void selectQuestion(IFormElement questionDef){
-		fieldHyperlink.setText(Itext.getDisplayText(questionDef));
+		String dText = Itext.getDisplayText(questionDef);
+		fieldHyperlink.setText(dText);
 		itemSelectionListener.onItemSelected(this, questionDef);
 	}
 
@@ -208,7 +209,7 @@ public class FieldWidget extends Composite{
 			this.questionDef = (QuestionDef)questionDef;
 		
 		if(questionDef != null)
-			fieldHyperlink.setText(questionDef.getText());
+			fieldHyperlink.setText(Itext.getDisplayText(questionDef));
 		else{
 			horizontalPanel.remove(fieldHyperlink);
 			horizontalPanel.remove(sgstField);

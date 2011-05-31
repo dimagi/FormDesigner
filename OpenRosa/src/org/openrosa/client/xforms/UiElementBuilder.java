@@ -52,8 +52,10 @@ public class UiElementBuilder {
 		bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_NODESET, dataPath);
 
 		if(qtn.getDataType() != QuestionDef.QTN_TYPE_REPEAT){
-			bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode));	
-			if(bindNode.getAttribute("type").isEmpty()){
+			String type = XformBuilderUtil.getXmlType(qtn.getDataType(),bindNode);
+			if(type != null && !type.isEmpty()){
+				bindNode.setAttribute(XformConstants.ATTRIBUTE_NAME_TYPE, type);	
+			}else{
 				bindNode.removeAttribute("type");
 			}
 		}

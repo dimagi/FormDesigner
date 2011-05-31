@@ -40,7 +40,6 @@ public class RelevantParser {
 	public static void addSkipRules(FormDef formDef, HashMap relevants){
 		Vector rules = new Vector();
 
-		HashMap<String,SkipRule> skipRulesMap = new HashMap<String,SkipRule>();
 
 		Iterator keys = relevants.keySet().iterator();
 		int id = 0;
@@ -51,20 +50,16 @@ public class RelevantParser {
 			//If there is a skip rule with the same relevant as the current
 			//then just add this question as another action target to the skip
 			//rule instead of creating a new skip rule.
-			SkipRule skipRule = skipRulesMap.get(relevant);
+			SkipRule skipRule = null;
 			
 			boolean hasRelevant = (relevant != null && !relevant.isEmpty());
 			
-			if(skipRule == null){
-				skipRule = buildSkipRule(formDef, qtn.getId(),relevant,++id,XformParserUtil.getAction(qtn));
-				if(skipRule != null){
-					rules.add(skipRule);
-					skipRulesMap.put(relevant, skipRule);
-				}
 			
-			}else{
-				skipRule.addActionTarget(qtn.getId());
+			skipRule = buildSkipRule(formDef, qtn.getId(),relevant,++id,XformParserUtil.getAction(qtn));
+			if(skipRule != null){
+				rules.add(skipRule);
 			}
+			
 			
 			boolean similar = isRelevantsEquivalent(relevant, skipRule, formDef);
 			if(similar){

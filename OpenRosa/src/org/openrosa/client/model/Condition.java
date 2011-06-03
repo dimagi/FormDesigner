@@ -165,6 +165,9 @@ public class Condition implements Serializable{
 			case QuestionDef.QTN_TYPE_DECIMAL:
 				ret = isDecimalTrue(qn,validation);
 				break;
+			case QuestionDef.QTN_TYPE_LONG:
+				ret = isLongTrue(qn,validation);
+				break;
 			case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:
 			case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE_DYNAMIC:
 				ret = isListExclusiveTrue(qn,validation);
@@ -542,6 +545,10 @@ public class Condition implements Serializable{
 		}
 
 		return false;
+	}
+	
+	public boolean isLongTrue(QuestionDef qtn, boolean validation){
+		return true;
 	}
 
 

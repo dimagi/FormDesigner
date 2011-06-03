@@ -65,6 +65,8 @@ public class XformBuilderUtil {
 			return XformConstants.DATA_TYPE_DECIMAL;
 		case QuestionDef.QTN_TYPE_NUMERIC:
 			return XformConstants.DATA_TYPE_INT;
+		case QuestionDef.QTN_TYPE_LONG:
+			return XformConstants.DATA_TYPE_LONG;
 		case QuestionDef.QTN_TYPE_TEXT:
 			return XformConstants.DATA_TYPE_TEXT;
 		case QuestionDef.QTN_TYPE_LIST_EXCLUSIVE:

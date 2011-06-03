@@ -86,51 +86,55 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 
 	/** List box index for decimal data type. */
 	private static final byte DT_INDEX_DECIMAL = 2;
-
+	
+	/** List box index for long number type question. */
+	private static final byte DT_INDEX_LONG = 3;
+	
 	/** List box index for date data type. */
-	private static final byte DT_INDEX_DATE = 3;
+	private static final byte DT_INDEX_DATE = 4;
 
 	/** List box index for time data type. */
-	private static final byte DT_INDEX_TIME = 4;
+	private static final byte DT_INDEX_TIME = 5;
 
 	/** List box index for dateTime data type. */
-	private static final byte DT_INDEX_DATE_TIME = 5;
+	private static final byte DT_INDEX_DATE_TIME = 6;
 
 	/** List box index for single select data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT = 6;
+	private static final byte DT_INDEX_SINGLE_SELECT = 7;
 
 	/** List box index for multiple select data type. */
-	private static final byte DT_INDEX_MULTIPLE_SELECT = 7;
+	private static final byte DT_INDEX_MULTIPLE_SELECT = 8;
 
 	/** List box index for repeat data type. */
-	private static final byte DT_INDEX_REPEAT = 8;
+	private static final byte DT_INDEX_REPEAT = 9;
 
 	/** List box index for image data type. */
-	private static final byte DT_INDEX_IMAGE = 9;
+	private static final byte DT_INDEX_IMAGE = 10;
 
 	/** List box index for video data type. */
-	private static final byte DT_INDEX_VIDEO = 10;
+	private static final byte DT_INDEX_VIDEO = 11;
 
 	/** List box index for audio data type. */
-	private static final byte DT_INDEX_AUDIO = 11;
+	private static final byte DT_INDEX_AUDIO = 12;
 
 	/** List box index for gps data type. */
-	private static final byte DT_INDEX_GPS = 12;
+	private static final byte DT_INDEX_GPS = 13;
 	
 	/** List box index for barcode data type. */
-	private static final byte DT_INDEX_BARCODE = 13;
+	private static final byte DT_INDEX_BARCODE = 14;
 	
 	/** List box index for group data type. */
-	private static final byte DT_INDEX_LABEL = 14;
+	private static final byte DT_INDEX_LABEL = 15;
 	
 	/** List box index for group data type. */
-	private static final byte DT_INDEX_GROUP = 15;
+	private static final byte DT_INDEX_GROUP = 17;
 	
 	/** List box index for boolean data type. */
-	private static final byte DT_INDEX_BOOLEAN = 17;
+	private static final byte DT_INDEX_BOOLEAN = 18;
 	
 	/** List box index for single select dynamic data type. */
-	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 18;
+	private static final byte DT_INDEX_SINGLE_SELECT_DYNAMIC = 19;
+	
 
 	/** Table used for organizing widgets in a table format. */
 	private FlexTable table = new FlexTable();
@@ -276,6 +280,7 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		cbDataType.addItem(LocaleText.get("qtnTypeText"));
 		cbDataType.addItem(LocaleText.get("qtnTypeNumber"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDecimal"));
+		cbDataType.addItem(LocaleText.get("qtnTypeLong"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDate"));
 		cbDataType.addItem(LocaleText.get("qtnTypeTime"));
 		cbDataType.addItem(LocaleText.get("qtnTypeDateTime"));
@@ -690,6 +695,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 		case DT_INDEX_GROUP:
 			dataType = QuestionDef.QTN_TYPE_GROUP;
 			break;
+		case DT_INDEX_LONG:
+			dataType = QuestionDef.QTN_TYPE_LONG;
+			break;
 		}
 
 		/*if(dataType == QuestionDef.QTN_TYPE_REPEAT && 
@@ -763,6 +771,9 @@ public class PropertiesView extends Composite implements IFormSelectionListener,
 			break;
 		case QuestionDef.QTN_TYPE_GROUP:
 			retIndex = DT_INDEX_GROUP;
+			break;
+		case QuestionDef.QTN_TYPE_LONG:
+			retIndex = DT_INDEX_LONG;
 			break;
 		}
 		

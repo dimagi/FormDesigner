@@ -160,6 +160,9 @@ public class QuestionDef implements IFormElement, Serializable{
 	
 	/** Option Item for (1)Select type questions */
 	public static final int QTN_TYPE_OPTION_ITEM = 19;
+	
+	/** Question with type Long (as in number) */
+	public static final int QTN_TYPE_LONG = 20;
 
 	/** The xforms model data node into which this question will feed its answer. */
 	private Element dataNode;

@@ -127,6 +127,7 @@ public class XformConstants {
 	public static final String DATA_TYPE_DATE_TIME = "xsd:dateTime";
 	public static final String DATA_TYPE_TIME = "xsd:time";
 	public static final String DATA_TYPE_DECIMAL = "xsd:decimal";
+	public static final String DATA_TYPE_LONG = "xsd:long";
 	public static final String DATA_TYPE_BARCODE = "barcode";
 
 	public static final String XPATH_VALUE_TRUE = "true()";

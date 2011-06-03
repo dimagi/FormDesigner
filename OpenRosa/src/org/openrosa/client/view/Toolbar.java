@@ -106,7 +106,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 	private Button decBut;
 	private Button dateBut;
 	private Button multBut;
-	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut, yesNoBut;
+	private Button singBut,timeBut,datetimeBut,picBut,vidBut,audBut,gpsBut, bcdBut, grpBut, lblBut, rptBut, yesNoBut, longBut;
 	private Button newBut;
 	private SplitButton splitItem;
 	private Button bdelete;
@@ -149,6 +149,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 			"Label Question", 			//21
 			"Repeat Question"};			//22
 	String yesNoButtonText = "Yes/No Question";
+	String longButtonText = "Long Number Question";
 	
 //	/** Widget to display the list of languages or locales. */
 //	ListBox localesComboBox = new ListBox(false);
@@ -288,6 +289,11 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		decBut.setScale(ButtonScale.LARGE);
 		decBut.setIconAlign(IconAlign.LEFT);
 		decBut.addStyleName("myMenuButton");
+		longBut = new Button(longButtonText);
+		longBut.setIcon(AbstractImagePrototype.create(images.blankbutton()));
+		longBut.setScale(ButtonScale.LARGE);
+		longBut.setIconAlign(IconAlign.LEFT);
+		longBut.addStyleName("myMenuButton");
 		dateBut = new Button(buttonLabels[4]);
 		dateBut.setIcon(AbstractImagePrototype.create(images.addDate()));
 		dateBut.setScale(ButtonScale.LARGE);
@@ -362,6 +368,7 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 		menu.add(txtBut);  
 		menu.add(intBut);  
 		menu.add(decBut);
+		menu.add(longBut);
 		menu.add(dateBut);
 		menu.add(multBut);
 		menu.add(singBut);
@@ -500,6 +507,15 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 				splitItem.hideMenu();
 			}
 		});
+		longBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
+			public void componentSelected(ButtonEvent ce) {
+				controller.addNewQuestion(QuestionDef.QTN_TYPE_LONG);
+				splitItem.setText(longBut.getText());
+				splitItem.setIcon(longBut.getIcon());
+				splitItem.hideMenu();
+			}
+		});
+		
 		dateBut.addSelectionListener(new SelectionListener<ButtonEvent>() {
 			public void componentSelected(ButtonEvent ce) {
 				// TODO Auto-generated method stub
@@ -657,6 +673,8 @@ public class Toolbar extends Composite implements ILocaleListChangeListener, IDa
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_REPEAT);
 				}else if(t.equals(yesNoButtonText)){
 					controller.addYesNoQuestion();
+				}else if(t.equals(longButtonText)){
+					controller.addNewQuestion(QuestionDef.QTN_TYPE_LONG);
 				}else{
 					controller.addNewQuestion(QuestionDef.QTN_TYPE_TEXT);
 				}	

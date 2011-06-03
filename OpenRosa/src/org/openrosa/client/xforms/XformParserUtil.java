@@ -237,7 +237,9 @@ public class XformParserUtil {
 				def.setDataType(QuestionDef.QTN_TYPE_NUMERIC);
 			else if(type.equals("xsd:decimal") || type.indexOf("decimal") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_DECIMAL);
-			else if(type.equals("xsd:dateTime") || type.indexOf("dateTime") != -1 )
+			else if(type.equals("xsd:long") || type.indexOf("long") != -1){
+				def.setDataType(QuestionDef.QTN_TYPE_LONG);
+			}else if(type.equals("xsd:dateTime") || type.indexOf("dateTime") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_DATE_TIME);
 			else if(type.equals("xsd:time") || type.indexOf("time") != -1 )
 				def.setDataType(QuestionDef.QTN_TYPE_TIME);

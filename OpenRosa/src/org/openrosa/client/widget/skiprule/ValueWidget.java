@@ -390,10 +390,10 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 			if(!valueHyperlink.getText().equals(EMPTY_VALUE) && (prevQuestionDef == questionDef || prevQuestionDef == null))
 				txtValue1.setText(valueHyperlink.getText());
 
-			if(!chkQuestionValue.getValue() == true)
+			if(!chkQuestionValue.getValue())
 				addNumericKeyboardListener();
 
-			if(chkQuestionValue.getValue() == true){
+			if(chkQuestionValue.getValue()){
 				sgstField.setFocus(true);
 				sgstField.setFocus(true);
 			}
@@ -433,7 +433,8 @@ public class ValueWidget extends Composite implements ItemSelectionListener, Clo
 	}
 
 	private void addNumericKeyboardListener(){
-		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL){
+		if(questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC || questionDef.getDataType() == QuestionDef.QTN_TYPE_DECIMAL ||
+				questionDef.getDataType() == QuestionDef.QTN_TYPE_LONG){
 			keyboardListener1 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue1, questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC ? false : true);
 			keyboardListener2 = FormUtil.getAllowNumericOnlyKeyboardListener(txtValue2, questionDef.getDataType() == QuestionDef.QTN_TYPE_NUMERIC ? false : true);
 
